@@ -1,0 +1,103 @@
+'use strict';
+
+var bcrypt = require('bcrypt-nodejs');
+
+module.exports = {
+    attributes: {
+        email: {
+            type: 'email',
+            required: true,
+            unique: true
+        },
+        phone: {
+            type: 'string',
+            required: true,
+            unique: true
+        },
+        picture: {
+            model: 'Image'
+        },
+        firstName: {
+            type: 'string',
+            required: true
+        },
+        lastName: {
+            type: 'string',
+            required: true
+        },
+        birthday: {
+            type: 'date',
+            required: true
+        },
+        idNumber: {
+            type: 'string',
+            required: true,
+            unique: true
+        },
+        password: {
+            type: 'string',
+            required: true
+        },
+        // Used only when resetting password
+        temporaryPassword: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        address: {
+            model: 'Address'
+        },
+        isActive: {
+            type: 'boolean',
+            required: true
+        },
+        // Generate when register for an event. Use this to generate QR Code and check-in
+        hash: {
+            type: 'string'
+        },
+        events: {
+            collection: 'Event',
+            via: 'racers'
+        },
+        races: {
+            collection: 'Race',
+            via: 'racers'
+        },
+        rfid: {
+            collection: 'Rfid',
+            via: 'racer'
+        }
+    },
+    beforeCreate: function (values, callback) {
+        if (values.password && values.password !== 'init') {
+            return bcrypt.hash(values.password, null, null, function (err, hash) {
+                if (err) {
+                    return callback(err);
+                }
+                values.password = hash;
+                return callback();
+            });
+        }
+        return callback();
+    },
+    beforeUpdate: function (values, callback) {
+        if (values.password && values.password !== 'init') {
+            // When user updating password
+            return bcrypt.hash(values.password, null, null, function (err, hash) {
+                if (err) {
+                    return callback(err);
+                }
+                values.password = hash;
+                return callback();
+            });
+        } else if (values.temporaryPassword && values.temporaryPassword !== '') {
+            return bcrypt.hash(values.temporaryPassword, null, null, function (err, hash) {
+                if (err) {
+                    return callback(err);
+                }
+                values.temporaryPassword = hash;
+                return callback();
+            });
+        }
+        return callback();
+    }
+};
