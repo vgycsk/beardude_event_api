@@ -7,6 +7,8 @@ module.exports = {
     create: function (req, res) {
         var input = req.body;
 
+        return res.ok('create event, input: ', JSON.stringify(input));
+/*
         Event.create(input)
         .then(function (eventData) {
             return res.ok(eventData);
@@ -14,6 +16,7 @@ module.exports = {
         .catch(function (E) {
             return res.badRequest(E);
         });
+*/
     },
     getGeneralInfo: function (req, res) {
         Event.findOne({
@@ -45,7 +48,7 @@ module.exports = {
         //name, startTime, endTime, manager (check), isActive
         var input = req.body;
         var updateObj = {};
-        var fields = ['name', 'startTime', 'endTime', 'manager', 'isPublic', 'isRegisterOpen'];
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'manager', 'isPublic', 'isRegisterOpen'];
         var i;
 
         for (i = 0; i < fields.length; i += 1) {

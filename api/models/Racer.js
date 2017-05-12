@@ -4,6 +4,23 @@ var bcrypt = require('bcrypt-nodejs');
 
 module.exports = {
     attributes: {
+        events: {
+            collection: 'Event',
+            via: 'racers'
+        },
+        races: {
+            collection: 'Race',
+            via: 'racers'
+        },
+        rfid: {
+            collection: 'Rfid',
+            via: 'racer'
+        },
+
+        address: {
+            model: 'Address'
+        },
+
         email: {
             type: 'email',
             required: true,
@@ -43,28 +60,14 @@ module.exports = {
             type: 'string',
             defaultsTo: ''
         },
-        address: {
-            model: 'Address'
-        },
         isActive: {
             type: 'boolean',
             required: true
         },
         // Generate when register for an event. Use this to generate QR Code and check-in
         hash: {
-            type: 'string'
-        },
-        events: {
-            collection: 'Event',
-            via: 'racers'
-        },
-        races: {
-            collection: 'Race',
-            via: 'racers'
-        },
-        rfid: {
-            collection: 'Rfid',
-            via: 'racer'
+            type: 'string',
+            defaultsTo: ''
         }
     },
     beforeCreate: function (values, callback) {

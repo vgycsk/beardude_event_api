@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <title>Test page</title>
+    <style>
+    section>ul>li {
+        display: inline-block;
+        vertical-align: top;
+        outline: 1px solid #ccc;
+        margin:5px;
+        padding: 5px;
+    }
+    section>ul>li>ul {
+        padding: 0 0 0 20px;
+    }
+    section>ul>li>div {
+        background: #efefef;
+        width: 400px;
+        overflow: hidden;
+    }
+    section>ul>li>div>code {
+        white-space: pre-wrap;
+    }
+    </style>
+</head>
+<body>
+    <section>
+        <h2>Manager</h2>
+        <ul>
+            <li>
+                <h3>Login</h3>
+                <form action="/manager/login" method="POST">
+                    <ul>
+                        <li>
+                            <label>email</label>
+                            <input type="text" name="email" />
+                        </li>
+                        <li>
+                            <label>password</label>
+                            <input type="password" name="password" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Activate</h3>
+                <form action="/manager/activate" method="POST">
+                    <ul>
+                        <li>
+                            <label>new password</label>
+                            <input type="password" name="password" />
+                        </li>
+                        <li>
+                            <label>confirm password</label>
+                            <input type="password" name="confirmPassword" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Create</h3>
+                <form action="/manager/create" method="POST">
+                    <ul>
+                        <li>
+                            <label>Email</label>
+                            <input type="text" name="email" />
+                        </li>
+                        <li>
+                            <label>Phone</label>
+                            <input type="text" name="phone" />
+                        </li>
+                        <li>
+                            <label>FirstName</label>
+                            <input type="text" name="firstName" />
+                        </li>
+                        <li>
+                            <label>LastName</label>
+                            <input type="text" name="lastName" />
+                        </li>
+                        <li>
+                            <label>Birthday</label>
+                            <input type="text" name="birthday" />
+                        </li>
+                        <li>
+                            <label>Id number</label>
+                            <input type="text" name="idNumber" />
+                        </li>
+                        <% include ./partials/address %>
+                        <li>
+                            <label>password</label>
+                            <input type="password" name="password" />
+                        </li>
+                        <li>
+                            <label>Confirm password</label>
+                            <input type="password" name="confirmPassword" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Get info</h3>
+                <ul>
+                    <% for (var i = 0; i < params.managers.length; i += 1) { %>
+                        <li>
+                            <label><%= params.managers[i].id %> - <%= params.managers[i].firstName %> <%= params.managers[i].lastName %>:</label> 
+                            <a href="/manager/info/<%= params.managers[i].id %>">General</a>
+                            <a href="/manager/mgmtInfo/<%= params.managers[i].id %>">Management</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Update</h3>
+                <ul>
+                    <% for (var i = 0; i < params.managers.length; i += 1) { %>
+                        <li>
+                            <label>
+                            <a href="/manager/update/<%= params.managers[i].id %>"><%= params.managers[i].id %> - <%= params.managers[i].firstName %> <%= params.managers[i].lastName %>:</label> </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Event</h2>
+        <ul>
+            <li>
+                <h3>Create</h3>
+                <form action="/event/create" method="POST">
+                    <ul>
+                        <li>
+                            <label>Name</label>
+                            <input type="text" name="name" />
+                        </li>
+                        <li>
+                            <label>Chinese Name</label>
+                            <input type="text" name="nameCht" />
+                        </li>
+                        <li>
+                            <label>Start time</label>
+                            <input type="text" name="startTime" />
+                        </li>
+                        <li>
+                            <label>End time</label>
+                            <input type="text" name="endTime" />
+                        </li>
+                        <% include ./partials/address.ejs %>
+                        <li>
+                            <label>Manager</label>
+                            <input type="text" name="manager" readOnly value="" />
+                        </li>
+                        <li>
+                            <label>isPublic</label>
+                            <input type="checkbox" name="isPublic" />
+                        </li>
+                        <li>
+                            <label>isRegisterationOpen</label>
+                            <input type="text" name="isRegisterationOpen" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+        </ul>
+    </section>
+    <script>
+    var params = <%- JSON.stringify(params, null, 4) %></script>
+</body>
+</html>

@@ -2,17 +2,29 @@
 
 module.exports = {
     attributes: {
-        manager: {
-            model: 'Manager'
+        street: {
+            type: 'string',
+            defaultsTo: ''
         },
-        racer: {
-            model: 'Racer'
+        district: {
+            type: 'string',
+            defaultsTo: ''
         },
-        street: 'string',
-        district: 'string',
-        city: 'string',
-        county: 'string',
-        country: 'string',
-        zip: 'integer'
+        city: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        county: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        country: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        zip: {
+            type: 'string',
+            defaultsTo: ''
+        }
     }
 };

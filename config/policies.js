@@ -2,31 +2,36 @@
 
 module.exports.policies = {
     AddressController: {
-        create: 'isLoggedIn',
-        update: 'isLoggedIn'
+        create: ['isActive', 'isLoggedIn'],
+        update: ['isActive', 'isLoggedIn']
     },
     EventController: {
-        create: 'isManager',
+        create: ['isActive', 'isManager'],
 //        getGeneralInfo: '',
-        getManagementInfo: 'isManager',
-        update: 'isManager'
+        getManagementInfo: ['isActive', 'isManager'],
+        update: ['isActive', 'isManager']
     },
     ManagerController: {
-        create: 'isManager',
+        activate: ['isLoggedIn', 'isInactive'],
+        create: ['isActive', 'isManager'],
 //        getGeneralInfo: '',
         getManagementInfo: 'isManager',
 //        login: '',
-        update: 'isManager'
+        logout: 'isManager',
+        update: ['isActive', 'isManager']
     },
     RacerController: {
 //        create: '',
 //        getGeneralInfo: '',
         getManagementInfo: 'isManager',
 //        login: '',
-        update: 'isLoggedIn'
+        update: ['isActive', 'isLoggedIn']
     },
     RfidController: {
-        create: 'isManager',
-        getInfo: 'isManager'
+        create: ['isActive', 'isManager'],
+        getInfo: ['isActive', 'isManager']
+    },
+    PageController: {
+        managerUpdatePage:  ['isActive', 'isManager']
     }
 };

@@ -6,8 +6,9 @@ module.exports = {
     attributes: {
         events: {
             collection: 'Event',
-            via: 'manager'
+            via: 'managers'
         },
+
         address: {
             model: 'Address'
         },
@@ -30,10 +31,12 @@ module.exports = {
             required: true
         },
         birthday: {
-            type: 'string'
+            type: 'string',
+            required: true
         },
         idNumber: {
-            type: 'string'
+            type: 'string',
+            required: true
         },
         password: {
             type: 'string',
@@ -50,7 +53,7 @@ module.exports = {
         }
     },
     beforeCreate: function (values, callback) {
-        if (values.password && values.password !== 'init') {
+        if (values.password) {
             return bcrypt.hash(values.password, null, null, function (err, hash) {
                 if (err) {
                     return callback(err);
@@ -62,7 +65,7 @@ module.exports = {
         return callback();
     },
     beforeUpdate: function (values, callback) {
-        if (values.password && values.password !== 'init') {
+        if (values.password) {
             // When user updating password
             return bcrypt.hash(values.password, null, null, function (err, hash) {
                 if (err) {

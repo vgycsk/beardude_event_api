@@ -3,6 +3,12 @@
 // Sub races within an event
 module.exports = {
     attributes: {
+        racers: {
+            collection: 'Racer',
+            via: 'races',
+            dominant: true
+        },
+
         event: {
             model: 'Event'
         },
@@ -10,13 +16,9 @@ module.exports = {
             type: 'string',
             required: true
         },
-        racers: {
-            collection: 'Racer',
-            via: 'races',
-            dominant: true
-        },
         records: {
-            type: 'json'
+            type: 'json',
+            defaultsTo: {}
         }
     }
 };

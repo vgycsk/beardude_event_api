@@ -11,7 +11,7 @@
         "randomstring": "1.1.5",
         "sails": "0.12.13",
         "sails-disk": "*",
-        "validator": "3.39.0"
+        "sails-mysql": "*"
     },
     "devDependencies": {
         "eslint": "*",

@@ -119,6 +119,10 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    logout: function (req, res) {
+        delete res.session.racerInfo;
+        return res.ok('Logged out');
+    },
     update: function (req, res) {
         var input = req.body;
         var fields = ['email', 'phone', 'firstName', 'lastName', 'birthday', 'idNumber', 'password', 'isActive', 'hash'];

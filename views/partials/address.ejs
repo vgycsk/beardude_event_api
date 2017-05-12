@@ -1,0 +1,65 @@
+<%
+    var address;
+    var hasData;
+    if (typeof manager !== 'undefined') {
+        address = manager.address;
+        hasData = true;
+    } else if (typeof racer !== 'undefined') {
+        address = racer.address;
+        hasData = true;
+    }
+%>
+<% if (hasData) { %>
+<li>
+    ID: <input type="text" name="address[id]" value="<%= address.id %>" readOnly/>
+</li>
+<li>
+    <label>Street</label>
+    <input type="text" name="address[street]" value="<%= address.street %>" />
+</li>
+<li>
+    <label>district</label>
+    <input type="text" name="address[district]" value="<%= address.district %>" />
+</li>
+<li>
+    <label>city</label>
+    <input type="text" name="address[city]" value="<%= address.city %>" />
+</li>
+<li>
+    <label>county</label>
+    <input type="text" name="address[county]" value="<%= address.county %>" />
+</li>
+<li>
+    <label>Country</label>
+    <input type="text" name="address[country]" value="<%= address.country %>" />
+</li>
+<li>
+    <label>zip</label>
+    <input type="text" name="address[zip]" value="<%= address.zip %>" />
+</li>
+<% } else { %>
+    <li>
+        <label>Street</label>
+        <input type="text" name="address[street]" />
+    </li>
+    <li>
+        <label>district</label>
+        <input type="text" name="address[district]" />
+    </li>
+    <li>
+        <label>city</label>
+        <input type="text" name="address[city]" />
+    </li>
+    <li>
+        <label>county</label>
+        <input type="text" name="address[county]" />
+    </li>
+    <li>
+        <label>Country</label>
+        <input type="text" name="address[country]" />
+    </li>
+    <li>
+        <label>zip</label>
+        <input type="text" name="address[zip]" />
+    </li>
+<% } %>

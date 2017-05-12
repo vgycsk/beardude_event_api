@@ -3,7 +3,33 @@
 // A bicycle race event, which may consist of a number of races
 module.exports = {
     attributes: {
+        managers: {
+            collection: 'Manager',
+            via: 'events',
+            dominant: true
+        },
+        races: {
+            collection: 'Race',
+            via: 'event'
+        },
+        racers: {
+            collection: 'Racer',
+            via: 'events',
+            dominant: true
+        },
+
+        address: {
+            model: 'Address'
+        },
+        picture: {
+            model: 'Image'
+        },
+
         name: {
+            type: 'string',
+            required: true
+        },
+        nameCht: {
             type: 'string',
             required: true
         },
@@ -15,15 +41,7 @@ module.exports = {
             type: 'date',
             required: true
         },
-        picture: {
-            model: 'Image'
-        },
-        manager: {
-            model: 'Manager'
-        },
-        address: {
-            model: 'Address'
-        },
+
         isPublic: {
             type: 'boolean',
             required: true
@@ -31,15 +49,6 @@ module.exports = {
         isRegisterationOpen: {
             type: 'boolean',
             required: true
-        },
-        races: {
-            collection: 'Race',
-            via: 'event'
-        },
-        racers: {
-            collection: 'Racer',
-            via: 'events',
-            dominant: true
         }
     }
 };

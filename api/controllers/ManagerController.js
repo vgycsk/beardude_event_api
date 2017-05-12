@@ -1,37 +1,84 @@
 /* eslint-disable no-console */
-/* global dataService, Manager */
+/* global Address, dataService, Manager */
 
 'use strict';
 
-var randomstring = require('randomstring');
-
 module.exports = {
-    create: function (req, res) {
+    // Activate manager by setting password and change isActive
+    activate: function (req, res) {
         var input = req.body;
 
-        Manager.findOne({
+        if (input.password === '') {
+            return res.badRequest('Password enter password');
+        }
+        if (input.password !== input.confirmPassword) {
+            return res.badRequest('Password and confirm-password mismatch');
+        }
+        return Manager.update({
+            email: req.session.managerInfo.email
+        }, {
+            password: input.password,
+            isActive: true
+        })
+        .then(function (managerData) {
+            req.session.managerInfo = managerData[0];
+            return res.ok('Account activated');
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    create: function (req, res) {
+        var input = req.body;
+        var addressInput = JSON.parse(JSON.stringify(input.address));
+        var addressDataObj;
+        var managerDataObj;
+
+        if (input.password !== input.confirmPassword) {
+            return res.badRequest('Password and confirm-password mismatch');
+        }
+        if (input.password === '') {
+            input.password = 'init';
+            input.isActive = false;
+        } else {
+            input.isActive = true;
+        }
+        return Manager.findOne({
             email: input.email
         })
         .then(function (managerData) {
-            if (!managerData || managerData.length === 0) {
-                // Temporary password
-                input.password = 'init';
-                input.temporaryPassword = randomstring.generate();
-                return Manager.create(input);
+            if (typeof managerData !== 'undefined') {
+                throw new Error('Account exists');
             }
-            throw new Error('User exists');
+            delete input.address;
+            return Manager.create(input);
         })
         .then(function (managerData) {
-            return res.ok(managerData);
+            managerDataObj = managerData;
+            return Address.create(addressInput);
+        })
+        .then(function (addressData) {
+            addressDataObj = addressData;
+            return Manager.update({
+                id: managerDataObj.id
+            }, {
+                address: addressDataObj.id
+            });
+        })
+        .then(function () {
+            var result = managerDataObj;
+
+            result.address = addressDataObj;
+            return res.ok(result);
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
     getGeneralInfo: function (req, res) {
-        var query = req.params;
-
-        Manager.findOne(query)
+        Manager.findOne({
+            id: req.params.id
+        })
         .then(function (managerData) {
             var result = {
                 firstName: managerData.firstName,
@@ -46,9 +93,9 @@ module.exports = {
         });
     },
     getManagementInfo: function (req, res) {
-        var query = req.params;
-
-        Manager.findOne(query)
+        Manager.findOne({
+            id: req.params.id
+        })
         .populate('address')
         .populate('events')
         .then(function (managerData) {
@@ -65,23 +112,13 @@ module.exports = {
     login: function (req, res) {
         var input = req.body;
         var managerDataObj;
-        var queryObj = {};
 
-        // User already logged in system
         if (req.session.managerInfo) {
-            // And already logged in
             return res.ok('Already logged in');
         }
-        if (input.email) {
-            queryObj = {
-                email: input.email
-            };
-        } else if (input.phone) {
-            queryObj = {
-                phone: input.phone
-            };
-        }
-        return Manager.findOne(queryObj)
+        return Manager.findOne({
+            email: input.email
+        })
         .then(function (managerData) {
             managerDataObj = managerData;
             return dataService.authenticate(input.password, managerDataObj.password);
@@ -111,21 +148,54 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    logout: function (req, res) {
+        delete res.session.managerInfo;
+        return res.ok('Logged out');
+    },
     update: function (req, res) {
         var input = req.body;
         var fields = ['email', 'phone', 'firstName', 'lastName', 'birthday', 'idNumber', 'password', 'isActive'];
+        var addressObj = input.address;
         var updateObj = {};
+        var resultObj;
+        var toUpdate;
 
-        fields.forEach(function (field) {
-            if (input[field]) {
-                updateObj[field] = input[field];
-            }
-        });
-        Manager.update({
-            id: input.id
-        }, updateObj)
+        Manager.findOne({
+            id: parseInt(input.id)
+        })
         .then(function (managerData) {
-            return res.ok(managerData[0]);
+            resultObj = input;
+            fields.forEach(function (field) {
+                if (input[field] && (managerData[field] !== input[field])) {
+                    updateObj[field] = input[field];
+                    toUpdate = true;
+                }
+            });
+            if (updateObj.password) {
+                if (updateObj.password === '') {
+                    delete updateObj.password;
+                } else if (input.password !== input.confirmPassword) {
+                    return res.badRequest('Password and confirm-password mismatch');
+                }
+            }
+            if (toUpdate) {
+                return Manager.update({
+                    id: input.id
+                }, updateObj);
+            }
+            return false;
+        })
+        .then(function (managerData) {
+            if (managerData) {
+                resultObj = managerData[0];
+            }
+            return Address.update({
+                id: addressObj.id
+            }, addressObj);
+        })
+        .then(function (addressData) {
+            resultObj.address = addressData[0];
+            return res.ok(resultObj);
         })
         .catch(function (E) {
             return res.badRequest(E);

@@ -12,7 +12,6 @@
 
 module.exports = {
     connections: {
-        reader: '192.168.0.100',
         aws: {
             key: '',
             secret: '',
@@ -28,15 +27,8 @@ module.exports = {
             database: 'emrv_api'
         },
         dev: {
-            adapter: 'sails-mysql',
-            host: 'localhost',
-            port: 8889,
-            user: 'root',
-            password: 'root',
-            database: 'beardude_event'
-        },
-        localDisk: {
             adapter: 'sails-disk'
+
         }
     },
     log: {
