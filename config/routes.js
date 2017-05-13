@@ -9,9 +9,9 @@ module.exports.routes = {
     //'post  /event/managers/remove': 'EventController.removeManagers',
     //'post  /event/races/add': 'EventController.addRaces',
     //'post  /event/races/remove': 'EventController.removeRaces',
-    //'post  /event/racers/add': 'EventController.removeRacers',
+    //'post  /event/racers/add': 'EventController.addRacers',
     //'post  /event/racers/remove': 'EventController.removeRacers',
-
+    'post  /event/update': 'EventController.update',
     // Manager
     'post /manager/activate': 'ManagerController.activate',
     'post /manager/create': 'ManagerController.create',
