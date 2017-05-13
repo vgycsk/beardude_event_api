@@ -20,6 +20,9 @@ module.exports = {
         address: {
             model: 'Address'
         },
+        team: {
+            model: 'Team'
+        },
 
         email: {
             type: 'email',
