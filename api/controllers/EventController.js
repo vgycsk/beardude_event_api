@@ -1,4 +1,4 @@
-/* global dataService, Event, Manager */
+/* global _, dataService, Event, Manager */
 
 'use strict';
 
@@ -69,23 +69,19 @@ module.exports = {
         })
         .populate('managers')
         .then(function(eventData) {
-            eventData.managers.forEach(function (dataManager) {
-                input.managers.forEach(function (inputManager) {
-                    if (dataManager.id === inputManager) {
-                        throw new Error('Already a manager of the event');
-                    }
-                });
-            });
-            input.managers.forEach(function (inputManager) {
-                var managerId = inputManager;
+            var managersToAdd = _.difference(input.managers, eventData.managers);
 
-                eventData.managers.add(managerId);
+            managersToAdd.forEach(function (inputManager) {
+                eventData.managers.add(inputManager);
             });
+            if (managersToAdd.length === 0) {
+                throw new Error('No managers to add');
+            }
             return eventData.save();
         })
         .then(function () {
             return res.ok({
-                message: 'Manager added to event',
+                message: 'Managers added to event',
                 event: input.event,
                 managers: input.managers
             });
@@ -94,6 +90,10 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    /* {
+        event: ID,
+        managers: [ID1, ID2]
+    } */
     removeManagers: function (req, res) {
         var input = req.body;
 
@@ -105,28 +105,93 @@ module.exports = {
         })
         .populate('managers')
         .then(function(eventData) {
-            input.managers.forEach(function (inputManager) {
-                var found;
+            var managersToRemove = _.intersection(input.managers, eventData.managers);
 
-                eventData.managers.forEach(function (dataManager) {
-                    if (dataManager.id === inputManager) {
-                        found = true;
-                    }
-                });
-                if (!found) {
-                    throw new Error('Not a manager of the event: ', inputManager);
-                }
-            });
-            input.managers.forEach(function (managerId) {
+            if (managersToRemove.length === 0) {
+                throw new Error('No managers to remove');
+            }
+            managersToRemove.forEach(function (managerId) {
                 eventData.managers.remove(managerId);
             });
             return eventData.save();
         })
         .then(function () {
             return res.ok({
-                message: 'Manager removed from event',
+                message: 'Managers removed from event',
                 event: input.event,
                 managers: input.managers
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    /* {
+        event: ID,
+        racers: [ID1, ID2]
+    } */
+    addRacers: function (req, res) {
+        var input = req.body;
+
+        input.racers.forEach(function (racer, index) {
+            input.racers[index] = parseInt(racer);
+        });
+        Event.findOne({
+            id: parseInt(input.event)
+        })
+        .populate('racers')
+        .then(function(eventData) {
+            var racersToAdd = _.difference(input.racers, eventData.racers);
+
+            if (racersToAdd.length === 0) {
+                throw new Error('No racers to add');
+            }
+            racersToAdd.forEach(function (inputRacer) {
+                eventData.racers.add(inputRacer);
+            });
+            return eventData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Racers added to event',
+                event: input.event,
+                racers: input.racers
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    /* {
+        event: ID,
+        racers: [ID1, ID2]
+    } */
+    removeRacers: function (req, res) {
+        var input = req.body;
+
+        input.racers.forEach(function (racer, index) {
+            input.racers[index] = parseInt(racer);
+        });
+        Event.findOne({
+            id: parseInt(input.event)
+        })
+        .populate('racers')
+        .then(function(eventData) {
+            var racersToRemove = _.intersection(input.racers, eventData.racers);
+
+            if (racersToRemove.length === 0) {
+                throw new Error('No racers to remove');
+            }
+            racersToRemove.forEach(function (racerId) {
+                eventData.racers.remove(racerId);
+            });
+            return eventData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Racers removed from event',
+                event: input.event,
+                racers: input.racers
             });
         })
         .catch(function (E) {
@@ -136,7 +201,7 @@ module.exports = {
     update: function (req, res) {
         var input = req.body;
         var updateObj;
-        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'location', 'isPublic', 'isRegisterOpen'];
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'location', 'racerNumber', 'isPublic', 'isRegisterOpen', 'isCheckinOpen'];
         var query = {
             id: parseInt(input.id)
         };
@@ -151,7 +216,7 @@ module.exports = {
         } else {
             input.isPublic = false;
         }
-
+        input.racerNumber = parseInt(input.racerNumber);
         Event.findOne(query)
         .then(function (eventData) {
             updateObj = dataService.returnUpdateObj(fields, input, eventData);
@@ -165,6 +230,13 @@ module.exports = {
         })
         .catch(function (E) {
             return res.badRequest(E);
+        });
+    },
+    checkInComplete: function (req, res) {
+        // 1. update event model
+        // 2. read race rule and assign racers to races
+        return res.ok({
+            message: 'ok'
         });
     }
 };

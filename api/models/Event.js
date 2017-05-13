@@ -39,6 +39,30 @@ module.exports = {
             type: 'datetime',
             required: true
         },
+        lapDistance: {
+            type: 'integer'
+        },
+        // preparation, race, finalize
+        timeTableByMinute: {
+            type: 'array',
+            required: true
+        },
+        /*[
+            {
+                name: '公路車',
+                racerCount: 150,
+                rounds: 3
+            },
+            {
+                name: '單速車',
+                racerCount: 150,
+                rounds: 3
+            }
+        ]*/
+        groupsAndRacerAllocation: {
+            type: 'json',
+            required: true
+        },
         location: {
             type: 'string',
             required: true
@@ -48,6 +72,10 @@ module.exports = {
             required: true
         },
         isRegisterationOpen: {
+            type: 'boolean',
+            required: true
+        },
+        isCheckinOpen: {
             type: 'boolean',
             required: true
         }

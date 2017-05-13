@@ -7,10 +7,8 @@ module.exports.routes = {
     'get  /event/info/:id': 'EventController.getInfo',
     'post  /event/managers/add': 'EventController.addManagers',
     'post  /event/managers/remove': 'EventController.removeManagers',
-    //'post  /event/races/add': 'EventController.addRaces',
-    //'post  /event/races/remove': 'EventController.removeRaces',
-    //'post  /event/racers/add': 'EventController.addRacers',
-    //'post  /event/racers/remove': 'EventController.removeRacers',
+    'post  /event/racers/add': 'EventController.addRacers',
+    'post  /event/racers/remove': 'EventController.removeRacers',
     'post  /event/update': 'EventController.update',
     // Manager
     'post /manager/activate': 'ManagerController.activate',
@@ -35,6 +33,12 @@ module.exports.routes = {
     'post /racer/update': 'RacerController.update',
     'post /racer/updatePassword': 'RacerController.updatePassword',
     // Reset password
+
+    // Race
+    //'post /race/create': 'RaceController.create',
+    //'get  /race/info/:id': 'RaceController.getInfo',
+    //'post /race/update': 'RaceController.update',
+    //'get  /race/delete/:id': 'RaceController.delete',
 
     // Test page
     'get  /manager/update/:id': 'PageController.managerUpdatePage',

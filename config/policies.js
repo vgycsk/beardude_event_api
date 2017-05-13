@@ -5,10 +5,8 @@ module.exports.policies = {
         create: 'isActiveManager',
 //        getGeneralInfo: '',
         getInfo: 'isActiveManager',
-//        addRaces: 'isActiveManager',
-//        removeRaces: 'isActiveManager',
-//        addRacers: 'isActiveManager',
-//        removeRacers: 'isActiveManager',
+        addRacers: 'isActiveManager',
+        removeRacers: 'isActiveManager',
         update: 'isActiveManager'
     },
     ManagerController: {
