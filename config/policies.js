@@ -1,37 +1,36 @@
 'use strict';
 
 module.exports.policies = {
-    AddressController: {
-        create: ['isActive', 'isLoggedIn'],
-        update: ['isActive', 'isLoggedIn']
-    },
     EventController: {
-        create: ['isActive', 'isManager'],
+        create: 'isActiveManager',
 //        getGeneralInfo: '',
-        getManagementInfo: ['isActive', 'isManager'],
-        update: ['isActive', 'isManager']
+        getManagementInfo: 'isActiveManager',
+        update: 'isActiveManager'
     },
     ManagerController: {
-        activate: ['isLoggedIn', 'isInactive'],
-        create: ['isActive', 'isManager'],
+        activate: 'isInactive',
+        create: 'isActiveManager',
 //        getGeneralInfo: '',
-        getManagementInfo: 'isManager',
+        getManagementInfo: 'isManagerSelf',
 //        login: '',
         logout: 'isManager',
-        update: ['isActive', 'isManager']
+//        reissuePassword: ''
+        update: 'isActiveManager',
+        updatePassword: 'isActiveManager'
     },
     RacerController: {
+        activate: 'isInactive',
 //        create: '',
 //        getGeneralInfo: '',
-        getManagementInfo: 'isManager',
+        getManagementInfo: 'isRacerSelfOrManager',
 //        login: '',
-        update: ['isActive', 'isLoggedIn']
+        logout: 'isRacer',
+//        reissuePassword: ''
+        update: 'isActiveRacer',
+        updatePassword: 'isActiveRacer'
     },
     RfidController: {
-        create: ['isActive', 'isManager'],
-        getInfo: ['isActive', 'isManager']
-    },
-    PageController: {
-        managerUpdatePage:  ['isActive', 'isManager']
+        create: 'isActiveManager',
+        getInfo: 'isActiveManager'
     }
 };
