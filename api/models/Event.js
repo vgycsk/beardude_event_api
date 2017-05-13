@@ -22,10 +22,6 @@ module.exports = {
             model: 'Image'
         },
 
-        location: {
-            type: 'string',
-            required: true
-        },
         name: {
             type: 'string',
             required: true
@@ -43,7 +39,10 @@ module.exports = {
             type: 'datetime',
             required: true
         },
-
+        location: {
+            type: 'string',
+            required: true
+        },
         isPublic: {
             type: 'boolean',
             required: true

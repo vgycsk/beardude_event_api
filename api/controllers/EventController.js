@@ -1,42 +1,52 @@
-/* eslint-disable no-console */
-/* global Event, Manager */
+/* global dataService, Event, Manager */
 
 'use strict';
 
 module.exports = {
     create: function (req, res) {
         var input = req.body;
+        var resultObj;
 
-        return res.ok('create event, input: ', JSON.stringify(input));
-/*
+        if (input.isRegisterationOpen && input.isRegisterationOpen !== '') {
+            input.isRegisterationOpen = true;
+        } else {
+            input.isRegisterationOpen = false;
+        }
+        if (input.isPublic && input.isPublic !== '') {
+            input.isPublic = true;
+        } else {
+            input.isPublic = false;
+        }
         Event.create(input)
         .then(function (eventData) {
-            return res.ok(eventData);
+            resultObj = eventData;
+            return Manager.findOne({
+                id: req.session.managerInfo.id
+            })
+            .populate('events');
+        })
+        .then(function (managerData) {
+            managerData.events.add(resultObj.id);
+            return managerData.save();
+        })
+        .then(function () {
+            resultObj.managers = [req.session.managerInfo.id];
+            return res.ok({
+                message: 'Event created',
+                event: resultObj
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
-*/
     },
-    getGeneralInfo: function (req, res) {
+    getInfo: function (req, res) {
         Event.findOne({
-            id: req.params.id
+            id: parseInt(req.params.id)
         })
-        .populate('address')
+        .populate('managers')
         .populate('races')
-        .then(function (eventData) {
-            return res.ok(eventData);
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    getManagementInfo: function (req, res) {
-        Event.findOne({
-            id: req.params.id
-        })
-        .populate('address')
-        .populate('races')
+        .populate('racers')
         .then(function (eventData) {
             return res.ok(eventData);
         })
@@ -45,38 +55,34 @@ module.exports = {
         });
     },
     update: function (req, res) {
-        //name, startTime, endTime, manager (check), isActive
         var input = req.body;
-        var updateObj = {};
-        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'location', 'manager', 'isPublic', 'isRegisterOpen'];
-        var i;
+        var updateObj;
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'location', 'isPublic', 'isRegisterOpen'];
+        var query = {
+            id: parseInt(input.id)
+        };
 
-        for (i = 0; i < fields.length; i += 1) {
-            if (typeof input[fields[i]] !== 'undefined') {
-                updateObj[i] = fields[i];
-            }
+        if (input.isRegisterationOpen && input.isRegisterationOpen !== '') {
+            input.isRegisterationOpen = true;
+        } else {
+            input.isRegisterationOpen = false;
         }
-        if (updateObj.manager) {
-            Manager.findOne({
-                id: updateObj.manager
-            })
-            .then(function (managerData) {
-                if (typeof managerData === 'undefined') {
-                    delete updateObj.manager;
-                }
-                return Event.update({
-                    id: input.id
-                }, updateObj);
-            })
-            .then(function (eventData) {
-                return res.ok(eventData[0]);
-            });
+        if (input.isPublic && input.isPublic !== '') {
+            input.isPublic = true;
+        } else {
+            input.isPublic = false;
         }
-        Event.update({
-            id: input.id
-        }, updateObj)
+
+        Event.findOne(query)
         .then(function (eventData) {
-            return res.ok(eventData[0]);
+            updateObj = dataService.returnUpdateObj(fields, input, eventData);
+            return Event.update(query, updateObj);
+        })
+        .then(function (eventData) {
+            return res.ok({
+                message: 'Event updated',
+                event: eventData[0]
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
