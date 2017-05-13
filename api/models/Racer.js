@@ -54,11 +54,6 @@ module.exports = {
         isActive: {
             type: 'boolean',
             required: true
-        },
-        // Generate when registering for events. Use this to generate QR Code for check-in
-        checkinKey: {
-            type: 'string',
-            defaultsTo: ''
         }
     },
     beforeCreate: function (values, callback) {
