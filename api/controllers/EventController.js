@@ -54,6 +54,85 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    /* {
+        event: ID,
+        managers: [ID1, ID2]
+    } */
+    addManagers: function (req, res) {
+        var input = req.body;
+
+        input.managers.forEach(function (manager, index) {
+            input.managers[index] = parseInt(manager);
+        });
+        Event.findOne({
+            id: parseInt(input.event)
+        })
+        .populate('managers')
+        .then(function(eventData) {
+            eventData.managers.forEach(function (dataManager) {
+                input.managers.forEach(function (inputManager) {
+                    if (dataManager.id === inputManager) {
+                        throw new Error('Already a manager of the event');
+                    }
+                });
+            });
+            input.managers.forEach(function (inputManager) {
+                var managerId = inputManager;
+
+                eventData.managers.add(managerId);
+            });
+            return eventData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Manager added to event',
+                event: input.event,
+                managers: input.managers
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    removeManagers: function (req, res) {
+        var input = req.body;
+
+        input.managers.forEach(function (manager, index) {
+            input.managers[index] = parseInt(manager);
+        });
+        Event.findOne({
+            id: parseInt(input.event)
+        })
+        .populate('managers')
+        .then(function(eventData) {
+            input.managers.forEach(function (inputManager) {
+                var found;
+
+                eventData.managers.forEach(function (dataManager) {
+                    if (dataManager.id === inputManager) {
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    throw new Error('Not a manager of the event: ', inputManager);
+                }
+            });
+            input.managers.forEach(function (managerId) {
+                eventData.managers.remove(managerId);
+            });
+            return eventData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Manager removed from event',
+                event: input.event,
+                managers: input.managers
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     update: function (req, res) {
         var input = req.body;
         var updateObj;

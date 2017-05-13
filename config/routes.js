@@ -5,8 +5,8 @@ module.exports.routes = {
     // Event (To do: policy)
     'post /event/create': 'EventController.create',
     'get  /event/info/:id': 'EventController.getInfo',
-    //'post  /event/managers/add': 'EventController.addManagers',
-    //'post  /event/managers/remove': 'EventController.removeManagers',
+    'post  /event/managers/add': 'EventController.addManagers',
+    'post  /event/managers/remove': 'EventController.removeManagers',
     //'post  /event/races/add': 'EventController.addRaces',
     //'post  /event/races/remove': 'EventController.removeRaces',
     //'post  /event/racers/add': 'EventController.addRacers',
