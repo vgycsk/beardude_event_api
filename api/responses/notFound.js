@@ -61,6 +61,8 @@ module.exports = function (data) {
             } else {
                 sails.log.warn('res.notFound() :: When attempting to render error page view, an error occured (sending JSON instead).  Details: ', err);
             }
+            data.code =  statusCode;
+            data.status = statusTitle;
             return res.jsonx(data);
         }
         return res.send(html);

@@ -59,7 +59,11 @@ module.exports = function (data) {
             } else {
                 sails.log.warn('res.forbidden() :: When attempting to render error page view, an error occured (sending JSON instead).  Details: ', err);
             }
-            return res.jsonx(data);
+            return res.send({
+                code: statusCode,
+                status: statusTitle,
+                message: data
+            });
         }
         return res.send(html);
     });

@@ -49,6 +49,8 @@ module.exports = function (data) {
         data: viewData,
         title: statusTitle
     }, function () {
+        data.status = statusTitle;
+        data.code = statusCode;
         return res.jsonx(data);
     });
 };
