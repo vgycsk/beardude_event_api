@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* global accountService, Manager */
 
 'use strict';
@@ -50,8 +49,10 @@ module.exports = {
         return accountService.login(req, res, 'Manager');
     },
     logout: function (req, res) {
-        delete res.session.managerInfo;
-        return res.ok('Logged out');
+        delete req.session.managerInfo;
+        return res.ok({
+            message: 'Logged out'
+        });
     },
     reissuePassword: function (req, res) {
         return accountService.reissuePassword(req, res, 'Manager');

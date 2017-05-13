@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* global Address, dataService, Manager, Racer */
 
 'use strict';
@@ -12,9 +11,9 @@ var returnModelObj = function (modelName) {
 };
 var returnSessionObj = function (req, modelName) {
     if (modelName === 'Manager') {
-        return req.ression.managerInfo;
+        return req.session.managerInfo;
     }
-    return req.ression.racerInfo;
+    return req.session.racerInfo;
 };
 var returnUpdateFields = function (modelName) {
     var managerUpdateFields = ['email', 'phone', 'firstName', 'lastName'];
@@ -46,8 +45,15 @@ module.exports = {
             isActive: true
         })
         .then(function (modelData) {
-            sessionObj = modelData[0];
-            return res.ok('Account activated');
+            if (modelName === 'Manager') {
+                req.session.managerInfo = modelData[0];
+            } else {
+                req.session.racerInfo = modelData[0];
+            }
+            return res.ok({
+                message: 'Account activated',
+                email: sessionObj.email
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -102,7 +108,11 @@ module.exports = {
             } else {
                 delete modelDataObj.password;
             }
-            return res.ok(modelDataObj);
+            return res.ok({
+                message: 'Account created',
+                accountType: modelName,
+                account: modelDataObj
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -116,14 +126,12 @@ module.exports = {
         var modelDataObj;
 
         if (sessionObj) {
-            return res.ok('Already logged in');
+            return res.badRequest('Already logged in');
         }
         return ModelObj.findOne({
             email: input.email
         })
         .populate('address')
-        .populate('events')
-        .populate('races')
         .then(function (modelData) {
             modelDataObj = modelData;
             return dataService.authenticate(input.password, modelDataObj.password);
@@ -132,8 +140,13 @@ module.exports = {
             if (!authenticated) {
                 throw new Error('User credentials incorrect');
             }
-            sessionObj = modelDataObj;
+            if (modelName === 'Manager') {
+                req.session.managerInfo = modelDataObj;
+            } else {
+                req.session.racerInfo = modelDataObj;
+            }
             return res.ok({
+                message: 'Logged in',
                 email: modelDataObj.email
             });
         })
@@ -162,13 +175,11 @@ module.exports = {
             });
         })
         .then(function () {
-            var result = {
-                id: input.id,
-                password: newPassword
-            };
-
             // To Do: send temporary password through email
-            return res.ok(result);
+            return res.ok({
+                message: 'Temporary password created',
+                password: newPassword
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -205,7 +216,11 @@ module.exports = {
         })
         .then(function (addressData) {
             resultObj.address = addressData[0];
-            return res.ok(resultObj);
+            return res.ok({
+                message: 'Account updated',
+                accountType: modelName,
+                account: resultObj
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -215,6 +230,7 @@ module.exports = {
     updatePassword: function (req, res, modelName) {
         var input = req.body;
         var ModelObj = returnModelObj(modelName);
+        var sessionObj = returnSessionObj(req, modelName);
 
         if (input.password === '') {
             return res.badRequest('Empty password');
@@ -222,13 +238,29 @@ module.exports = {
         if (input.password !== input.confirmPassword) {
             return res.badRequest('Password and confirm-password mismatch');
         }
-        return ModelObj.update({
-            id: input.id
-        }, {
-            password: input.password
+        if (input.oldPassword === input.password) {
+            return res.badRequest('Password unchanged');
+        }
+        return ModelObj.findOne({
+            id: sessionObj.id
+        })
+        .then(function (modelData) {
+            return dataService.authenticate(input.oldPassword, modelData.password);
+        })
+        .then(function (authenticated) {
+            if (!authenticated) {
+                throw new Error('Old password incorrect');
+            }
+            return ModelObj.update({
+                id: input.id
+            }, {
+                password: input.password
+            });
         })
         .then(function () {
-            return res.ok('Password updated');
+            return res.ok({
+                message: 'Password updated'
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* global accountService, Racer */
 
 'use strict';
@@ -52,8 +51,13 @@ module.exports = {
         return accountService.login(req, res, 'Racer');
     },
     logout: function (req, res) {
-        delete res.session.racerInfo;
-        return res.ok('Logged out');
+        delete req.session.racerInfo;
+        return res.ok({
+            message: 'Logged out'
+        });
+    },
+    reissuePassword: function (req, res) {
+        return accountService.reissuePassword(req, res, 'Racer');
     },
     update: function (req, res) {
         return accountService.update(req, res, 'Racer');
