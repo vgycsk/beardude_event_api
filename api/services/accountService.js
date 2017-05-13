@@ -115,6 +115,8 @@ module.exports = {
         ModelObj.findOne({
             id: req.params.id
         })
+        .populate('events')
+        .populate('races')
         .then(function (modelData) {
             var result = {
                 firstName: modelData.firstName,

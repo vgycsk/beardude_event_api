@@ -2,8 +2,15 @@
 
 module.exports.routes = {
 
-    // Event
+    // Event (To do: policy)
     'post /event/create': 'EventController.create',
+    'get  /event/info/:id': 'EventController.getInfo',
+    //'post  /event/managers/add': 'EventController.addManagers',
+    //'post  /event/managers/remove': 'EventController.removeManagers',
+    //'post  /event/races/add': 'EventController.addRaces',
+    //'post  /event/races/remove': 'EventController.removeRaces',
+    //'post  /event/racers/add': 'EventController.removeRacers',
+    //'post  /event/racers/remove': 'EventController.removeRacers',
 
     // Manager
     'post /manager/activate': 'ManagerController.activate',
@@ -15,6 +22,19 @@ module.exports.routes = {
     'get  /manager/reissuePassword/:id': 'ManagerController.reissuePassword',
     'post /manager/update': 'ManagerController.update',
     'post /manager/updatePassword': 'ManagerController.updatePassword',
+    // Reset password
+
+    // Racer
+    'post /racer/activate': 'RacerController.activate',
+    'post /racer/create': 'RacerController.create',
+    'get  /racer/info/:id': 'RacerController.getGeneralInfo',
+    'get  /racer/mgmtInfo/:id': 'RacerController.getManagementInfo',
+    'post /racer/login': 'RacerController.login',
+    'post /racer/logout': 'RacerController.logout',
+    'get  /racer/reissuePassword/:id': 'RacerController.reissuePassword',
+    'post /racer/update': 'RacerController.update',
+    'post /racer/updatePassword': 'RacerController.updatePassword',
+    // Reset password
 
     // Test page
     'get  /manager/update/:id': 'PageController.managerUpdatePage',
