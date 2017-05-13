@@ -4,7 +4,11 @@ module.exports.policies = {
     EventController: {
         create: 'isActiveManager',
 //        getGeneralInfo: '',
-        getManagementInfo: 'isActiveManager',
+        getInfo: 'isActiveManager',
+//        addRaces: 'isActiveManager',
+//        removeRaces: 'isActiveManager',
+//        addRacers: 'isActiveManager',
+//        removeRacers: 'isActiveManager',
         update: 'isActiveManager'
     },
     ManagerController: {
@@ -12,7 +16,7 @@ module.exports.policies = {
         create: 'isActiveManager',
 //        getGeneralInfo: '',
         getManagementInfo: 'isManagerSelf',
-//        login: '',
+        login: 'isNotLoggedIn',
         logout: 'isManager',
 //        reissuePassword: ''
         update: 'isActiveManager',
@@ -23,7 +27,7 @@ module.exports.policies = {
 //        create: '',
 //        getGeneralInfo: '',
         getManagementInfo: 'isRacerSelfOrManager',
-//        login: '',
+        login: 'isNotLoggedIn',
         logout: 'isRacer',
 //        reissuePassword: ''
         update: 'isActiveRacer',
