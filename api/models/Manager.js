@@ -8,10 +8,6 @@ module.exports = {
             collection: 'Event',
             via: 'managers'
         },
-        races: {
-            collection: 'Race',
-            via: 'managers'
-        },
 
         address: {
             model: 'Address'

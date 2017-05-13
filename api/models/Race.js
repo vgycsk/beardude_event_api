@@ -3,11 +3,6 @@
 // Sub races within an event
 module.exports = {
     attributes: {
-        managers: {
-            collection: 'Manager',
-            via: 'races',
-            dominant: true
-        },
         racers: {
             collection: 'Racer',
             via: 'races',

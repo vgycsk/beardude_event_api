@@ -108,48 +108,6 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // Get insensitive account info
-    getGeneralInfo: function (req, res, modelName) {
-        var ModelObj = returnModelObj(modelName);
-
-        ModelObj.findOne({
-            id: req.params.id
-        })
-        .populate('events')
-        .populate('races')
-        .then(function (modelData) {
-            var result = {
-                firstName: modelData.firstName,
-                lastName: modelData.lastName,
-                isActive: modelData.isActive
-            };
-
-            return res.ok(result);
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // Get complete account info
-    getManagementInfo: function (req, res, modelName) {
-        var ModelObj = returnModelObj(modelName);
-
-        ModelObj.findOne({
-            id: req.params.id
-        })
-        .populate('address')
-        .populate('events')
-        .populate('races')
-        .then(function (modelData) {
-            var result = modelData;
-
-            delete result.password;
-            return res.ok(result);
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
     // Login and keep account info in session
     login: function (req, res, modelName) {
         var input = req.body;

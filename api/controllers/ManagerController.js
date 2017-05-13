@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global accountService */
+/* global accountService, Manager */
 
 'use strict';
 
@@ -10,11 +10,41 @@ module.exports = {
     create: function (req, res) {
         return accountService.create(req, res, 'Manager');
     },
+    // Get insensitive account info
     getGeneralInfo: function (req, res) {
-        return accountService.getGeneralInfo(req, res, 'Manager');
+        Manager.findOne({
+            id: req.params.id
+        })
+        .populate('events')
+        .then(function (modelData) {
+            var result = {
+                firstName: modelData.firstName,
+                lastName: modelData.lastName,
+                isActive: modelData.isActive
+            };
+
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
+    // Get complete account info
     getManagementInfo: function (req, res) {
-        return accountService.getManagementInfo(req, res, 'Manager');
+        Manager.findOne({
+            id: req.params.id
+        })
+        .populate('address')
+        .populate('events')
+        .then(function (modelData) {
+            var result = modelData;
+
+            delete result.password;
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
     login: function (req, res) {
         return accountService.login(req, res, 'Manager');
