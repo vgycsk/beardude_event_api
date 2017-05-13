@@ -1,4 +1,4 @@
-/* global Racer */
+/* global Manager */
 
 'use strict';
 

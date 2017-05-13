@@ -1,4 +1,3 @@
-/* global Racer */
 
 'use strict';
 
