@@ -28,6 +28,12 @@
         <h2>Manager</h2>
         <ul>
             <li>
+                <% if (typeof params.session.managerInfo !== 'undefined') { %>
+                    Logged in as : <%= params.session.managerInfo.firstName %> <%= params.session.managerInfo.lastName %>
+                <% } else { %>
+                    Not logged in
+                <% } %>
+                <hr>
                 <h3>Login</h3>
                 <form action="/manager/login" method="POST">
                     <ul>
@@ -42,6 +48,9 @@
                     </ul>
                     <button type="submit">Submit</button>
                 </form>
+                <hr>
+                <h3>Logout</h3>
+                <a href="/manager/logout">Click to logout</a>
             </li>
             <li>
                 <h3>Activate</h3>
@@ -133,6 +142,24 @@
         <ul>
             <li>
                 <h3>Create</h3>
+                <%
+                    var timestamp = Date.now();
+                    var timestampStart = timestamp + (2 * 3600 * 1000);
+                    var timestampEnd = timestampStart + 8 * 3600 * 1000;
+                    var returnDate = function (timestamp) {
+                        var date = new Date(timestamp);
+                        var yyyy = date.getFullYear();
+                        var MM = date.getMonth() + 1;
+                        var dd = date.getDate();
+                        var hh = date.getHours();
+                        var mm = date.getMinutes();
+                        return yyyy + '-' + MM + '-' + dd + ' ' + hh + ':' + mm + ':00';
+                    };
+                    var now = returnDate(timestamp);
+                    var startdate = returnDate(timestampStart);
+                    var enddate = returnDate(timestampEnd);
+                %>
+                <p>Current time: <%= now %></p>
                 <form action="/event/create" method="POST">
                     <ul>
                         <li>
@@ -145,19 +172,15 @@
                         </li>
                         <li>
                             <label>Start time</label>
-                            <input type="text" name="startTime" />
+                            <input type="text" name="startTime" value="<%= startdate %>"/>
                         </li>
                         <li>
                             <label>End time</label>
-                            <input type="text" name="endTime" />
+                            <input type="text" name="endTime" value="<%= enddate %>"/>
                         </li>
                         <li>
                             <label>Location</label>
                             <input type="text" name="location" />
-                        </li>
-                        <li>
-                            <label>Manager</label>
-                            <input type="text" name="manager" readOnly value="" />
                         </li>
                         <li>
                             <label>isPublic</label>
@@ -165,11 +188,21 @@
                         </li>
                         <li>
                             <label>isRegisterationOpen</label>
-                            <input type="text" name="isRegisterationOpen" />
+                            <input type="checkbox" name="isRegisterationOpen" />
                         </li>
                     </ul>
                     <button type="submit">Submit</button>
                 </form>
+            </li>
+            <li>
+                <h3>Get info</h3>
+                <ul>
+                    <% for (var i = 0; i < params.events.length; i += 1) { %>
+                        <li>
+                            <a href="/event/info/<%= params.events[i].id %>"><%= params.events[i].id %> - <%= params.events[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
             </li>
         </ul>
     </section>
