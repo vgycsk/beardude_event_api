@@ -32,20 +32,6 @@ var dataService = {
             return updateObj;
         }
         return false;
-    },
-    sluggify: function (string) {
-        if (string) {
-            return string
-            .trim()
-            .toLowerCase()
-            // remove hyphen
-            //.replace(/[^\w ]+/g,'')
-            // remove special char
-            .replace(/[^\w\s]/gi, '')
-            // condense
-            .replace(/ +/g, '');
-        }
-        return string;
     }
 };
 

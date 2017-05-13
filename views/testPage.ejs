@@ -172,15 +172,19 @@
                         </li>
                         <li>
                             <label>Start time</label>
-                            <input type="text" name="startTime" value="<%= startdate %>"/>
+                            <input type="datetime-local" name="startTime" />
                         </li>
                         <li>
                             <label>End time</label>
-                            <input type="text" name="endTime" value="<%= enddate %>"/>
+                            <input type="datetime-local" name="endTime" />
                         </li>
                         <li>
                             <label>Location</label>
                             <input type="text" name="location" />
+                        </li>
+                        <li>
+                            <label>Racer number</label>
+                            <input type="number" name="racerNumber" />
                         </li>
                         <li>
                             <label>isPublic</label>
