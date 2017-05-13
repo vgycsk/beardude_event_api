@@ -11,6 +11,10 @@ module.exports = {
         },
         racer: {
             model: 'Racer'
+        },
+        isRecycled: {
+            type: 'boolean',
+            defaultsTo: false
         }
     }
 };
