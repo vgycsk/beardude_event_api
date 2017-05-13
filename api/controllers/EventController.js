@@ -48,7 +48,7 @@ module.exports = {
         //name, startTime, endTime, manager (check), isActive
         var input = req.body;
         var updateObj = {};
-        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'manager', 'isPublic', 'isRegisterOpen'];
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'location', 'manager', 'isPublic', 'isRegisterOpen'];
         var i;
 
         for (i = 0; i < fields.length; i += 1) {

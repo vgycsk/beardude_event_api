@@ -8,6 +8,10 @@ module.exports = {
             collection: 'Event',
             via: 'managers'
         },
+        races: {
+            collection: 'Race',
+            via: 'managers'
+        },
 
         address: {
             model: 'Address'
@@ -30,22 +34,9 @@ module.exports = {
             type: 'string',
             required: true
         },
-        birthday: {
-            type: 'string',
-            required: true
-        },
-        idNumber: {
-            type: 'string',
-            required: true
-        },
         password: {
             type: 'string',
             required: true
-        },
-        // Used only when resetting password
-        temporaryPassword: {
-            type: 'string',
-            defaultsTo: ''
         },
         isActive: {
             type: 'boolean',
@@ -72,14 +63,6 @@ module.exports = {
                     return callback(err);
                 }
                 values.password = hash;
-                return callback();
-            });
-        } else if (values.temporaryPassword && values.temporaryPassword !== '') {
-            return bcrypt.hash(values.temporaryPassword, null, null, function (err, hash) {
-                if (err) {
-                    return callback(err);
-                }
-                values.temporaryPassword = hash;
                 return callback();
             });
         }

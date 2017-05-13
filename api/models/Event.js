@@ -18,13 +18,14 @@ module.exports = {
             dominant: true
         },
 
-        address: {
-            model: 'Address'
-        },
         picture: {
             model: 'Image'
         },
 
+        location: {
+            type: 'string',
+            required: true
+        },
         name: {
             type: 'string',
             required: true
@@ -33,12 +34,13 @@ module.exports = {
             type: 'string',
             required: true
         },
+        //moment().format("YYYY-MM-DD HH:mm:ss")
         startTime: {
-            type: 'date',
+            type: 'datetime',
             required: true
         },
         endTime: {
-            type: 'date',
+            type: 'datetime',
             required: true
         },
 

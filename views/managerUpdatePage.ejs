@@ -26,49 +26,50 @@
 <body>
     <section>
         <h2>Manager Update test page</h2>
-        <h3>Create</h3>
-        <form action="/manager/update" method="POST">
-            <ul>
-                <li>
-                    <label>Id</label>
-                    <input type="text" name="id" value="<%= manager.id %>" readOnly />
-                </li>
-                <li>
-                    <label>Email</label>
-                    <input type="text" name="email" value="<%= manager.email %>" />
-                </li>
-                <li>
-                    <label>Phone</label>
-                    <input type="text" name="phone" value="<%= manager.phone %>" />
-                </li>
-                <li>
-                    <label>FirstName</label>
-                    <input type="text" name="firstName" value="<%= manager.firstName %>" />
-                </li>
-                <li>
-                    <label>LastName</label>
-                    <input type="text" name="lastName" value="<%= manager.lastName %>" />
-                </li>
-                <li>
-                    <label>Birthday</label>
-                    <input type="text" name="birthday" value="<%= manager.birthday %>" />
-                </li>
-                <li>
-                    <label>Id number</label>
-                    <input type="text" name="idNumber" value="<%= manager.idNumber %>" />
-                </li>
-                <% include ./partials/address %>
-                <li>
-                    <label>password</label>
-                    <input type="password" name="password" />
-                </li>
-                <li>
-                    <label>Confirm password</label>
-                    <input type="password" name="confirmPassword" />
-                </li>
-            </ul>
-            <button type="submit">Submit</button>
-        </form>
+        <ul>
+            <li>
+                <h3>Update</h3>
+                <form action="/manager/update" method="POST">
+                    <ul>
+                        <li>
+                            <label>Id</label>
+                            <input type="text" name="id" value="<%= manager.id %>" readOnly />
+                        </li>
+                        <li>
+                            <label>Email</label>
+                            <input type="text" name="email" value="<%= manager.email %>" />
+                        </li>
+                        <li>
+                            <label>Phone</label>
+                            <input type="text" name="phone" value="<%= manager.phone %>" />
+                        </li>
+                        <li>
+                            <label>Name</label>
+                            <input type="text" name="firstName" value="<%= manager.firstName %>" placeholder="first name"/>
+                            <input type="text" name="lastName" value="<%= manager.lastName %>" placeholder="last name"/>
+                        </li>
+                        <% include ./partials/address %>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Update</h3>
+                <form action="/manager/updatePassword" method="POST">
+                    <ul>
+                        <li>
+                            <label>password</label>
+                            <input type="password" name="password" />
+                        </li>
+                        <li>
+                            <label>Confirm password</label>
+                            <input type="password" name="confirmPassword" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+        </ul>
     </section>
     <script>
     var params = <%- JSON.stringify(params, null, 4) %></script>

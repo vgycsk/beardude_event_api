@@ -7,6 +7,7 @@
     "dependencies": {
         "bcrypt-nodejs": "0.0.3",
         "ejs": "2.3.4",
+        "moment": "2.18.1",
         "q": "*",
         "randomstring": "1.1.5",
         "sails": "0.12.13",

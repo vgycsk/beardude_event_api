@@ -58,6 +58,17 @@
                     </ul>
                     <button type="submit">Submit</button>
                 </form>
+                <hr>
+                <h3>Reissue password</h3>
+                <ul>
+                    <% for (var i = 0; i < params.managers.length; i += 1) { %>
+                        <li>
+                            <a href="/manager/reissuePassword/<%= params.managers[i].id %>">
+                                <%= params.managers[i].id %> - <%= params.managers[i].firstName %> <%= params.managers[i].lastName %>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
             </li>
             <li>
                 <h3>Create</h3>
@@ -78,14 +89,6 @@
                         <li>
                             <label>LastName</label>
                             <input type="text" name="lastName" />
-                        </li>
-                        <li>
-                            <label>Birthday</label>
-                            <input type="text" name="birthday" />
-                        </li>
-                        <li>
-                            <label>Id number</label>
-                            <input type="text" name="idNumber" />
                         </li>
                         <% include ./partials/address %>
                         <li>
@@ -148,7 +151,10 @@
                             <label>End time</label>
                             <input type="text" name="endTime" />
                         </li>
-                        <% include ./partials/address.ejs %>
+                        <li>
+                            <label>Location</label>
+                            <input type="text" name="location" />
+                        </li>
                         <li>
                             <label>Manager</label>
                             <input type="text" name="manager" readOnly value="" />

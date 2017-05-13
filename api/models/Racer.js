@@ -27,9 +27,7 @@ module.exports = {
             unique: true
         },
         phone: {
-            type: 'string',
-            required: true,
-            unique: true
+            type: 'string'
         },
         picture: {
             model: 'Image'
@@ -43,22 +41,15 @@ module.exports = {
             required: true
         },
         birthday: {
-            type: 'date',
-            required: true
+            type: 'date'
         },
         idNumber: {
             type: 'string',
-            required: true,
             unique: true
         },
         password: {
             type: 'string',
             required: true
-        },
-        // Used only when resetting password
-        temporaryPassword: {
-            type: 'string',
-            defaultsTo: ''
         },
         isActive: {
             type: 'boolean',
@@ -90,14 +81,6 @@ module.exports = {
                     return callback(err);
                 }
                 values.password = hash;
-                return callback();
-            });
-        } else if (values.temporaryPassword && values.temporaryPassword !== '') {
-            return bcrypt.hash(values.temporaryPassword, null, null, function (err, hash) {
-                if (err) {
-                    return callback(err);
-                }
-                values.temporaryPassword = hash;
                 return callback();
             });
         }

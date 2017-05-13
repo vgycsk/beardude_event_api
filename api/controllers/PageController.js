@@ -12,7 +12,6 @@ var returnParams = function (session) {
     .populate('managers')
     .populate('races')
     .populate('racers')
-    .populate('address')
     .then(function (eventData) {
         params.events = eventData;
         return Manager.find({})

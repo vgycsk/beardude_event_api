@@ -18,6 +18,21 @@ var dataService = {
         });
         return q.promise;
     },
+    returnUpdateObj: function (fields, input, originalData) {
+        var updateObj = {};
+        var toUpdate;
+
+        fields.forEach(function (field) {
+            if (input[field] && (originalData[field] !== input[field])) {
+                updateObj[field] = input[field];
+                toUpdate = true;
+            }
+        });
+        if (toUpdate) {
+            return updateObj;
+        }
+        return false;
+    },
     sluggify: function (string) {
         if (string) {
             return string
