@@ -55,8 +55,8 @@ module.exports = {
             type: 'boolean',
             required: true
         },
-        // Generate when register for an event. Use this to generate QR Code and check-in
-        hash: {
+        // Generate when registering for events. Use this to generate QR Code for check-in
+        checkinKey: {
             type: 'string',
             defaultsTo: ''
         }

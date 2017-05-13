@@ -27,7 +27,7 @@ var returnUpdateFields = function (modelName) {
 };
 
 module.exports = {
-    // Activate manager by setting password and change isActive
+    // Activate account by setting user-input password, and set isActive=true
     activate: function (req, res, modelName) {
         var input = req.body;
         var ModelObj = returnModelObj(modelName);
@@ -53,6 +53,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Create account. When omitting password, set account inactive and require user to activate
     create: function (req, res, modelName) {
         var input = req.body;
         var addressInput = input.address;
@@ -107,6 +108,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Get insensitive account info
     getGeneralInfo: function (req, res, modelName) {
         var ModelObj = returnModelObj(modelName);
 
@@ -126,6 +128,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Get complete account info
     getManagementInfo: function (req, res, modelName) {
         var ModelObj = returnModelObj(modelName);
 
@@ -145,6 +148,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Login and keep account info in session
     login: function (req, res, modelName) {
         var input = req.body;
         var ModelObj = returnModelObj(modelName);
@@ -177,6 +181,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Reissue password to inactive account
     reissuePassword: function (req, res, modelName) {
         var input = req.params;
         var newPassword;
@@ -209,6 +214,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Update fields speficied in returnUpdateFields function
     update: function (req, res, modelName) {
         var input = req.body;
         var addressObj = input.address;
@@ -245,6 +251,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Update account password
     updatePassword: function (req, res, modelName) {
         var input = req.body;
         var ModelObj = returnModelObj(modelName);

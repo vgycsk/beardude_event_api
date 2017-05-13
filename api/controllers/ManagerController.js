@@ -4,7 +4,6 @@
 'use strict';
 
 module.exports = {
-    // Activate manager by setting password and change isActive
     activate: function (req, res) {
         return accountService.activate(req, res, 'Manager');
     },

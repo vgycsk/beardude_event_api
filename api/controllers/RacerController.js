@@ -4,7 +4,6 @@
 'use strict';
 
 module.exports = {
-    // Activate racer by setting password and change isActive
     activate: function (req, res) {
         return accountService.activate(req, res, 'Racer');
     },
@@ -16,7 +15,6 @@ module.exports = {
     },
     getManagementInfo: function (req, res) {
         return accountService.getManagementInfo(req, res, 'Racer');
-
     },
     login: function (req, res) {
         return accountService.login(req, res, 'Racer');
