@@ -1,4 +1,4 @@
-/* global Event, Manager, Race, Racer */
+/* global Event, Group, Manager, Race, Racer, Registration */
 'use strict';
 
 var Q = require('q');
