@@ -32,6 +32,9 @@ module.exports = {
             type: 'string',
             required: true
         },
+        nickName: {
+            type: 'string'
+        },
         birthday: {
             type: 'date'
         },

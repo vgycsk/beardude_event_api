@@ -16,6 +16,9 @@ module.exports = {
             type: 'string',
             required: true
         },
+        pacerEpc: {
+            type: 'string'
+        },
         racerNumberAllowed: {
             type: 'integer',
             required: true
@@ -25,20 +28,35 @@ module.exports = {
             required: true,
             defaultsTo: true
         },
+        requirePacer: {
+            type: 'boolean',
+            required: true
+        },
         laps: {
             type: 'integer'
+        },
+        //moment().format("YYYY-MM-DD HH:mm:ss")
+        startTime: {
+            type: 'datetime',
+            required: true
+        },
+        endTime: {
+            type: 'datetime',
+            required: true
         },
         advancingRule: {
             type: 'array'
         },
-        records: {
+        // [{epc:1 time: ms}, {}, {}]
+        rawData: {
+            type: 'array'
+        },
+        // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
+        recordsHashTable: {
             type: 'json',
             defaultsTo: {}
         },
-        /* [{
-            racer: 1,
-            time: ms
-        }, {}, {}] */
+        // [{racer: 1, time: ms}, {}, {}]
         result: {
             type: 'array'
         },

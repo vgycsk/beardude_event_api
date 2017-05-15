@@ -8,6 +8,9 @@ module.exports = {
         racers: {
             collection: 'Racer',
             via: 'team'
+        },
+        leader: {
+            model: 'Racer'
         }
     }
 };
