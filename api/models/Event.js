@@ -1,6 +1,6 @@
 'use strict';
 
-// A bicycle race event, which may consist of a number of races
+// 活動
 module.exports = {
     attributes: {
         managers: {
@@ -8,18 +8,9 @@ module.exports = {
             via: 'events',
             dominant: true
         },
-        races: {
-            collection: 'Race',
+        groups: {
+            collection: 'Group',
             via: 'event'
-        },
-        racers: {
-            collection: 'Racer',
-            via: 'events',
-            dominant: true
-        },
-
-        picture: {
-            model: 'Image'
         },
 
         name: {
@@ -42,40 +33,11 @@ module.exports = {
         lapDistance: {
             type: 'integer'
         },
-        // preparation, race, finalize
-        timeTableByMinute: {
-            type: 'array',
-            required: true
-        },
-        /*[
-            {
-                name: '公路車',
-                racerCount: 150,
-                rounds: 3
-            },
-            {
-                name: '單速車',
-                racerCount: 150,
-                rounds: 3
-            }
-        ]*/
-        groupsAndRacerAllocation: {
-            type: 'json',
-            required: true
-        },
         location: {
             type: 'string',
             required: true
         },
         isPublic: {
-            type: 'boolean',
-            required: true
-        },
-        isRegisterationOpen: {
-            type: 'boolean',
-            required: true
-        },
-        isCheckinOpen: {
             type: 'boolean',
             required: true
         }

@@ -9,16 +9,39 @@ module.exports = {
             dominant: true
         },
 
-        event: {
-            model: 'Event'
+        group: {
+            model: 'Group'
         },
+
         name: {
             type: 'string',
             required: true
         },
+        racerNumberAllowed: {
+            type: 'integer',
+            required: true
+        },
+        isCheckinOpen: {
+            type: 'boolean',
+            required: true,
+            defaultsTo: true
+        },
+        laps: {
+            type: 'integer'
+        },
+        advancingRule: {
+            type: 'array'
+        },
         records: {
             type: 'json',
             defaultsTo: {}
+        },
+        /* [{
+            racer: 1,
+            time: ms
+        }, {}, {}] */
+        result: {
+            type: 'array'
         },
         toJSON: function () {
             var obj = this.toObject();

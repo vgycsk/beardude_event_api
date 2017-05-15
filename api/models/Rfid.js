@@ -2,16 +2,18 @@
 
 module.exports = {
     attributes: {
-        epc: {
-            type: 'string',
-            required: true
-        },
-        event: {
-            model: 'Event'
+        group: {
+            model: 'Group'
         },
         racer: {
             model: 'Racer'
         },
+
+        epc: {
+            type: 'string',
+            required: true
+        },
+
         isRecycled: {
             type: 'boolean',
             defaultsTo: false

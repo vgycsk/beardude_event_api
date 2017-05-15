@@ -7,12 +7,7 @@ module.exports = {
         var input = req.body;
         var resultObj;
 
-        if (input.isRegisterationOpen && input.isRegisterationOpen !== '') {
-            input.isRegisterationOpen = true;
-        } else {
-            input.isRegisterationOpen = false;
-        }
-        if (input.isPublic && input.isPublic !== '') {
+        if (input.isPublic && input.isPublic === 'on') {
             input.isPublic = true;
         } else {
             input.isPublic = false;
@@ -45,8 +40,6 @@ module.exports = {
             id: parseInt(req.params.id)
         })
         .populate('managers')
-        .populate('races')
-        .populate('racers')
         .then(function (eventData) {
             return res.ok(eventData);
         })
@@ -128,34 +121,34 @@ module.exports = {
     },
     /* {
         event: ID,
-        racers: [ID1, ID2]
+        groups: [ID1, ID2]
     } */
-    addRacers: function (req, res) {
+    addGroups: function (req, res) {
         var input = req.body;
+        var groupsToAdd;
 
-        input.racers.forEach(function (racer, index) {
-            input.racers[index] = parseInt(racer);
+        input.groups.forEach(function (group, index) {
+            input.groups[index] = parseInt(group);
         });
         Event.findOne({
             id: parseInt(input.event)
         })
-        .populate('racers')
+        .populate('groups')
         .then(function(eventData) {
-            var racersToAdd = _.difference(input.racers, eventData.racers);
-
-            if (racersToAdd.length === 0) {
-                throw new Error('No racers to add');
+            groupsToAdd = _.difference(input.groups, eventData.groups);
+            if (groupsToAdd.length === 0) {
+                throw new Error('No groups to add');
             }
-            racersToAdd.forEach(function (inputRacer) {
-                eventData.racers.add(inputRacer);
+            groupsToAdd.forEach(function (inputGroup) {
+                eventData.groups.add(inputGroup);
             });
             return eventData.save();
         })
         .then(function () {
             return res.ok({
-                message: 'Racers added to event',
+                message: 'Groups added to event',
                 event: input.event,
-                racers: input.racers
+                groups: groupsToAdd
             });
         })
         .catch(function (E) {
@@ -164,34 +157,34 @@ module.exports = {
     },
     /* {
         event: ID,
-        racers: [ID1, ID2]
+        groups: [ID1, ID2]
     } */
-    removeRacers: function (req, res) {
+    removeGroups: function (req, res) {
         var input = req.body;
+        var groupsToRemove;
 
-        input.racers.forEach(function (racer, index) {
-            input.racers[index] = parseInt(racer);
+        input.groups.forEach(function (groups, index) {
+            input.groups[index] = parseInt(groups);
         });
         Event.findOne({
             id: parseInt(input.event)
         })
-        .populate('racers')
+        .populate('groups')
         .then(function(eventData) {
-            var racersToRemove = _.intersection(input.racers, eventData.racers);
-
-            if (racersToRemove.length === 0) {
-                throw new Error('No racers to remove');
+            groupsToRemove = _.intersection(input.groups, eventData.groups);
+            if (groupsToRemove.length === 0) {
+                throw new Error('No groups to remove');
             }
-            racersToRemove.forEach(function (racerId) {
-                eventData.racers.remove(racerId);
+            groupsToRemove.forEach(function (groupId) {
+                eventData.groups.remove(groupId);
             });
             return eventData.save();
         })
         .then(function () {
             return res.ok({
-                message: 'Racers removed from event',
+                message: 'Groups removed from event',
                 event: input.event,
-                racers: input.racers
+                groups: groupsToRemove
             });
         })
         .catch(function (E) {
@@ -201,17 +194,12 @@ module.exports = {
     update: function (req, res) {
         var input = req.body;
         var updateObj;
-        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'location', 'racerNumber', 'isPublic', 'isRegisterOpen', 'isCheckinOpen'];
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isPublic'];
         var query = {
             id: parseInt(input.id)
         };
 
-        if (input.isRegisterationOpen && input.isRegisterationOpen !== '') {
-            input.isRegisterationOpen = true;
-        } else {
-            input.isRegisterationOpen = false;
-        }
-        if (input.isPublic && input.isPublic !== '') {
+        if (input.isPublic && input.isPublic === 'on') {
             input.isPublic = true;
         } else {
             input.isPublic = false;
@@ -230,13 +218,6 @@ module.exports = {
         })
         .catch(function (E) {
             return res.badRequest(E);
-        });
-    },
-    checkInComplete: function (req, res) {
-        // 1. update event model
-        // 2. read race rule and assign racers to races
-        return res.ok({
-            message: 'ok'
         });
     }
 };
