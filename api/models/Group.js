@@ -28,7 +28,7 @@ module.exports = {
             type: 'boolean',
             required: true
         },
-        isRegisterationOpen: {
+        isRegistrationOpen: {
             type: 'boolean',
             required: true
         }

@@ -10,13 +10,10 @@ module.exports.routes = {
     'post /event/update': 'EventController.update',
 
     // Group
-//    'post /group/create': 'GroupController.create',
-//    'get  /group/info/:id': 'GroupController.getInfo',
-//    'post /group/regs/add': 'GroupController.addRegistrations',
-//    'post /group/regs/remove': 'GroupController.removeRegistrations',
-//    'post /group/races/add': 'GroupController.addRaces',
-//    'post /group/races/remove': 'GroupController.removeRaces',
-//    'post /group/update': 'GroupController.update',
+    'post /group/create': 'GroupController.create',
+    'get  /group/info/:id': 'GroupController.getInfo',
+    'post /group/update': 'GroupController.update',
+
 
     // Manager
     'post /manager/activate': 'ManagerController.activate',
@@ -60,6 +57,7 @@ module.exports.routes = {
     //'get  /reg/recycleRfid': 'Registration: recycleRfid,
 
     // Test page
+    'get  /group/update/:id': 'PageController.groupUpdatePage',
     'get  /manager/update/:id': 'PageController.managerUpdatePage',
     'get  /': 'PageController.apiTestPage'
 };

@@ -58,6 +58,26 @@ module.exports = {
             return res.badRequest('Broken: ', E);
         });
     },
+    groupUpdatePage: function (req, res) {
+        returnParams(req.session)
+        .then(function (params) {
+            var inputId = parseInt(req.params.id);
+            var groupToUpdate;
+
+            params.groups.forEach(function (group) {
+                if (group.id === inputId) {
+                    groupToUpdate = group;
+                }
+            });
+            return res.render('groupUpdatePage', {
+                manager: groupToUpdate,
+                params: params
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest('Broken: ', E);
+        });
+    }
     managerUpdatePage: function (req, res) {
         returnParams(req.session)
         .then(function (params) {

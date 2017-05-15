@@ -183,16 +183,8 @@
                             <input type="text" name="location" />
                         </li>
                         <li>
-                            <label>Racer number</label>
-                            <input type="number" name="racerNumber" />
-                        </li>
-                        <li>
                             <label>isPublic</label>
                             <input type="checkbox" name="isPublic" />
-                        </li>
-                        <li>
-                            <label>isRegisterationOpen</label>
-                            <input type="checkbox" name="isRegisterationOpen" />
                         </li>
                     </ul>
                     <button type="submit">Submit</button>
@@ -204,6 +196,56 @@
                     <% for (var i = 0; i < params.events.length; i += 1) { %>
                         <li>
                             <a href="/event/info/<%= params.events[i].id %>"><%= params.events[i].id %> - <%= params.events[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Group</h2>
+        <ul>
+            <li>
+                <h3>Create</h3>
+
+                <form action="/group/create" method="POST">
+                    <ul>
+                        <li>
+                            <label>Name</label>
+                            <input type="text" name="name" />
+                        </li>
+                        <li>
+                            <label>Chinese Name</label>
+                            <input type="text" name="nameCht" />
+                        </li>
+                        <li>
+                            <label>isPublic</label>
+                            <input type="checkbox" name="isPublic" />
+                        </li>
+                        <li>
+                            <label>isRegistrationOpen</label>
+                            <input type="checkbox" name="isRegistrationOpen" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Get info</h3>
+                <ul>
+                    <% for (var i = 0; i < params.groups.length; i += 1) { %>
+                        <li>
+                            <a href="/group/info/<%= params.groups[i].id %>"><%= params.groups[i].id %> - <%= params.groups[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Update</h3>
+                <ul>
+                    <% for (var i = 0; i < params.groups.length; i += 1) { %>
+                        <li>
+                            <a href="/groups/update/<%= params.managers[i].id %>"><%= params.groups[i].id %> - <%= params.groups[i].name %></a>
                         </li>
                     <% } %>
                 </ul>
