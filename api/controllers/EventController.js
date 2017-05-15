@@ -7,7 +7,7 @@ module.exports = {
         var input = req.body;
         var resultObj;
 
-        if (input.isPublic && input.isPublic === 'on') {
+        if (input.isPublic && input.isPublic !== '') {
             input.isPublic = true;
         } else {
             input.isPublic = false;
@@ -199,7 +199,7 @@ module.exports = {
             id: parseInt(input.id)
         };
 
-        if (input.isPublic && input.isPublic === 'on') {
+        if (input.isPublic && input.isPublic !== '') {
             input.isPublic = true;
         } else {
             input.isPublic = false;
