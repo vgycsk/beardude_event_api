@@ -1,4 +1,4 @@
-/* global accountService, Manager */
+/* global accountService, dataService, Manager */
 
 'use strict';
 
@@ -45,8 +45,36 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // Login and keep account info in session
     login: function (req, res) {
-        return accountService.login(req, res, 'Manager');
+        var input = req.body;
+        var modelDataObj;
+
+        if (req.session.managerInfo) {
+            return res.badRequest('Already logged in');
+        }
+        return Manager.findOne({
+            email: input.email
+        })
+        .populate('address')
+        .populate('events')
+        .then(function (modelData) {
+            modelDataObj = modelData;
+            return dataService.authenticate(input.password, modelDataObj.password);
+        })
+        .then(function (authenticated) {
+            if (!authenticated) {
+                throw new Error('Credentials incorrect');
+            }
+            req.session.managerInfo = modelDataObj;
+            return res.ok({
+                message: 'Logged in',
+                email: modelDataObj.email
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
     logout: function (req, res) {
         delete req.session.managerInfo;

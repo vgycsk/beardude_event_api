@@ -121,42 +121,6 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // Login and keep account info in session
-    login: function (req, res, modelName) {
-        var input = req.body;
-        var ModelObj = returnModelObj(modelName);
-        var sessionObj = returnSessionObj(req, modelName);
-        var modelDataObj;
-
-        if (sessionObj) {
-            return res.badRequest('Already logged in');
-        }
-        return ModelObj.findOne({
-            email: input.email
-        })
-        .populate('address')
-        .then(function (modelData) {
-            modelDataObj = modelData;
-            return dataService.authenticate(input.password, modelDataObj.password);
-        })
-        .then(function (authenticated) {
-            if (!authenticated) {
-                throw new Error('User credentials incorrect');
-            }
-            if (modelName === 'Manager') {
-                req.session.managerInfo = modelDataObj;
-            } else {
-                req.session.racerInfo = modelDataObj;
-            }
-            return res.ok({
-                message: 'Logged in',
-                email: modelDataObj.email
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
     // Reissue password to inactive account
     reissuePassword: function (req, res, modelName) {
         var input = req.params;

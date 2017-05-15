@@ -1,4 +1,4 @@
-/* global accountService, Racer */
+/* global accountService, dataService, Racer */
 
 'use strict';
 
@@ -48,7 +48,34 @@ module.exports = {
         });
     },
     login: function (req, res) {
-        return accountService.login(req, res, 'Racer');
+        var input = req.body;
+        var modelDataObj;
+
+        if (req.session.racerInfo) {
+            return res.badRequest('Already logged in');
+        }
+        return Racer.findOne({
+            email: input.email
+        })
+        .populate('address')
+        .populate('team')
+        .then(function (modelData) {
+            modelDataObj = modelData;
+            return dataService.authenticate(input.password, modelDataObj.password);
+        })
+        .then(function (authenticated) {
+            if (!authenticated) {
+                throw new Error('Credentials incorrect');
+            }
+            req.session.racerInfo = modelDataObj;
+            return res.ok({
+                message: 'Logged in',
+                email: modelDataObj.email
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
     logout: function (req, res) {
         delete req.session.racerInfo;
@@ -58,6 +85,49 @@ module.exports = {
     },
     reissuePassword: function (req, res) {
         return accountService.reissuePassword(req, res, 'Racer');
+    },
+    // {team: ID}
+    applyForTeam: function (req, res) {
+        var input = req.body;
+
+        Racer.update({
+            id: req.session.racerInfo.id
+        }, {
+            teamApplication: parseInt(input.team)
+        })
+        .then(function () {
+            res.ok({
+                message: 'Team application sent',
+                team: input.team
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {team: ID}
+    unapplyForTeam: function (req, res) {
+        var input = req.body;
+
+        Racer.findOne({
+            id: req.session.racerInfo.id
+        })
+        .populate('teamApplication')
+        .then(function (modelData) {
+            var teamApplication = modelData.teamApplication;
+
+            modelData.teamApplication.remove(teamApplication);
+            modelData.save();
+        })
+        .then(function () {
+            res.ok({
+                message: 'Team application removed',
+                team: input.team
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
     update: function (req, res) {
         return accountService.update(req, res, 'Racer');

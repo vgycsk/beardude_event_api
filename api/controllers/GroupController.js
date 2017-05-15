@@ -1,10 +1,10 @@
+/* global Group */
 
 'use strict';
 
 module.exports = {
     create: function (req, res) {
         var input = req.body;
-        var resultObj;
 
         if (input.isPublic && input.isPublic !== '') {
             input.isPublic = true;
@@ -18,7 +18,6 @@ module.exports = {
         }
         Group.create(input)
         .then(function (modelData) {
-            resultObj = modelData;
             return res.ok({
                 message: 'Group created',
                 group: modelData

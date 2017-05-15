@@ -32,6 +32,15 @@ var dataService = {
             return updateObj;
         }
         return false;
+    },
+    sluggify: function (string) {
+        return string
+        .toLowerCase()
+//        .replace(/[^\w ]+/g,'') // remove hyphen
+        // remove special char
+        .replace(/[^\w\s]/gi, '')
+        // condense
+        .replace(/ +/g, '');
     }
 };
 

@@ -77,7 +77,7 @@ module.exports = {
         .catch(function (E) {
             return res.badRequest('Broken: ', E);
         });
-    }
+    },
     managerUpdatePage: function (req, res) {
         returnParams(req.session)
         .then(function (params) {
