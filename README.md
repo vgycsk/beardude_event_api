@@ -1,62 +1,104 @@
 # beardude_event
 
+Beardude Event 用來管理單車比賽的賽制及流程，提供賽事管理介面以及選手報名與成績管理的功能。
+
 Model:
 ![beardude event model](https://cloud.githubusercontent.com/assets/6611716/26051930/677f9c78-3996-11e7-99f6-eb277ea4ff86.jpg)
 
-1. event mgmt - website (heroku?)
-    create at laptop, set a password
+Scenarios:
+1. 賽前
+    a. 管理者：
+        - 新增活動
+        - 修改活動內容
+            - 新增組別
+            - 刪除組別
+            - 新增賽事
+            - 修改賽事內容
+            - 刪除賽事
+            - 設定賽制 (比賽前1~X名晉級a賽, Y~Z名晉級b賽, 排位規則)
 
-    - creates a public reg. page, using server user db
+        - 新增其他管理者
+        - 修改報名資料
+            - 新增隊伍並集體報名
+            - 修改隊伍資料
+            - 刪除隊伍 (保留選手與報名資料?)
+            - 修改報名付款狀態
+            - 取消報名 ＋ 退款
+            X - 移轉報名 (僅限已付款的) (轉到其他已報名的帳號 / 新增帳號)
 
+    b. 參賽者：
+        - 註冊帳號
+        - 報名比賽 (個人報名 & 隊伍報名)
+        - 修改個人資料 (保險資料需確實)
+        - 修改隊伍資料 (僅隊長可以)
+        X - 新增隊伍 (隊長)
+        X - 申請加入隊伍
+        X - 邀請其他選手加入
 
-2. registration
-    tablet (cellphone) - rfid reader
-    PC - RFID Reader
+    c. 好奇民眾：
+        - 觀看活動內容
+        - 觀看賽程
+        - 觀看報名隊伍
+        - 觀看報名選手名單
 
-    1. PC runs node.js, connects to event mgmt site by default (key)
-    2. login event to mgmt
-    3. scan rfid and bind with user. sends info back to event mgmt site
+2. 比賽準備期間 (前一天或當天一早)
+    a. 管理者：
+        - 修改活動內容
+            - 新增賽事
+            - 修改賽事內容
+            - 刪除賽事
 
+        - 分配RFID
+        - 更換RFID (假設壞掉)
 
-3. race
-    1. PC (tablet) - network - (web interface + rpi + local logging) - rfid readers
-    2. when race starts (manual set start time), PC start logging data from a specific reader (http address), and capture data during the race (manual start time + race logic of specific laps achieved first).
-        - when behind first place rider's lap count, racer is marked DNF (still records time in case misjudge)
-        - when first place rider finishes, race ends after first racer's last lap time x 2, otherwise DNF.
-        - Race ends automatically
-        - When done, list all racers' record, and allow judge to revise data (mark DNF or shift time)
-        
-    3. 
+    b. 管理者 - 系統測試員
+        - 測試RFID天線
+            - 使用測試TAG測訊號強度
+        - 測試比賽流程
+            - pacer登錄
+            - 選手登錄
+            - 情境測試
 
+    c. 參賽者：
+        - 查詢報名狀態
+        - 觀看賽程
+        - 觀看報名隊伍
+        - 觀看報名選手名單
 
+3. 比賽期間
+    a. 管理者：
+        - 觀看賽程
+        - 顯示選手名單
+        - 準備比賽
+            - 開啟比賽 (例: 公路車：男 - 資格賽1) [ok / 警告 先選資格賽1未比, 先選資格賽3) / 禁止 (未比預賽直接開決賽)]
+            - 開始選手登陸
+                - 登錄成功 - 顯示選手排位
+                - 登錄失敗
+                    - 人工判讀確認選手是否參加, 讀取出錯者更換RFID
 
-=======
-賽事網站引擎
+            - 確認選手到齊 - 宣布規則
 
-1. 選手登錄
- Basic info
-    - name
-    - age
-    - email
-    - phone
-    - team 
-    - pic
+            - 啟動讀卡機 & 使用測試TAG測訊號強度
 
-2. 加入賽事
-    - 連結晶片ID
-    - 拍照
- 
-3. 賽制
-    預設賽制
-      自動+手動分組 
+        - 開始比賽
+            - 系統顯示倒數
+            - pacer 開跑
 
-      初賽：每組前x名晉級排位賽, y名複賽 (取x%進複賽1, y%進複賽2)
-      複賽1：排順序 (取100%進決賽)
-      複賽2：前z名晉級 (取z%進決賽)
-      決賽：x+z競賽
+        - 套圈
+            - 顯示系統偵測遭套圈選手號碼與名字
+            - 確認套圈並取消選手資格 (經裁判判定, 避免因計圈錯誤造成)
 
-線上報名
- - 確認繳費
+        - 中斷比賽 (i.e. 發生嚴重事故, 場地毀損)
 
-現場登錄+發卡
+        - 完成比賽
+            - 顯示晉級名單與成績
+            - 顯示決賽成績
+
+    b. 參賽者：
+        - 賽後檢視成績
+
+    c. 好奇民眾：
+        - 觀看活動內容
+        - 觀看賽程
+        - 觀看選手即時成績
 
