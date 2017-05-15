@@ -1,6 +1,8 @@
 'use strict';
 
-module.exports.policies = {
+module.exports.policies = ();
+/*
+{
     EventController: {
         create: 'isActiveManager',
 //        getGeneralInfo: '',
@@ -36,3 +38,4 @@ module.exports.policies = {
         getInfo: 'isActiveManager'
     }
 };
+*/
