@@ -16,11 +16,17 @@ module.exports = {
             type: 'string',
             required: true
         },
-        pacerEpc: {
-            type: 'string'
+        laps: {
+            type: 'integer',
+            required: true
         },
         racerNumberAllowed: {
             type: 'integer',
+            required: true
+        },
+        // 晉級規則, 空的代表是決賽, 比完直接將結果張貼至 Group model的 result
+        advancingRule: {
+            type: 'array',
             required: true
         },
         isCheckinOpen: {
@@ -32,23 +38,18 @@ module.exports = {
             type: 'boolean',
             required: true
         },
-        laps: {
-            type: 'integer'
+        pacerEpc: {
+            type: 'string'
         },
         //moment().format("YYYY-MM-DD HH:mm:ss")
         startTime: {
-            type: 'datetime',
-            required: true
+            type: 'datetime'
         },
         endTime: {
-            type: 'datetime',
-            required: true
-        },
-        advancingRule: {
-            type: 'array'
+            type: 'datetime'
         },
         // [{epc:1 time: ms}, {}, {}]
-        rawData: {
+        rfidData: {
             type: 'array'
         },
         // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
@@ -56,7 +57,7 @@ module.exports = {
             type: 'json',
             defaultsTo: {}
         },
-        // [{racer: 1, time: ms}, {}, {}]
+        // [{racer: 1, time: hh:mm:ss}, {}, {}]
         result: {
             type: 'array'
         },

@@ -2,7 +2,7 @@
 
 module.exports.routes = {
 
-    // Event (To do: policy)
+    // Event
     'post /event/create': 'EventController.create',
     'get  /event/info/:id': 'EventController.getInfo',
     'post /event/managers/add': 'EventController.addManagers',
@@ -28,12 +28,13 @@ module.exports.routes = {
     // Reset password
 
     // Race
-//    'post /race/create': 'RaceController.create',
-//    'get  /race/info/:id': 'RaceController.getInfo',
+    'post /race/create': 'RaceController.create',
+    'get  /race/info/:id': 'RaceController.getGeneralInfo',
+    'get  /race/mgmtInfo/:id': 'ManagerController.getManagementInfo',
+    'post /race/update': 'RaceController.update',
+    'get  /race/delete/:id': 'RaceController.delete',
 //    'post /race/racers/add': 'RaceController.addRacers',
 //    'post /race/racers/remove': 'RaceController.removeRacers',
-//    'post /race/update': 'RaceController.update',
-    //'get  /race/delete/:id': 'RaceController.delete',
 //   (More race logics)
 
 
