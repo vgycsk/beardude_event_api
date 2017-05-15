@@ -39,11 +39,12 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // {group: ID}
     update: function (req, res) {
         var input = req.body;
         var updateObj = {};
         var query = {
-            id: parseInt(input.id)
+            id: parseInt(input.group)
         };
 
         if (input.name) {

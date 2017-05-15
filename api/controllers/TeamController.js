@@ -107,7 +107,7 @@ module.exports = {
         .then(function (modelData) {
             updateObj = dataService.returnUpdateObj(fields, input, modelData);
             return Team.update({
-                id: input.id
+                id: input.team
             }, updateObj);
         })
         .then(function (teamData) {

@@ -191,12 +191,13 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // {event: ID}
     update: function (req, res) {
         var input = req.body;
         var updateObj;
         var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isPublic'];
         var query = {
-            id: parseInt(input.id)
+            id: parseInt(input.event)
         };
 
         if (input.isPublic && input.isPublic !== '') {

@@ -31,6 +31,10 @@ module.exports = {
         isRegistrationOpen: {
             type: 'boolean',
             required: true
+        },
+        // [{racer: ID, time: mm:ss}, {}, {}...]
+        result: {
+            type: 'array'
         }
     }
 };
