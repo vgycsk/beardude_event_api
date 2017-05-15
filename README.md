@@ -1,5 +1,8 @@
 # beardude_event
 
+Model:
+![beardude event model](https://cloud.githubusercontent.com/assets/6611716/26051930/677f9c78-3996-11e7-99f6-eb277ea4ff86.jpg)
+
 1. event mgmt - website (heroku?)
     create at laptop, set a password
 
