@@ -1,4 +1,4 @@
-/* global dataService, Race */
+/* global _, dataService, Group, Race */
 
 'use strict';
 
@@ -120,6 +120,99 @@ module.exports = {
                 message: 'Race updated',
                 race: modelData
             });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, racers: [ID, ID]}
+    addRacers: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.race)
+        };
+        var raceDataObj;
+        var racersToAdd;
+
+        input.racers.forEach(function (racer, index) {
+            input.racers[index] = parseInt(racer);
+        });
+        Race.findOne(query)
+        .populate('registrations')
+        .then(function (modelData) {
+            raceDataObj = modelData;
+            return Group.findOne({
+                id: modelData.group
+            })
+            .populate('registrations');
+        })
+        .then(function (modelData) {
+            var racerNotInGroup = _.difference(input.racers, modelData.racers);
+
+            // 1. validate racers in group
+            if (racerNotInGroup.length > 0) {
+                throw new Error('Racer not in group');
+            }
+            // 2. Get racers not in race
+            racersToAdd = _.difference(input.racers, raceDataObj);
+            racersToAdd.forEach(function (racerInput) {
+                raceDataObj.racers.add(racerInput);
+            });
+            return raceDataObj.save();
+        })
+        .then(function () {
+            return res.ok({
+                messange: 'Racers added to race',
+                racers: racersToAdd
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, racers: [ID, ID]}
+    removeRacers: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.race)
+        };
+        var raceDataObj;
+        var racersToRemove;
+
+        input.racers.forEach(function (racer, index) {
+            input.racers[index] = parseInt(racer);
+        });
+        Race.findOne(query)
+        .populate('registrations')
+        .then(function (modelData) {
+            raceDataObj = modelData;
+            return Group.findOne({
+                id: modelData.group
+            })
+            .populate('registrations');
+        })
+        .then(function (modelData) {
+            var racerNotInGroup = _.difference(input.racers, modelData.racers);
+
+            // 1. validate racers in group
+            if (racerNotInGroup.length > 0) {
+                throw new Error('Racer not in group');
+            }
+            // 2. Get racers not in race
+            racersToRemove = _.intersection(input.racers, raceDataObj);
+            racersToRemove.forEach(function (racerInput) {
+                raceDataObj.racers.add(racerInput);
+            });
+            return raceDataObj.save();
+        })
+        .then(function () {
+            return res.ok({
+                messange: 'Racers removed from race',
+                racers: racersToRemove
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
         });
     }
 };

@@ -33,8 +33,8 @@ module.exports.routes = {
     'get  /race/mgmtInfo/:id': 'ManagerController.getManagementInfo',
     'post /race/update': 'RaceController.update',
     'get  /race/delete/:id': 'RaceController.delete',
-//    'post /race/racers/add': 'RaceController.addRacers',
-//    'post /race/racers/remove': 'RaceController.removeRacers',
+    'post /race/racers/add': 'RaceController.addRacers',
+    'post /race/racers/remove': 'RaceController.removeRacers',
 //   (More race logics)
 
 
