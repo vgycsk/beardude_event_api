@@ -1,0 +1,46 @@
+{
+  "productImages": [
+    "1"
+  ],
+  "productName": "test",
+  "productNameI18n": {
+    "zh-tw": "test cht"
+  },
+  "description": "desc",
+  "descriptionI18n": {
+    "zh-tw": "desc cht"
+  },
+  "priceI18n": {
+    "zh-tw": "1000"
+  },
+  "price": "30",
+  "products": [
+    {
+      "sex": "men",
+      "size": "S",
+      "quantity": "5",
+      "price": "",
+      "priceI18n": {
+        "zh-tw": ""
+      }
+    },
+    {
+      "sex": "men",
+      "size": "L",
+      "quantity": "4",
+      "price": "",
+      "priceI18n": {
+        "zh-tw": ""
+      }
+    },
+    {
+      "sex": "women",
+      "size": "M",
+      "quantity": "3",
+      "price": "",
+      "priceI18n": {
+        "zh-tw": "900"
+      }
+    }
+  ]
+}

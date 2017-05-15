@@ -19,19 +19,13 @@ var returnParams = function (session) {
     })
     .then(function (managerData) {
         params.managers = managerData;
-        return Race.find({})
-        .populate('racers')
-        .populate('event');
-    })
-    .then(function (raceData) {
-        params.races = raceData;
         return Racer.find({})
         .populate('address');
     })
     .then(function (racerData) {
         params.racers = racerData;
         return Group.find({})
-        .populate('racers')
+        .populate('registrations')
         .populate('races');
     })
     .then(function (groupData) {
@@ -39,7 +33,11 @@ var returnParams = function (session) {
         return Registration.find({});
     })
     .then(function (regData) {
-        params.registrationData = regData;
+        params.registrations = regData;
+        return Race.find({});
+    })
+    .then(function (raceData) {
+        params.races = raceData;
         return q.resolve(params);
     })
     .catch(function (E) {

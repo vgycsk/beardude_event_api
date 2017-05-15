@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.policies = ();
+module.exports.policies = {};
 /*
 {
     EventController: {

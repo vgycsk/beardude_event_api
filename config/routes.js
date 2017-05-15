@@ -37,6 +37,8 @@ module.exports.routes = {
 //    'post /race/racers/remove': 'RaceController.removeRacers',
 //    'post /race/update': 'RaceController.update',
     //'get  /race/delete/:id': 'RaceController.delete',
+//   (More race logics)
+
 
     // Racer
     'post /racer/activate': 'RacerController.activate',

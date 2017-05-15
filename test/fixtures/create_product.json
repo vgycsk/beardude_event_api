@@ -1,0 +1,22 @@
+{
+  "productImages": [
+    "2"
+  ],
+  "productName": "test",
+  "productNameI18n": {
+    "zh-tw": "test cht"
+  },
+  "description": "desc",
+  "descriptionI18n": {
+    "zh-tw": "desc cht"
+  },
+  "priceI18n": {
+    "zh-tw": "1000"
+  },
+  "price": "30",
+  "product": [
+    {
+      "quantity": "10"
+    }
+  ]
+}
