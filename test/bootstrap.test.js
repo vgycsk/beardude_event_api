@@ -3,7 +3,7 @@
 'use strict';
 
 var sails = require('sails');
-var time30s = 30000;
+//var time30s = 30000;
 
 before(function(done) {
     // configuration for testing purposes
@@ -14,7 +14,7 @@ before(function(done) {
     };
 
     // Increase the Mocha timeout so that Sails has enough time to lift.
-    this.timeout(time30s);
+//    this.timeout(time30s);
     sails.lift(sailsConfig, function (err) {
         if (err) {
             return done(err);

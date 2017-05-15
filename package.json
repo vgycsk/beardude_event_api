@@ -15,6 +15,8 @@
         "sails-mysql": "*"
     },
     "devDependencies": {
+        "chai": "*",
+        "chai-as-promised": "*",
         "eslint": "*",
         "istanbul": "0.4.5",
         "mocha": "3.0.2",

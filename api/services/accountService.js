@@ -33,10 +33,13 @@ module.exports = {
         var sessionObj = returnSessionObj(req, modelName);
 
         if (input.password === '') {
-            return res.badRequest('Password enter password');
+            return res.badRequest('Please enter password');
         }
         if (input.password !== input.confirmPassword) {
             return res.badRequest('Password and confirm-password mismatch');
+        }
+        if (!sessionObj) {
+            return res.badRequest('Please login');
         }
         return ModelObj.update({
             email: sessionObj.email
