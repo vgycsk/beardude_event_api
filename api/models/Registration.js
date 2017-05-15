@@ -2,6 +2,12 @@
 
 module.exports = {
     attributes: {
+        races: {
+            collection: 'Race',
+            via: 'registrations',
+            dominant: true
+        },
+
         group: {
             model: 'Group'
         },
@@ -11,11 +17,16 @@ module.exports = {
 
         epc: {
             type: 'string',
-            required: true
+            defaultsTo: ''
         },
-
-        isRecycled: {
+        paid: {
             type: 'boolean',
+            required: true,
+            defaultsTo: false
+        },
+        rfidRecycled: {
+            type: 'boolean',
+            required: true,
             defaultsTo: false
         }
     }

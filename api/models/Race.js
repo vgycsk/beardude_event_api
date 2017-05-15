@@ -1,12 +1,11 @@
 'use strict';
 
-// Sub races within an event
+// Race within a group
 module.exports = {
     attributes: {
-        racers: {
-            collection: 'Racer',
-            via: 'races',
-            dominant: true
+        registrations: {
+            collection: 'Registration',
+            via: 'races'
         },
 
         group: {

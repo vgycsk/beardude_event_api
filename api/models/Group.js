@@ -3,14 +3,13 @@
 // 分組. 例如 公路車: 男, 單速車: 混合
 module.exports = {
     attributes: {
-        racers: {
-            collection: 'Racer',
-            via: 'events',
-            dominant: true
+        registrations: {
+            collection: 'Registration',
+            via: 'group'
         },
         races: {
             collection: 'Race',
-            via: 'event'
+            via: 'group'
         },
 
         event: {

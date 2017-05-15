@@ -4,6 +4,11 @@ var bcrypt = require('bcrypt-nodejs');
 
 module.exports = {
     attributes: {
+        registrations: {
+            collection: 'Registration',
+            via: 'racer'
+        },
+
         address: {
             model: 'Address'
         },
