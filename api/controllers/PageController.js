@@ -10,8 +10,7 @@ var returnParams = function (session) {
 
     Event.find({})
     .populate('managers')
-    .populate('races')
-    .populate('racers')
+    .populate('groups')
     .then(function (eventData) {
         params.events = eventData;
         return Manager.find({})
@@ -27,13 +26,20 @@ var returnParams = function (session) {
     .then(function (raceData) {
         params.races = raceData;
         return Racer.find({})
-        .populate('events')
-        .populate('races')
-        .populate('rfid')
         .populate('address');
     })
     .then(function (racerData) {
         params.racers = racerData;
+        return Group.find({})
+        .populate('racers')
+        .populate('races');
+    })
+    .then(function (groupData) {
+        params.groups = groupData;
+        return Registration.find({});
+    })
+    .then(function (regData) {
+        params.registrationData = regData;
         return q.resolve(params);
     })
     .catch(function (E) {
