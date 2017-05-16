@@ -3,15 +3,14 @@
 'use strict';
 
 module.exports = {
-    // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, advancingRule: JSON, isCheckinOpen: BOOL, requirePacer: BOOL}
+    // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
     create: function (req, res) {
         var input = req.body;
         var createObj = {
             group: parseInt(input.group),
             name: input.name,
             laps: parseInt(input.laps),
-            racerNumberAllowed: parseInt(input.racerNumberAllowed),
-            advancingRule: input.advancingRule
+            racerNumberAllowed: parseInt(input.racerNumberAllowed)
         };
 
         if (input.isCheckinOpen && input.isCheckinOpen !== '') {
@@ -74,7 +73,7 @@ module.exports = {
                 name: modelData.name,
                 laps: modelData.laps,
                 racerNumberAllowed: modelData.racerNumberAllowed,
-                advancingRule: modelData.advancingRule,
+                advancingRules: modelData.advancingRules,
                 isCheckinOpen: modelData.isCheckinOpen,
                 requirePacer: modelData.requirePacer,
                 startTime: modelData.startTime,
@@ -103,10 +102,10 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, advancingRule: JSON, isCheckinOpen: BOOL, requirePacer: BOOL}
+    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
     update: function (req, res) {
         var input = req.body;
-        var fields = ['name', 'laps', 'racerNumberAllowed', 'advancingRule', 'isCheckinOpen', 'requirePacer'];
+        var fields = ['name', 'laps', 'racerNumberAllowed', 'isCheckinOpen', 'requirePacer'];
         var updateObj;
         var query = {
             id: parseInt(input.race)
@@ -270,6 +269,78 @@ module.exports = {
                 message: message,
                 race: input.race,
                 epc: input.epc
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, advancingRules: [{rule1}, {rule2} ]}
+    // rule: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
+    /*
+        { rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 }
+        { rankFrom: 10, rankTo: 19, toRace: 3, insertAt: 0 }
+    */
+    updateAdvancingRules: function (req, res) {
+        var input = req.body;
+        var toRace = [];
+
+        input.race = parseInt(input.race);
+        input.advancingRules = _.sortBy(input.advancingRules, 'rankFrom');
+        Race.findOne({
+            id: input.race
+        })
+        .then(function (modelData) {
+            if (!dataService.validateAdvRules.continuity(input.advancingRules)) {
+                throw new Error('Must set rules for continuous rankings');
+            }
+            if (!dataService.validateAdvRules.startFromZero(input.advancingRules)) {
+                throw new Error('Must set rules for continuous rankings');
+            }
+            if (!dataService.validateAdvRules.maxRanking(input.advancingRules, modelData.racerNumberAllowed)) {
+                throw new Error('Rule setting exceeds max racer');
+            }
+            input.advancingRules.forEach(function (rule) {
+                toRace.push(rule.toRace);
+            });
+            _.uniq(toRace);
+            Group.findOne({
+                id: modelData.group
+            })
+            .populate('races');
+        })
+        .then(function (modelData) {
+            var rulesByRace = [];
+
+            // validate advancing rules' insertAt dont overlap
+            toRace.forEach(function (raceId) {
+                var rulesForSameRace = [];
+
+                modelData.races.advancingRules.forEach(function (rule) {
+                    if (rule.toRace === raceId) {
+                        rulesForSameRace.push(rule);
+                    }
+                });
+                rulesByRace.push(rulesForSameRace);
+            });
+            rulesByRace.forEach(function (rulesForSameRace) {
+                var sortedRules = _.sortBy(rulesForSameRace, 'insertAt');
+
+                if (!dataService.validateAdvRules.noOverlap(sortedRules)) {
+                    throw new Error('Inserting position overlaps with other race\'s rules');
+                }
+            });
+            return Race.update({
+                id: input.race
+            }, {
+                advancingRules: input.advancingRules
+            });
+            // validate all advanced race's all position are filled (show warning if not)
+        })
+        .then(function (modelData) {
+            return res.ok({
+                message: 'Advancing rules updated',
+                race: modelData[0]
             });
         })
         .catch(function (E) {

@@ -25,7 +25,7 @@ module.exports = {
             required: true
         },
         // 晉級規則, 空的代表是決賽, 比完直接將結果張貼至 Group model的 result
-        advancingRule: {
+        advancingRules: {
             type: 'array',
             required: true
         },
