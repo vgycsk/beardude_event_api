@@ -13,6 +13,7 @@ module.exports.routes = {
     'post /group/create': 'GroupController.create',
     'get  /group/info/:id': 'GroupController.getInfo',
     'post /group/update': 'GroupController.update',
+    'post /group/delete': 'GroupController.delete',
 
 
     // Manager

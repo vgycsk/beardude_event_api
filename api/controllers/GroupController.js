@@ -1,4 +1,4 @@
-/* global Group */
+/* global Group, Race */
 
 'use strict';
 
@@ -34,6 +34,48 @@ module.exports = {
         .populate('managers')
         .then(function (eventData) {
             return res.ok(eventData);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {group: ID}
+    delete: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.group)
+        };
+        var racesToDestroy = [];
+
+        // Validate: only can delete those without registration
+        Group.findOne({
+            id: query
+        })
+        .populate('registration')
+        .populate('races')
+        .then(function (modelData) {
+            if (modelData.registration.length > 0) {
+                throw new Error('Cannot delete group that has racers registered');
+            }
+            modelData.races.forEach(function (race) {
+                racesToDestroy.push(race.id);
+            });
+            if (racesToDestroy.length === 0) {
+                return false;
+            }
+            return Race.destroy({
+                id: racesToDestroy
+            });
+        })
+        .then(function () {
+            return Group.destroy(query);
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Group deleted',
+                group: input.group,
+                races: racesToDestroy
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
