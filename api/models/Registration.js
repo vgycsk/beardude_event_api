@@ -46,6 +46,16 @@ module.exports = {
         refunded: {
             type: 'boolean',
             defaultsTo: false
+        },
+        toPublic: function () {
+            var obj = this.toObject();
+
+            delete obj.refunded;
+            delete obj.accessCode;
+            delete obj.epc;
+            delete obj.rfidRecycled;
+            delete obj.refundRequested;
+            delete obj.refunded;
         }
     }
 };

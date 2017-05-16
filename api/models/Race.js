@@ -41,6 +41,10 @@ module.exports = {
         pacerEpc: {
             type: 'string'
         },
+        testerEpc: {
+            type: 'array',
+            defaultsTo: []
+        },
         //moment().format("YYYY-MM-DD HH:mm:ss")
         startTime: {
             type: 'datetime'

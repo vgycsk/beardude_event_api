@@ -19,7 +19,7 @@ module.exports.routes = {
     // Group
     // 1.2.1
     'post /group/create': 'GroupController.create',
-    // 3.2
+    // 3.2, 3.3, 3.4, 5.2.*
     'get  /group/info/:id': 'GroupController.getInfo',
     // 1.2.2
     'post /group/update': 'GroupController.update',
@@ -48,7 +48,7 @@ module.exports.routes = {
     'post /race/create': 'RaceController.create',
     // NA
     'get  /race/info/:id': 'RaceController.getGeneralInfo',
-    // NA
+    // 6.1.2
     'get  /race/mgmtInfo/:id': 'ManagerController.getManagementInfo',
     // 1.2.8
     'post /race/update': 'RaceController.update',

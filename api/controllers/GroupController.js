@@ -42,6 +42,49 @@ module.exports = {
         .then(function (modelData) {
             result.team = modelData;
             return Registration.find({
+                group: groupId,
+                paid: true
+            })
+            .populate('racer');
+        })
+        .then(function (modelData) {
+            var result = [];
+
+            modelData.forEach(function (reg) {
+                result.push({
+                    races: reg.races,
+                    event: reg.event,
+                    group: reg.group,
+                    racer: {
+                        team: reg.racer.team,
+                        firstName: reg.racer.firstName,
+                        lastName: req.racer.lastName,
+                        nickName: req.racer.nickName
+                    },
+                    raceNumber: reg.raceNumber
+                });
+            });
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    getManagementInfo: function (req, res) {
+        var result;
+        var groupId = parseInt(req.params.id);
+
+        Group.findOne({
+            id: groupId
+        })
+        .populate('races')
+        .then(function (modelData) {
+            result = modelData;
+            return Team.find({});
+        })
+        .then(function (modelData) {
+            result.team = modelData;
+            return Registration.find({
                 group: groupId
             })
             .populate('racer');
