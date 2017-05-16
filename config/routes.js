@@ -6,7 +6,7 @@ module.exports.routes = {
     // 1.1
     'post /event/create': 'EventController.create',
     // 3.1
-    'get  /event/info/:id': 'EventController.getInfo',
+    'get  /event/info/:id': 'EventController.getGeneralInfo',
     // 1.3
     'post /event/managers/add': 'EventController.addManagers',
     // 1.3
@@ -19,7 +19,7 @@ module.exports.routes = {
     // Group
     // 1.2.1
     'post /group/create': 'GroupController.create',
-    // NA
+    // 3.2
     'get  /group/info/:id': 'GroupController.getInfo',
     // 1.2.2
     'post /group/update': 'GroupController.update',
@@ -59,6 +59,7 @@ module.exports.routes = {
     // 1.4.6
     'post /race/racers/remove': 'RaceController.removeRacers',
 //    'post /race/assignPacerRfid': 'RaceController.assignPacerRfid'
+//    'post /race/assignTesterRfid': 'RaceController.assignTesterRfid'
 //   (More race logics)
 
 
@@ -77,6 +78,8 @@ module.exports.routes = {
     // Registration
     // 2.2.1
     'post /reg/create': 'Registration.create',
+    // 5.1.1, 5.1.2
+    'get  /reg/info/': 'Registration.getInfo',
     // 4.1.1
     'post /reg/assignRfid': 'Registration.assignRfid',
     // 4.1.2
@@ -85,6 +88,11 @@ module.exports.routes = {
     'post /reg/recycleRfid': 'Registration.recycleRfid',
     // 1.4.3
     'post /reg/updatePayment': 'Registration.updatePayment',
+    // 2.2.3
+    'post /reg/requestRefund': 'Registration.requestRefund',
+    // 1.4.4
+    'post /reg/refunded': 'Registration.refunded',
+    'post /reg/confirm': 'Registration.confirmRegistration'
 
     // Team
     // 2.3.3

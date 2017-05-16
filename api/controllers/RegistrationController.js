@@ -1,10 +1,39 @@
+/* eslint-disable no-param-reassign */
 /* global Registration */
 
 'use strict';
 
+var Q = require('q');
+var randomstring = require('randomstring');
+
 module.exports = {
-    // {group: ID, racer: ID}
+    // {event: ID, group: ID, racer: ID}
     create: function (req, res) {
+        var returnAccessCode = function (eventId) {
+            var q = Q.defer();
+            var codeLength = 4;
+            var code = randomstring.generate({
+                length: codeLength
+            });
+            var getCode = function (code) {
+                Registration.findOne({
+                    event: eventId,
+                    accessCode: code
+                })
+                .then(function (modelData) {
+                    if (modelData) {
+                        code = randomstring.generate({
+                            length: codeLength
+                        });
+                        return getCode(code);
+                    }
+                    return q.resolve(code);
+                });
+            };
+
+            getCode(code);
+            return q.promise;
+        };
         var input = {
             group: parseInt(req.body.group),
             racer: parseInt(req.body.racer)
@@ -15,36 +44,115 @@ module.exports = {
             if (modelData) {
                 throw new Error('Already registered');
             }
+            return returnAccessCode();
+        })
+        .then(function (accessCode) {
+            input.accessCode = accessCode;
             return Registration.create(input);
         })
-        .then(function () {
+        .then(function (modelData) {
             return res.ok({
                 message: 'Registered successfully',
                 group: input.group,
-                racer: input.racer
+                racer: input.racer,
+                accessCode: modelData.accessCode
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {registration: ID, group: ID, epc: STR}
-    assignRfid: function (req, res) {
-        var input = req.body;
-
-        input.registration = parseInt(input.registration);
-        input.group = parseInt(input.group);
+    // {registration: ID}
+    confirmRegistration: function (req, res) {
+        var regId = parseInt(req.body.registration);
+        var raceNumber;
+        var eventId;
 
         Registration.findOne({
-            id: input.registration
+            id: regId
+        })
+        .populate('event')
+        .then(function (modelData) {
+            eventId = modelData.event.id;
+            raceNumber = modelData.event.assignedRaceNumber;
+            return Event.update({
+                id: eventId
+            }, {
+                assignedRaceNumber: raceNumber + 1
+            });
+        })
+        .then(function () {
+            return Registration.findOne({
+                event: eventId,
+                raceNumber: raceNumber
+            });
+        })
+        .then(function (modelData) {
+            if (modelData) {
+                throw new Error('Race number already assigned');
+            }
+            Registration.update({
+                registration: regId
+            }, {
+                raceNumber: raceNumber
+            });
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Registration confirmed',
+                raceNumber: raceNumber
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {event: ID}
+    getInfo: function (req, res) {
+        var query = {
+            event: parseInt(req.body.event),
+            racer: req.session.racerInfo.id
+        };
+
+        Registration.findOne(query)
+        .populate('races')
+        .then(function (modelData) {
+            var result = {
+                races: modelData.races,
+                event: modelData.event,
+                group: modelData.group,
+                accessCode: modelData.accessCode,
+                raceNumber: modelData.raceNumber,
+                paid: modelData.paid,
+                rfidRecycled: modelData.rfidRecycled,
+                refundRequested: modelData.refundRequested,
+                refunded: modelData.refunded
+            };
+
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {event: ID, accessCode: STR, epc: STR}
+    assignRfid: function (req, res) {
+        var input = req.body;
+        var regId;
+
+        input.event = parseInt(input.event);
+        Registration.findOne({
+            event: input.event,
+            accessCode: input.accessCode
         })
         .then(function (modelData) {
             if (modelData.epc && modelData.epc !== '') {
                 throw new Error('Racer already has RFID');
             }
-            // Validate if rfid already assigned in this group
+            regId = modelData.id;
+            // Validate if rfid already assigned in this event
             return Registration.findOne({
-                group: input.group,
+                event: input.event,
                 epc: input.epc
             });
         })
@@ -53,7 +161,7 @@ module.exports = {
                 throw new Error('RFID already assigned to another racer');
             }
             return Registration.update({
-                id: input.registration
+                id: regId
             }, {
                 epc: input.epc
             });
@@ -61,29 +169,29 @@ module.exports = {
         .then(function (modelData) {
             return res.ok({
                 message: 'Rfid assigned',
-                registration: modelData[0].id
+                raceNumber: modelData[0].raceNumber
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {registration: ID, group: ID, epc: STR}
+    // {event: ID, raceNumber: INT, epc: STR}
     replaceRfid: function (req, res) {
         var input = req.body;
+        var regId;
 
-        input.registration = parseInt(input.registration);
-        input.group = parseInt(input.group);
-        Registration.findOne({
-            id: input.registration
-        })
+        input.event = parseInt(input.event);
+        input.raceNumber = parseInt(input.raceNumber);
+        Registration.findOne(input)
         .then(function (modelData) {
             if (!modelData.epc || modelData.epc === '') {
                 throw new Error('Racer not assigned RFID yet');
             }
-            // Validate if rfid already assigned in this group
+            regId = modelData.id;
+            // Validate if rfid already assigned in this event
             return Registration.findOne({
-                group: input.group,
+                event: input.event,
                 epc: input.epc
             });
         })
@@ -92,15 +200,15 @@ module.exports = {
                 throw new Error('RFID already assigned to another racer');
             }
             return Registration.update({
-                id: input.registration
+                id: regId
             }, {
                 epc: input.epc
             });
         })
         .then(function (modelData) {
             return res.ok({
-                message: 'Rfid assigned',
-                registration: modelData[0].id
+                message: 'Rfid replaced',
+                raceNumber: modelData[0].raceNumber
             });
         })
         .catch(function (E) {
@@ -151,6 +259,66 @@ module.exports = {
                 message: 'Payment status changed',
                 registration: modelData[0].id
             });
+        });
+    },
+    // {registration: ID, refundRequested: BOOL}
+    requestRefund: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.registration)
+        };
+        var updateObj = {};
+
+        if (input.refundRequested && input.refundRequested !== '') {
+            updateObj.refundRequested = true;
+        } else {
+            updateObj.refundRequested = false;
+        }
+        Registration.findOne(query)
+        .then(function (modelData) {
+            if (!modelData.paid) {
+                throw new Error('Registration unpaid');
+            }
+            return Registration.update(query, updateObj);
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Refund requested',
+                registration: input.registration
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {registration: ID, refunded: BOOL}
+    refunded: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.registration)
+        };
+        var updateObj = {};
+
+        if (input.refunded && input.refunded !== '') {
+            updateObj.refunded = true;
+        } else {
+            updateObj.refunded = false;
+        }
+        Registration.findOne(query)
+        .then(function (modelData) {
+            if (modelData.paid && (modelData.refunded !== updateObj.refunded)) {
+                return Registration.update(query, updateObj);
+            }
+            throw new Error('Registration unpaid or refunded status unchanged');
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Marked as refunded',
+                registration: input.registration
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
         });
     }
 };

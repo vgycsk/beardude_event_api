@@ -8,13 +8,23 @@ module.exports = {
             dominant: true
         },
 
+        event: {
+            model: 'Event'
+        },
         group: {
             model: 'Group'
         },
         racer: {
             model: 'Racer'
         },
-
+        // 每個Event裡的所有accessCode為unique
+        accessCode: {
+            type: 'string',
+            required: true
+        },
+        raceNumber: {
+            type: 'integer'
+        },
         epc: {
             type: 'string',
             defaultsTo: ''
@@ -27,6 +37,14 @@ module.exports = {
         rfidRecycled: {
             type: 'boolean',
             required: true,
+            defaultsTo: false
+        },
+        refundRequested: {
+            type: 'boolean',
+            defaultsTo: false
+        },
+        refunded: {
+            type: 'boolean',
             defaultsTo: false
         }
     }

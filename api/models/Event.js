@@ -21,6 +21,10 @@ module.exports = {
             type: 'string',
             required: true
         },
+        assignedRaceNumber: {
+            type: 'integer',
+            defaultsTo: 1
+        },
         //moment().format("YYYY-MM-DD HH:mm:ss")
         startTime: {
             type: 'datetime',
