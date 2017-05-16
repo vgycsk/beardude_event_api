@@ -195,17 +195,11 @@ module.exports = {
     update: function (req, res) {
         var input = req.body;
         var updateObj;
-        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isPublic'];
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location'];
         var query = {
             id: parseInt(input.event)
         };
 
-        if (input.isPublic && input.isPublic !== '') {
-            input.isPublic = true;
-        } else {
-            input.isPublic = false;
-        }
-        input.racerNumber = parseInt(input.racerNumber);
         Event.findOne(query)
         .then(function (eventData) {
             updateObj = dataService.returnUpdateObj(fields, input, eventData);
@@ -215,6 +209,30 @@ module.exports = {
             return res.ok({
                 message: 'Event updated',
                 event: eventData[0]
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {event: ID, isPublic: BOOL}
+    updateIsPublic: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.event)
+        };
+        var updateObj = {
+            isPublic: false
+        };
+
+        if (input.isPublic && input.isPublic !== '') {
+            updateObj.isPublic = true;
+        }
+        Event.update(query, updateObj)
+        .then(function (modelData) {
+            return res.ok({
+                message: 'Event isPublic updated',
+                event: modelData[0]
             });
         })
         .catch(function (E) {
