@@ -3,7 +3,8 @@
 Beardude Event 用來管理單車比賽的賽制及流程，提供賽事管理介面以及選手報名與成績管理的功能。
 
 Model:
-![beardude event model](https://cloud.githubusercontent.com/assets/6611716/26051930/677f9c78-3996-11e7-99f6-eb277ea4ff86.jpg)
+![beardude event model1](https://cloud.githubusercontent.com/assets/6611716/26103132/a9dfc154-3a6a-11e7-86ac-3175496962db.jpg)
+
 
 Scenarios:
 
