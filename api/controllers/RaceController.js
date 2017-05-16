@@ -311,12 +311,23 @@ module.exports = {
         })
         .then(function (modelData) {
             var rulesByRace = [];
+            var racesToCheck = [];
 
+            modelData.races.forEach(function (race) {
+                if (race.id !== input.race) {
+                    racesToCheck.push(race);
+                }
+            });
             // validate advancing rules' insertAt dont overlap
             toRace.forEach(function (raceId) {
                 var rulesForSameRace = [];
 
-                modelData.races.advancingRules.forEach(function (rule) {
+                racesToCheck.advancingRules.forEach(function (rule) {
+                    if (rule.toRace === raceId) {
+                        rulesForSameRace.push(rule);
+                    }
+                });
+                input.advancingRules.forEach(function (rule) {
                     if (rule.toRace === raceId) {
                         rulesForSameRace.push(rule);
                     }
