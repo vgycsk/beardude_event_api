@@ -1,105 +1,156 @@
-/* global Rfid */
+/* global Registration */
 
 'use strict';
 
 module.exports = {
-    /*
-        epc: string
-        event: ID
-        racer: ID
-    */
+    // {group: ID, racer: ID}
+    create: function (req, res) {
+        var input = {
+            group: parseInt(req.body.group),
+            racer: parseInt(req.body.racer)
+        };
+
+        Registration.findOne(input)
+        .then(function (modelData) {
+            if (modelData) {
+                throw new Error('Already registered');
+            }
+            return Registration.create(input);
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Registered successfully',
+                group: input.group,
+                racer: input.racer
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {registration: ID, group: ID, epc: STR}
     assignRfid: function (req, res) {
         var input = req.body;
 
-        input.event = parseInt(input.event);
-        input.racer = parseInt(input.racer);
-        Rfid.findOne({
-            event: input.event,
-            racer: input.racer
+        input.registration = parseInt(input.registration);
+        input.group = parseInt(input.group);
+
+        Registration.findOne({
+            id: input.registration
         })
-        .then(function (rfidData) {
-            if (rfidData) {
-                throw new Error('Racer already has RFID: ', rfidData.epc);
+        .then(function (modelData) {
+            if (modelData.epc && modelData.epc !== '') {
+                throw new Error('Racer already has RFID');
             }
-            Rfid.findOne({
-                event: input.event,
+            // Validate if rfid already assigned in this group
+            return Registration.findOne({
+                group: input.group,
                 epc: input.epc
             });
         })
-        .then(function (rfidData) {
-            if (rfidData) {
-                throw new Error('RFID already assigned to racer: ', rfidData.racer);
+        .then(function (modelData) {
+            if (modelData) {
+                throw new Error('RFID already assigned to another racer');
             }
-            return Rfid.create(input);
+            return Registration.update({
+                id: input.registration
+            }, {
+                epc: input.epc
+            });
         })
-        .then(function (RfidData) {
+        .then(function (modelData) {
             return res.ok({
                 message: 'Rfid assigned',
-                rfid: RfidData
+                registration: modelData[0].id
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    /*
-        epc: string
-        event: ID
-        racer: ID
-    */
+    // {registration: ID, group: ID, epc: STR}
     replaceRfid: function (req, res) {
         var input = req.body;
 
-        Rfid.findOne({
-            event: input.event,
-            racer: input.racer
+        input.registration = parseInt(input.registration);
+        input.group = parseInt(input.group);
+        Registration.findOne({
+            id: input.registration
         })
-        .then(function (rfidData) {
-            if (!rfidData) {
+        .then(function (modelData) {
+            if (!modelData.epc || modelData.epc === '') {
                 throw new Error('Racer not assigned RFID yet');
             }
-            return Rfid.update({
-                id: rfidData.id
+            // Validate if rfid already assigned in this group
+            return Registration.findOne({
+                group: input.group,
+                epc: input.epc
+            });
+        })
+        .then(function (modelData) {
+            if (modelData) {
+                throw new Error('RFID already assigned to another racer');
+            }
+            return Registration.update({
+                id: input.registration
             }, {
                 epc: input.epc
             });
         })
-        .then(function (RfidData) {
+        .then(function (modelData) {
             return res.ok({
-                message: 'Rfid replaced',
-                rfid: RfidData[0]
+                message: 'Rfid assigned',
+                registration: modelData[0].id
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    /*
-        event: ID
-        racer: ID
-    */
+    // {epc: STR}
     recycleRfid: function (req, res) {
-        var input = req.body;
+        var query = {
+            epc: req.body.epc
+        };
 
-        Rfid.findOne({
-            event: input.event,
-            epc: input.epc
+        Registration.update(query, {
+            rfidRecycled: true
         })
-        .then(function (rfidData) {
-            return Rfid.update({
-                id: rfidData.id
-            }, {
-                isRecycled: true
-            });
-        })
-        .then(function (rfidData) {
+        .then(function (modelData) {
             return res.ok({
                 message: 'Rfid recycled',
-                rfid: rfidData
+                registration: modelData[0].id
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
+        });
+    },
+    // {registration: ID, paid: BOOL}
+    updatePayment: function (req, res) {
+        var input = req.body;
+        var query = {
+            registration: parseInt(input.registration)
+        };
+        var updateObj = {
+            paid: false
+        };
+
+        if (input.paid && input.paid !== '') {
+            updateObj.paid = true;
+        }
+        Registration.findOne(query)
+        .then(function (modelData) {
+            if (modelData.paid === updateObj.paid) {
+                throw new Error('Payment status unchange');
+            }
+            return Registration.update(query, updateObj);
+        })
+        .then(function (modelData) {
+            return res.ok({
+                message: 'Payment status changed',
+                registration: modelData[0].id
+            });
         });
     }
 };

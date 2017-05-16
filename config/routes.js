@@ -35,6 +35,7 @@ module.exports.routes = {
     'get  /race/delete/:id': 'RaceController.delete',
     'post /race/racers/add': 'RaceController.addRacers',
     'post /race/racers/remove': 'RaceController.removeRacers',
+//    'post /race/assignPacerRfid': 'RaceController.assignPacerRfid'
 //   (More race logics)
 
 
@@ -53,11 +54,11 @@ module.exports.routes = {
     // Reset password
 
     // Registration
-    //'post /reg/create': 'Registration.create',
-    //'post /reg/replaceRfid': 'Registration.replaceRfid',
-    //'get  /reg/paid': 'Registration: paid,
-    //'get  /reg/unpaid': 'Registration: unpaid,
-    //'get  /reg/recycleRfid': 'Registration: recycleRfid,
+    'post /reg/create': 'Registration.create',
+    'post /reg/assignRfid': 'Registration.assignRfid',
+    'post /reg/replaceRfid': 'Registration.replaceRfid',
+    'post /reg/recycleRfid': 'Registration.recycleRfid',
+    'post /reg/updatePayment': 'Registration.updatePayment',
 
     // Team
     'post /team/create': 'TeamController.create',
