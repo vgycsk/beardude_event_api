@@ -47,8 +47,6 @@ module.exports.routes = {
     'post /racer/login': 'RacerController.login',
     'post /racer/logout': 'RacerController.logout',
     'get  /racer/reissuePassword/:id': 'RacerController.reissuePassword',
-    'post /racer/team/apply': 'RacerController.applyForTeam',
-    'post /racer/team/unapply': 'RacerController.unapplyForTeam',
     'post /racer/update': 'RacerController.update',
     'post /racer/updatePassword': 'RacerController.updatePassword',
     // Reset password
@@ -65,8 +63,10 @@ module.exports.routes = {
     'get  /team/getInfo': 'TeamController.getInfo',
     'post /team/delete': 'TeamController.delete',
     'post /team/update': 'TeamController.update',
-    'post /team/racer/approve': 'TeamController.approveRacer',
-    'post /team/racer/remove': 'TeamController.removeRacer',
+    'post /team/apply': 'TeamController.applyForTeam',
+    'post /team/unapply': 'TeamController.unapplyForTeam',
+    'post /team/approveRacer': 'TeamController.approveRacer',
+    'post /team/removeRacer': 'TeamController.removeRacer',
 
     // Test page
     'get  /group/update/:id': 'PageController.groupUpdatePage',

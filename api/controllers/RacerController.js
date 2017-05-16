@@ -86,49 +86,6 @@ module.exports = {
     reissuePassword: function (req, res) {
         return accountService.reissuePassword(req, res, 'Racer');
     },
-    // {team: ID}
-    applyForTeam: function (req, res) {
-        var input = req.body;
-
-        Racer.update({
-            id: req.session.racerInfo.id
-        }, {
-            teamApplication: parseInt(input.team)
-        })
-        .then(function () {
-            res.ok({
-                message: 'Team application sent',
-                team: input.team
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {team: ID}
-    unapplyForTeam: function (req, res) {
-        var input = req.body;
-
-        Racer.findOne({
-            id: req.session.racerInfo.id
-        })
-        .populate('teamApplication')
-        .then(function (modelData) {
-            var teamApplication = modelData.teamApplication;
-
-            modelData.teamApplication.remove(teamApplication);
-            modelData.save();
-        })
-        .then(function () {
-            res.ok({
-                message: 'Team application removed',
-                team: input.team
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
     update: function (req, res) {
         return accountService.update(req, res, 'Racer');
     },

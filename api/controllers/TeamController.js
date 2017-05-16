@@ -1,43 +1,8 @@
-/* global dataService, Team */
+/* global dataService, Racer, Team */
 
 'use strict';
 
 module.exports = {
-    // {team: ID, racer: ID}
-    approveRacer: function (req, res) {
-        var input = req.body;
-
-        input.racer = parseInt(input.racer);
-        Team.findOne({
-            id: parseInt(input.team)
-        })
-        .populate('racers')
-        .populate('racersApplication')
-        .then(function (modelData) {
-            var racerToAdd;
-
-            modelData.racersApplication.forEach(function (racer) {
-                if (racer === input.racer) {
-                    racerToAdd = input.racer;
-                }
-            });
-            if (!racerToAdd) {
-                throw new Error('Racer application not found');
-            }
-            modelData.racers.add(input.racer);
-            modelData.racersApplication.remove(input.racer);
-            return modelData.save();
-        })
-        .then(function () {
-            return res.ok({
-                message: 'Racer added to your team',
-                racer: input.racer
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
     // {name: STR, desc: STR, url: STR}
     create: function (req, res) {
         var input = req.body;
@@ -114,6 +79,84 @@ module.exports = {
             return res.ok({
                 message: 'Team updated',
                 event: teamData[0]
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {team: ID}
+    applyForTeam: function (req, res) {
+        var input = req.body;
+
+        Racer.update({
+            id: req.session.racerInfo.id
+        }, {
+            teamApplication: parseInt(input.team)
+        })
+        .then(function () {
+            res.ok({
+                message: 'Team application sent',
+                team: input.team
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {team: ID}
+    unapplyForTeam: function (req, res) {
+        var input = req.body;
+
+        Racer.findOne({
+            id: req.session.racerInfo.id
+        })
+        .populate('teamApplication')
+        .then(function (modelData) {
+            var teamApplication = modelData.teamApplication;
+
+            modelData.teamApplication.remove(teamApplication);
+            modelData.save();
+        })
+        .then(function () {
+            res.ok({
+                message: 'Team application removed',
+                team: input.team
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {team: ID, racer: ID}
+    approveRacer: function (req, res) {
+        var input = req.body;
+
+        input.racer = parseInt(input.racer);
+        Team.findOne({
+            id: parseInt(input.team)
+        })
+        .populate('racers')
+        .populate('racersApplication')
+        .then(function (modelData) {
+            var racerToAdd;
+
+            modelData.racersApplication.forEach(function (racer) {
+                if (racer === input.racer) {
+                    racerToAdd = input.racer;
+                }
+            });
+            if (!racerToAdd) {
+                throw new Error('Racer application not found');
+            }
+            modelData.racers.add(input.racer);
+            modelData.racersApplication.remove(input.racer);
+            return modelData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Racer added to your team',
+                racer: input.racer
             });
         })
         .catch(function (E) {
