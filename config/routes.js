@@ -48,7 +48,7 @@ module.exports.routes = {
     'post /race/create': 'RaceController.create',
     // 7.1.1, 7.1.3
     'get  /race/info/:id': 'RaceController.getGeneralInfo',
-    // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3
+    // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3, 6.3.4
     'get  /race/mgmtInfo/:id': 'ManagerController.getManagementInfo',
     // 1.2.8
     'post /race/update': 'RaceController.update',
