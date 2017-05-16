@@ -1,4 +1,4 @@
-/* global Group, Race */
+/* global dataService, Group, Race */
 
 'use strict';
 
@@ -81,34 +81,67 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {group: ID}
+    // {group: ID, name: STR, nameCht: STR}
     update: function (req, res) {
         var input = req.body;
-        var updateObj = {};
+        var fields = ['name', 'nameCht'];
         var query = {
             id: parseInt(input.group)
         };
+        var updateObj = dataService.returnUpdateObj(fields, input);
 
-        if (input.name) {
-            updateObj.name = input.name;
-        }
-        if (input.nameCht) {
-            updateObj.nameCht = input.nameCht;
-        }
+        Group.update(query, updateObj)
+        .then(function (modelData) {
+            return res.ok({
+                message: 'Group updated',
+                group: modelData[0]
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {group: ID, openRegistration: BOOL}
+    updateIsRegistrationOpen: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.group)
+        };
+        var updateObj = {
+            isRegistrationOpen: false
+        };
+
         if (input.isRegistrationOpen && input.isRegistrationOpen !== '') {
             updateObj.isRegistrationOpen = true;
-        } else {
-            updateObj.isRegistrationOpen = false;
-        }
-        if (input.isPublic && input.isPublic !== '') {
-            updateObj.isPublic = true;
-        } else {
-            updateObj.isPublic = false;
         }
         Group.update(query, updateObj)
         .then(function (modelData) {
             return res.ok({
-                message: 'Event updated',
+                message: 'Group isRegistrationOpen updated',
+                group: modelData[0]
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {group: ID, isPublic: BOOL}
+    updateIsPublic: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.group)
+        };
+        var updateObj = {
+            isPublic: false
+        };
+
+        if (input.isPublic && input.isPublic !== '') {
+            updateObj.isPublic = true;
+        }
+        Group.update(query, updateObj)
+        .then(function (modelData) {
+            return res.ok({
+                message: 'Group isPublic updated',
                 group: modelData[0]
             });
         })

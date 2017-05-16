@@ -13,6 +13,8 @@ module.exports.routes = {
     'post /group/create': 'GroupController.create',
     'get  /group/info/:id': 'GroupController.getInfo',
     'post /group/update': 'GroupController.update',
+    'post /group/regOpen': 'GroupController.updateIsRegistrationOpen',
+    'post /group/isPublic': 'GroupController.updateIsPublic',
     'post /group/delete': 'GroupController.delete',
 
 

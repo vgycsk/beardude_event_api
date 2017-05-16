@@ -22,13 +22,20 @@ var dataService = {
         var updateObj = {};
         var toUpdate;
 
-        fields.forEach(function (field) {
-            if (input[field] && (originalData[field] !== input[field])) {
-                updateObj[field] = input[field];
-                toUpdate = true;
+        if (originalData) {
+            fields.forEach(function (field) {
+                if (input[field] && (originalData[field] !== input[field])) {
+                    updateObj[field] = input[field];
+                    toUpdate = true;
+                }
+            });
+            if (toUpdate) {
+                return updateObj;
             }
-        });
-        if (toUpdate) {
+        } else {
+            fields.forEach(function (field) {
+                updateObj[field] = input[field];
+            });
             return updateObj;
         }
         return false;
