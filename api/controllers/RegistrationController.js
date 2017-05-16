@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-/* global Registration */
+/* global Race, Registration */
 
 'use strict';
 
@@ -56,51 +56,6 @@ module.exports = {
                 group: input.group,
                 racer: input.racer,
                 accessCode: modelData.accessCode
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {registration: ID}
-    confirmRegistration: function (req, res) {
-        var regId = parseInt(req.body.registration);
-        var raceNumber;
-        var eventId;
-
-        Registration.findOne({
-            id: regId
-        })
-        .populate('event')
-        .then(function (modelData) {
-            eventId = modelData.event.id;
-            raceNumber = modelData.event.assignedRaceNumber;
-            return Event.update({
-                id: eventId
-            }, {
-                assignedRaceNumber: raceNumber + 1
-            });
-        })
-        .then(function () {
-            return Registration.findOne({
-                event: eventId,
-                raceNumber: raceNumber
-            });
-        })
-        .then(function (modelData) {
-            if (modelData) {
-                throw new Error('Race number already assigned');
-            }
-            Registration.update({
-                registration: regId
-            }, {
-                raceNumber: raceNumber
-            });
-        })
-        .then(function () {
-            return res.ok({
-                message: 'Registration confirmed',
-                raceNumber: raceNumber
             });
         })
         .catch(function (E) {
@@ -315,6 +270,89 @@ module.exports = {
             return res.ok({
                 message: 'Marked as refunded',
                 registration: input.registration
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {registration: ID}
+    confirmRegistration: function (req, res) {
+        var regId = parseInt(req.body.registration);
+        var raceNumber;
+        var eventId;
+
+        Registration.findOne({
+            id: regId
+        })
+        .populate('event')
+        .then(function (modelData) {
+            eventId = modelData.event.id;
+            raceNumber = modelData.event.assignedRaceNumber;
+            return Event.update({
+                id: eventId
+            }, {
+                assignedRaceNumber: raceNumber + 1
+            });
+        })
+        .then(function () {
+            return Registration.findOne({
+                event: eventId,
+                raceNumber: raceNumber
+            });
+        })
+        .then(function (modelData) {
+            if (modelData) {
+                throw new Error('Race number already assigned');
+            }
+            Registration.update({
+                registration: regId
+            }, {
+                raceNumber: raceNumber
+            });
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Registration confirmed',
+                raceNumber: raceNumber
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, epc: STR}
+    admitRacer: function (req, res) {
+        var input = req.body;
+
+        input.race = parseInt(input.race);
+        // validate racer in selected race
+        Registration.findOne({
+            epc: input.epc
+        })
+        .populate('races')
+        .then(function (regData) {
+            var raceObj;
+
+            regData.races.forEach(function (race) {
+                if (race.id === input.race) {
+                    raceObj = race;
+                }
+            });
+            if (!raceObj) {
+                throw new Error('Racer not in this race');
+            }
+            raceObj.recordsHashTable[input.epc] = [];
+            return Race.update({
+                id: raceObj.id
+            }, {
+                recordsHashTable: raceObj.recordsHashTable
+            });
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Racer admitted',
+                epc: input.epc
             });
         })
         .catch(function (E) {

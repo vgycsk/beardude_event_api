@@ -24,6 +24,9 @@ module.exports = {
             type: 'string',
             required: true
         },
+        rules: {
+            type: 'string'
+        },
         isPublic: {
             type: 'boolean',
             required: true

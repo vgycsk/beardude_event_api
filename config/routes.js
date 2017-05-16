@@ -46,20 +46,22 @@ module.exports.routes = {
     // Race
     //1.2.5
     'post /race/create': 'RaceController.create',
-    // NA
+    // 7.1.1, 7.1.3
     'get  /race/info/:id': 'RaceController.getGeneralInfo',
-    // 6.1.2
+    // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3
     'get  /race/mgmtInfo/:id': 'ManagerController.getManagementInfo',
     // 1.2.8
     'post /race/update': 'RaceController.update',
     // 1.2.6
     'post /race/delete': 'RaceController.delete',
-    // 1.4.5
+    // 1.4.5, 6.2.4
     'post /race/racers/add': 'RaceController.addRacers',
     // 1.4.6
     'post /race/racers/remove': 'RaceController.removeRacers',
-//    'post /race/assignPacerRfid': 'RaceController.assignPacerRfid'
-//    'post /race/assignTesterRfid': 'RaceController.assignTesterRfid'
+    //6.2.6
+    'post /race/assignPacerRfid': 'RaceController.assignPacerRfid'
+    // 4.2.3
+    'post /race/assignTesterRfid': 'RaceController.assignTesterRfid'
 //   (More race logics)
 
 
@@ -92,7 +94,10 @@ module.exports.routes = {
     'post /reg/requestRefund': 'Registration.requestRefund',
     // 1.4.4
     'post /reg/refunded': 'Registration.refunded',
-    'post /reg/confirm': 'Registration.confirmRegistration'
+    // 2.2.4
+    'post /reg/confirm': 'Registration.confirmRegistration',
+    // 6.2.3, 6.2.4
+    'post /reg/admitRacer': 'Registration.admitRacer',
 
     // Team
     // 2.3.3

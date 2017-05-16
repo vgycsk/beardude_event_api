@@ -216,5 +216,64 @@ module.exports = {
         .catch(function (E) {
             return res.badRequest(E);
         });
+    },
+    // {race: ID, epc: STR}
+    assignPacerRfid: function (req, res) {
+        var input = req.body;
+
+        input.race = parseInt(input.race);
+        Race.update({
+            id: input.id
+        }, {
+            pacerEpc: input.epc
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Pacer registered',
+                race: input.race,
+                epc: input.epc
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, epc: STR}
+    assignTesterRfid: function (req, res) {
+        var input = req.body;
+
+        input.race = parseInt(input.race);
+        Race.findOne({
+            id: input.id
+        })
+        .then(function (modelData) {
+            var testerEpc = modelData.testerEpc;
+            var rfidExist = _.includes(testerEpc, input.epc);
+
+            if (rfidExist) {
+                return false;
+            }
+            testerEpc.push(input.epc);
+            return Race.update({
+                id: input.id
+            }, {
+                testerEpc: testerEpc
+            });
+        })
+        .then(function (modelData) {
+            var message = 'Tester registered';
+
+            if (!modelData) {
+                message = 'Tester RFID already assigned';
+            }
+            return res.ok({
+                message: message,
+                race: input.race,
+                epc: input.epc
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     }
 };

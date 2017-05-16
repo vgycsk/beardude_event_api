@@ -142,7 +142,7 @@ module.exports = {
     // {group: ID, name: STR, nameCht: STR}
     update: function (req, res) {
         var input = req.body;
-        var fields = ['name', 'nameCht'];
+        var fields = ['name', 'nameCht', 'rules'];
         var query = {
             id: parseInt(input.group)
         };
