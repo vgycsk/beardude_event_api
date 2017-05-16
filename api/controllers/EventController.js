@@ -35,13 +35,14 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    getInfo: function (req, res) {
+    getGeneralInfo: function (req, res) {
         Event.findOne({
             id: parseInt(req.params.id)
         })
         .populate('managers')
-        .then(function (eventData) {
-            return res.ok(eventData);
+        .populate('groups')
+        .then(function (modelData) {
+            return res.ok(modelData);
         })
         .catch(function (E) {
             return res.badRequest(E);

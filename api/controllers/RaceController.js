@@ -3,6 +3,7 @@
 'use strict';
 
 module.exports = {
+    // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, advancingRule: JSON, isCheckinOpen: BOOL, requirePacer: BOOL}
     create: function (req, res) {
         var input = req.body;
         var createObj = {
@@ -78,6 +79,7 @@ module.exports = {
                 requirePacer: modelData.requirePacer,
                 startTime: modelData.startTime,
                 endTime: modelData.endTime,
+                recordsHashTable: modelData.recordsHashTable,
                 result: modelData.result
             };
 
@@ -101,7 +103,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {race: ID, ...}
+    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, advancingRule: JSON, isCheckinOpen: BOOL, requirePacer: BOOL}
     update: function (req, res) {
         var input = req.body;
         var fields = ['name', 'laps', 'racerNumberAllowed', 'advancingRule', 'isCheckinOpen', 'requirePacer'];

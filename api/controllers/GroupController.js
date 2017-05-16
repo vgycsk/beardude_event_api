@@ -1,4 +1,4 @@
-/* global dataService, Group, Race */
+/* global dataService, Group, Race, Registration, Team */
 
 'use strict';
 
@@ -28,12 +28,27 @@ module.exports = {
         });
     },
     getInfo: function (req, res) {
+        var result;
+        var groupId = parseInt(req.params.id);
+
         Group.findOne({
-            id: parseInt(req.params.id)
+            id: groupId
         })
-        .populate('managers')
-        .then(function (eventData) {
-            return res.ok(eventData);
+        .populate('races')
+        .then(function (modelData) {
+            result = modelData;
+            return Team.find({});
+        })
+        .then(function (modelData) {
+            result.team = modelData;
+            return Registration.find({
+                group: groupId
+            })
+            .populate('racer');
+        })
+        .then(function (modelData) {
+            result.registrations = modelData;
+            return res.ok(result);
         })
         .catch(function (E) {
             return res.badRequest(E);
