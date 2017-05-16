@@ -19,7 +19,7 @@ Scenarios:
 1.2.6  |       |         |              | 刪除組別比賽   | /race/delete/:id |
 1.2.7  |       |         |              | 修改活動內容   | /event/update  |
 1.2.8  |       |         |              | 修改比賽內容   | /race/update  |
-1.2.9  |       |         |              | 設定比賽賽制   |               |
+1.2.9  |       |         |              | 設定比賽賽制   | /race/updateAdvancingRules |
 1.2.10  |       |         |              | 公開活動      | /event/updateIsPublic |
 1.2.11  |       |         |              | 公開組別      | /group/isPublic  |
 1.3    |       |         | 新增其他管理者 |               | /event/managers/add |

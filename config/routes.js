@@ -62,7 +62,7 @@ module.exports.routes = {
     'post /race/assignPacerRfid': 'RaceController.assignPacerRfid',
     // 4.2.3
     'post /race/assignTesterRfid': 'RaceController.assignTesterRfid',
-
+    // 1.2.9
     'post /race/updateAdvancingRules': 'RaceController.updateAdvancingRules',
 //   (More race logics)
 
