@@ -57,11 +57,13 @@ module.exports = {
             type: 'array'
         },
         // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
+        // 輸入的資料必須validate過, 可以直接用來計算結果 (1. 時間間隔合理 2. 沒有被套圈)
+        // 被套圈的寫: 'dnf'
         recordsHashTable: {
             type: 'json',
             defaultsTo: {}
         },
-        // [{racer: 1, time: hh:mm:ss}, {}, {}]
+        // [{registration: 1, time: hh:mm:ss}, {}, {}]
         result: {
             type: 'array'
         },
