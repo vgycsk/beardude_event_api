@@ -1,5 +1,6 @@
 'use strict';
 
+// 比賽隊伍
 module.exports = {
     attributes: {
         racers: {

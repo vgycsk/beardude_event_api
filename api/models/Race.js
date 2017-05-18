@@ -1,6 +1,6 @@
 'use strict';
 
-// Race within a group
+// 分組裡面的個別賽事
 module.exports = {
     attributes: {
         registrations: {
@@ -25,6 +25,7 @@ module.exports = {
             required: true
         },
         // 晉級規則, 空的代表是決賽, 比完直接將結果張貼至 Group model的 result
+        // [{ rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 }]
         advancingRules: {
             type: 'array',
             required: true

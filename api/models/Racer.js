@@ -2,6 +2,7 @@
 
 var bcrypt = require('bcrypt-nodejs');
 
+// 選手資料
 module.exports = {
     attributes: {
         registrations: {

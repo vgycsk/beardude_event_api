@@ -2,6 +2,8 @@
 
 var bcrypt = require('bcrypt-nodejs');
 
+// 活動管理人員, 例如裁判, admin, etc.
+// TO DO: 分權限
 module.exports = {
     attributes: {
         events: {
