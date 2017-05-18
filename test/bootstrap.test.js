@@ -1,3 +1,4 @@
+/* eslint-disable no-invalid-this */
 /* global before, after */
 
 'use strict';
@@ -12,9 +13,10 @@ before(function(done) {
             grunt: false
         }
     };
+    var time10s = 10000;
 
     // Increase the Mocha timeout so that Sails has enough time to lift.
-//    this.timeout(time30s);
+    this.timeout(time10s);
     sails.lift(sailsConfig, function (err) {
         if (err) {
             return done(err);
