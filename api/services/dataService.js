@@ -90,6 +90,72 @@ var dataService = {
             }
             return true;
         }
+    },
+    returnUpdatedRaceNotes: function (raceId, raceNote, existingRaceNotes) {
+        var raceNotes = existingRaceNotes;
+        var dataExist;
+        var i;
+
+        for (i = 0; i < existingRaceNotes.length; i += 1) {
+            if (raceNotes[i].race === raceId) {
+                raceNotes[i].note = raceNote;
+                dataExist = true;
+                break;
+            }
+        }
+        if (!dataExist) {
+            raceNotes.push({
+                race: raceId,
+                note: raceNote
+            });
+        }
+        return raceNotes;
+    },
+    returnParsedRaceResult: function (recordsHashTable, laps, registrations) {
+        var recordCount = laps + 1;
+        var result = {
+            dnfRacers: [],
+            disqualifiedRacers: [],
+            finishedRacers: [],
+            finishedRacersWithoutTime: []
+        };
+        var racerData;
+        var lastRecordIndex;
+        var lastRecord;
+        var i;
+        var isRacerDisqualified = function (epc, registrations) {
+            var result;
+
+            registrations.forEach(function (reg) {
+                if (epc === reg.epc && reg.isDisqualified) {
+                    result = true;
+                }
+            });
+            return result;
+        };
+
+        for (i in recordsHashTable) {
+            if (recordsHashTable.hasOwnProperty(i)) {
+                racerData = recordsHashTable[i];
+                lastRecordIndex = racerData.length - 1;
+                lastRecord = racerData[lastRecordIndex];
+                // 1. 檢查選手有沒有失格 (disqualifiedRacers)
+                // 2. 檢查資料長度, 最後一筆資料如果是 'dnf' 代表被套圈的選手 (dnfRacers)
+                // 3. 承上, 裁判沒說除名的則是完賽但沒資料的選手 finishedRacersWithoutTime
+                // 4. 其他資料正常者則為完賽選手 finishedRacers
+                if (isRacerDisqualified(i, registrations)) {
+                    return result.disqualifiedRacers.push(racerData);
+                }
+                if (recordsHashTable[i].length <= recordCount) {
+                    if (lastRecord === 'dnf') {
+                        return result.dnfRacers.push(recordsHashTable[i]);
+                    }
+                    return result.finishedRacersWithoutTime.push(recordsHashTable[i]);
+                }
+                return result.finishedRacers.push(recordsHashTable[i]);
+            }
+        }
+        return result;
     }
 };
 

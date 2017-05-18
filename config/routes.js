@@ -64,6 +64,10 @@ module.exports.routes = {
     'post /race/assignTesterRfid': 'RaceController.assignTesterRfid',
     // 1.2.9
     'post /race/updateAdvancingRules': 'RaceController.updateAdvancingRules',
+    // 6.3.7
+    'post /race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
+    // 6.3.10
+    'post /race/submitRaceResult': 'RaceController.submitRaceResult',
 //   (More race logics)
 
 
@@ -100,6 +104,10 @@ module.exports.routes = {
     'post /reg/confirm': 'Registration.confirmRegistration',
     // 6.2.3, 6.2.4
     'post /reg/admitRacer': 'Registration.admitRacer',
+    // 6.3.9
+    'post /reg/updateRaceNote': 'Registration.updateRaceNote',
+    // 6.3.6
+    'post /reg/updateDisqualification': 'Registration.updateDisqualification',
 
     // Team
     // 2.3.3

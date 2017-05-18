@@ -79,9 +79,11 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 6.3.3 |        |         |             |  確認套圈選手離場     | (同上)    |
 6.3.4 |        |         |             |  完成比賽成績確認     | (同上)    |
 6.3.5 |        |         |             |  中斷比賽           |          |
-6.3.6 |        |         |             |  取消選手成績        |         |
-6.3.7 |        |         |             |  檢視晉級名單        |         |
+6.3.6 |        |         |             |  取消選手資格        | /reg/updateDisqualification |
+6.3.7 |        |         |             |  計算晉級名單        | /race/getParsedRaceResult |
 6.3.8 |        |         |             |  關閉RFID Reader    |         |
+6.3.9 |        |         |             |  新增選手比賽筆記     | /registration/updateRaceNote  |
+6.3.10 |        |         |             |  送出比賽結果        | /race/submitRaceResult |
 7.1.1  |        | 選手    | 檢視賽程       | 顯示目前成績與資格 | /race/info/:id  |
 7.1.2  |        |        |             | 顯示下一場上場時間  |              |
 7.1.3  |        |        |             | 顯示成績          |  /race/info/:id   |

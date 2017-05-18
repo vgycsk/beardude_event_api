@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-/* global Race, Registration */
+/* global dataService, Race, Registration */
 
 'use strict';
 
@@ -353,6 +353,73 @@ module.exports = {
             return res.ok({
                 message: 'Racer admitted',
                 epc: input.epc
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, registration: ID, note: STR, isDisqualified: BOOL}
+    updateDisqualification: function (req, res) {
+        var input = req.body;
+
+        input.race = parseInt(input.race);
+        input.registration = parseInt(input.registration);
+        if (input.isDisqualified && input.isDisqualified !== '') {
+            input.isDisqualified = true;
+        } else {
+            input.isDisqualified = false;
+        }
+        Registration.findOne({
+            id: input.registration
+        })
+        .then(function (regData) {
+            var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes);
+
+            return Registration.update({
+                id: input.registration
+            }, {
+                isDisqualified: input.isDisqualified,
+                raceNotes: raceNotes
+            });
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Racer disqualification updated',
+                race: input.race,
+                isDisqualified: input.isDisqualified,
+                registration: input.registration,
+                note: input.note
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, registration: ID, note: STR}
+    updateRaceNote: function (req, res) {
+        var input = req.body;
+
+        input.race = parseInt(input.race);
+        input.registration = parseInt(input.registration);
+        Registration.findOne({
+            id: input.registration
+        })
+        .then(function (regData) {
+            var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes);
+
+            return Registration.update({
+                id: input.registration
+            }, {
+                raceNotes: raceNotes
+            });
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Race note added',
+                race: input.race,
+                registration: input.registration,
+                note: input.note
             });
         })
         .catch(function (E) {

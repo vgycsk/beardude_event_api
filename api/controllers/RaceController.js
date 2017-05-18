@@ -2,7 +2,8 @@
 
 'use strict';
 
-module.exports = {
+var Q = require('q');
+var RaceController = {
     // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
     create: function (req, res) {
         var input = req.body;
@@ -357,5 +358,126 @@ module.exports = {
         .catch(function (E) {
             return res.badRequest(E);
         });
+    },
+    getParsedRaceResult: function (req, res) {
+        var input = req.params.id;
+
+        input.race = parseInt(input.race);
+        Race.findOne({
+            id: input.race
+        })
+        .populate('registrations')
+        .then(function (raceData) {
+            if (raceData.endTime && raceData.endTime !== '') {
+                return Race.findOne({
+                    id: input.race
+                })
+                .populate('registrations');
+            }
+            throw new Error('Race not finished');
+        })
+        .then(function (raceData) {
+            var result = dataService.returnParsedRaceResult(raceData.recordsHashTable, raceData.laps, raceData.registrations);
+
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    advancingRacerToRace: function (advancingRule, ranking) {
+        var q = Q.defer();
+
+        Race.findOne({
+            id: advancingRule.toRace
+        })
+        .populate('registrations')
+        .then(function (raceData) {
+            var i;
+            var regId;
+
+            for (i = advancingRule.rankFrom; i <= advancingRule.rankTo; i += 1) {
+                regId = ranking[i].registration;
+                raceData.registrations.add(regId);
+            }
+            return raceData.save();
+        })
+        .then(function () {
+            return q.resolve({
+                message: 'Racers allocated to coming races',
+                race: advancingRule.toRace,
+                rankFrom: advancingRule.rankFrom,
+                rankTo: advancingRule.rankTo
+            });
+        })
+        .catch(function (E) {
+            return q.reject(E);
+        });
+        return q.promise;
+    },
+    /* {race: ID,
+        ranking: [{registration: ID, time: INT/'dnf'}],
+        disqualified: [{registration: ID, time: INT/dnf}]}
+    */
+    submitRaceResult: function (req, res) {
+        var input = req.body;
+        var advancingRules;
+        var completeRanking;
+        var groupId;
+
+        input.race = parseInt(input.race);
+        Race.findOne({
+            id: input.race
+        })
+        .then(function (raceData) {
+            var funcs = [];
+
+            advancingRules = raceData.advancingRules;
+            groupId = raceData.group;
+            if (advancingRules.length === 0) {
+                return false;
+            }
+            advancingRules.forEach(function (rule) {
+                funcs.push(function () {
+                    return RaceController.advancingRacerToRace(rule, input.ranking);
+                });
+            });
+            return Q.all(funcs);
+        })
+        .then(function () {
+            completeRanking = input.ranking.concat(input.disqualified);
+
+            return Race.update({
+                id: input.race
+            }, {
+                result: completeRanking
+            });
+        })
+        .then(function () {
+            if (advancingRules.length === 0) {
+                return Group.update({
+                    id: groupId
+                }, {
+                    result: completeRanking
+                });
+            }
+            return false;
+        })
+        .then(function (groupData) {
+            var result = {
+                message: 'Result submitted',
+                race: input.race
+            };
+
+            if (groupData) {
+                result.group = groupData[0].id;
+            }
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     }
 };
+
+module.exports = RaceController;

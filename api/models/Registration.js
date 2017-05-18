@@ -1,5 +1,6 @@
 'use strict';
 
+// 註冊比賽的選手賽籍
 module.exports = {
     attributes: {
         races: {
@@ -46,6 +47,14 @@ module.exports = {
         refunded: {
             type: 'boolean',
             defaultsTo: false
+        },
+        isDisqualified: {
+            type: 'boolean',
+            defaultsTo: false
+        },
+        // {race: ID, note: STR}
+        raceNotes: {
+            type: 'json'
         },
         toPublic: function () {
             var obj = this.toObject();
