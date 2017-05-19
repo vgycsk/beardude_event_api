@@ -120,16 +120,12 @@ var dataService = {
         return raceNotes;
     },
     returnParsedRaceResult: function (recordsHashTable, laps, registrations) {
-        var recordCount = laps + 1;
         var result = {
-            dnfRacers: [],
-            disqualifiedRacers: [],
-            finishedRacers: [],
-            finishedRacersWithoutTime: []
+            dnf: [],
+            disqualified: [],
+            finished: [],
+            finishedWithoutTime: []
         };
-        var racerData;
-        var lastRecordIndex;
-        var lastRecord;
         var i;
         var isRacerDisqualified = function (epc, registrations) {
             var result;
@@ -144,23 +140,31 @@ var dataService = {
 
         for (i in recordsHashTable) {
             if (recordsHashTable.hasOwnProperty(i)) {
-                racerData = recordsHashTable[i];
-                lastRecordIndex = racerData.length - 1;
-                lastRecord = racerData[lastRecordIndex];
                 // 1. 檢查選手有沒有失格 (disqualifiedRacers)
                 // 2. 檢查資料長度, 最後一筆資料如果是 'dnf' 代表被套圈的選手 (dnfRacers)
                 // 3. 承上, 裁判沒說除名的則是完賽但沒資料的選手 finishedRacersWithoutTime
                 // 4. 其他資料正常者則為完賽選手 finishedRacers
                 if (isRacerDisqualified(i, registrations)) {
-                    return result.disqualifiedRacers.push(racerData);
+                    result.disqualified.push({
+                        epc: i,
+                        data: recordsHashTable[i]
+                    });
+                } else if (recordsHashTable[i][recordsHashTable[i].length - 1] === 'dnf') {
+                    result.dnf.push({
+                        epc: i,
+                        data: recordsHashTable[i]
+                    });
+                } else if (recordsHashTable[i].length <= laps) {
+                    result.finishedWithoutTime.push({
+                        epc: i,
+                        data: recordsHashTable[i]
+                    });
+                } else {
+                    result.finished.push({
+                        epc: i,
+                        data: recordsHashTable[i]
+                    });
                 }
-                if (recordsHashTable[i].length <= recordCount) {
-                    if (lastRecord === 'dnf') {
-                        return result.dnfRacers.push(recordsHashTable[i]);
-                    }
-                    return result.finishedRacersWithoutTime.push(recordsHashTable[i]);
-                }
-                return result.finishedRacers.push(recordsHashTable[i]);
             }
         }
         return result;

@@ -1,0 +1,17 @@
+[
+    {
+        "id": 2,
+        "isDisqualified": false,
+        "epc": "e2801160600002066604d481"
+    },
+    {
+        "id": 3,
+        "isDisqualified": false,
+        "epc": "e2801160600002066604d480"
+    },
+    {
+        "id": 4,
+        "isDisqualified": true,
+        "epc": "e2801160600002066604d485"
+    }
+]

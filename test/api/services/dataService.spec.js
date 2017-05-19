@@ -196,14 +196,129 @@ describe('services/dataService', function() {
         });
 
     });
-    /*
+
     describe('.returnUpdatedRaceNotes()', function () {
-        it('should ', function (done) {
+        it('should append new race note to existing raceNotes array', function (done) {
+            var raceId = 7;
+            var raceNote = '摔車';
+            var existingRaceNotes = [
+                {
+                    race: 2,
+                    note: '疑似晶片脫落'
+                }
+            ];
+            var actual = dataService.returnUpdatedRaceNotes(raceId, raceNote, existingRaceNotes);
+            var expected = [
+                {
+                    race: 2,
+                    note: '疑似晶片脫落'
+                },
+                {
+                    race: 7,
+                    note: '摔車'
+                }
+            ];
+
+            assert.deepEqual(actual, expected);
+            done();
+        });
+
+        it('should replace existing race note', function (done) {
+            var raceId = 2;
+            var raceNote = '疑似摔車造成晶片脫落';
+            var existingRaceNotes = [
+                {
+                    race: 2,
+                    note: '疑似晶片脫落'
+                }
+            ];
+            var actual = dataService.returnUpdatedRaceNotes(raceId, raceNote, existingRaceNotes);
+            var expected = [
+                {
+                    race: 2,
+                    note: '疑似摔車造成晶片脫落'
+                }
+            ];
+
+            assert.deepEqual(actual, expected);
+            done();
         });
     });
+
     describe('.returnParsedRaceResult()', function () {
+        var recordsHashTable1 = require('../../mockdata/recordsHashTable1.json');
+        var registrations1 = require('../../mockdata/registrations1.json');
+
         it('should ', function (done) {
+            var actual = dataService.returnParsedRaceResult(recordsHashTable1, 9, registrations1);
+            var expected = {
+                disqualified: [
+                    {
+                        epc: 'e2801160600002066604d485',
+                        data: [
+                            '1494477554987403',
+                            '1494477754957403',
+                            '1494477951977403',
+                            '1494478154977405',
+                            '1494478353977403',
+                            '1494478551977403',
+                            '1494478752977403'
+                        ]
+                    }
+                ],
+                dnf: [{
+                    epc: 'e2801160600002066604d487',
+                    data: [
+                        '1494477554987403',
+                        '1494477754957403',
+                        '1494477951977403',
+                        'dnf'
+                    ]
+                }],
+                finished: [
+                    {
+                        epc: 'e2801160600002066604d481',
+                        data: [
+                            '1494477554977403',
+                            '1494477754977403',
+                            '1494477954977403',
+                            '1494478154977403',
+                            '1494478354977403',
+                            '1494478554977403',
+                            '1494478754977403',
+                            '1494478954977403',
+                            '1494479154977403',
+                            '1494479344977403'
+                        ]
+                    },
+                    {
+                        epc: 'e2801160600002066604d480',
+                        data: [
+                            '1494477554987403',
+                            '1494477754957403',
+                            '1494477951977403',
+                            '1494478154977405',
+                            '1494478353977403',
+                            '1494478551977403',
+                            '1494478752977403',
+                            '1494478934977403',
+                            '1494479114977403',
+                            '1494479324977403'
+                        ]
+                    }
+                ],
+                finishedWithoutTime: [{
+                    epc: 'e2801160600002066604d489',
+                    data: [
+                        '1494477554987403',
+                        '1494477754957403',
+                        '1494477951977403'
+                    ]
+                }]
+            };
+
+            assert.deepEqual(actual, expected);
+            done();
         });
     });
-    */
 });
