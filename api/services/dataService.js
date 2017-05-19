@@ -24,7 +24,7 @@ var dataService = {
 
         if (originalData) {
             fields.forEach(function (field) {
-                if (input[field] && (originalData[field] !== input[field])) {
+                if (typeof input[field] !== 'undefined' && (originalData[field] !== input[field])) {
                     updateObj[field] = input[field];
                     toUpdate = true;
                 }
@@ -34,7 +34,9 @@ var dataService = {
             }
         } else {
             fields.forEach(function (field) {
-                updateObj[field] = input[field];
+                if (typeof input[field] !== 'undefined') {
+                    updateObj[field] = input[field];
+                }
             });
             return updateObj;
         }
@@ -73,7 +75,7 @@ var dataService = {
             return true;
         },
         maxRanking: function (rules, racerNumberAllowed) {
-            if (rules[rules.length - 1].rankTo > racerNumberAllowed) {
+            if (rules[rules.length - 1].rankTo >= racerNumberAllowed) {
                 return false;
             }
             return true;
@@ -81,12 +83,18 @@ var dataService = {
         noOverlap: function (rules) {
             var lastPos;
             var i;
+            var raceId = rules[0].toRace;
 
             for (i = 0; i < rules.length; i += 1) {
-                lastPos = rules[i].insertAt + (rules[i].rankTo - rules[i].rankFrom);
-                if (rules[i + 1].insertAt <= lastPos) {
+                if (raceId !== rules[i].toRace) {
                     return false;
                 }
+                if (lastPos) {
+                    if (rules[i].insertAt <= lastPos) {
+                        return false;
+                    }
+                }
+                lastPos = rules[i].insertAt + (rules[i].rankTo - rules[i].rankFrom);
             }
             return true;
         }

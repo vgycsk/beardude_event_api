@@ -33,6 +33,22 @@ describe('services/dataService', function() {
                 });
             });
         });
+        it('should return false if passwords do not match', function (done) {
+            var password = '123abcde';
+            var enteredPassword = '123Abcde';
+
+            return bcrypt.hash(password, null, null, function (err, hash) {
+                if (err) {
+                    assert.equal(true, false);
+                    return done();
+                }
+                return dataService.authenticate(enteredPassword, hash)
+                .then(function (result) {
+                    assert.equal(result, false);
+                    return done();
+                });
+            });
+        });
     });
     describe('.returnUpdateObj()', function () {
         it('should return an object for model update', function (done) {
@@ -61,6 +77,20 @@ describe('services/dataService', function() {
             assert.deepEqual(actual, expected);
             done();
         });
+        it('should return an object for model update without originalData', function (done) {
+            var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isPublic'];
+            var input = {
+                name: 'newName',
+                nameCht: '不變',
+                lapDistance: 10,
+                location: 'new location',
+                isPublic: false
+            };
+            var actual = dataService.returnUpdateObj(fields, input);
+
+            assert.deepEqual(actual, input);
+            done();
+        });
     });
     describe('.sluggify()', function () {
         it('should return sluggified string', function () {
@@ -83,43 +113,96 @@ describe('services/dataService', function() {
         });
     });
     describe('.validateAdvRules', function () {
-        var rule1 = require('../../mockdata/advancingRules-good1.json');
-        var rule2 = require('../../mockdata/advancingRules-bad1.json');
+        var good1 = require('../../mockdata/advancingRules-good1.json');
+        var good2 = require('../../mockdata/advancingRules-good2.json');
+        var bad1 = require('../../mockdata/advancingRules-bad1.json');
+        var bad2 = require('../../mockdata/advancingRules-bad2.json');
+        var bad3 = require('../../mockdata/advancingRules-bad3.json');
+        var bad4 = require('../../mockdata/advancingRules-bad4.json');
+        var bad5 = require('../../mockdata/advancingRules-bad5.json');
 
         describe('.continuity()', function () {
             it('should return true when rules are valid', function (done) {
-                var actual = dataService.validateAdvRules.continuity(rule1);
+                var actual = dataService.validateAdvRules.continuity(good1);
+
                 assert.equal(actual, true);
                 done();
             });
             it('should return false when rankings are not consecutive', function (done) {
-                var actual = dataService.validateAdvRules.continuity(rule2);
+                var actual = dataService.validateAdvRules.continuity(bad1);
+
+                assert.equal(actual, false);
+                done();
+            });
+            it('should return false when rankings are not consecutive', function (done) {
+                var actual = dataService.validateAdvRules.continuity(bad2);
+
                 assert.equal(actual, false);
                 done();
             });
         });
-        /*
+
         describe('.startFromZero()', function () {
-            it('should ', function () {
+            it('should return true when ranking start from 0', function (done) {
+                var actual = dataService.validateAdvRules.startFromZero(good1);
+
+                assert.equal(actual, true);
+                done();
+            });
+            it('should return false when ranking not start from 0', function (done) {
+                var actual = dataService.validateAdvRules.startFromZero(bad3);
+
+                assert.equal(actual, false);
+                done();
             });
         });
+
         describe('.maxRanking()', function () {
-            it('should ', function () {
+            it('should return true when rankings in advancing rules not exceed total racer number', function (done) {
+                var totalRacerNumber = 60;
+                var actual = dataService.validateAdvRules.maxRanking(good1, totalRacerNumber);
+
+                assert.equal(actual, true);
+                done();
+            });
+            it('should return false when rankings in advancing rules exceed total racer number', function (done) {
+                var totalRacerNumber = 60;
+                var actual = dataService.validateAdvRules.maxRanking(bad4, totalRacerNumber);
+
+                assert.equal(actual, false);
+                done();
             });
         });
+
         describe('.noOverlap()', function () {
-            it('should ', function () {
+            it('should return true when rankings do not overlap', function (done) {
+                var actual = dataService.validateAdvRules.noOverlap(good2);
+
+                assert.equal(actual, true);
+                done();
+            });
+            it('should return false when toRace not the same', function (done) {
+                var actual = dataService.validateAdvRules.noOverlap(bad4);
+
+                assert.equal(actual, false);
+                done();
+            });
+            it('should return false when rankings overlap', function (done) {
+                var actual = dataService.validateAdvRules.noOverlap(bad5);
+
+                assert.equal(actual, false);
+                done();
             });
         });
-        */
+
     });
     /*
     describe('.returnUpdatedRaceNotes()', function () {
-        it('should ', function () {
+        it('should ', function (done) {
         });
     });
     describe('.returnParsedRaceResult()', function () {
-        it('should ', function () {
+        it('should ', function (done) {
         });
     });
     */

@@ -1,0 +1,20 @@
+[
+    {
+        "rankFrom": 0,
+        "rankTo": 9,
+        "toRace": 2,
+        "insertAt": 0
+    },
+    {
+        "rankFrom": 10,
+        "rankTo": 14,
+        "toRace": 2,
+        "insertAt": 10
+    },
+    {
+        "rankFrom": 15,
+        "rankTo": 50,
+        "toRace": 2,
+        "insertAt": 15
+    }
+]
