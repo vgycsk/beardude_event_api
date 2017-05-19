@@ -86,6 +86,27 @@ describe('services/dataService', function() {
                 location: 'new location',
                 isPublic: false
             };
+            var originalData = {
+                name: 'newName',
+                nameCht: '不變',
+                lapDistance: 10,
+                location: 'new location',
+                isPublic: false
+            };
+            var actual = dataService.returnUpdateObj(fields, input, originalData);
+
+            assert.deepEqual(actual, false);
+            done();
+        });
+        it('should return false if nothing to update', function (done) {
+            var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isPublic'];
+            var input = {
+                name: 'newName',
+                nameCht: '不變',
+                lapDistance: 10,
+                location: 'new location',
+                isPublic: false
+            };
             var actual = dataService.returnUpdateObj(fields, input);
 
             assert.deepEqual(actual, input);
@@ -105,6 +126,14 @@ describe('services/dataService', function() {
             it('should remove space in name', function (done) {
                 var input = 'my name';
                 var expected = 'myname';
+                var actual = dataService.sluggify(input);
+
+                assert.equal(actual, expected);
+                done();
+            });
+            it('should keep hyphen and convert to lowercase', function (done) {
+                var input = 'my-Name';
+                var expected = 'my-name';
                 var actual = dataService.sluggify(input);
 
                 assert.equal(actual, expected);
