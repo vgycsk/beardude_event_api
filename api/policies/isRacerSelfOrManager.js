@@ -10,10 +10,10 @@ module.exports = function (req, res, callback) {
             email: req.session.managerInfo.email
         })
         .then(function (managerData) {
-            if (typeof managerData !== 'undefined') {
+            if (typeof managerData !== 'undefined' && managerData.isActive) {
                 return callback();
             }
-            return res.forbidden('Login required');
+            return res.forbidden('Unauthorized');
         });
     }
     return res.forbidden('Login required');
