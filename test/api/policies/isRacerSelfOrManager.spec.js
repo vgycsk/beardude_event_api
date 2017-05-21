@@ -76,8 +76,11 @@ describe('policies/isRacerSelfOrManager', function() {
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isRacerSelfOrManager(req, res, callbackFunc);
-        assert.equal(actual, expected);
-        done();
+        setTimeout(function () {
+            assert.equal(actual, expected);
+            Manager.findOne.restore();
+            done();
+        }, 100);
     });
 
 
@@ -94,12 +97,12 @@ describe('policies/isRacerSelfOrManager', function() {
                 }
             }
         };
+        var actual;
         var res = {
             forbidden: function (str) {
-                return str;
+                actual = str;
             }
         };
-        var actual;
         var callbackFunc = function () {
             actual = 'verified';
         };
@@ -112,8 +115,11 @@ describe('policies/isRacerSelfOrManager', function() {
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isRacerSelfOrManager(req, res, callbackFunc);
-        assert.equal(actual, expected);
-        done();
+        setTimeout(function () {
+            assert.equal(actual, expected);
+            Manager.findOne.restore();
+            done();
+        }, 100);
     });
 
     it('should return false if the user is not the racer', function (done) {
