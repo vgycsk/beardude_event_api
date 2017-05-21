@@ -104,6 +104,6 @@ describe('policies/isActiveRacer', function() {
             assert.equal(actual, expected);
             Racer.findOne.restore();
             done();
-        }, 100);
+        }, 10);
     });
 });

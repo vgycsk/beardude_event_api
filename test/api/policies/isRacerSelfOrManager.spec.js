@@ -80,7 +80,7 @@ describe('policies/isRacerSelfOrManager', function() {
             assert.equal(actual, expected);
             Manager.findOne.restore();
             done();
-        }, 100);
+        }, 10);
     });
 
 
@@ -119,7 +119,7 @@ describe('policies/isRacerSelfOrManager', function() {
             assert.equal(actual, expected);
             Manager.findOne.restore();
             done();
-        }, 100);
+        }, 10);
     });
 
     it('should return false if the user is not the racer', function (done) {

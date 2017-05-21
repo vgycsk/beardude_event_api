@@ -104,6 +104,6 @@ describe('policies/isActiveManager', function() {
             assert.equal(actual, expected);
             Manager.findOne.restore();
             done();
-        }, 100);
+        }, 10);
     });
 });
