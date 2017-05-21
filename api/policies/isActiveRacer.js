@@ -3,7 +3,7 @@
 'use strict';
 
 module.exports = function (req, res, callback) {
-    if (req.session.racerInfo && req.session.RacerInfo.email) {
+    if (req.session.racerInfo && req.session.racerInfo.email) {
         return Racer.findOne({
             email: req.session.racerInfo.email
         })
