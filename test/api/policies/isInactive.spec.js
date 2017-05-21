@@ -16,6 +16,27 @@ describe('policies/isInactive', function() {
         sandbox.restore();
     });
 
+    it('should return true if the manager is not active', function (done) {
+        var req = {
+            session: {
+                managerInfo: {
+                    email: 'info@beardude.com',
+                    isActive: false
+                }
+            }
+        };
+        var res = {};
+        var expected = 'verified';
+        var actual;
+        var callbackFunc = function () {
+            actual = 'verified';
+        };
+
+        isInactive(req, res, callbackFunc);
+        assert.equal(actual, expected);
+        done();
+    });
+
     it('should return true if the user is not active', function (done) {
         var req = {
             session: {
@@ -81,6 +102,26 @@ describe('policies/isInactive', function() {
             }
         };
         var expected = 'Already activated';
+
+        isInactive(req, res, callbackFunc);
+        assert.equal(actual, expected);
+        done();
+    });
+
+    it('should return true if not logged in', function (done) {
+        var req = {
+            session: {}
+        };
+        var actual;
+        var callbackFunc = function () {
+            actual = 'verified';
+        };
+        var res = {
+            forbidden: function (str) {
+                actual = str;
+            }
+        };
+        var expected = 'verified';
 
         isInactive(req, res, callbackFunc);
         assert.equal(actual, expected);
