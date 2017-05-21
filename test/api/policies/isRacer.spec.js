@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-/* global afterEach, beforeEach, describe, it, Racer */
+/* global afterEach, beforeEach, describe, it */
 
 var isRacer = require('../../../api/policies/isRacer.js');
 var sinon = require('sinon');
@@ -36,7 +36,7 @@ describe('policies/isRacer', function() {
         };
         var expected = 'verified';
 
-        isRacer(req, res, callbackFunc)
+        isRacer(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });
@@ -46,7 +46,6 @@ describe('policies/isRacer', function() {
             session: {}
         };
         var actual;
-        var mockData;
         var callbackFunc = function () {
             return 'verified';
         };

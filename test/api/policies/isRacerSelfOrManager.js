@@ -40,7 +40,7 @@ describe('policies/isRacerSelfOrManager', function() {
         };
         var expected = 'verified';
 
-        isRacerSelfOrManager(req, res, callbackFunc)
+        isRacerSelfOrManager(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });
@@ -75,7 +75,7 @@ describe('policies/isRacerSelfOrManager', function() {
         var expected = 'verified';
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
-        isRacerSelfOrManager(req, res, callbackFunc)
+        isRacerSelfOrManager(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });
@@ -111,7 +111,7 @@ describe('policies/isRacerSelfOrManager', function() {
         var expected = 'Unauthorized';
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
-        isRacerSelfOrManager(req, res, callbackFunc)
+        isRacerSelfOrManager(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });

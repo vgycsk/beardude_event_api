@@ -1,10 +1,9 @@
 /* eslint-disable no-magic-numbers */
-/* global afterEach, beforeEach, describe, it, Racer */
+/* global afterEach, beforeEach, describe, it */
 
 var isInactive = require('../../../api/policies/isInactive.js');
 var sinon = require('sinon');
 var assert = require('assert');
-var sailsMock = require('sails-mock-models');
 
 describe('policies/isInactive', function() {
     var sandbox;
@@ -48,7 +47,6 @@ describe('policies/isInactive', function() {
             }
         };
         var actual;
-        var mockData;
         var callbackFunc = function () {
             return 'verified';
         };
@@ -74,7 +72,6 @@ describe('policies/isInactive', function() {
             }
         };
         var actual;
-        var mockData;
         var callbackFunc = function () {
             return 'verified';
         };

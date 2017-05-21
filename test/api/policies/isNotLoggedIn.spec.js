@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-/* global afterEach, beforeEach, describe, it, Racer */
+/* global afterEach, beforeEach, describe, it */
 
 var isNotLoggedIn = require('../../../api/policies/isNotLoggedIn.js');
 var sinon = require('sinon');
@@ -42,7 +42,6 @@ describe('policies/isNotLoggedIn', function() {
             }
         };
         var actual;
-        var mockData;
         var callbackFunc = function () {
             return 'verified';
         };
@@ -68,7 +67,6 @@ describe('policies/isNotLoggedIn', function() {
             }
         };
         var actual;
-        var mockData;
         var callbackFunc = function () {
             return 'verified';
         };

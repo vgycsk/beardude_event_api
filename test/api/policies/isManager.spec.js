@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-/* global afterEach, beforeEach, describe, it, Manager */
+/* global afterEach, beforeEach, describe, it */
 
 var isManager = require('../../../api/policies/isManager.js');
 var sinon = require('sinon');
@@ -35,7 +35,7 @@ describe('policies/isManager', function() {
         };
         var expected = 'verified';
 
-        isManager(req, res, callbackFunc)
+        isManager(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });
