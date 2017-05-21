@@ -278,7 +278,7 @@ describe('services/dataService', function() {
         var recordsHashTable1 = require('../../mockdata/recordsHashTable1.json');
         var registrations1 = require('../../mockdata/registrations1.json');
 
-        it('should ', function (done) {
+        it('should return parsed race result', function (done) {
             var actual = dataService.returnParsedRaceResult(recordsHashTable1, 9, registrations1);
             var expected = {
                 disqualified: [
