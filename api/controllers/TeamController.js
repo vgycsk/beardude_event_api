@@ -1,9 +1,10 @@
-/* global dataService, Racer, Team */
+/* global dataService, Team */
 
 'use strict';
 
 module.exports = {
     // {name: STR, desc: STR, url: STR}
+    /*
     create: function (req, res) {
         var input = req.body;
 
@@ -40,6 +41,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    */
     getInfo: function (req, res) {
         Team.findOne({
             id: parseInt(req.params.id)
@@ -78,13 +80,14 @@ module.exports = {
         .then(function (teamData) {
             return res.ok({
                 message: 'Team updated',
-                event: teamData[0]
+                team: teamData[0]
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
-    },
+    }
+    /*
     // {team: ID}
     applyForTeam: function (req, res) {
         var input = req.body;
@@ -197,4 +200,5 @@ module.exports = {
             return res.badRequest(E);
         });
     }
+    */
 };
