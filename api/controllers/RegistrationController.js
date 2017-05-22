@@ -1,8 +1,37 @@
-/* global dataService, Race, Registration */
+/* global accountService, dataService, Race, Registration */
 
 'use strict';
 
 module.exports = {
+    // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, address: {}} }
+    signupAndCreate: function (req, res) {
+        var input = {
+            group: parseInt(req.body.group)
+        };
+        var racerObj;
+
+        accountService.create(req.body.racer)
+        .then(function (result) {
+            racerObj = result;
+            input.racer = racerObj.id;
+            return dataService.returnAccessCode();
+        })
+        .then(function (accessCode) {
+            input.accessCode = accessCode;
+            return Registration.create(input);
+        })
+        .then(function (modelData) {
+            return res.ok({
+                message: 'Registered successfully',
+                group: input.group,
+                racer: racerObj,
+                accessCode: modelData.accessCode
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     // {event: ID, group: ID, racer: ID}
     create: function (req, res) {
         var input = {

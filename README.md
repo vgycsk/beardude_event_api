@@ -30,11 +30,12 @@ Scenarios:
 1.4.5  |       |         |              | 將選手加入比賽  | /race/racer/add    |
 1.4.6  |       |         |              | 將選手移出比賽  |  /race/racer/remove    |
 1.5    |       |         | 帳號管理      |               |  /manager/*       |
-2.1    |       | 參賽者   | 註冊帳號      |               | /racer/create |
+2.1    |       | 參賽者   | 註冊帳號      |               | (刪掉, 應該是報名比賽同時註冊) |
 2.2.1  |       |         | 報名比賽      | 個人報名       | /reg/create    |
 2.2.2  |       |         |              | 隊伍報名       |                 |
 2.2.3  |       |         |              | 退款&取消報名   | /reg/requestRefund    |
 2.2.4  |       |         |              | 付款&完成報名   | /reg/confirm    | 分配選手背號
+2.2.5  |       |         |              | 註冊&報名      | /reg/signupAndCreate     |
 2.3.1  |       |         | 修改資料      | 修改個人資料    | /racer/update    |
 2.3.2  |       |         |              | 修改隊伍資料    | /team/update    |
 2.3.3  |       |         |              | 新增隊伍       | /team/create    |
