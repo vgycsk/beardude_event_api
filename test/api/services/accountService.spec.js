@@ -195,13 +195,13 @@ describe('services/accountService', function() {
                 };
             });
             sailsMock.mockModel(Manager, 'findOne', mockData);
-            this.timeout(200);
+            this.timeout(99);
             accountService.create(input, 'Manager');
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.findOne.restore();
                 done();
-            }, 100);
+            }, 50);
         });
         it('Should create inactive account if password not specified', function (done) {
             var input = {
@@ -245,14 +245,14 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
             accountService.create(input, 'Manager');
-            this.timeout(120);
+            this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Address.create.restore();
                 Manager.findOne.restore();
                 Manager.create.restore();
                 done();
-            }, 100);
+            }, 50);
         });
         it('Should create active account if password specified', function (done) {
             var input = {
@@ -292,14 +292,14 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
             accountService.create(input, 'Manager');
-            this.timeout(120);
+            this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Address.create.restore();
                 Manager.findOne.restore();
                 Manager.create.restore();
                 done();
-            }, 100);
+            }, 50);
         });
     });
     describe('reissuePassword()', function () {
@@ -570,7 +570,7 @@ describe('services/accountService', function() {
                 sailsMock.mockModel(Manager, 'findOne', mockData);
                 sailsMock.mockModel(Manager, 'update');
                 accountService.updatePassword(req, res, 'Manager');
-                that.timeout(1000);
+                that.timeout(800);
                 return setTimeout(function () {
                     expect(actual).to.deep.equal(expected);
                     Manager.update.restore();

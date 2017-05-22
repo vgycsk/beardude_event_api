@@ -54,7 +54,7 @@ describe('/controllers/EventController', function() {
                 event: req.body
             };
 
-            this.timeout(200);
+            this.timeout(99);
             mockData.isPublic = false;
             sailsMock.mockModel(Event, 'create', mockData);
             sailsMock.mockModel(Manager, 'findOne', mockDataManager);
@@ -64,7 +64,7 @@ describe('/controllers/EventController', function() {
                 Event.create.restore();
                 Manager.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.getGeneralInfo()', function () {
@@ -90,14 +90,14 @@ describe('/controllers/EventController', function() {
             };
             var expected = mockData;
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'findOne', mockData);
             eventController.getGeneralInfo(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Event.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.addManagers()', function () {
@@ -125,14 +125,14 @@ describe('/controllers/EventController', function() {
             };
             var expected = new Error('No managers to add');
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'findOne', mockData);
             eventController.addManagers(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Event.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
         it('should add unexist manager', function (done) {
             var actual;
@@ -169,14 +169,14 @@ describe('/controllers/EventController', function() {
             mockData.managers.add = function (id) {
                 addedManager.push(id);
             };
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'findOne', mockData);
             eventController.addManagers(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Event.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.removeManagers()', function () {
@@ -204,14 +204,14 @@ describe('/controllers/EventController', function() {
             };
             var expected = new Error('No managers to remove');
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'findOne', mockData);
             eventController.removeManagers(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Event.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
         it('should remove manager from event', function (done) {
             var actual;
@@ -248,14 +248,14 @@ describe('/controllers/EventController', function() {
             mockData.managers.remove = function (id) {
                 removedManager.push(id);
             };
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'findOne', mockData);
             eventController.removeManagers(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Event.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.update()', function () {
@@ -287,7 +287,7 @@ describe('/controllers/EventController', function() {
             };
 
             mockData.id = 1;
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'create', mockData);
             sailsMock.mockModel(Event, 'update', mockDataUpdate);
 
@@ -297,7 +297,7 @@ describe('/controllers/EventController', function() {
                 Event.create.restore();
                 Event.update.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.updateSwitch()', function () {
@@ -330,7 +330,7 @@ describe('/controllers/EventController', function() {
                 event: mockDataUpdate[0]
             };
 
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Event, 'update', mockDataUpdate);
 
             eventController.updateSwitch(req, res);
@@ -338,7 +338,7 @@ describe('/controllers/EventController', function() {
                 expect(actual).to.deep.equal(expected);
                 Event.update.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
 });

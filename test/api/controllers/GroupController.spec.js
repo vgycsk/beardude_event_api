@@ -36,14 +36,14 @@ describe('/controllers/GroupController', function() {
                 group: mockData
             };
 
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'create', mockData);
             groupController.create(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Group.create.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.getInfo()', function () {
@@ -107,7 +107,7 @@ describe('/controllers/GroupController', function() {
                 ]
             };
 
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
             sailsMock.mockModel(Team, 'find', mockTeam);
             sailsMock.mockModel(Registration, 'find', mockDataReg);
@@ -118,7 +118,7 @@ describe('/controllers/GroupController', function() {
                 Team.find.restore();
                 Registration.find.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.getManagementInfo()', function () {
@@ -172,7 +172,7 @@ describe('/controllers/GroupController', function() {
                 registrations: mockDataReg
             };
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
             sailsMock.mockModel(Team, 'find', mockTeam);
             sailsMock.mockModel(Registration, 'find', mockDataReg);
@@ -183,7 +183,7 @@ describe('/controllers/GroupController', function() {
                 Team.find.restore();
                 Registration.find.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
 
@@ -210,14 +210,14 @@ describe('/controllers/GroupController', function() {
             };
             var expected = new Error('Cannot delete group that has racers registered');
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
             groupController.delete(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Group.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
         it('should remove empty group', function (done) {
             var actual;
@@ -246,7 +246,7 @@ describe('/controllers/GroupController', function() {
                 races: []
             };
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
 
             groupController.delete(req, res);
@@ -254,7 +254,7 @@ describe('/controllers/GroupController', function() {
                 expect(actual).to.deep.equal(expected);
                 Group.findOne.restore();
                 done();
-            }, 100);
+            }, 30);
         });
         it('should remove group', function (done) {
             var actual;
@@ -293,7 +293,7 @@ describe('/controllers/GroupController', function() {
                 races: [1, 2, 3]
             };
 
-            this.timeout(120);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
             sailsMock.mockModel(Race, 'destroy');
 
@@ -303,7 +303,7 @@ describe('/controllers/GroupController', function() {
                 Group.findOne.restore();
                 Race.destroy.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
     describe('.update()', function () {
@@ -332,14 +332,14 @@ describe('/controllers/GroupController', function() {
                 group: mock[0]
             };
 
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Group, 'update', mock);
             groupController.update(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Group.update.restore();
                 done();
-            }, 100);
+            }, 30);
         });
     });
 });

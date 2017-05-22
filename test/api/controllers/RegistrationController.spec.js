@@ -70,12 +70,12 @@ describe('/controllers/RegistrationController', function() {
             });
             sailsMock.mockModel(Registration, 'create', mock);
             registrationController.signupAndCreate(req, res);
-            this.timeout(200);
+            this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Registration.create.restore();
                 done();
-            }, 100);
+            }, 50);
         });
     });
     describe('.create()', function () {
@@ -105,7 +105,7 @@ describe('/controllers/RegistrationController', function() {
 
             sailsMock.mockModel(Registration, 'findOne', mock);
             registrationController.create(req, res);
-            this.timeout(100);
+            this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Registration.findOne.restore();
@@ -149,13 +149,13 @@ describe('/controllers/RegistrationController', function() {
             sailsMock.mockModel(Registration, 'findOne');
             sailsMock.mockModel(Registration, 'create', mock);
             registrationController.create(req, res);
-            this.timeout(200);
+            this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Registration.findOne.restore();
                 Registration.create.restore();
                 done();
-            }, 100);
+            }, 50);
         });
     });
     describe('.getInfo()', function () {
@@ -209,12 +209,12 @@ describe('/controllers/RegistrationController', function() {
 
             sailsMock.mockModel(Registration, 'findOne', mock);
             registrationController.getInfo(req, res);
-            this.timeout(200);
+            this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Registration.findOne.restore();
                 done();
-            }, 100);
+            }, 50);
         });
     });
     describe('.assignRfid()', function () {

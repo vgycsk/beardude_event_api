@@ -108,12 +108,12 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function() {
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
-        this.timeout(20);
+        this.timeout(40);
         setTimeout(function () {
             assert.equal(actual, expected);
             Manager.findOne.restore();
             done();
-        }, 10);
+        }, 25);
     });
 
 
@@ -148,12 +148,12 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function() {
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
-        this.timeout(20);
+        this.timeout(40);
         setTimeout(function () {
             assert.equal(actual, expected);
             Manager.findOne.restore();
             done();
-        }, 10);
+        }, 25);
     });
 
     it('should return false if the user is not the racer', function (done) {

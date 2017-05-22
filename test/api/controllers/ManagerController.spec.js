@@ -219,13 +219,13 @@ describe('/controllers/ManagerController', function() {
                     password: hash
                 };
                 sailsMock.mockModel(Manager, 'findOne', mock);
-                that.timeout(1000);
+                that.timeout(800);
                 managerController.login(req, res);
                 return setTimeout(function () {
                     expect(actual).to.deep.equal(expected);
                     Manager.findOne.restore();
                     return done();
-                }, 500);
+                }, 300);
             });
         });
         it('should return logged in user and create session data', function (done) {
@@ -260,7 +260,7 @@ describe('/controllers/ManagerController', function() {
                     password: hash
                 };
                 sailsMock.mockModel(Manager, 'findOne', mock);
-                that.timeout(1000);
+                that.timeout(800);
                 managerController.login(req, res);
                 return setTimeout(function () {
                     expect(actual).to.deep.equal(expected);
@@ -269,7 +269,7 @@ describe('/controllers/ManagerController', function() {
                     });
                     Manager.findOne.restore();
                     return done();
-                }, 500);
+                }, 300);
             });
         });
     });

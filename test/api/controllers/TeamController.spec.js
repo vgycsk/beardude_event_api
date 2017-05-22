@@ -61,14 +61,14 @@ describe('/controllers/TeamController', function() {
                 }
             };
 
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Team, 'findOne', mockData);
             teamController.getInfo(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Team.findOne.restore();
                 done();
-            }, 100);
+            }, 50);
         });
     });
     describe('.update()', function () {
@@ -111,7 +111,7 @@ describe('/controllers/TeamController', function() {
                 }
             };
 
-            this.timeout(200);
+            this.timeout(99);
             sailsMock.mockModel(Team, 'findOne', mockData);
             sailsMock.mockModel(Team, 'update', mockUpdate);
             teamController.update(req, res);
@@ -120,7 +120,7 @@ describe('/controllers/TeamController', function() {
                 Team.findOne.restore();
                 Team.update.restore();
                 done();
-            }, 100);
+            }, 50);
         });
     });
 });
