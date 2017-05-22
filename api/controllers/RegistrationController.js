@@ -6,6 +6,7 @@ module.exports = {
     // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, address: {}} }
     signupAndCreate: function (req, res) {
         var input = {
+            event: parseInt(req.body.event),
             group: parseInt(req.body.group)
         };
         var racerObj;
@@ -35,6 +36,7 @@ module.exports = {
     // {event: ID, group: ID, racer: ID}
     create: function (req, res) {
         var input = {
+            event: parseInt(req.body.event),
             group: parseInt(req.body.group),
             racer: parseInt(req.body.racer)
         };
