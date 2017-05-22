@@ -68,7 +68,8 @@ module.exports.routes = {
 
     // Racer 2.4
     'post /racer/activate': 'RacerController.activate',
-    'post /racer/create': 'RacerController.create',
+    // Create while registering for an event
+    //'post /racer/create': 'RacerController.create',
     'get  /racer/info/:id': 'RacerController.getGeneralInfo',
     'get  /racer/mgmtInfo/:id': 'RacerController.getManagementInfo',
     'post /racer/login': 'RacerController.login',
@@ -79,32 +80,34 @@ module.exports.routes = {
     // Reset password
 
     // Registration - prerace
+    // 2.2.5
+    'post /reg/signupAndCreate': 'RegistrationController.signupAndCreate',
     // 2.2.1
-    'post /reg/create': 'Registration.create',
+    'post /reg/create': 'RegistrationController.create',
     // 1.4.3
-    'post /reg/updatePayment': 'Registration.updatePayment',
+    'post /reg/updatePayment': 'RegistrationController.updatePayment',
     // 2.2.3
-    'post /reg/requestRefund': 'Registration.requestRefund',
+    'post /reg/requestRefund': 'RegistrationController.requestRefund',
     // 1.4.4
-    'post /reg/refunded': 'Registration.refunded',
+    'post /reg/refunded': 'RegistrationController.refunded',
     // 2.2.4
-    'post /reg/confirm': 'Registration.confirmRegistration',
+    'post /reg/confirm': 'RegistrationController.confirmRegistration',
     // 5.1.1, 5.1.2
-    'get  /reg/info/': 'Registration.getInfo',
+    'get  /reg/info/': 'RegistrationController.getInfo',
 
     // Registration - race logic
     // 4.1.1
-    'post /reg/assignRfid': 'Registration.assignRfid',
+    'post /reg/assignRfid': 'RegistrationController.assignRfid',
     // 4.1.2
-    'post /reg/replaceRfid': 'Registration.replaceRfid',
+    'post /reg/replaceRfid': 'RegistrationController.replaceRfid',
     // 8.2
-    'post /reg/recycleRfid': 'Registration.recycleRfid',
+    'post /reg/recycleRfid': 'RegistrationController.recycleRfid',
     // 6.2.3, 6.2.4
-    'post /reg/admitRacer': 'Registration.admitRacer',
+    'post /reg/admitRacer': 'RegistrationController.admitRacer',
     // 6.3.9
-    'post /reg/updateRaceNote': 'Registration.updateRaceNote',
+    'post /reg/updateRaceNote': 'RegistrationController.updateRaceNote',
     // 6.3.6
-    'post /reg/updateDisqualification': 'Registration.updateDisqualification',
+    'post /reg/updateDisqualification': 'RegistrationController.updateDisqualification',
 
     // Team
     // 之後再開放進階隊伍管理功能
