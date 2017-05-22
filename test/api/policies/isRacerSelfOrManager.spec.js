@@ -76,6 +76,7 @@ describe('policies/isRacerSelfOrManager', function() {
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isRacerSelfOrManager(req, res, callbackFunc);
+        this.timeout(20);
         setTimeout(function () {
             assert.equal(actual, expected);
             Manager.findOne.restore();
@@ -115,6 +116,7 @@ describe('policies/isRacerSelfOrManager', function() {
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isRacerSelfOrManager(req, res, callbackFunc);
+        this.timeout(20);
         setTimeout(function () {
             assert.equal(actual, expected);
             Manager.findOne.restore();

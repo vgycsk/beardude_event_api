@@ -98,6 +98,7 @@ describe('policies/isActiveRacer', function() {
         };
         var expected = 'Login required or need activation';
 
+        this.timeout(20);
         sailsMock.mockModel(Racer, 'findOne', mockData);
         isActiveRacer(req, res, callbackFunc);
         setTimeout(function () {

@@ -210,6 +210,7 @@ describe('services/accountService', function() {
 
             sailsMock.mockModel(Manager, 'findOne', mockData);
             accountService.create(req, res, 'Manager');
+            this.timeout(20);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.findOne.restore();
@@ -262,6 +263,7 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
             accountService.create(req, res, 'Manager');
+            this.timeout(120);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Address.create.restore();
@@ -312,6 +314,7 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
             accountService.create(req, res, 'Manager');
+            this.timeout(120);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Address.create.restore();
@@ -347,6 +350,7 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'findOne', mockData);
             accountService.reissuePassword(req, res, 'Manager');
             Manager.findOne.restore();
+            this.timeout(20);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 done();
@@ -390,6 +394,7 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'update', mockData1);
             accountService.reissuePassword(req, res, 'Manager');
             Manager.findOne.restore();
+            this.timeout(20);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.update.restore();
@@ -453,7 +458,7 @@ describe('services/accountService', function() {
 
             accountService.update(req, res, 'Manager');
             Manager.findOne.restore();
-
+            this.timeout(20);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.update.restore();
@@ -573,6 +578,7 @@ describe('services/accountService', function() {
             var expected = {
                 message: 'Password updated'
             };
+            var that = this;
 
             return bcrypt.hash('123abc', null, null, function (err, hash) {
                 if (err) {
@@ -586,6 +592,7 @@ describe('services/accountService', function() {
                 sailsMock.mockModel(Manager, 'findOne', mockData);
                 sailsMock.mockModel(Manager, 'update');
                 accountService.updatePassword(req, res, 'Manager');
+                that.timeout(1000);
                 return setTimeout(function () {
                     expect(actual).to.deep.equal(expected);
                     Manager.update.restore();
