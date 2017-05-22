@@ -219,6 +219,43 @@ describe('/controllers/GroupController', function() {
                 done();
             }, 100);
         });
+        it('should remove empty group', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    group: 1
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mockData = {
+                id: 1,
+                name: 'new group',
+                registration: [],
+                races: []
+            };
+            var expected = {
+                message: 'Group deleted',
+                group: 1,
+                races: []
+            };
+
+            this.timeout(120);
+            sailsMock.mockModel(Group, 'findOne', mockData);
+
+            groupController.delete(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Group.findOne.restore();
+                done();
+            }, 100);
+        });
         it('should remove group', function (done) {
             var actual;
             var req = {
