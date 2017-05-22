@@ -318,11 +318,116 @@ describe('/controllers/RegistrationController', function() {
             }, 25);
         });
     });
-    /*
     describe('.replaceRfid()', function () {
-        it('should ', function (done) {
+        it('should return error if racer not assigned RFID yet', function (done) {
+            var actual;
+            var mock = {
+                id: 1
+            };
+            var req = {
+                body: {
+                    event: 1,
+                    raceNumber: 1,
+                    epc: 'abc000'
+                }
+            };
+            var res = {
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = new Error('Racer not assigned RFID yet');
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            registrationController.replaceRfid(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                done();
+            }, 25);
+        });
+        it('should return error if RFID already assigned to another racer', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    event: 1,
+                    raceNumber: 1,
+                    epc: 'abc000'
+                }
+            };
+            var mock = {
+                id: 1,
+                epc: 'abc001'
+            };
+            var mock1 = {
+                id: 2,
+                epc: 'abc000'
+            };
+            var res = {
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = new Error('RFID already assigned to another racer');
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            registrationController.replaceRfid(req, res);
+            Registration.findOne.restore();
+            sailsMock.mockModel(Registration, 'findOne', mock1);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                done();
+            }, 25);
+        });
+        it('should replace RFID', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    event: 1,
+                    raceNumber: 1,
+                    epc: 'abc000'
+                }
+            };
+            var mock = {
+                id: 1,
+                epc: 'abc001'
+            };
+            var mockUpdate = [{
+                id: 1,
+                epc: 'abc001',
+                raceNumber: 1
+            }];
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Rfid replaced',
+                raceNumber: 1
+            };
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            sailsMock.mockModel(Registration, 'update', mockUpdate);
+            registrationController.replaceRfid(req, res);
+            Registration.findOne.restore();
+            sailsMock.mockModel(Registration, 'findOne');
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                Registration.update.restore();
+                done();
+            }, 25);
         });
     });
+    /*
     describe('.recycleRfid()', function () {
         it('should ', function (done) {
         });
