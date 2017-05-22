@@ -131,7 +131,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {group: ID, name: STR, nameCht: STR}
+    // {group: ID, name: STR, nameCht: STR, rules: ARRAY}
     update: function (req, res) {
         var input = req.body;
         var fields = ['name', 'nameCht', 'rules'];
@@ -144,33 +144,6 @@ module.exports = {
         .then(function (modelData) {
             return res.ok({
                 message: 'Group updated',
-                group: modelData[0]
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {group: ID, isRegistrationOpen: BOOL, isTeamRegistrationOpen, BOOL, isPublic: BOOL}
-    updateSwitch: function (req, res) {
-        var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];
-        var input = req.body;
-        var query = {
-            id: parseInt(input.group)
-        };
-        var updateObj;
-
-        fields.forEach(function (field) {
-            if (input[field] && input[field] !== '') {
-                updateObj[field] = true;
-            } else {
-                updateObj[field] = false;
-            }
-        });
-        Group.update(query, updateObj)
-        .then(function (modelData) {
-            return res.ok({
-                message: 'Group boolean field(s) updated',
                 group: modelData[0]
             });
         })

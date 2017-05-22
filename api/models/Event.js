@@ -34,6 +34,7 @@ module.exports = {
             type: 'datetime',
             required: true
         },
+        // meter
         lapDistance: {
             type: 'integer'
         },
@@ -42,6 +43,14 @@ module.exports = {
             required: true
         },
         isPublic: {
+            type: 'boolean',
+            required: true
+        },
+        isRegistrationOpen: {
+            type: 'boolean',
+            required: true
+        },
+        isTeamRegistrationOpen: {
             type: 'boolean',
             required: true
         }

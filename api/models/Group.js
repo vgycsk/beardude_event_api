@@ -27,18 +27,6 @@ module.exports = {
         rules: {
             type: 'string'
         },
-        isPublic: {
-            type: 'boolean',
-            required: true
-        },
-        isRegistrationOpen: {
-            type: 'boolean',
-            required: true
-        },
-        isTeamRegistrationOpen: {
-            type: 'boolean',
-            required: true
-        },
         // [{racer: ID, time: mm:ss}, {}, {}...]
         result: {
             type: 'array'

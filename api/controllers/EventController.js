@@ -3,16 +3,12 @@
 'use strict';
 
 module.exports = {
-    // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR, isPublic: BOOL}
+    // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
     create: function (req, res) {
         var input = req.body;
         var resultObj;
 
-        if (input.isPublic && input.isPublic !== '') {
-            input.isPublic = true;
-        } else {
-            input.isPublic = false;
-        }
+        input.isPublic = false;
         Event.create(input)
         .then(function (eventData) {
             resultObj = eventData;
@@ -52,6 +48,7 @@ module.exports = {
     // {event: ID, managers: [ID1, ID2]}
     addManagers: function (req, res) {
         var input = req.body;
+        var managersToAdd = [];
 
         input.managers.forEach(function (manager, index) {
             input.managers[index] = parseInt(manager);
@@ -61,21 +58,21 @@ module.exports = {
         })
         .populate('managers')
         .then(function(eventData) {
-            var managersToAdd = _.difference(input.managers, eventData.managers);
+            managersToAdd = _.difference(input.managers, eventData.managers);
 
-            managersToAdd.forEach(function (inputManager) {
-                eventData.managers.add(inputManager);
-            });
             if (managersToAdd.length === 0) {
                 throw new Error('No managers to add');
             }
+            managersToAdd.forEach(function (inputManager) {
+                eventData.managers.add(inputManager);
+            });
             return eventData.save();
         })
         .then(function () {
             return res.ok({
                 message: 'Managers added to event',
                 event: input.event,
-                managers: input.managers
+                managers: managersToAdd
             });
         })
         .catch(function (E) {
@@ -85,6 +82,7 @@ module.exports = {
     // {event: ID, managers: [ID1, ID2]}
     removeManagers: function (req, res) {
         var input = req.body;
+        var managersToRemove = [];
 
         input.managers.forEach(function (manager, index) {
             input.managers[index] = parseInt(manager);
@@ -94,7 +92,7 @@ module.exports = {
         })
         .populate('managers')
         .then(function(eventData) {
-            var managersToRemove = _.intersection(input.managers, eventData.managers);
+            managersToRemove = _.intersection(input.managers, eventData.managers);
 
             if (managersToRemove.length === 0) {
                 throw new Error('No managers to remove');
@@ -108,73 +106,7 @@ module.exports = {
             return res.ok({
                 message: 'Managers removed from event',
                 event: input.event,
-                managers: input.managers
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {event: ID, groups: [ID1, ID2]}
-    addGroups: function (req, res) {
-        var input = req.body;
-        var groupsToAdd;
-
-        input.groups.forEach(function (group, index) {
-            input.groups[index] = parseInt(group);
-        });
-        Event.findOne({
-            id: parseInt(input.event)
-        })
-        .populate('groups')
-        .then(function(eventData) {
-            groupsToAdd = _.difference(input.groups, eventData.groups);
-            if (groupsToAdd.length === 0) {
-                throw new Error('No groups to add');
-            }
-            groupsToAdd.forEach(function (inputGroup) {
-                eventData.groups.add(inputGroup);
-            });
-            return eventData.save();
-        })
-        .then(function () {
-            return res.ok({
-                message: 'Groups added to event',
-                event: input.event,
-                groups: groupsToAdd
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {event: ID, groups: [ID1, ID2]}
-    removeGroups: function (req, res) {
-        var input = req.body;
-        var groupsToRemove;
-
-        input.groups.forEach(function (groups, index) {
-            input.groups[index] = parseInt(groups);
-        });
-        Event.findOne({
-            id: parseInt(input.event)
-        })
-        .populate('groups')
-        .then(function(eventData) {
-            groupsToRemove = _.intersection(input.groups, eventData.groups);
-            if (groupsToRemove.length === 0) {
-                throw new Error('No groups to remove');
-            }
-            groupsToRemove.forEach(function (groupId) {
-                eventData.groups.remove(groupId);
-            });
-            return eventData.save();
-        })
-        .then(function () {
-            return res.ok({
-                message: 'Groups removed from event',
-                event: input.event,
-                groups: groupsToRemove
+                managers: managersToRemove
             });
         })
         .catch(function (E) {
@@ -205,23 +137,26 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {event: ID, isPublic: BOOL}
-    updateIsPublic: function (req, res) {
+    // {event: ID, isRegistrationOpen: BOOL, isTeamRegistrationOpen, BOOL, isPublic: BOOL}
+    updateSwitch: function (req, res) {
+        var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];
         var input = req.body;
         var query = {
-            id: parseInt(input.event)
+            id: parseInt(input.group)
         };
-        var updateObj = {
-            isPublic: false
-        };
+        var updateObj = {};
 
-        if (input.isPublic && input.isPublic !== '') {
-            updateObj.isPublic = true;
-        }
+        fields.forEach(function (field) {
+            if (input[field] && input[field] !== '') {
+                updateObj[field] = true;
+            } else {
+                updateObj[field] = false;
+            }
+        });
         Event.update(query, updateObj)
         .then(function (modelData) {
             return res.ok({
-                message: 'Event isPublic updated',
+                message: 'Event boolean field(s) updated',
                 event: modelData[0]
             });
         })
