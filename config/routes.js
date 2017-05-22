@@ -112,11 +112,11 @@ module.exports.routes = {
     // Team
     // 之後再開放進階隊伍管理功能
     // 2.3.3
-    'post /team/create': 'TeamController.create',
+    //'post /team/create': 'TeamController.create',
     // NA
     'get  /team/getInfo': 'TeamController.getInfo',
     // 2.3.4
-    'post /team/delete': 'TeamController.delete',
+    //'post /team/delete': 'TeamController.delete',
     // 2.3.2
     'post /team/update': 'TeamController.update',
 
