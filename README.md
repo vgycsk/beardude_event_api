@@ -14,14 +14,14 @@ Scenarios:
 1.2.1  |       |         | 修改活動內容   | 新增競賽組別   | /group/create |
 1.2.2  |       |         |              | 修改競賽組別   | /group/update |
 1.2.3  |       |         |              | 刪除競賽組別   | /group/delete |
-1.2.4  |       |         |              | 開放組別報名   | /group/regOpen |
+1.2.4  |       |         |              | 開放組別報名   | (刪掉)         |
 1.2.5  |       |         |              | 新增組別比賽   | /race/create   |
 1.2.6  |       |         |              | 刪除組別比賽   | /race/delete/:id |
 1.2.7  |       |         |              | 修改活動內容   | /event/update  |
 1.2.8  |       |         |              | 修改比賽內容   | /race/update  |
 1.2.9  |       |         |              | 設定比賽賽制   | /race/updateAdvancingRules |
 1.2.10  |       |         |              | 公開活動      | /event/updateIsPublic |
-1.2.11  |       |         |              | 公開組別      | /group/isPublic  |
+1.2.11  |       |         |              | 公開組別      | (刪掉)          |
 1.3    |       |         | 新增其他管理者 |               | /event/managers/add |
 1.4.1  |       |         | 修改參賽資料   | 修改隊伍資料   | /team/update    |
 1.4.2  |       |         |              | 刪除隊伍      | /team/delete   |

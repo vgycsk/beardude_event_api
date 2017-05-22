@@ -14,7 +14,7 @@ module.exports.routes = {
     // 1.2.7
     'post /event/update': 'EventController.update',
     // 1.2.10
-    'post /event/updateIsPublic': 'EventController.updateIsPublic',
+    'post /event/updateSwitch': 'EventController.updateSwitch',
 
     // Group
     // 1.2.1
@@ -23,11 +23,8 @@ module.exports.routes = {
     'get  /group/info/:id': 'GroupController.getInfo',
     // 1.2.2
     'post /group/update': 'GroupController.update',
-    // 1.2.4, 1.2.11
-    'post /group/updateSwitch': 'GroupController.updateSwitch',
     // 1.2.3
     'post /group/delete': 'GroupController.delete',
-
 
     // Manager 1.5
     'post /manager/activate': 'ManagerController.activate',
