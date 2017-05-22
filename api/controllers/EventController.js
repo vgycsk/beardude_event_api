@@ -3,6 +3,7 @@
 'use strict';
 
 module.exports = {
+    // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR, isPublic: BOOL}
     create: function (req, res) {
         var input = req.body;
         var resultObj;
@@ -48,10 +49,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    /* {
-        event: ID,
-        managers: [ID1, ID2]
-    } */
+    // {event: ID, managers: [ID1, ID2]}
     addManagers: function (req, res) {
         var input = req.body;
 
@@ -84,10 +82,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    /* {
-        event: ID,
-        managers: [ID1, ID2]
-    } */
+    // {event: ID, managers: [ID1, ID2]}
     removeManagers: function (req, res) {
         var input = req.body;
 
@@ -120,10 +115,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    /* {
-        event: ID,
-        groups: [ID1, ID2]
-    } */
+    // {event: ID, groups: [ID1, ID2]}
     addGroups: function (req, res) {
         var input = req.body;
         var groupsToAdd;
@@ -156,10 +148,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    /* {
-        event: ID,
-        groups: [ID1, ID2]
-    } */
+    // {event: ID, groups: [ID1, ID2]}
     removeGroups: function (req, res) {
         var input = req.body;
         var groupsToRemove;
