@@ -98,13 +98,13 @@ describe('policies/isActiveRacer', function() {
         };
         var expected = 'Login required or need activation';
 
-        this.timeout(20);
+        this.timeout(90);
         sailsMock.mockModel(Racer, 'findOne', mockData);
         isActiveRacer(req, res, callbackFunc);
         setTimeout(function () {
             assert.equal(actual, expected);
             Racer.findOne.restore();
             done();
-        }, 10);
+        }, 50);
     });
 });

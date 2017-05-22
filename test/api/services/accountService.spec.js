@@ -436,13 +436,13 @@ describe('services/accountService', function() {
 
             accountService.update(req, res, 'Manager');
             Manager.findOne.restore();
-            this.timeout(30);
+            this.timeout(90);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.update.restore();
                 Address.update.restore();
                 done();
-            }, 10);
+            }, 50);
         });
     });
 
