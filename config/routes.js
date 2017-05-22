@@ -23,10 +23,8 @@ module.exports.routes = {
     'get  /group/info/:id': 'GroupController.getInfo',
     // 1.2.2
     'post /group/update': 'GroupController.update',
-    // 1.2.4
-    'post /group/regOpen': 'GroupController.updateIsRegistrationOpen',
-    // 1.2.11
-    'post /group/isPublic': 'GroupController.updateIsPublic',
+    // 1.2.4, 1.2.11
+    'post /group/updateSwitch': 'GroupController.updateSwitch',
     // 1.2.3
     'post /group/delete': 'GroupController.delete',
 
@@ -83,17 +81,9 @@ module.exports.routes = {
     'post /racer/updatePassword': 'RacerController.updatePassword',
     // Reset password
 
-    // Registration
+    // Registration - prerace
     // 2.2.1
     'post /reg/create': 'Registration.create',
-    // 5.1.1, 5.1.2
-    'get  /reg/info/': 'Registration.getInfo',
-    // 4.1.1
-    'post /reg/assignRfid': 'Registration.assignRfid',
-    // 4.1.2
-    'post /reg/replaceRfid': 'Registration.replaceRfid',
-    // 8.2
-    'post /reg/recycleRfid': 'Registration.recycleRfid',
     // 1.4.3
     'post /reg/updatePayment': 'Registration.updatePayment',
     // 2.2.3
@@ -102,6 +92,16 @@ module.exports.routes = {
     'post /reg/refunded': 'Registration.refunded',
     // 2.2.4
     'post /reg/confirm': 'Registration.confirmRegistration',
+    // 5.1.1, 5.1.2
+    'get  /reg/info/': 'Registration.getInfo',
+
+    // Registration - race logic
+    // 4.1.1
+    'post /reg/assignRfid': 'Registration.assignRfid',
+    // 4.1.2
+    'post /reg/replaceRfid': 'Registration.replaceRfid',
+    // 8.2
+    'post /reg/recycleRfid': 'Registration.recycleRfid',
     // 6.2.3, 6.2.4
     'post /reg/admitRacer': 'Registration.admitRacer',
     // 6.3.9
@@ -110,6 +110,7 @@ module.exports.routes = {
     'post /reg/updateDisqualification': 'Registration.updateDisqualification',
 
     // Team
+    // 之後再開放進階隊伍管理功能
     // 2.3.3
     'post /team/create': 'TeamController.create',
     // NA
@@ -118,14 +119,15 @@ module.exports.routes = {
     'post /team/delete': 'TeamController.delete',
     // 2.3.2
     'post /team/update': 'TeamController.update',
+
     // 2.3.5
-    'post /team/apply': 'TeamController.applyForTeam',
+    //'post /team/apply': 'TeamController.applyForTeam',
     // 2.3.6
-    'post /team/unapply': 'TeamController.unapplyForTeam',
+    //'post /team/unapply': 'TeamController.unapplyForTeam',
     // 2.3.7
-    'post /team/approveRacer': 'TeamController.approveRacer',
+    //'post /team/approveRacer': 'TeamController.approveRacer',
     // 2.3.8
-    'post /team/removeRacer': 'TeamController.removeRacer',
+    //'post /team/removeRacer': 'TeamController.removeRacer',
 
     // Test page
     'get  /group/update/:id': 'PageController.groupUpdatePage',
