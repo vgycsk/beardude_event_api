@@ -210,7 +210,7 @@ describe('services/accountService', function() {
 
             sailsMock.mockModel(Manager, 'findOne', mockData);
             accountService.create(req, res, 'Manager');
-            this.timeout(20);
+            this.timeout(30);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.findOne.restore();
