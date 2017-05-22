@@ -218,13 +218,13 @@ describe('/controllers/RacerController', function() {
                     password: hash
                 };
                 sailsMock.mockModel(Racer, 'findOne', mock);
-                that.timeout(800);
+                that.timeout(1000);
                 racerController.login(req, res);
                 return setTimeout(function () {
                     expect(actual).to.deep.equal(expected);
                     Racer.findOne.restore();
                     return done();
-                }, 300);
+                }, 500);
             });
         });
         it('should return logged in user and create session data', function (done) {
@@ -259,7 +259,7 @@ describe('/controllers/RacerController', function() {
                     password: hash
                 };
                 sailsMock.mockModel(Racer, 'findOne', mock);
-                that.timeout(800);
+                that.timeout(1000);
                 racerController.login(req, res);
                 return setTimeout(function () {
                     expect(actual).to.deep.equal(expected);
@@ -268,7 +268,7 @@ describe('/controllers/RacerController', function() {
                     });
                     Racer.findOne.restore();
                     return done();
-                }, 300);
+                }, 500);
             });
         });
     });
