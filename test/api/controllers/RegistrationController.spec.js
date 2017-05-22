@@ -1,5 +1,5 @@
-/* eslint-disable no-magic-numbers, no-undefined */
-/* global afterEach, accountService, beforeEach, dataService, describe, it, Registration */
+/* eslint-disable no-magic-numbers, no-undefined, max-lines */
+/* global afterEach, accountService, beforeEach, dataService, describe, it, Race, Registration */
 
 var registrationController = require('../../../api/controllers/RegistrationController.js');
 var sailsMock = require('sails-mock-models');
@@ -427,11 +427,207 @@ describe('/controllers/RegistrationController', function() {
             }, 25);
         });
     });
-    /*
     describe('.recycleRfid()', function () {
-        it('should ', function (done) {
+        it('should recycle rfid', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    event: 1,
+                    epc: 'abc000'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Rfid recycled',
+                epc: 'abc000'
+            };
+            var mock = [
+                {
+                    id: 1,
+                    epc: 'abc000'
+                }
+            ];
+
+            sailsMock.mockModel(Registration, 'update', mock);
+            registrationController.recycleRfid(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.update.restore();
+                done();
+            }, 25);
         });
     });
+    describe('.confirmRegistration()', function () {
+        it('should complain Race number already assigned if race number found', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    registration: 1
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = new Error('Race number already assigned');
+            var mock = [
+                {
+                    id: 1,
+                    epc: 'abc000',
+                    event: {
+                        id: 1,
+                        assignedRaceNumber: 10
+                    }
+                }
+            ];
+            var mock1 = {
+                id: 2
+            };
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            registrationController.confirmRegistration(req, res);
+            Registration.findOne.restore();
+            sailsMock.mockModel(Registration, 'findOne', mock1);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                done();
+            }, 25);
+        });
+        it('should complain Race number already assigned if race number found', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    registration: 1
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Registration confirmed',
+                raceNumber: 10
+            };
+            var mock = {
+                id: 1,
+                epc: 'abc000',
+                event: {
+                    id: 1,
+                    assignedRaceNumber: 10
+                }
+            };
+
+            sailsMock.mockModel(Event, 'update');
+            sailsMock.mockModel(Registration, 'update');
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            registrationController.confirmRegistration(req, res);
+            Registration.findOne.restore();
+            sailsMock.mockModel(Registration, 'findOne');
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                Registration.update.restore();
+                Event.update.restore();
+                done();
+            }, 25);
+        });
+    });
+    describe('.admitRacer()', function () {
+        it('should return warning that the racer is not in the race', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: 1,
+                    epc: 'abc123'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = new Error('Racer not in this race');
+
+            sailsMock.mockModel(Registration, 'findOne');
+            registrationController.admitRacer(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                done();
+            }, 25);
+        });
+        it('should admit racer to the race', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: 1,
+                    epc: 'abc123'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Racer admitted',
+                epc: 'abc123'
+            };
+            var mock = {
+                id: 1,
+                epc: 'abc000',
+                event: {
+                    id: 1,
+                    assignedRaceNumber: 10
+                },
+                races: [{
+                    id: 1,
+                    recordsHashTable: {}
+                }, {
+                    id: 2,
+                    recordsHashTable: {}
+                }, {
+                    id: 3,
+                    recordsHashTable: {}
+                }]
+            };
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            sailsMock.mockModel(Race, 'update');
+            registrationController.admitRacer(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                Race.update.restore();
+                done();
+            }, 25);
+        });
+    });
+    /*
     describe('.updatePayment()', function () {
         it('should ', function (done) {
         });
@@ -444,14 +640,7 @@ describe('/controllers/RegistrationController', function() {
         it('should ', function (done) {
         });
     });
-    describe('.confirmRegistration()', function () {
-        it('should ', function (done) {
-        });
-    });
-    describe('.admitRacer()', function () {
-        it('should ', function (done) {
-        });
-    });
+
     describe('.updateDisqualification()', function () {
         it('should ', function (done) {
         });

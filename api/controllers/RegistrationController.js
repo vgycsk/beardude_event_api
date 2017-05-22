@@ -181,10 +181,10 @@ module.exports = {
         Registration.update(query, {
             rfidRecycled: true
         })
-        .then(function (modelData) {
+        .then(function () {
             return res.ok({
                 message: 'Rfid recycled',
-                registration: modelData[0].id
+                epc: req.body.epc
             });
         })
         .catch(function (E) {
@@ -192,6 +192,7 @@ module.exports = {
         });
     },
     // {registration: ID, paid: BOOL}
+    /*
     updatePayment: function (req, res) {
         var input = req.body;
         var query = {
@@ -278,6 +279,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    */
     // {registration: ID}
     confirmRegistration: function (req, res) {
         var regId = parseInt(req.body.registration);
