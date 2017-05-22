@@ -228,8 +228,7 @@ describe('/controllers/RegistrationController', function() {
                 body: {
                     event: 1,
                     accessCode: 'aaa',
-                    epc: 'abc000',
-                    event: 1
+                    epc: 'abc000'
                 }
             };
             var res = {
@@ -254,17 +253,12 @@ describe('/controllers/RegistrationController', function() {
                 body: {
                     event: 1,
                     accessCode: 'aaa',
-                    epc: 'abc000',
-                    event: 1
+                    epc: 'abc000'
                 }
             };
             var mock = {
                 id: 1
             };
-            var mockUpdate = [{
-                id: 1,
-                raceNumber: 1
-            }];
             var res = {
                 badRequest: function (obj) {
                     actual = obj;
@@ -287,8 +281,7 @@ describe('/controllers/RegistrationController', function() {
                 body: {
                     event: 1,
                     accessCode: 'aaa',
-                    epc: 'abc000',
-                    event: 1
+                    epc: 'abc000'
                 }
             };
             var mock = {
