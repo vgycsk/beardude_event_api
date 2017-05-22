@@ -2,6 +2,7 @@
 
 'use strict';
 
+var Q = require('q');
 var randomstring = require('randomstring');
 var returnModelObj = function (modelName) {
     if (modelName === 'Manager') {
@@ -26,6 +27,27 @@ var returnUpdateFields = function (modelName) {
 };
 
 module.exports = {
+    /*
+    // [{email: EMAIL1}, {email: EMAIL2}]
+    accountsExist: function (queryArray, modelName) {
+        var ModelObj = returnModelObj(modelName);
+        var q = Q.defer();
+
+        ModelObj.find({
+            or: queryArray
+        })
+        .then(function (result) {
+            if (result) {
+                return q.resolve(result);
+            }
+            return q.resolve(false);
+        })
+        .catch(function (E) {
+            return q.reject(E);
+        })
+        return q.promise;
+    },
+    */
     // Activate account by setting user-input password, and set isActive=true
     activate: function (req, res, modelName) {
         var input = req.body;
@@ -63,17 +85,14 @@ module.exports = {
         });
     },
     // Create account. When omitting password, set account inactive and require user to activate
-    create: function (req, res, modelName) {
-        var input = req.body;
+    create: function (input, modelName) {
         var addressInput = input.address;
         var addressDataObj;
         var modelDataObj;
         var returnPassword;
         var ModelObj = returnModelObj(modelName);
+        var q = Q.defer();
 
-        if (input.password !== input.confirmPassword) {
-            return res.badRequest('Password and confirm-password mismatch');
-        }
         if (input.password === '') {
             input.password = randomstring.generate();
             input.isActive = false;
@@ -82,7 +101,7 @@ module.exports = {
             input.isActive = true;
         }
         delete input.confirmPassword;
-        return ModelObj.findOne({
+        ModelObj.findOne({
             email: input.email
         })
         .then(function (modelData) {
@@ -111,15 +130,12 @@ module.exports = {
             } else {
                 delete modelDataObj.password;
             }
-            return res.ok({
-                message: 'Account created',
-                accountType: modelName,
-                account: modelDataObj
-            });
+            return q.resolve(modelDataObj);
         })
         .catch(function (E) {
-            return res.badRequest(E);
+            return q.reject(E);
         });
+        return q.promise;
     },
     // Reissue password to inactive account
     reissuePassword: function (req, res, modelName) {

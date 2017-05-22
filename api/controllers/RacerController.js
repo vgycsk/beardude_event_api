@@ -3,12 +3,44 @@
 'use strict';
 
 module.exports = {
+    // {email: STR}
+    racerExist: function (req, res) {
+        var input = req.body;
+
+        Racer.findOne(input)
+        .then(function (result) {
+            var msg = 'racer not exist';
+
+            if (result) {
+                msg = 'racer exist';
+            }
+            return res.ok({
+                message: msg
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     activate: function (req, res) {
         return accountService.activate(req, res, 'Racer');
     },
+    /*
     create: function (req, res) {
-        return accountService.create(req, res, 'Racer');
+        var input = req.body;
+
+        if (input.password !== input.confirmPassword) {
+            throw new Error('Password and confirm-password mismatch');
+        }
+        accountService.create(input, 'Racer')
+        .then(function (result) {
+            return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
+    */
     // Get insensitive account info
     getGeneralInfo: function (req, res) {
         Racer.findOne({

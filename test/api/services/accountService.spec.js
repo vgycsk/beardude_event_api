@@ -9,6 +9,7 @@ var expect = chai.expect;
 var sailsMock = require('sails-mock-models');
 var randomstring = require('randomstring');
 var sinon = require('sinon');
+var Q = require('q');
 
 chai.use(chaiAsPromised);
 describe('services/accountService', function() {
@@ -170,81 +171,52 @@ describe('services/accountService', function() {
         });
     });
     describe('create()', function () {
-        it('Should return password mismatch if password and confirm password do not match', function (done) {
-            var req = {
-                body: {
-                    password: '123',
-                    confirmPassword: '456'
-                }
-            };
-            var actual;
-            var res = {
-                badRequest: function (msg) {
-                    actual = msg;
-                }
-            };
-            var expected = 'Password and confirm-password mismatch';
-
-            accountService.create(req, res, 'Manager');
-            expect(actual).to.equal(expected);
-            done();
-        });
         it('Should return account exist if email already registered', function (done) {
-            var req = {
-                body: {
-                    password: '123',
-                    confirmPassword: '123'
-                }
+            var input = {
+                email: 'info@beardude.com',
+                password: '123',
+                confirmPassword: '123'
             };
             var actual;
-            var res = {
-                badRequest: function (msg) {
-                    actual = msg;
-                }
-            };
             var expected = new Error('Account exists');
             var mockData = {
                 id: 5,
                 email: 'info@beardude.com'
             };
 
+            sandbox.stub(Q, 'defer', function () {
+                return {
+                    resolve: function (obj) {
+                        actual = obj;
+                    },
+                    reject: function (obj) {
+                        actual = obj;
+                    }
+                };
+            });
             sailsMock.mockModel(Manager, 'findOne', mockData);
-            accountService.create(req, res, 'Manager');
-            this.timeout(30);
+            this.timeout(200);
+            accountService.create(input, 'Manager');
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.findOne.restore();
                 done();
-            }, 10);
+            }, 100);
         });
         it('Should create inactive account if password not specified', function (done) {
-            var req = {
-                body: {
-                    email: 'info@beardude.com',
-                    password: '',
-                    confirmPassword: ''
-                }
+            var input = {
+                email: 'info@beardude.com',
+                password: '',
+                confirmPassword: ''
             };
             var actual;
-            var res = {
-                ok: function (obj) {
-                    actual = obj;
-                },
-                badRequest: function (msg) {
-                    actual = msg;
-                }
-            };
             var expected = {
-                message: 'Account created',
-                accountType: 'Manager',
-                account: {
-                    id: 5,
-                    email: 'info@beardude.com',
-                    password: 'PewPewPew',
-                    address: {
-                        id: 1,
-                        street: '123'
-                    }
+                id: 5,
+                email: 'info@beardude.com',
+                password: 'PewPewPew',
+                address: {
+                    id: 1,
+                    street: '123'
                 }
             };
             var mockData = {
@@ -256,13 +228,23 @@ describe('services/accountService', function() {
                 street: '123'
             };
 
+            sandbox.stub(Q, 'defer', function () {
+                return {
+                    resolve: function (obj) {
+                        actual = obj;
+                    },
+                    reject: function (obj) {
+                        actual = obj;
+                    }
+                };
+            });
             sandbox.stub(randomstring, 'generate', function () {
                 return 'PewPewPew';
             });
             sailsMock.mockModel(Address, 'create', mockAddress);
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
-            accountService.create(req, res, 'Manager');
+            accountService.create(input, 'Manager');
             this.timeout(120);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
@@ -273,32 +255,18 @@ describe('services/accountService', function() {
             }, 100);
         });
         it('Should create active account if password specified', function (done) {
-            var req = {
-                body: {
-                    email: 'info@beardude.com',
-                    password: '123abc',
-                    confirmPassword: '123abc'
-                }
+            var input = {
+                email: 'info@beardude.com',
+                password: '123abc',
+                confirmPassword: '123abc'
             };
             var actual;
-            var res = {
-                ok: function (obj) {
-                    actual = obj;
-                },
-                badRequest: function (msg) {
-                    actual = msg;
-                }
-            };
             var expected = {
-                message: 'Account created',
-                accountType: 'Manager',
-                account: {
-                    id: 5,
-                    email: 'info@beardude.com',
-                    address: {
-                        id: 1,
-                        street: '123'
-                    }
+                id: 5,
+                email: 'info@beardude.com',
+                address: {
+                    id: 1,
+                    street: '123'
                 }
             };
             var mockData = {
@@ -310,10 +278,20 @@ describe('services/accountService', function() {
                 street: '123'
             };
 
+            sandbox.stub(Q, 'defer', function () {
+                return {
+                    resolve: function (obj) {
+                        actual = obj;
+                    },
+                    reject: function (obj) {
+                        actual = obj;
+                    }
+                };
+            });
             sailsMock.mockModel(Address, 'create', mockAddress);
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
-            accountService.create(req, res, 'Manager');
+            accountService.create(input, 'Manager');
             this.timeout(120);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);

@@ -7,7 +7,21 @@ module.exports = {
         return accountService.activate(req, res, 'Manager');
     },
     create: function (req, res) {
-        return accountService.create(req, res, 'Manager');
+        var input = req.body;
+
+        if (input.password !== input.confirmPassword) {
+            return res.badRequest('Password and confirm-password mismatch');
+        }
+        return accountService.create(input, 'Manager')
+        .then(function (result) {
+            return res.ok({
+                message: 'Account created',
+                manager: result
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
     // Get insensitive account info
     getGeneralInfo: function (req, res) {
