@@ -1,12 +1,12 @@
 /* eslint-disable no-magic-numbers */
 /* global afterEach, beforeEach, describe, it, Manager */
 
-var isRacerSelfOrManager = require('../../../api/policies/isRacerSelfOrManager.js');
+var isRacerSelfOrTeamLeaderOrManager = require('../../../api/policies/isRacerSelfOrTeamLeaderOrManager.js');
 var sinon = require('sinon');
 var assert = require('assert');
 var sailsMock = require('sails-mock-models');
 
-describe('policies/isRacerSelfOrManager', function() {
+describe('policies/isRacerSelfOrTeamLeaderOrManager', function() {
     var sandbox;
 
     beforeEach(function () {
@@ -40,7 +40,39 @@ describe('policies/isRacerSelfOrManager', function() {
         };
         var expected = 'verified';
 
-        isRacerSelfOrManager(req, res, callbackFunc);
+        isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
+        assert.equal(actual, expected);
+        done();
+    });
+
+    it('should return true if the user is the team leader', function (done) {
+        var req = {
+            params: {
+                id: '3'
+            },
+            session: {
+                racerInfo: {
+                    id: 3,
+                    email: 'info@beardude.com',
+                    team: {
+                        id: 1,
+                        leader: 3
+                    }
+                }
+            }
+        };
+        var res = {
+            forbidden: function (str) {
+                return str;
+            }
+        };
+        var actual;
+        var callbackFunc = function () {
+            actual = 'verified';
+        };
+        var expected = 'verified';
+
+        isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });
@@ -75,7 +107,7 @@ describe('policies/isRacerSelfOrManager', function() {
         var expected = 'verified';
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
-        isRacerSelfOrManager(req, res, callbackFunc);
+        isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
         this.timeout(20);
         setTimeout(function () {
             assert.equal(actual, expected);
@@ -115,7 +147,7 @@ describe('policies/isRacerSelfOrManager', function() {
         var expected = 'Unauthorized';
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
-        isRacerSelfOrManager(req, res, callbackFunc);
+        isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
         this.timeout(20);
         setTimeout(function () {
             assert.equal(actual, expected);
@@ -147,7 +179,7 @@ describe('policies/isRacerSelfOrManager', function() {
         };
         var expected = 'Login required';
 
-        isRacerSelfOrManager(req, res, callbackFunc);
+        isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc);
         assert.equal(actual, expected);
         done();
     });
