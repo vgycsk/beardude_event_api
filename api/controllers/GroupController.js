@@ -32,7 +32,7 @@ module.exports = {
             return Team.find({});
         })
         .then(function (modelData) {
-            result.team = modelData;
+            result.teams = modelData;
             return Registration.find({
                 group: groupId,
                 paid: true
@@ -40,18 +40,14 @@ module.exports = {
             .populate('racer');
         })
         .then(function (modelData) {
-            var result = [];
-
+            result.registrations = [];
             modelData.forEach(function (reg) {
-                result.push({
-                    races: reg.races,
-                    event: reg.event,
-                    group: reg.group,
+                result.registrations.push({
                     racer: {
                         team: reg.racer.team,
                         firstName: reg.racer.firstName,
-                        lastName: req.racer.lastName,
-                        nickName: req.racer.nickName
+                        lastName: reg.racer.lastName,
+                        nickName: reg.racer.nickName
                     },
                     raceNumber: reg.raceNumber
                 });
@@ -75,7 +71,7 @@ module.exports = {
             return Team.find({});
         })
         .then(function (modelData) {
-            result.team = modelData;
+            result.teams = modelData;
             return Registration.find({
                 group: groupId
             })
