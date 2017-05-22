@@ -187,7 +187,48 @@ describe('/controllers/ManagerController', function() {
             expect(actual).to.equal(expected);
             done();
         });
-        it('should return message if already logged in', function (done) {
+        it('should return error message if password incorrect', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    email: 'info@beardude.com',
+                    password: '1234'
+                },
+                session: {}
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = new Error('Credentials incorrect');
+            var mock;
+            var that = this;
+
+            return bcrypt.hash('123', null, null, function (err, hash) {
+                if (err) {
+                    expect(true).to.equal(false);
+                    return done();
+                }
+                mock = {
+                    id: 1,
+                    email: 'info@beardude.com',
+                    password: hash
+                };
+                sailsMock.mockModel(Manager, 'findOne', mock);
+                that.timeout(1000);
+                managerController.login(req, res);
+                return setTimeout(function () {
+                    expect(actual).to.deep.equal(expected);
+                    Manager.findOne.restore();
+                    return done();
+                }, 500);
+            });
+        });
+        it('should return logged in user and create session data', function (done) {
             var actual;
             var req = {
                 body: {
