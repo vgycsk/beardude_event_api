@@ -264,7 +264,7 @@ describe('/controllers/EventController', function() {
             var req = {
                 body: {
                     name: 'new event1',
-                    assignedRaceNumber: 50,
+                    assignedRaceNumber: 50
                 }
             };
             var res = {
