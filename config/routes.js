@@ -85,11 +85,11 @@ module.exports.routes = {
     // 2.2.1
     'post /reg/create': 'RegistrationController.create',
     // 1.4.3
-    'post /reg/updatePayment': 'RegistrationController.updatePayment',
+    //'post /reg/updatePayment': 'RegistrationController.updatePayment',
     // 2.2.3
-    'post /reg/requestRefund': 'RegistrationController.requestRefund',
+    //'post /reg/requestRefund': 'RegistrationController.requestRefund',
     // 1.4.4
-    'post /reg/refunded': 'RegistrationController.refunded',
+    //'post /reg/refunded': 'RegistrationController.refunded',
     // 2.2.4
     'post /reg/confirm': 'RegistrationController.confirmRegistration',
     // 5.1.1, 5.1.2
