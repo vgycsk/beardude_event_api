@@ -184,7 +184,7 @@ describe('services/accountService', function() {
                 email: 'info@beardude.com'
             };
 
-            sandbox.stub(Q, 'defer', function () {
+            sandbox.stub(Q, 'defer').callsFake(function () {
                 return {
                     resolve: function (obj) {
                         actual = obj;
@@ -228,7 +228,7 @@ describe('services/accountService', function() {
                 street: '123'
             };
 
-            sandbox.stub(Q, 'defer', function () {
+            sandbox.stub(Q, 'defer').callsFake(function () {
                 return {
                     resolve: function (obj) {
                         actual = obj;
@@ -238,7 +238,7 @@ describe('services/accountService', function() {
                     }
                 };
             });
-            sandbox.stub(randomstring, 'generate', function () {
+            sandbox.stub(randomstring, 'generate').callsFake(function () {
                 return 'PewPewPew';
             });
             sailsMock.mockModel(Address, 'create', mockAddress);
@@ -278,7 +278,7 @@ describe('services/accountService', function() {
                 street: '123'
             };
 
-            sandbox.stub(Q, 'defer', function () {
+            sandbox.stub(Q, 'defer').callsFake(function () {
                 return {
                     resolve: function (obj) {
                         actual = obj;
@@ -365,7 +365,7 @@ describe('services/accountService', function() {
                 Doe: 'Doh'
             };
 
-            sandbox.stub(randomstring, 'generate', function () {
+            sandbox.stub(randomstring, 'generate').callsFake(function () {
                 return 'PewPewPew';
             });
             sailsMock.mockModel(Manager, 'findOne', mockData);

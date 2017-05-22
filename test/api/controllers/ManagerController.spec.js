@@ -25,7 +25,7 @@ describe('/controllers/ManagerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'activate', function () {
+            sandbox.stub(accountService, 'activate').callsFake(function () {
                 actual = true;
             });
             managerController.activate(req, res);
@@ -74,7 +74,7 @@ describe('/controllers/ManagerController', function() {
                 }
             };
 
-            sandbox.stub(accountService, 'create', function () {
+            sandbox.stub(accountService, 'create').callsFake(function () {
                 var q = Q.defer();
 
                 q.resolve({
@@ -306,7 +306,7 @@ describe('/controllers/ManagerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'reissuePassword', function () {
+            sandbox.stub(accountService, 'reissuePassword').callsFake(function () {
                 actual = true;
             });
             managerController.reissuePassword(req, res);
@@ -320,7 +320,7 @@ describe('/controllers/ManagerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'update', function () {
+            sandbox.stub(accountService, 'update').callsFake(function () {
                 actual = true;
             });
             managerController.update(req, res);
@@ -334,7 +334,7 @@ describe('/controllers/ManagerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'updatePassword', function () {
+            sandbox.stub(accountService, 'updatePassword').callsFake(function () {
                 actual = true;
             });
             managerController.updatePassword(req, res);

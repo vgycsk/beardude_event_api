@@ -82,7 +82,7 @@ describe('/controllers/RacerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'activate', function () {
+            sandbox.stub(accountService, 'activate').callsFake(function () {
                 actual = true;
             });
             racerController.activate(req, res);
@@ -305,7 +305,7 @@ describe('/controllers/RacerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'reissuePassword', function () {
+            sandbox.stub(accountService, 'reissuePassword').callsFake(function () {
                 actual = true;
             });
             racerController.reissuePassword(req, res);
@@ -319,7 +319,7 @@ describe('/controllers/RacerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'update', function () {
+            sandbox.stub(accountService, 'update').callsFake(function () {
                 actual = true;
             });
             racerController.update(req, res);
@@ -333,7 +333,7 @@ describe('/controllers/RacerController', function() {
             var res = {};
             var actual;
 
-            sandbox.stub(accountService, 'updatePassword', function () {
+            sandbox.stub(accountService, 'updatePassword').callsFake(function () {
                 actual = true;
             });
             racerController.updatePassword(req, res);

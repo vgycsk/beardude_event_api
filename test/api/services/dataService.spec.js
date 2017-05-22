@@ -364,7 +364,7 @@ describe('services/dataService', function() {
 
             sailsMock.mockModel(Registration, 'findOne');
             actual = dataService.returnAccessCode(1);
-            sandbox.stub(randomstring, 'generate', function () {
+            sandbox.stub(randomstring, 'generate').callsFake(function () {
                 return 'abcd';
             });
 
