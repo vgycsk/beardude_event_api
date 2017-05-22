@@ -1,11 +1,17 @@
 /* eslint-disable no-magic-numbers */
-/* global afterEach, beforeEach, describe, it */
+/* global afterEach, beforeEach, describe, it, Registration */
 
 var dataService = require('../../../api/services/dataService.js');
 var assert = require('assert');
 var bcrypt = require('bcrypt-nodejs');
 var sinon = require('sinon');
+var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+var expect = chai.expect;
+var sailsMock = require('sails-mock-models');
+var randomstring = require('randomstring');
 
+chai.use(chaiAsPromised);
 describe('services/dataService', function() {
     var sandbox;
 
@@ -347,6 +353,23 @@ describe('services/dataService', function() {
             };
 
             assert.deepEqual(actual, expected);
+            done();
+        });
+    });
+
+    describe('.returnAccessCode()', function () {
+        it('should return 4-letter unique access code within an event', function (done) {
+            var expected = 'abcd';
+            var actual;
+
+            sailsMock.mockModel(Registration, 'findOne');
+            actual = dataService.returnAccessCode(1);
+            sandbox.stub(randomstring, 'generate', function () {
+                return 'abcd';
+            });
+
+            expect(actual).to.eventually.equal(expected);
+            Registration.findOne.restore();
             done();
         });
     });

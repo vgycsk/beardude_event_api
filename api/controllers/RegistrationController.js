@@ -1,39 +1,10 @@
-/* eslint-disable no-param-reassign */
 /* global dataService, Race, Registration */
 
 'use strict';
 
-var Q = require('q');
-var randomstring = require('randomstring');
-
 module.exports = {
     // {event: ID, group: ID, racer: ID}
     create: function (req, res) {
-        var returnAccessCode = function (eventId) {
-            var q = Q.defer();
-            var codeLength = 4;
-            var code = randomstring.generate({
-                length: codeLength
-            });
-            var getCode = function (code) {
-                Registration.findOne({
-                    event: eventId,
-                    accessCode: code
-                })
-                .then(function (modelData) {
-                    if (modelData) {
-                        code = randomstring.generate({
-                            length: codeLength
-                        });
-                        return getCode(code);
-                    }
-                    return q.resolve(code);
-                });
-            };
-
-            getCode(code);
-            return q.promise;
-        };
         var input = {
             group: parseInt(req.body.group),
             racer: parseInt(req.body.racer)
@@ -44,7 +15,7 @@ module.exports = {
             if (modelData) {
                 throw new Error('Already registered');
             }
-            return returnAccessCode();
+            return dataService.returnAccessCode();
         })
         .then(function (accessCode) {
             input.accessCode = accessCode;

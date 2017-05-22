@@ -1,7 +1,10 @@
+/* eslint-disable no-param-reassign */
+/* global Registration */
 
 'use strict';
 
 var bcrypt = require('bcrypt-nodejs');
+var randomstring = require('randomstring');
 var Q = require('q');
 var dataService = {
     authenticate: function (inputPassword, userDataPassword) {
@@ -168,6 +171,31 @@ var dataService = {
             }
         }
         return result;
+    },
+    returnAccessCode: function (eventId) {
+        var q = Q.defer();
+        var codeLength = 4;
+        var code = randomstring.generate({
+            length: codeLength
+        });
+        var getCode = function (code) {
+            Registration.findOne({
+                event: eventId,
+                accessCode: code
+            })
+            .then(function (modelData) {
+                if (modelData) {
+                    code = randomstring.generate({
+                        length: codeLength
+                    });
+                    return getCode(code);
+                }
+                return q.resolve(code);
+            });
+        };
+
+        getCode(code);
+        return q.promise;
     }
 };
 
