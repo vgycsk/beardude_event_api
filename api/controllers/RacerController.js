@@ -9,13 +9,14 @@ module.exports = {
 
         Racer.findOne(input)
         .then(function (result) {
-            var msg = 'racer not exist';
+            var msg = false;
 
             if (result) {
-                msg = 'racer exist';
+                msg = true;
             }
             return res.ok({
-                message: msg
+                racer: input.email,
+                exist: msg
             });
         })
         .catch(function (E) {
