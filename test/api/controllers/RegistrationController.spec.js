@@ -627,6 +627,91 @@ describe('/controllers/RegistrationController', function() {
             }, 25);
         });
     });
+    describe('.updateDisqualification()', function () {
+        it('should add note to registration and disqualify racer', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: 1,
+                    registration: 1,
+                    note: 'Dangerous conduct',
+                    isDisqualified: true
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Racer disqualification updated',
+                race: 1,
+                isDisqualified: true,
+                registration: 1,
+                note: 'Dangerous conduct'
+            };
+            var mock = {
+                id: 1,
+                epc: 'abc000',
+                raceNotes: []
+            };
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            registrationController.updateDisqualification(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                done();
+            }, 25);
+        });
+    });
+
+    describe('.updateRaceNote()', function () {
+        it('should update race note', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: 1,
+                    registration: 1,
+                    note: 'fall twice'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Race note added',
+                race: 1,
+                registration: 1,
+                note: 'fall twice'
+            };
+            var mock = {
+                id: 1,
+                epc: 'abc000',
+                raceNotes: []
+            };
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            sailsMock.mockModel(Registration, 'update');
+            registrationController.updateRaceNote(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                Registration.update.restore();
+                done();
+            }, 25);
+        });
+    });
     /*
     describe('.updatePayment()', function () {
         it('should ', function (done) {
@@ -641,13 +726,6 @@ describe('/controllers/RegistrationController', function() {
         });
     });
 
-    describe('.updateDisqualification()', function () {
-        it('should ', function (done) {
-        });
-    });
-    describe('.updateRaceNote()', function () {
-        it('should ', function (done) {
-        });
-    });
+
     */
 });
