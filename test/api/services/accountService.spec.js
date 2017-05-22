@@ -350,7 +350,7 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'findOne', mockData);
             accountService.reissuePassword(req, res, 'Manager');
             Manager.findOne.restore();
-            this.timeout(20);
+            this.timeout(30);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 done();
@@ -394,7 +394,7 @@ describe('services/accountService', function() {
             sailsMock.mockModel(Manager, 'update', mockData1);
             accountService.reissuePassword(req, res, 'Manager');
             Manager.findOne.restore();
-            this.timeout(20);
+            this.timeout(30);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.update.restore();
@@ -458,7 +458,7 @@ describe('services/accountService', function() {
 
             accountService.update(req, res, 'Manager');
             Manager.findOne.restore();
-            this.timeout(20);
+            this.timeout(30);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.update.restore();
