@@ -63,7 +63,7 @@ var RaceController = {
     // Get public info
     getGeneralInfo: function (req, res) {
         Race.findOne({
-            id: req.params.id
+            id: parseInt(req.params.id)
         })
         .populate('registrations')
         .populate('group')
@@ -238,44 +238,7 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-    // {race: ID, epc: STR}
-    assignTesterRfid: function (req, res) {
-        var input = req.body;
 
-        input.race = parseInt(input.race);
-        Race.findOne({
-            id: input.id
-        })
-        .then(function (modelData) {
-            var testerEpc = modelData.testerEpc;
-            var rfidExist = _.includes(testerEpc, input.epc);
-
-            if (rfidExist) {
-                return false;
-            }
-            testerEpc.push(input.epc);
-            return Race.update({
-                id: input.id
-            }, {
-                testerEpc: testerEpc
-            });
-        })
-        .then(function (modelData) {
-            var message = 'Tester registered';
-
-            if (!modelData) {
-                message = 'Tester RFID already assigned';
-            }
-            return res.ok({
-                message: message,
-                race: input.race,
-                epc: input.epc
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
     // {race: ID, advancingRules: [{rule1}, {rule2} ]}
     // rule: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
     /*

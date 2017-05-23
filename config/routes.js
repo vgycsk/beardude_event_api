@@ -15,6 +15,8 @@ module.exports.routes = {
     'post /event/update': 'EventController.update',
     // 1.2.10
     'post /event/updateSwitch': 'EventController.updateSwitch',
+    // 4.2.3
+    'post /event/assignTesterRfid': 'EventController.assignTesterRfid',
 
     // Group
     // 1.2.1
@@ -55,8 +57,6 @@ module.exports.routes = {
     'post /race/racers/remove': 'RaceController.removeRacers',
     //6.2.6
     'post /race/assignPacerRfid': 'RaceController.assignPacerRfid',
-    // 4.2.3
-    'post /race/assignTesterRfid': 'RaceController.assignTesterRfid',
     // 1.2.9
     'post /race/updateAdvancingRules': 'RaceController.updateAdvancingRules',
     // 6.3.7

@@ -1,4 +1,4 @@
-/* global _, dataService, Event, Manager */
+/* global _, dataService, Event, Manager, Race */
 
 'use strict';
 
@@ -158,6 +158,66 @@ module.exports = {
             return res.ok({
                 message: 'Event boolean field(s) updated',
                 event: modelData[0]
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {event: ID, epc: STR}
+    // copy to all races
+    assignTesterRfid: function (req, res) {
+        var input = req.body;
+        var testerEpc;
+        var raceQueries = [];
+
+        input.race = parseInt(input.event);
+        Event.findOne({
+            id: input.id
+        })
+        .populate('groups')
+        .then(function (modelData) {
+            var rfidExist;
+            var groupIdQueries = [];
+
+            testerEpc = modelData.testerEpc;
+            rfidExist = _.includes(testerEpc, input.epc);
+
+            if (rfidExist) {
+                throw new Error('Tester RFID already assigned');
+            }
+            modelData.groups.forEach(function (group) {
+                groupIdQueries.push({
+                    group: group.id
+                });
+            });
+            testerEpc.push(input.epc);
+            return Race.find({
+                or: groupIdQueries
+            });
+        })
+        .then(function (raceData) {
+            raceData.forEach(function (race) {
+                raceQueries.push({
+                    id: race.id
+                });
+            });
+            return Event.update({
+                id: input.id
+            }, {
+                testerEpc: testerEpc
+            });
+        })
+        .then(function () {
+            return Race.update(raceQueries, {
+                testerEpc: testerEpc
+            });
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Tester registered',
+                event: input.event,
+                epc: input.epc
             });
         })
         .catch(function (E) {

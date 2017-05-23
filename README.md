@@ -53,7 +53,7 @@ Scenarios:
 4.1.2  |        |         |             | 更換RFID       | /reg/replaceRfid   |
 4.2.1  |        |         | 系統測試     | 測試RFID天線訊號 |                    |
 4.2.2  |        |         |             | 測試完整比賽流程  |                    |
-4.2.3  |        |         |             | 註冊測試用RFID  | /reg/assignTesterRfid |
+4.2.3  |        |         |             | 註冊測試用RFID  | /event/assignTesterRfid |
 4.2.4  |        |         |             | 啟動RFID Reader  |                  |
 4.2.5  |        |         |             | 接RFID Reader資料 |                  |
 4.2.6  |        |         |             | 關閉RFID Reader |                  |

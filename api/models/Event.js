@@ -53,6 +53,10 @@ module.exports = {
         isTeamRegistrationOpen: {
             type: 'boolean',
             required: true
+        },
+        testerEpc: {
+            type: 'array',
+            defaultsTo: []
         }
     }
 };
