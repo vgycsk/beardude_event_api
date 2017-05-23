@@ -72,7 +72,8 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 6.2.6  |        |         |             | 登錄Pacer ID        | /race/assignPacerRfid    |
 6.2.7  |        |         |             | 確認選手登錄狀態       | /race/mgmtInfo/:id    |
 6.2.8  |        |         |             | 宣讀規則             |  /race/mgmtInfo/:id    |
-6.2.9  |        |         |             | 啟動RFID Reader    |         |顯示收發訊號
+6.2.9  |        |         |             | 啟動RFID Reader    |         |顯示收發訊號, 將testerEPC從Event複製到Race
+6.2.10  |        |         |             | 啟動試跑模式       |         |
 4.2.10  |        |         |             | 接RFID Reader資料 |                  |
 6.2.11 |        |         |             | 啟動比賽開始倒數      |                |
 6.3.1  |        |         | 比賽裁判     | 即時顯示通過閘門選手    |  /race/mgmtInfo/:id   |

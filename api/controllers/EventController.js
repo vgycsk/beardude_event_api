@@ -1,4 +1,4 @@
-/* global _, dataService, Event, Manager, Race */
+/* global _, dataService, Event, Manager */
 
 'use strict';
 
@@ -169,7 +169,6 @@ module.exports = {
     assignTesterRfid: function (req, res) {
         var input = req.body;
         var testerEpc;
-        var raceQueries = [];
 
         input.race = parseInt(input.event);
         Event.findOne({
@@ -178,38 +177,16 @@ module.exports = {
         .populate('groups')
         .then(function (modelData) {
             var rfidExist;
-            var groupIdQueries = [];
 
-            testerEpc = modelData.testerEpc;
             rfidExist = _.includes(testerEpc, input.epc);
-
             if (rfidExist) {
                 throw new Error('Tester RFID already assigned');
             }
-            modelData.groups.forEach(function (group) {
-                groupIdQueries.push({
-                    group: group.id
-                });
-            });
+            testerEpc = modelData.testerEpc;
             testerEpc.push(input.epc);
-            return Race.find({
-                or: groupIdQueries
-            });
-        })
-        .then(function (raceData) {
-            raceData.forEach(function (race) {
-                raceQueries.push({
-                    id: race.id
-                });
-            });
             return Event.update({
                 id: input.id
             }, {
-                testerEpc: testerEpc
-            });
-        })
-        .then(function () {
-            return Race.update(raceQueries, {
                 testerEpc: testerEpc
             });
         })

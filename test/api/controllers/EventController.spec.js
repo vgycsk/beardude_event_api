@@ -341,4 +341,76 @@ describe('/controllers/EventController', function() {
             }, 30);
         });
     });
+    describe('.assignTesterRfid()', function () {
+        it('should return error if RFID already assigned', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    event: 1,
+                    epc: 'abc0001'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 1,
+                name: 'new event1',
+                testerEpc: ['abc0000', 'abc0001', 'abc0002', 'abc0003']
+            };
+            var expected = new Error('Tester RFID already assigned');
+
+            this.timeout(50);
+            sailsMock.mockModel(Event, 'findOne', mock);
+            eventController.assignTesterRfid(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Event.findOne.restore();
+                done();
+            }, 30);
+        });
+        it('should assign tester RFID', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    event: 1,
+                    epc: 'abc0007'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 1,
+                name: 'new event1',
+                testerEpc: ['abc0000', 'abc0001', 'abc0002', 'abc0003']
+            };
+            var expected = {
+                message: 'Tester registered',
+                event: 1,
+                epc: 'abc0007'
+            };
+
+            this.timeout(50);
+            sailsMock.mockModel(Event, 'findOne', mock);
+            sailsMock.mockModel(Event, 'update');
+            eventController.assignTesterRfid(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Event.findOne.restore();
+                Event.update.restore();
+                done();
+            }, 30);
+        });
+    });
 });
