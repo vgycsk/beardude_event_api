@@ -1,4 +1,4 @@
-/* global _, dataService, Group, Race */
+/* global _, dataService, Group, Race, Registration */
 
 'use strict';
 
@@ -115,102 +115,105 @@ var RaceController = {
         Race.findOne(query)
         .then(function (modelData) {
             updateObj = dataService.returnUpdateObj(fields, input, modelData);
-            Race.update(query, updateObj);
+            return Race.update(query, updateObj);
         })
         .then(function (modelData) {
             return res.ok({
                 message: 'Race updated',
-                race: modelData
+                race: modelData[0]
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {race: ID, racers: [ID, ID]}
-    addRacers: function (req, res) {
-        var input = req.body;
-        var query = {
-            id: parseInt(input.race)
+    // {event: ID, race: ID, raceNumber: INT}
+    addRacer: function (req, res) {
+        var input = {
+            event: parseInt(req.body.event),
+            race: parseInt(req.body.race),
+            raceNumber: parseInt(req.body.raceNumber)
         };
-        var raceDataObj;
-        var racersToAdd;
+        var regId;
 
-        input.racers.forEach(function (racer, index) {
-            input.racers[index] = parseInt(racer);
-        });
-        Race.findOne(query)
-        .populate('registrations')
-        .then(function (modelData) {
-            raceDataObj = modelData;
+        Registration.findOne({
+            event: input.event,
+            raceNumber: input.raceNumber
+        })
+        .then(function (regData) {
+            regId = regData.id;
             return Group.findOne({
-                id: modelData.group
+                id: regData.group
             })
             .populate('registrations');
         })
-        .then(function (modelData) {
-            var racerNotInGroup = _.difference(input.racers, modelData.racers);
+        .then(function (groupData) {
+            var racerFound = _.find(groupData.registrations, {
+                id: regId
+            });
 
-            // 1. validate racers in group
-            if (racerNotInGroup.length > 0) {
+            if (!racerFound) {
                 throw new Error('Racer not in group');
             }
-            // 2. Get racers not in race
-            racersToAdd = _.difference(input.racers, raceDataObj);
-            racersToAdd.forEach(function (racerInput) {
-                raceDataObj.racers.add(racerInput);
+            return Race.findOne(input.race)
+            .populate('registrations');
+        })
+        .then(function (raceData) {
+            var racerFound = _.find(raceData.registrations, {
+                id: regId
             });
-            return raceDataObj.save();
+
+            if (racerFound) {
+                throw new Error('Racer already in race');
+            }
+            raceData.registrations.add(regId);
+            return raceData.save();
         })
         .then(function () {
             return res.ok({
-                messange: 'Racers added to race',
-                racers: racersToAdd
+                messange: 'Racer added to race',
+                race: input.race,
+                raceNumber: input.raceNumber
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {race: ID, racers: [ID, ID]}
-    removeRacers: function (req, res) {
-        var input = req.body;
-        var query = {
-            id: parseInt(input.race)
+    // {event: ID, race: ID, raceNumber: INT}
+    removeRacer: function (req, res) {
+        var input = {
+            event: parseInt(req.body.event),
+            race: parseInt(req.body.race),
+            raceNumber: parseInt(req.body.raceNumber)
         };
-        var raceDataObj;
-        var racersToRemove;
+        var regId;
 
-        input.racers.forEach(function (racer, index) {
-            input.racers[index] = parseInt(racer);
-        });
-        Race.findOne(query)
-        .populate('registrations')
-        .then(function (modelData) {
-            raceDataObj = modelData;
-            return Group.findOne({
-                id: modelData.group
-            })
+        Registration.findOne({
+            event: input.event,
+            raceNumber: input.raceNumber
+        })
+        .then(function (regData) {
+            regId = regData.id;
+            return Race.findOne(input.race)
             .populate('registrations');
         })
-        .then(function (modelData) {
-            var racerNotInGroup = _.difference(input.racers, modelData.racers);
-
-            // 1. validate racers in group
-            if (racerNotInGroup.length > 0) {
-                throw new Error('Racer not in group');
-            }
-            // 2. Get racers not in race
-            racersToRemove = _.intersection(input.racers, raceDataObj);
-            racersToRemove.forEach(function (racerInput) {
-                raceDataObj.racers.add(racerInput);
+        .then(function (raceData) {
+            var racerFound = _.find(raceData.registrations, {
+                id: regId
             });
-            return raceDataObj.save();
+
+            if (!racerFound) {
+                throw new Error('Racer not in race');
+            }
+            raceData.registrations.remove(regId);
+            return raceData.save();
         })
         .then(function () {
             return res.ok({
-                messange: 'Racers removed from race',
-                racers: racersToRemove
+                messange: 'Racer removed from race',
+                race: input.race,
+                raceNumber: input.raceNumber
             });
         })
         .catch(function (E) {

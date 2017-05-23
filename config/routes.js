@@ -52,9 +52,9 @@ module.exports.routes = {
     // 1.2.6
     'post /race/delete': 'RaceController.delete',
     // 1.4.5, 6.2.4
-    'post /race/racers/add': 'RaceController.addRacers',
+    'post /race/racer/add': 'RaceController.addRacer',
     // 1.4.6
-    'post /race/racers/remove': 'RaceController.removeRacers',
+    'post /race/racer/remove': 'RaceController.removeRacer',
     //6.2.6
     'post /race/assignPacerRfid': 'RaceController.assignPacerRfid',
     // 1.2.9
