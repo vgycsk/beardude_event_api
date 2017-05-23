@@ -1,9 +1,28 @@
-/* global accountService, dataService, Race, Registration */
+/* global accountService, dataService, Race, Registration, Team */
 
 'use strict';
 
-module.exports = {
-    // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, address: {}} }
+var Q = require('q');
+var RegistrationController = {
+    // {event, ID, group: ID, racer: ID}
+    createReg: function (input) {
+        var q = Q.defer();
+        var query = input;
+
+        dataService.returnAccessCode()
+        .then(function (accessCode) {
+            query.accessCode = accessCode;
+            return Registration.create(query);
+        })
+        .then(function (regData) {
+            return q.resolve(regData);
+        })
+        .catch(function (E) {
+            return q.reject(E);
+        });
+        return q.promise;
+    },
+    // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, address: {}...} }
     signupAndCreate: function (req, res) {
         var input = {
             event: parseInt(req.body.event),
@@ -15,11 +34,7 @@ module.exports = {
         .then(function (result) {
             racerObj = result;
             input.racer = racerObj.id;
-            return dataService.returnAccessCode();
-        })
-        .then(function (accessCode) {
-            input.accessCode = accessCode;
-            return Registration.create(input);
+            return RegistrationController.createReg(input);
         })
         .then(function (modelData) {
             return res.ok({
@@ -27,6 +42,73 @@ module.exports = {
                 group: input.group,
                 racer: racerObj,
                 accessCode: modelData.accessCode
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // 情境1: 隊伍跟選手都是新的 -> 1) 輸入隊伍及選手資料 2) 報名
+    // 情境2: 已註冊帳號想團報-> 1) 登入 2) 註冊車隊 3) 註冊或選擇選手 4) 報名
+    // 這個是情境1用的
+    // {event: ID, group: ID, team: {name: STR, desc: STR, url: STR}, racers: [{email: STR, address: {}...}]}
+    signupAndCreateMultiple: function (req, res) {
+        var input = req.body;
+        var teamObj;
+        var racersObj;
+        var regsObj;
+
+        input.event = parseInt(input.event);
+        input.group = parseInt(input.group);
+        // 1. create team
+        Team.create(input.team)
+        .then(function (teamData) {
+            var funcs = [];
+
+            teamObj = teamData;
+            input.racers.forEach(function (racer) {
+                var query = racer;
+
+                query.team = teamData.id;
+                funcs.push(function () {
+                    return accountService.create(query);
+                });
+            });
+            // 2. create racers
+            return Q.all(funcs);
+        })
+        .then(function (racersData) {
+            var funcs = [];
+
+            racersObj = racersData;
+            racersObj.forEach(function (racer) {
+                var regObj = {
+                    event: input.event,
+                    group: input.group,
+                    racer: racer.id
+                };
+
+                funcs.push(function () {
+                    return RegistrationController.createReg(regObj);
+                });
+            });
+            // 3. create regs
+            return Q.all(funcs);
+        })
+        .then(function (regs) {
+            regsObj = regs;
+            return Team.update({
+                id: teamObj.id
+            }, {
+                leader: racersObj[0].id
+            });
+        })
+        .then(function (teamData) {
+            teamObj = teamData[0];
+            return res.ok({
+                message: 'Team registered successfully',
+                team: teamObj,
+                registrations: regsObj
             });
         })
         .catch(function (E) {
@@ -46,11 +128,7 @@ module.exports = {
             if (modelData) {
                 throw new Error('Already registered');
             }
-            return dataService.returnAccessCode();
-        })
-        .then(function (accessCode) {
-            input.accessCode = accessCode;
-            return Registration.create(input);
+            return RegistrationController.createReg(input);
         })
         .then(function (modelData) {
             return res.ok({
@@ -431,3 +509,5 @@ module.exports = {
         });
     }
 };
+
+module.exports = RegistrationController;

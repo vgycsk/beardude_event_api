@@ -1,14 +1,25 @@
 /* eslint-disable no-magic-numbers */
-/* global describe, it, Team */
+/* global afterEach, beforeEach, describe, it, Team */
 
 var teamController = require('../../../api/controllers/TeamController.js');
 var sailsMock = require('sails-mock-models');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var expect = chai.expect;
+var Q = require('q');
+var sinon = require('sinon');
 
 chai.use(chaiAsPromised);
 describe('/controllers/TeamController', function() {
+    var sandbox;
+
+    beforeEach(function () {
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(function () {
+        sandbox.restore();
+    });
     describe('.teamExist()', function () {
         it('should return team not found message if team not exist', function (done) {
             var actual;
@@ -66,6 +77,41 @@ describe('/controllers/TeamController', function() {
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Team.findOne.restore();
+                done();
+            }, 25);
+        });
+    });
+    describe('.createTeam()', function () {
+        // {name: STR, desc: STR, url: STR}
+        it('should create team', function (done) {
+            var actual;
+            var obj = {
+                name: 'Team Murica',
+                desc: 'The best of the best of the best',
+                url: 'http://team-murica.cafe'
+            };
+
+            var mock = obj;
+            var expected;
+
+            mock.id = 1;
+            expected = mock;
+            sailsMock.mockModel(Team, 'create', mock);
+            sandbox.stub(Q, 'defer').callsFake(function () {
+                return {
+                    resolve: function (obj) {
+                        actual = obj;
+                    },
+                    reject: function (obj) {
+                        actual = obj;
+                    }
+                };
+            });
+            teamController.createTeam(obj);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Team.create.restore();
                 done();
             }, 25);
         });

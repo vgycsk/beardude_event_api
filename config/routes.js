@@ -84,6 +84,8 @@ module.exports.routes = {
     // Registration - prerace
     // 2.2.5
     'post /reg/signupAndCreate': 'RegistrationController.signupAndCreate',
+    // 2.2.2
+    'post /reg/signupAndCreateMultiple': 'RegistrationController.signupAndCreateMultiple',
     // 2.2.1
     'post /reg/create': 'RegistrationController.create',
     // 1.4.3
@@ -132,8 +134,6 @@ module.exports.routes = {
     //'post /team/approveRacer': 'TeamController.approveRacer',
     // 2.3.8
     //'post /team/removeRacer': 'TeamController.removeRacer',
-    // 2.2.2
-    'post /team/registerAll': 'TeamController.registerAll',
 
     // Test page
     'get  /group/update/:id': 'PageController.groupUpdatePage',

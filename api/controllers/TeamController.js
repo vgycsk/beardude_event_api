@@ -2,7 +2,8 @@
 
 'use strict';
 
-module.exports = {
+var Q = require('q');
+var TeamController = {
     // {name: STR}
     teamExist: function (req, res) {
         var uniqueName = dataService.sluggify(req.body.name);
@@ -25,24 +26,47 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    // {name: STR, desc: STR, url: STR, leader: ID}
+    createTeam: function (input) {
+        var q = Q.defer();
+        var obj = {
+            name: input.name,
+            uniqueName: dataService.sluggify(input.name),
+            description: input.description,
+            url: input.url
+        };
+
+        if (input.leader) {
+            obj.leader = input.leader;
+        }
+        Team.create(obj)
+        .then(function (teamData) {
+            return q.resolve(teamData);
+        })
+        .catch(function (E) {
+            return q.reject(E);
+        });
+        return q.promise;
+    },
     // {name: STR, desc: STR, url: STR}
-    /*
     create: function (req, res) {
         var input = req.body;
 
-        input.uniqueName = dataService.sluggify(input.name);
-        input.leader = req.session.racerInfo.id;
-        Team.create(input)
+        if (req.session.racerInfo) {
+            input.leader = req.session.racerInfo.id;
+        }
+        TeamController.createTeam()
         .then(function (teamData) {
             return res.ok({
                 message: 'Team created',
-                event: teamData
+                team: teamData
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
+    /*
     // {team: ID}
     delete: function (req, res) {
         var input = req.body;
@@ -224,3 +248,5 @@ module.exports = {
     }
     */
 };
+
+module.exports = TeamController;
