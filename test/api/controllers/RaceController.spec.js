@@ -902,7 +902,13 @@ describe('/controllers/RaceController', function() {
             var expected = {
                 message: 'Advancing rules updated',
                 race: 5,
-                advancingRules: req.body.advancingRules
+                advancingRules: req.body.advancingRules,
+                notices: [
+                    'There may be overlapped racers in advanced race: 2',
+                    'Advanced race spots unfilled: 2',
+                    'There may be overlapped racers in advanced race: 3',
+                    'Advanced race spots unfilled: 3'
+                ]
             };
             var mockUpdate = [{
                 id: 5,

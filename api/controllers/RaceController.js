@@ -251,6 +251,7 @@ var RaceController = {
     updateAdvancingRules: function (req, res) {
         var input = req.body;
         var toRace = [];
+        var notices = [];
 
         // 1. validate rules within this race
         if (!dataService.validateAdvRules.continuity(input.advancingRules)) {
@@ -296,6 +297,12 @@ var RaceController = {
 
                     advRulesForSameRace = advRulesForSameRace.concat(matches);
                 });
+                if (!dataService.validateAdvRules.noOverlap(advRulesForSameRace)) {
+                    notices.push('There may be overlapped racers in advanced race: ' + toRaceId);
+                }
+                if (!dataService.validateAdvRules.racerNumberMatched(advRulesForSameRace, raceObj.racerNumberAllowed)) {
+                    notices.push('Advanced race spots unfilled: ' + toRaceId);
+                }
                 if (!dataService.validateAdvRules.noOverflow(advRulesForSameRace, raceObj.racerNumberAllowed)) {
                     throw new Error('Racer count exceed max number of advanced race');
                 }
@@ -307,14 +314,12 @@ var RaceController = {
             });
         })
         .then(function (modelData) {
-            var result = {
+            return res.ok({
                 message: 'Advancing rules updated',
                 race: input.race,
-                advancingRules: modelData[0].advancingRules
-            };
-
-            // to do: add notice for warning
-            return res.ok(result);
+                advancingRules: modelData[0].advancingRules,
+                notices: notices
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);

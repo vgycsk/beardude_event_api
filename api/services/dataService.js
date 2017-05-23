@@ -117,6 +117,22 @@ var dataService = {
                 return false;
             }
             return true;
+        },
+        racerNumberMatched: function (rules, maxNumberAllowed) {
+            var i;
+            var raceId = rules[0].toRace;
+            var totalRacers = 0;
+
+            for (i = 0; i < rules.length; i += 1) {
+                if (raceId !== rules[i].toRace) {
+                    return false;
+                }
+                totalRacers += (rules[i].rankTo - rules[i].rankFrom + 1);
+            }
+            if (totalRacers === maxNumberAllowed) {
+                return true;
+            }
+            return false;
         }
     },
     returnUpdatedRaceNotes: function (raceId, raceNote, existingRaceNotes) {
