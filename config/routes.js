@@ -77,6 +77,8 @@ module.exports.routes = {
     'get  /racer/reissuePassword/:id': 'RacerController.reissuePassword',
     'post /racer/update': 'RacerController.update',
     'post /racer/updatePassword': 'RacerController.updatePassword',
+    // 2.2.2
+    'post /racer/exist': 'RacerController.racerExist',
     // Reset password
 
     // Registration - prerace
@@ -119,6 +121,8 @@ module.exports.routes = {
     //'post /team/delete': 'TeamController.delete',
     // 2.3.2
     'post /team/update': 'TeamController.update',
+    // 2.2.2
+    'post /team/exist': 'TeamController.teamExist',
 
     // 2.3.5
     //'post /team/apply': 'TeamController.applyForTeam',
@@ -128,6 +132,8 @@ module.exports.routes = {
     //'post /team/approveRacer': 'TeamController.approveRacer',
     // 2.3.8
     //'post /team/removeRacer': 'TeamController.removeRacer',
+    // 2.2.2
+    'post /team/registerAll': 'TeamController.registerAll',
 
     // Test page
     'get  /group/update/:id': 'PageController.groupUpdatePage',

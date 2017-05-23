@@ -47,12 +47,10 @@ var dataService = {
     },
     sluggify: function (string) {
         return string
+        .trim()
         .toLowerCase()
-//        .replace(/[^\w ]+/g,'') // remove hyphen
-        // remove special char
-        .replace(/[^\w\s]/gi, '')
         // condense
-        .replace(/ +/g, '');
+        .replace(/ +/g, '-');
     },
     // rule: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
     /*

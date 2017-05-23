@@ -131,7 +131,7 @@ describe('services/dataService', function() {
             });
             it('should remove space in name', function (done) {
                 var input = 'my name';
-                var expected = 'myname';
+                var expected = 'my-name';
                 var actual = dataService.sluggify(input);
 
                 assert.equal(actual, expected);

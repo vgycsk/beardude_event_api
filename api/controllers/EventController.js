@@ -178,11 +178,11 @@ module.exports = {
         .then(function (modelData) {
             var rfidExist;
 
+            testerEpc = modelData.testerEpc;
             rfidExist = _.includes(testerEpc, input.epc);
             if (rfidExist) {
                 throw new Error('Tester RFID already assigned');
             }
-            testerEpc = modelData.testerEpc;
             testerEpc.push(input.epc);
             return Event.update({
                 id: input.id

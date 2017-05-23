@@ -9,6 +9,67 @@ var expect = chai.expect;
 
 chai.use(chaiAsPromised);
 describe('/controllers/TeamController', function() {
+    describe('.teamExist()', function () {
+        it('should return team not found message if team not exist', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    name: 'Team Murica'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                name: 'Team Murica',
+                exist: false
+            };
+
+            sailsMock.mockModel(Team, 'findOne');
+            teamController.teamExist(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Team.findOne.restore();
+                done();
+            }, 25);
+        });
+        it('should return team exist message if team found', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    name: 'Team Murica'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                name: 'Team Murica',
+                exist: true
+            };
+            var mock = {
+                id: 1,
+                name: 'Team Murica'
+            };
+
+            sailsMock.mockModel(Team, 'findOne', mock);
+            teamController.teamExist(req, res);
+            this.timeout(50);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Team.findOne.restore();
+                done();
+            }, 25);
+        });
+    });
     describe('.getInfo()', function () {
         it('should return team info', function (done) {
             var actual;

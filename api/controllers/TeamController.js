@@ -3,6 +3,28 @@
 'use strict';
 
 module.exports = {
+    // {name: STR}
+    teamExist: function (req, res) {
+        var uniqueName = dataService.sluggify(req.body.name);
+
+        Team.findOne({
+            uniqueName: uniqueName
+        })
+        .then(function (result) {
+            var msg = false;
+
+            if (result) {
+                msg = true;
+            }
+            return res.ok({
+                name: req.body.name,
+                exist: msg
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     // {name: STR, desc: STR, url: STR}
     /*
     create: function (req, res) {
