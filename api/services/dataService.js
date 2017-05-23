@@ -83,6 +83,7 @@ var dataService = {
             }
             return true;
         },
+        // May be deprecated
         noOverlap: function (rules) {
             var lastPos;
             var i;
@@ -98,6 +99,22 @@ var dataService = {
                     }
                 }
                 lastPos = rules[i].insertAt + (rules[i].rankTo - rules[i].rankFrom);
+            }
+            return true;
+        },
+        noOverflow: function (rules, maxNumberAllowed) {
+            var i;
+            var raceId = rules[0].toRace;
+            var totalRacers = 0;
+
+            for (i = 0; i < rules.length; i += 1) {
+                if (raceId !== rules[i].toRace) {
+                    return false;
+                }
+                totalRacers += (rules[i].rankTo - rules[i].rankFrom + 1);
+            }
+            if (totalRacers > maxNumberAllowed) {
+                return false;
             }
             return true;
         }

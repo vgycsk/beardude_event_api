@@ -226,7 +226,7 @@ var RaceController = {
 
         input.race = parseInt(input.race);
         Race.update({
-            id: input.id
+            id: input.race
         }, {
             pacerEpc: input.epc
         })
@@ -243,8 +243,8 @@ var RaceController = {
     },
 
     // {race: ID, advancingRules: [{rule1}, {rule2} ]}
-    // rule: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
     /*
+    advancingRules: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
         { rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 }
         { rankFrom: 10, rankTo: 19, toRace: 3, insertAt: 0 }
     */
@@ -252,18 +252,20 @@ var RaceController = {
         var input = req.body;
         var toRace = [];
 
+        // 1. validate rules within this race
+        if (!dataService.validateAdvRules.continuity(input.advancingRules)) {
+            return res.badRequest('Must set rules for continuous rankings');
+        }
+        if (!dataService.validateAdvRules.startFromZero(input.advancingRules)) {
+            return res.badRequest('Must set rankFrom from 0');
+        }
         input.race = parseInt(input.race);
         input.advancingRules = _.sortBy(input.advancingRules, 'rankFrom');
-        Race.findOne({
+        return Race.findOne({
             id: input.race
         })
         .then(function (modelData) {
-            if (!dataService.validateAdvRules.continuity(input.advancingRules)) {
-                throw new Error('Must set rules for continuous rankings');
-            }
-            if (!dataService.validateAdvRules.startFromZero(input.advancingRules)) {
-                throw new Error('Must set rules for continuous rankings');
-            }
+            // 2. validate more rules within this race
             if (!dataService.validateAdvRules.maxRanking(input.advancingRules, modelData.racerNumberAllowed)) {
                 throw new Error('Rule setting exceeds max racer');
             }
@@ -271,41 +273,31 @@ var RaceController = {
                 toRace.push(rule.toRace);
             });
             _.uniq(toRace);
-            Group.findOne({
+            return Group.findOne({
                 id: modelData.group
             })
             .populate('races');
         })
         .then(function (modelData) {
-            var rulesByRace = [];
-            var racesToCheck = [];
-
-            modelData.races.forEach(function (race) {
-                if (race.id !== input.race) {
-                    racesToCheck.push(race);
-                }
-            });
-            // validate advancing rules' insertAt dont overlap
-            toRace.forEach(function (raceId) {
-                var rulesForSameRace = [];
-
-                racesToCheck.advancingRules.forEach(function (rule) {
-                    if (rule.toRace === raceId) {
-                        rulesForSameRace.push(rule);
-                    }
+            // 3. validate all toRace dont exceed max racer allowed
+            // TO DO: validate all advanced race's all position are filled (show warning if not)
+            toRace.forEach(function (toRaceId) {
+                var advRulesForSameRace = _.filter(input.advancingRules, {
+                    toRace: toRaceId
                 });
-                input.advancingRules.forEach(function (rule) {
-                    if (rule.toRace === raceId) {
-                        rulesForSameRace.push(rule);
-                    }
+                var raceObj = _.filter(modelData.races, {
+                    id: toRaceId
                 });
-                rulesByRace.push(rulesForSameRace);
-            });
-            rulesByRace.forEach(function (rulesForSameRace) {
-                var sortedRules = _.sortBy(rulesForSameRace, 'insertAt');
 
-                if (!dataService.validateAdvRules.noOverlap(sortedRules)) {
-                    throw new Error('Inserting position overlaps with other race\'s rules');
+                modelData.races.forEach(function (otherRace) {
+                    var matches = _.filter(otherRace.advancingRules, {
+                        toRace: toRaceId
+                    });
+
+                    advRulesForSameRace = advRulesForSameRace.concat(matches);
+                });
+                if (!dataService.validateAdvRules.noOverflow(advRulesForSameRace, raceObj.racerNumberAllowed)) {
+                    throw new Error('Racer count exceed max number of advanced race');
                 }
             });
             return Race.update({
@@ -313,13 +305,16 @@ var RaceController = {
             }, {
                 advancingRules: input.advancingRules
             });
-            // validate all advanced race's all position are filled (show warning if not)
         })
         .then(function (modelData) {
-            return res.ok({
+            var result = {
                 message: 'Advancing rules updated',
-                race: modelData[0]
-            });
+                race: input.race,
+                advancingRules: modelData[0].advancingRules
+            };
+
+            // to do: add notice for warning
+            return res.ok(result);
         })
         .catch(function (E) {
             return res.badRequest(E);

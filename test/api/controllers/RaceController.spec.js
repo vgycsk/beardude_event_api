@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, max-lines */
 /* global describe, Group, it, Race, Registration */
 
 var raceController = require('../../../api/controllers/RaceController.js');
@@ -606,20 +606,324 @@ describe('/controllers/RaceController', function() {
             }, 30);
         });
     });
-
-    /*
     describe('.assignPacerRfid()', function () {
-        it('should return error if racer not in group', function (done) {
-        });
-        it('should remove valid racer to race', function (done) {
+        it('should assign RFID to pacer', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    epc: 'abcd0001'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Pacer registered',
+                race: 5,
+                epc: 'abcd0001'
+            };
+
+            sailsMock.mockModel(Race, 'update');
+            this.timeout(50);
+            raceController.assignPacerRfid(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.update.restore();
+                done();
+            }, 30);
         });
     });
     describe('.updateAdvancingRules()', function () {
-        it('should return error if racer not in group', function (done) {
+        it('should return error if rules not continuous', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    advancingRules: [
+                        {
+                            rankFrom: 0,
+                            rankTo: 9,
+                            toRace: 2,
+                            insertAt: 0
+                        },
+                        {
+                            rankFrom: 11,
+                            rankTo: 19,
+                            toRace: 3,
+                            insertAt: 0
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = 'Must set rules for continuous rankings';
+
+            this.timeout(50);
+            raceController.updateAdvancingRules(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                done();
+            }, 30);
         });
-        it('should remove valid racer to race', function (done) {
+        it('should return error if rules not start from 0', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    advancingRules: [
+                        {
+                            rankFrom: 1,
+                            rankTo: 9,
+                            toRace: 2,
+                            insertAt: 0
+                        },
+                        {
+                            rankFrom: 10,
+                            rankTo: 19,
+                            toRace: 3,
+                            insertAt: 0
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = 'Must set rankFrom from 0';
+
+            this.timeout(50);
+            raceController.updateAdvancingRules(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                done();
+            }, 30);
+        });
+        it('should return error if racer count in rules exceed the number of racers', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    advancingRules: [
+                        {
+                            rankFrom: 0,
+                            rankTo: 9,
+                            toRace: 2,
+                            insertAt: 0
+                        },
+                        {
+                            rankFrom: 10,
+                            rankTo: 19,
+                            toRace: 3,
+                            insertAt: 0
+                        },
+                        {
+                            rankFrom: 20,
+                            rankTo: 30,
+                            toRace: 4,
+                            insertAt: 0
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                racerNumberAllowed: 30
+            };
+            var expected = new Error('Rule setting exceeds max racer');
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            this.timeout(50);
+            raceController.updateAdvancingRules(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                done();
+            }, 30);
+        });
+        it('should return error if racer number exceed max racer allowed in advanced race', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    advancingRules: [
+                        {
+                            rankFrom: 0,
+                            rankTo: 2,
+                            toRace: 2,
+                            insertAt: 3
+                        },
+                        {
+                            rankFrom: 3,
+                            rankTo: 11,
+                            toRace: 3,
+                            insertAt: 10
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                racerNumberAllowed: 30
+            };
+            var mockGroup = {
+                id: 1,
+                races: [
+                    {
+                        id: 1,
+                        advancingRules: [
+                            {
+                                rankFrom: 0,
+                                rankTo: 2,
+                                toRace: 2,
+                                insertAt: 0
+                            },
+                            {
+                                rankFrom: 3,
+                                rankTo: 11,
+                                toRace: 3,
+                                insertAt: 0
+                            }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        racerNumberAllowed: 3,
+                        advancingRules: []
+                    }
+                ]
+            };
+            var expected = new Error('Rule setting exceeds max racer');
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            sailsMock.mockModel(Group, 'findOne', mockGroup);
+            this.timeout(50);
+            raceController.updateAdvancingRules(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                Group.findOne.restore();
+                done();
+            }, 30);
+        });
+        it('should update advancing rules', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    advancingRules: [
+                        {
+                            rankFrom: 0,
+                            rankTo: 2,
+                            toRace: 2,
+                            insertAt: 3
+                        },
+                        {
+                            rankFrom: 3,
+                            rankTo: 11,
+                            toRace: 3,
+                            insertAt: 10
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                racerNumberAllowed: 30
+            };
+            var mockGroup = {
+                id: 1,
+                races: [
+                    {
+                        id: 1,
+                        advancingRules: [
+                            {
+                                rankFrom: 0,
+                                rankTo: 2,
+                                toRace: 2,
+                                insertAt: 0
+                            },
+                            {
+                                rankFrom: 3,
+                                rankTo: 11,
+                                toRace: 3,
+                                insertAt: 0
+                            }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        racerNumberAllowed: 6,
+                        advancingRules: []
+                    }
+                ]
+            };
+            var expected = {
+                message: 'Advancing rules updated',
+                race: 5,
+                advancingRules: req.body.advancingRules
+            };
+            var mockUpdate = [{
+                id: 5,
+                advancingRules: req.body.advancingRules
+            }];
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            sailsMock.mockModel(Race, 'update', mockUpdate);
+            sailsMock.mockModel(Group, 'findOne', mockGroup);
+            this.timeout(99);
+            raceController.updateAdvancingRules(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.update.restore();
+                Race.findOne.restore();
+                Group.findOne.restore();
+                done();
+            }, 60);
         });
     });
+    /*
     describe('.getParsedRaceResult()', function () {
         it('should return error if racer not in group', function (done) {
         });
