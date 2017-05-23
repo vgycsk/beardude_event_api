@@ -1,12 +1,23 @@
 /* eslint-disable no-magic-numbers, max-lines */
-/* global describe, Group, it, Race, Registration */
+/* global afterEach, beforeEach, dataService, describe, Group, it, Race, Registration */
 
 var raceController = require('../../../api/controllers/RaceController.js');
+var sinon = require('sinon');
 var sailsMock = require('sails-mock-models');
 var chai = require('chai');
 var expect = chai.expect;
+var Q = require('q');
 
 describe('/controllers/RaceController', function() {
+    var sandbox;
+
+    beforeEach(function () {
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(function () {
+        sandbox.restore();
+    });
     describe('.create()', function () {
         it('should create a race', function (done) {
             var actual;
@@ -830,14 +841,14 @@ describe('/controllers/RaceController', function() {
 
             sailsMock.mockModel(Race, 'findOne', mock);
             sailsMock.mockModel(Group, 'findOne', mockGroup);
-            this.timeout(50);
+            this.timeout(99);
             raceController.updateAdvancingRules(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Race.findOne.restore();
                 Group.findOne.restore();
                 done();
-            }, 30);
+            }, 70);
         });
         it('should update advancing rules', function (done) {
             var actual;
@@ -929,24 +940,294 @@ describe('/controllers/RaceController', function() {
             }, 60);
         });
     });
-    /*
     describe('.getParsedRaceResult()', function () {
-        it('should return error if racer not in group', function (done) {
+        it('should return error if race not finished', function (done) {
+            var actual;
+            var req = {
+                params: {
+                    id: '5'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                startTime: '2017-10-10T08:00:00-08:00'
+            };
+            var expected = new Error('Race not finished');
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            this.timeout(99);
+            raceController.getParsedRaceResult(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                done();
+            }, 60);
         });
-        it('should remove valid racer to race', function (done) {
+        it('should return parsed race result', function (done) {
+            var recordsHashTable1 = require('../../mockdata/recordsHashTable1.json');
+            var registrations1 = require('../../mockdata/registrations1.json');
+            var actual;
+            var req = {
+                params: {
+                    id: '5'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                startTime: '2017-10-10T08:00:00-08:00',
+                endTime: '2017-10-10T8:30:00-08:00',
+                recordsHashTable: recordsHashTable1,
+                laps: 9,
+                registrations: registrations1
+            };
+            var expected = dataService.returnParsedRaceResult(mock.recordsHashTable, mock.laps, mock.registrations);
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            this.timeout(99);
+            raceController.getParsedRaceResult(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                done();
+            }, 60);
         });
     });
     describe('.advancingRacerToRace()', function () {
-        it('should return error if racer not in group', function (done) {
-        });
-        it('should remove valid racer to race', function (done) {
+        it('should advance racers that match advancingRules to next race', function (done) {
+            /*
+    // 晉級規則 advancingRule: [{ rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }, {...}]
+    // 該場比賽排名 rankings: [{registration: ID, time: INT/'dnf'}, {...}]
+            */
+            var actual;
+            var added = [];
+            var advancingRule = {
+                rankFrom: 0,
+                rankTo: 2,
+                toRace: 5
+            };
+            var rankings = [
+                {
+                    registration: 1
+                },
+                {
+                    registration: 3
+                },
+                {
+                    registration: 5
+                },
+                {
+                    registration: 7
+                },
+                {
+                    registration: 9
+                }
+            ];
+            var mock = {
+                id: 5,
+                registrations: []
+            };
+            var expected = {
+                message: 'Racers allocated to coming races',
+                race: 5,
+                rankFrom: 0,
+                rankTo: 2
+            };
+
+            sandbox.stub(Q, 'defer').callsFake(function () {
+                return {
+                    resolve: function (obj) {
+                        actual = obj;
+                    },
+                    reject: function (obj) {
+                        actual = obj;
+                    }
+                };
+            });
+            mock.registrations.add = function (id) {
+                added.push(id);
+            };
+            mock.save = function () {
+                return true;
+            };
+            sailsMock.mockModel(Race, 'findOne', mock);
+            raceController.advancingRacerToRace(advancingRule, rankings);
+            this.timeout(99);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                expect(added).to.deep.equal([1, 3, 5]);
+                Race.findOne.restore();
+                done();
+            }, 60);
         });
     });
     describe('.submitRaceResult()', function () {
-        it('should return error if racer not in group', function (done) {
+        it('should submit race result and update group if is last race', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    rankings: [
+                        {
+                            registration: 1
+                        },
+                        {
+                            registration: 3
+                        },
+                        {
+                            registration: 5
+                        },
+                        {
+                            registration: 7
+                        },
+                        {
+                            registration: 9
+                        }
+                    ],
+                    disqualified: [
+                        {
+                            registration: 2
+                        },
+                        {
+                            registration: 4
+                        },
+                        {
+                            registration: 6
+                        },
+                        {
+                            registration: 8
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                group: 3,
+                advancingRules: []
+            };
+            var mockGroup = [{
+                id: 3
+            }];
+            var expected = {
+                message: 'Result submitted',
+                group: 3,
+                race: 5
+            };
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            sailsMock.mockModel(Race, 'update');
+            sailsMock.mockModel(Group, 'update', mockGroup);
+            this.timeout(99);
+            raceController.submitRaceResult(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                Race.update.restore();
+                Group.update.restore();
+                done();
+            }, 60);
         });
-        it('should remove valid racer to race', function (done) {
+        it('should submit race result and advance qualified racers to coming races', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    race: '5',
+                    rankings: [
+                        {
+                            registration: 1
+                        },
+                        {
+                            registration: 3
+                        },
+                        {
+                            registration: 5
+                        },
+                        {
+                            registration: 7
+                        },
+                        {
+                            registration: 9
+                        }
+                    ],
+                    disqualified: [
+                        {
+                            registration: 2
+                        },
+                        {
+                            registration: 4
+                        },
+                        {
+                            registration: 6
+                        },
+                        {
+                            registration: 8
+                        }
+                    ]
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5,
+                group: 3,
+                advancingRules: [
+                    {
+                        rankFrom: 0,
+                        rankTo: 2,
+                        toRace: 2,
+                        insertAt: 3
+                    }
+                ]
+            };
+            var expected = {
+                message: 'Result submitted',
+                race: 5
+            };
+
+            sandbox.stub(Q, 'all').callsFake(function () {
+                return true;
+            });
+            sailsMock.mockModel(Race, 'findOne', mock);
+            sailsMock.mockModel(Race, 'update');
+            this.timeout(99);
+            raceController.submitRaceResult(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                Race.update.restore();
+                done();
+            }, 60);
         });
     });
+    /*
     */
 });

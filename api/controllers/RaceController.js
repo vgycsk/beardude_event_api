@@ -242,10 +242,9 @@ var RaceController = {
         });
     },
 
-    // {race: ID, advancingRules: [{rule1}, {rule2} ]}
-    /*
-    advancingRules: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
-        { rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 }
+    //  {race: ID, advancingRules: [{rule1}, {rule2} ]}
+    /*  advancingRules: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
+        { rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 },
         { rankFrom: 10, rankTo: 19, toRace: 3, insertAt: 0 }
     */
     updateAdvancingRules: function (req, res) {
@@ -326,24 +325,19 @@ var RaceController = {
         });
     },
     getParsedRaceResult: function (req, res) {
-        var input = req.params.id;
+        var query = {
+            id: parseInt(req.params.id)
+        };
 
-        input.race = parseInt(input.race);
-        Race.findOne({
-            id: input.race
-        })
+        Race.findOne(query)
         .populate('registrations')
         .then(function (raceData) {
-            if (raceData.endTime && raceData.endTime !== '') {
-                return Race.findOne({
-                    id: input.race
-                })
-                .populate('registrations');
+            var result;
+
+            if (!raceData.endTime || raceData.endTime === '') {
+                throw new Error('Race not finished');
             }
-            throw new Error('Race not finished');
-        })
-        .then(function (raceData) {
-            var result = dataService.returnParsedRaceResult(raceData.recordsHashTable, raceData.laps, raceData.registrations);
+            result = dataService.returnParsedRaceResult(raceData.recordsHashTable, raceData.laps, raceData.registrations);
 
             return res.ok(result);
         })
@@ -351,7 +345,9 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-    advancingRacerToRace: function (advancingRule, ranking) {
+    // 晉級規則 advancingRule: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
+    // 該場比賽排名 rankings: [{registration: ID, time: INT/'dnf'}, {...}]
+    advancingRacerToRace: function (advancingRule, rankings) {
         var q = Q.defer();
 
         Race.findOne({
@@ -363,7 +359,7 @@ var RaceController = {
             var regId;
 
             for (i = advancingRule.rankFrom; i <= advancingRule.rankTo; i += 1) {
-                regId = ranking[i].registration;
+                regId = rankings[i].registration;
                 raceData.registrations.add(regId);
             }
             return raceData.save();
@@ -381,10 +377,11 @@ var RaceController = {
         });
         return q.promise;
     },
-    /* {race: ID,
-        ranking: [{registration: ID, time: INT/'dnf'}],
-        disqualified: [{registration: ID, time: INT/dnf}]}
-    */
+    /* {
+        race: ID,
+        rankings: [{registration: ID, time: INT/'dnf'}],
+        disqualified: [{registration: ID, time: INT/dnf}]
+    }*/
     submitRaceResult: function (req, res) {
         var input = req.body;
         var advancingRules;
@@ -405,14 +402,13 @@ var RaceController = {
             }
             advancingRules.forEach(function (rule) {
                 funcs.push(function () {
-                    return RaceController.advancingRacerToRace(rule, input.ranking);
+                    return RaceController.advancingRacerToRace(rule, input.rankings);
                 });
             });
             return Q.all(funcs);
         })
         .then(function () {
-            completeRanking = input.ranking.concat(input.disqualified);
-
+            completeRanking = input.rankings.concat(input.disqualified);
             return Race.update({
                 id: input.race
             }, {
