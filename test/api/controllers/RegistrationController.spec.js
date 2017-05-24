@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, no-undefined, max-lines */
-/* global afterEach, accountService, beforeEach, dataService, describe, it, Race, Registration */
+/* global afterEach, accountService, beforeEach, dataService, describe, it, Race, Registration, Team */
 
 var registrationController = require('../../../api/controllers/RegistrationController.js');
 var sailsMock = require('sails-mock-models');
@@ -76,6 +76,130 @@ describe('/controllers/RegistrationController', function() {
                 Registration.create.restore();
                 done();
             }, 50);
+        });
+    });
+    describe('.signupAndCreateMultiple()', function () {
+        it('should create a team and multiple racer accounts, then register all for an event', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    group: 1,
+                    event: 1,
+                    team: {
+                        name: 'Team Murica',
+                        desc: 'The best of the best of the best',
+                        url: 'http://team-murica.cafe'
+                    },
+                    racers: [
+                        {
+                            email: 'info@beardude.com',
+                            firstName: 'Jane'
+                        },
+                        {
+                            email: 'info@beardude.com',
+                            firstName: 'John'
+                        },
+                        {
+                            email: 'info@beardude.com',
+                            firstName: 'Peter'
+                        }
+                    ]
+                }
+            };
+            var racerObjs = [
+                {
+                    id: 1,
+                    email: 'info@beardude.com',
+                    firstName: 'Jane'
+                },
+                {
+                    id: 2,
+                    email: 'info@beardude.com',
+                    firstName: 'John'
+                },
+                {
+                    id: 3,
+                    email: 'info@beardude.com',
+                    firstName: 'Peter'
+                }
+            ];
+            var regObjs = [
+                {
+                    event: 1,
+                    group: 1,
+                    racer: 1
+                },
+                {
+                    event: 1,
+                    group: 1,
+                    racer: 2
+                },
+                {
+                    event: 1,
+                    group: 1,
+                    racer: 3
+                }
+            ];
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                message: 'Team registered successfully',
+                team: {
+                    id: 1,
+                    name: 'Team Murica',
+                    desc: 'The best of the best of the best',
+                    url: 'http://team-murica.cafe',
+                    leader: 1
+                },
+                registrations: regObjs
+            };
+            var mock = {
+                id: 1,
+                name: 'Team Murica',
+                desc: 'The best of the best of the best',
+                url: 'http://team-murica.cafe'
+            };
+            var mockUpdate = [{
+                id: 1,
+                name: 'Team Murica',
+                desc: 'The best of the best of the best',
+                url: 'http://team-murica.cafe',
+                leader: 1
+            }];
+            var mockReg = {
+                id: 1,
+                event: 1,
+                group: 1
+            };
+            var accountId = 1;
+            var stubb = sandbox.stub(Q, 'all');
+
+            sandbox.stub(accountService, 'create').callsFake(function (query) {
+                var q = Q.defer();
+                var result = query;
+
+                result.id = accountId;
+                accountId += 1;
+                q.resolve(result);
+                return q.promise;
+            });
+            stubb.onFirstCall().returns(racerObjs);
+            stubb.onSecondCall().returns(regObjs);
+            sailsMock.mockModel(Team, 'create', mock);
+            sailsMock.mockModel(Team, 'update', mockUpdate);
+            sailsMock.mockModel(Registration, 'create', mockReg);
+            registrationController.signupAndCreateMultiple(req, res);
+            this.timeout(99);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Team.create.restore();
+                Team.update.restore();
+                Registration.create.restore();
+                done();
+            }, 70);
         });
     });
     describe('.create()', function () {
