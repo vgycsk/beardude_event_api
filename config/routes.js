@@ -115,6 +115,8 @@ module.exports.routes = {
 
     // Team
     // 之後再開放進階隊伍管理功能
+    // 2.2.2
+    'post /team/exist': 'TeamController.teamExist',
     // 2.3.3
     //'post /team/create': 'TeamController.create',
     // NA
@@ -123,8 +125,6 @@ module.exports.routes = {
     //'post /team/delete': 'TeamController.delete',
     // 2.3.2
     'post /team/update': 'TeamController.update',
-    // 2.2.2
-    'post /team/exist': 'TeamController.teamExist',
 
     // 2.3.5
     //'post /team/apply': 'TeamController.applyForTeam',

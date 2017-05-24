@@ -105,6 +105,7 @@ module.exports = {
             email: input.email
         })
         .then(function (modelData) {
+            console.log('modelData: ', modelData);
             if (typeof modelData !== 'undefined') {
                 throw new Error('Account exists');
             }

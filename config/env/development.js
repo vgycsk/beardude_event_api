@@ -28,7 +28,6 @@ module.exports = {
         },
         dev: {
             adapter: 'sails-disk'
-
         }
     },
     log: {

@@ -44,15 +44,18 @@ module.exports = {
         },
         isPublic: {
             type: 'boolean',
-            required: true
+            required: true,
+            defaultsTo: false
         },
         isRegistrationOpen: {
             type: 'boolean',
-            required: true
+            required: true,
+            defaultsTo: false
         },
         isTeamRegistrationOpen: {
             type: 'boolean',
-            required: true
+            required: true,
+            defaultsTo: false
         },
         testerEpc: {
             type: 'array',

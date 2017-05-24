@@ -35,31 +35,6 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-    // {race: ID}
-    delete: function (req, res) {
-        var input = req.body;
-        var query = {
-            id: parseInt(input.race)
-        };
-
-        Race.findOne(query)
-        .then(function (modelData) {
-            // Race started
-            if (modelData.startTime && modelData.startTime !== '') {
-                throw new Error('Cannot delete a started race');
-            }
-            return Race.destroy(query);
-        })
-        .then(function () {
-            return res.ok({
-                message: 'Race deleted',
-                race: input.race
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
     // Get public info
     getGeneralInfo: function (req, res) {
         Race.findOne({
@@ -121,6 +96,31 @@ var RaceController = {
             return res.ok({
                 message: 'Race updated',
                 race: modelData[0]
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID}
+    delete: function (req, res) {
+        var input = req.body;
+        var query = {
+            id: parseInt(input.race)
+        };
+
+        Race.findOne(query)
+        .then(function (modelData) {
+            // Race started
+            if (modelData.startTime && modelData.startTime !== '') {
+                throw new Error('Cannot delete a started race');
+            }
+            return Race.destroy(query);
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Race deleted',
+                race: input.race
             });
         })
         .catch(function (E) {
@@ -241,7 +241,6 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-
     //  {race: ID, advancingRules: [{rule1}, {rule2} ]}
     /*  advancingRules: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
         { rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 },
