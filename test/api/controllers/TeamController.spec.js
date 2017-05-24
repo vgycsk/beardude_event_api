@@ -116,6 +116,49 @@ describe('/controllers/TeamController', function() {
             }, 25);
         });
     });
+    describe('.create()', function () {
+        // {name: STR, desc: STR, url: STR}
+        it('should create team', function (done) {
+            var actual;
+            var req = {
+                body: {
+                    name: 'Team Murica',
+                    desc: 'The best of the best of the best',
+                    url: 'http://team-murica.cafe'
+                },
+                session: {
+                    racerInfo: {
+                        id: 1
+                    }
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 1,
+                name: 'Team Murica',
+                desc: 'The best of the best of the best',
+                url: 'http://team-murica.cafe',
+                leader: 1
+            };
+            var expected = {
+                message: 'Team created',
+                team: mock
+            };
+
+            sailsMock.mockModel(Team, 'create', mock);
+            teamController.create(req, res);
+            this.timeout(99);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Team.create.restore();
+                done();
+            }, 70);
+        });
+    });
     describe('.getInfo()', function () {
         it('should return team info', function (done) {
             var actual;

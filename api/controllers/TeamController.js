@@ -55,7 +55,7 @@ var TeamController = {
         if (req.session.racerInfo) {
             input.leader = req.session.racerInfo.id;
         }
-        TeamController.createTeam()
+        TeamController.createTeam(input)
         .then(function (teamData) {
             return res.ok({
                 message: 'Team created',
