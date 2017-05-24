@@ -3,11 +3,10 @@
 'use strict';
 
 module.exports = {
+    // { name: STR, nameCht: STR, rules: STR }
     create: function (req, res) {
         var input = req.body;
 
-        input.isPublic = false;
-        input.isRegistrationOpen = false;
         Group.create(input)
         .then(function (modelData) {
             return res.ok({
