@@ -48,7 +48,7 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function() {
     it('should return true if the user is the team leader', function (done) {
         var req = {
             params: {
-                id: '3'
+                id: '5'
             },
             session: {
                 racerInfo: {
