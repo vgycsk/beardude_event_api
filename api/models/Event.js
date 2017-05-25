@@ -25,13 +25,13 @@ module.exports = {
             type: 'integer',
             defaultsTo: 1
         },
-        //moment().format("YYYY-MM-DD HH:mm:ss")
+        //時間統一用 timestamp
         startTime: {
-            type: 'datetime',
+            type: 'integer',
             required: true
         },
         endTime: {
-            type: 'datetime',
+            type: 'integer',
             required: true
         },
         // meter
