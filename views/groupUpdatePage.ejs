@@ -23,23 +23,6 @@
     }
     </style>
 </head>
-
-        name: {
-            type: 'string',
-            required: true
-        },
-        nameCht: {
-            type: 'string',
-            required: true
-        },
-        isPublic: {
-            type: 'boolean',
-            required: true
-        },
-        isRegistrationOpen: {
-            type: 'boolean',
-            required: true
-        }
 <body>
     <section>
         <h2>Group Update test page</h2>
@@ -50,23 +33,19 @@
                     <ul>
                         <li>
                             <label>Id</label>
-                            <input type="number" name="id" value="<%= group.id %>" readOnly />
+                            <input type="number" name="group" value="<%= group.id %>" readOnly />
                         </li>
                         <li>
-                            <label>Event</label>
-                            <input type="text" name="event" value="<%= group.event %>" readOnly />
+                            <label>Name</label>
+                            <input type="text" name="name" value="<%= group.name %>" readOnly />
                         </li>
                         <li>
-                            <label>Phone</label>
-                            <input type="text" name="name" value="<%= group.name %>" />
-                        </li>
-                        <li>
-                            <label>Phone</label>
+                            <label>NameCht</label>
                             <input type="text" name="nameCht" value="<%= group.nameCht %>" />
                         </li>
+
                         <li>
-                            <input type="text" name="isPublic" <% if (group.isPublic) { %> checked <% } %> />
-                            <input type="text" name="isRegistrationOpen" <% if (group.isRegistrationOpen) { %> checked <% } %> />
+                            <textarea name="rules" value="<%= group.rules %>"></textarea>
                         </li>
                     </ul>
                     <button type="submit">Submit</button>

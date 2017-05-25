@@ -171,6 +171,10 @@
                             <input type="text" name="nameCht" />
                         </li>
                         <li>
+                            <label>assignedRaceNumber</label>
+                            <input type="number" name="assignedRaceNumber" />
+                        </li>
+                        <li>
                             <label>Start time</label>
                             <input type="datetime-local" name="startTime" />
                         </li>
@@ -179,12 +183,12 @@
                             <input type="datetime-local" name="endTime" />
                         </li>
                         <li>
-                            <label>Location</label>
-                            <input type="text" name="location" />
+                            <label>Lap Distance (meter)</label>
+                            <input type="number" name="lapDistance" />
                         </li>
                         <li>
-                            <label>isPublic</label>
-                            <input type="checkbox" name="isPublic" />
+                            <label>Location</label>
+                            <input type="text" name="location" />
                         </li>
                     </ul>
                     <button type="submit">Submit</button>
@@ -200,6 +204,26 @@
                     <% } %>
                 </ul>
             </li>
+            <li>
+                <h3>Update</h3>
+                <ul>
+                    <% for (var i = 0; i < params.events.length; i += 1) { %>
+                        <li>
+                            <a href="/event/update/<%= params.events[i].id %>"><%= params.events[i].id %> - <%= params.events[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Delete</h3>
+                <ul>
+                    <% for (var i = 0; i < params.events.length; i += 1) { %>
+                        <li>
+                            <a href="/event/delete/<%= params.events[i].id %>"><%= params.events[i].id %> - <%= params.events[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
         </ul>
     </section>
     <section>
@@ -211,6 +235,10 @@
                 <form action="/group/create" method="POST">
                     <ul>
                         <li>
+                            <label>Event</label>
+                            <input type="number" name="event" />
+                        </li>
+                        <li>
                             <label>Name</label>
                             <input type="text" name="name" />
                         </li>
@@ -219,12 +247,8 @@
                             <input type="text" name="nameCht" />
                         </li>
                         <li>
-                            <label>isPublic</label>
-                            <input type="checkbox" name="isPublic" />
-                        </li>
-                        <li>
-                            <label>isRegistrationOpen</label>
-                            <input type="checkbox" name="isRegistrationOpen" />
+                            <label>Rules</label>
+                            <textarea type="text" name="rules"></textarea>
                         </li>
                     </ul>
                     <button type="submit">Submit</button>
@@ -245,7 +269,17 @@
                 <ul>
                     <% for (var i = 0; i < params.groups.length; i += 1) { %>
                         <li>
-                            <a href="/groups/update/<%= params.managers[i].id %>"><%= params.groups[i].id %> - <%= params.groups[i].name %></a>
+                            <a href="/group/update/<%= params.groups[i].id %>"><%= params.groups[i].id %> - <%= params.groups[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Delete</h3>
+                <ul>
+                    <% for (var i = 0; i < params.groups.length; i += 1) { %>
+                        <li>
+                            <a href="/group/delete/<%= params.groups[i].id %>"><%= params.groups[i].id %> - <%= params.groups[i].name %></a>
                         </li>
                     <% } %>
                 </ul>

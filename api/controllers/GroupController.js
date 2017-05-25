@@ -3,7 +3,7 @@
 'use strict';
 
 module.exports = {
-    // { name: STR, nameCht: STR, rules: STR }
+    // { event: ID, name: STR, nameCht: STR, rules: STR }
     create: function (req, res) {
         var input = req.body;
 
@@ -86,9 +86,8 @@ module.exports = {
     },
     // {group: ID}
     delete: function (req, res) {
-        var input = req.body;
         var query = {
-            id: parseInt(input.group)
+            id: parseInt(req.params.id)
         };
         var racesToDestroy = [];
 
@@ -118,7 +117,7 @@ module.exports = {
         .then(function () {
             return res.ok({
                 message: 'Group deleted',
-                group: input.group,
+                group: query.id,
                 races: racesToDestroy
             });
         })

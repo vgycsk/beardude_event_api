@@ -191,8 +191,8 @@ describe('/controllers/GroupController', function() {
         it('should return error if event has registrations', function (done) {
             var actual;
             var req = {
-                body: {
-                    group: 1
+                params: {
+                    id: '1'
                 }
             };
             var res = {
@@ -222,8 +222,8 @@ describe('/controllers/GroupController', function() {
         it('should remove empty group', function (done) {
             var actual;
             var req = {
-                body: {
-                    group: 1
+                params: {
+                    'id': 1
                 }
             };
             var res = {
@@ -259,8 +259,8 @@ describe('/controllers/GroupController', function() {
         it('should remove group', function (done) {
             var actual;
             var req = {
-                body: {
-                    group: 1
+                params: {
+                    id: '1'
                 }
             };
             var res = {
