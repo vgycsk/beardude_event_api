@@ -2,13 +2,16 @@
 
 'use strict';
 
+var moment = require('moment');
+
 module.exports = {
     // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
     create: function (req, res) {
         var input = req.body;
         var resultObj;
 
-        input.isPublic = false;
+        input.startTime = moment(input.startTime).valueOf();
+        input.endTime = moment(input.endTime).valueOf();
         Event.create(input)
         .then(function (eventData) {
             resultObj = eventData;
@@ -142,7 +145,7 @@ module.exports = {
         var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];
         var input = req.body;
         var query = {
-            id: parseInt(input.group)
+            id: parseInt(input.event)
         };
         var updateObj = {};
 
@@ -200,5 +203,53 @@ module.exports = {
         .catch(function (E) {
             return res.badRequest(E);
         });
-    }
+    },
+    delete: function (req, res) {
+        var query = {
+            id: parseInt(req.params.id)
+        };
+        var groupIds = [];
+
+        Event.findOne(query)
+        .populate('groups')
+        .then(function (modelData) {
+            var startTime = modelData.startTime;
+            var endTime = modelData.endTime;
+            var now = moment().valueOf();
+
+            if (modelData.isPublic) {
+                throw new Error('Cannot delete a public event');
+            }
+            if (now > startTime && now < endTime) {
+                throw new Error('Cannot delete an ongoing event');
+            }
+            //
+            modelData.groups.forEach(function (group) {
+                groupIds.push(group.id);
+            });
+            if (groupIds.length === 0) {
+                return false;
+            }
+            return Group.find({
+                id: groupIds
+            })
+            .populate('races')
+            .populate('registrations')
+        })
+        .then(function (groupData) {
+            if (groupData) {
+                throw new Error('Cannot delete an event that contains group');
+            }
+            return Event.destroy(query);
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Event deleted',
+                event: query.id
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
 };

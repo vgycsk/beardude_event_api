@@ -25,45 +25,67 @@
 </head>
 <body>
     <section>
-        <h2>Manager Update test page</h2>
+        <h2>Event Update test page</h2>
         <ul>
             <li>
                 <h3>Update</h3>
-                <form action="/manager/update" method="POST">
+                <form action="/event/update" method="POST">
                     <ul>
                         <li>
                             <label>Id</label>
-                            <input type="text" name="id" value="<%= manager.id %>" readOnly />
-                        </li>
-                        <li>
-                            <label>Email</label>
-                            <input type="text" name="email" value="<%= manager.email %>" />
-                        </li>
-                        <li>
-                            <label>Phone</label>
-                            <input type="text" name="phone" value="<%= manager.phone %>" />
+                            <input type="number" name="event" value="<%= event.id %>" readOnly />
                         </li>
                         <li>
                             <label>Name</label>
-                            <input type="text" name="firstName" value="<%= manager.firstName %>" placeholder="first name"/>
-                            <input type="text" name="lastName" value="<%= manager.lastName %>" placeholder="last name"/>
+                            <input type="text" name="name" value="<%= event.name %>" />
                         </li>
-                        <% include ./partials/address %>
+                        <li>
+                            <label>Name Cht</label>
+                            <input type="text" name="nameCht" value="<%= event.nameCht %>" />
+                        </li>
+                        <li>
+                            <label>assignedRaceNumber</label>
+                            <input type="number" name="assignedRaceNumber" value="<%= event.assignedRaceNumber %>" />
+                        </li>
+                        <li>
+                            <label>Start time</label>
+                            <input type="datetime" name="startTime" value="<%= event.startTime %>" />
+                        </li>
+                        <li>
+                            <label>End time</label>
+                            <input type="datetime" name="endTime" value="<%= event.endTime %>" />
+                        </li>
+                        <li>
+                            <label>lapDistance</label>
+                            <input type="number" name="lapDistance" value="<%= event.lapDistance %>" />
+                        </li>
+                        <li>
+                            <label>location</label>
+                            <input type="text" name="location" value="<%= event.location %>" />
+                        </li>
                     </ul>
                     <button type="submit">Submit</button>
                 </form>
             </li>
             <li>
-                <h3>Update</h3>
-                <form action="/manager/updatePassword" method="POST">
+                <h3>Update Switch</h3>
+                <form action="/event/updateSwitch" method="POST">
                     <ul>
                         <li>
-                            <label>password</label>
-                            <input type="password" name="password" />
+                            <label>Id</label>
+                            <input type="number" name="event" value="<%= event.id %>" readOnly />
                         </li>
                         <li>
-                            <label>Confirm password</label>
-                            <input type="password" name="confirmPassword" />
+                            <input type="checkbox" name="isPublic" <% if (event.isPublic) { %>checked<% } %> />
+                            <label>isPublic</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="isRegistrationOpen" <% if (event.isRegistrationOpen) { %>checked<% } %> />
+                            <label>isRegistrationOpen</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="isTeamRegistrationOpen" <% if (event.isTeamRegistrationOpen) { %>checked<% } %> />
+                            <label>isTeamRegistrationOpen</label>
                         </li>
                     </ul>
                     <button type="submit">Submit</button>

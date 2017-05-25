@@ -3,20 +3,22 @@
 module.exports.routes = {
 
     // Event
-    // 1.1
+    // 1.1 -
     'post /event/create': 'EventController.create',
-    // 3.1
+    // 3.1 -
     'get  /event/info/:id': 'EventController.getGeneralInfo',
     // 1.3
     'post /event/managers/add': 'EventController.addManagers',
     // 1.3
     'post /event/managers/remove': 'EventController.removeManagers',
-    // 1.2.7
+    // 1.2.7 -
     'post /event/update': 'EventController.update',
-    // 1.2.10
+    // 1.2.10 -
     'post /event/updateSwitch': 'EventController.updateSwitch',
     // 4.2.3
     'post /event/assignTesterRfid': 'EventController.assignTesterRfid',
+    // 1.6
+    'get  /event/delete/:id': 'EventController.delete',
 
     // Group
     // 1.2.1
@@ -26,7 +28,7 @@ module.exports.routes = {
     // 1.2.2
     'post /group/update': 'GroupController.update',
     // 1.2.3
-    'post /group/delete': 'GroupController.delete',
+    'get  /group/delete/:id': 'GroupController.delete',
 
     // Manager 1.5
     'post /manager/activate': 'ManagerController.activate',
@@ -137,6 +139,7 @@ module.exports.routes = {
 
     // Test page
     'get  /group/update/:id': 'PageController.groupUpdatePage',
+    'get  /event/update/:id': 'PageController.eventUpdatePage',
     'get  /manager/update/:id': 'PageController.managerUpdatePage',
     'get  /': 'PageController.apiTestPage'
 };

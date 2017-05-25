@@ -305,6 +305,7 @@ describe('/controllers/EventController', function() {
             var actual;
             var req = {
                 body: {
+                    event: 1,
                     isRegistrationOpen: true,
                     isTeamRegistrationOpen: true,
                     isPublic: true
