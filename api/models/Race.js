@@ -48,10 +48,10 @@ module.exports = {
         },
         //moment().format("YYYY-MM-DD HH:mm:ss")
         startTime: {
-            type: 'datetime'
+            type: 'integer'
         },
         endTime: {
-            type: 'datetime'
+            type: 'integer'
         },
         // [{epc:1 time: ms}, {}, {}]
         rfidData: {
