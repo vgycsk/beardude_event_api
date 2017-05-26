@@ -69,7 +69,7 @@ module.exports = {
                 if (event.id === inputId) {
                     eventToUpdate = event;
                 }
-            });//moment.ISO_8601
+            });
             eventToUpdate.startTime = moment(eventToUpdate.startTime).format();
             eventToUpdate.endTime = moment(eventToUpdate.endTime).format();
             return res.render('eventUpdatePage', {
