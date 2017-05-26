@@ -1,6 +1,7 @@
 /* global Event, Group, Manager, Race, Racer, Registration */
 'use strict';
 
+var moment = require('moment');
 var Q = require('q');
 var returnParams = function (session) {
     var q = Q.defer();
@@ -55,7 +56,49 @@ module.exports = {
             });
         })
         .catch(function (E) {
-            return res.badRequest('Broken: ', E);
+            return res.badRequest(E);
+        });
+    },
+    eventUpdatePage: function (req, res) {
+        returnParams(req.session)
+        .then(function (params) {
+            var inputId = parseInt(req.params.id);
+            var eventToUpdate;
+
+            params.events.forEach(function (event) {
+                if (event.id === inputId) {
+                    eventToUpdate = event;
+                }
+            });//moment.ISO_8601
+            eventToUpdate.startTime = moment(eventToUpdate.startTime).format();
+            eventToUpdate.endTime = moment(eventToUpdate.endTime).format();
+            return res.render('eventUpdatePage', {
+                event: eventToUpdate,
+                params: params
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    raceUpdatePage: function (req, res) {
+        returnParams(req.session)
+        .then(function (params) {
+            var inputId = parseInt(req.params.id);
+            var raceToUpdate;
+
+            params.races.forEach(function (race) {
+                if (race.id === inputId) {
+                    raceToUpdate = race;
+                }
+            });
+            return res.render('raceUpdatePage', {
+                race: raceToUpdate,
+                params: params
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
         });
     },
     groupUpdatePage: function (req, res) {
@@ -70,12 +113,12 @@ module.exports = {
                 }
             });
             return res.render('groupUpdatePage', {
-                manager: groupToUpdate,
+                group: groupToUpdate,
                 params: params
             });
         })
         .catch(function (E) {
-            return res.badRequest('Broken: ', E);
+            return res.badRequest(E);
         });
     },
     managerUpdatePage: function (req, res) {
@@ -95,7 +138,7 @@ module.exports = {
             });
         })
         .catch(function (E) {
-            return res.badRequest('Broken: ', E);
+            return res.badRequest(E);
         });
     }
 };
