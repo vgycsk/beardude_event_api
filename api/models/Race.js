@@ -16,6 +16,9 @@ module.exports = {
             type: 'string',
             required: true
         },
+        nameCht: {
+            type: 'string'
+        },
         laps: {
             type: 'integer',
             required: true
@@ -28,7 +31,7 @@ module.exports = {
         // [{ rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 }]
         advancingRules: {
             type: 'array',
-            required: true
+            defaultsTo: []
         },
         isCheckinOpen: {
             type: 'boolean',
