@@ -95,10 +95,10 @@ module.exports = {
         Group.findOne({
             id: query
         })
-        .populate('registration')
+        .populate('registrations')
         .populate('races')
         .then(function (modelData) {
-            if (modelData.registration.length > 0) {
+            if (modelData.registrations.length > 0) {
                 throw new Error('Cannot delete group that has racers registered');
             }
             modelData.races.forEach(function (race) {

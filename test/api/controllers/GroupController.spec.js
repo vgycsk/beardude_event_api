@@ -223,7 +223,7 @@ describe('/controllers/GroupController', function() {
             var actual;
             var req = {
                 params: {
-                    'id': 1
+                    id: '1'
                 }
             };
             var res = {
@@ -237,7 +237,7 @@ describe('/controllers/GroupController', function() {
             var mockData = {
                 id: 1,
                 name: 'new group',
-                registration: [],
+                registrations: [],
                 races: []
             };
             var expected = {
@@ -274,7 +274,7 @@ describe('/controllers/GroupController', function() {
             var mockData = {
                 id: 1,
                 name: 'new group',
-                registration: [],
+                registrations: [],
                 races: [
                     {
                         id: 1
