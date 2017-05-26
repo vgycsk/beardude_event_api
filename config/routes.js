@@ -65,6 +65,10 @@ module.exports.routes = {
     'get  /race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
     // 6.3.10
     'post /race/submitRaceResult': 'RaceController.submitRaceResult',
+    // 1.7.1
+    'post /race/assignRacersToRace': 'RaceController.assignRacersToRace',
+    // 1.7.2
+    'post /race/reassignRacerToRace': 'RaceController.reassignRacer',
 //   (More race logics)
 
 
@@ -99,7 +103,7 @@ module.exports.routes = {
     // 2.2.4
     'post /reg/confirm': 'RegistrationController.confirmRegistration',
     // 5.1.1, 5.1.2
-    'get  /reg/info/': 'RegistrationController.getInfo',
+    'post /reg/info': 'RegistrationController.getInfo',
 
     // Registration - race logic
     // 4.1.1
