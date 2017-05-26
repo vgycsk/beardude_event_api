@@ -127,83 +127,69 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-    // {event: ID, race: ID, raceNumber: INT}
+    // {race: ID, raceNumber: INT}
     addRacer: function (req, res) {
-        var input = {
-            event: parseInt(req.body.event),
-            race: parseInt(req.body.race),
-            raceNumber: parseInt(req.body.raceNumber)
-        };
+        var raceId = parseInt(req.body.race);
+        var raceNumber = parseInt(req.body.raceNumber);
+        var raceObj;
         var regId;
+        var groupId;
 
-        Registration.findOne({
-            event: input.event,
-            raceNumber: input.raceNumber
+        Race.findOne({
+            id: raceId
         })
-        .then(function (regData) {
-            regId = regData.id;
-            return Group.findOne({
-                id: regData.group
-            })
-            .populate('registrations');
-        })
-        .then(function (groupData) {
-            var racerFound = _.find(groupData.registrations, {
-                id: regId
-            });
-
-            if (!racerFound) {
-                throw new Error('Racer not in group');
-            }
-            return Race.findOne(input.race)
-            .populate('registrations');
-        })
+        .populate('registrations')
         .then(function (raceData) {
-            var racerFound = _.find(raceData.registrations, {
+            var racerFound;
+
+            raceObj = raceData;
+            groupId = raceData.group;
+            regId = _.find(raceData.registrations, {
+                raceNumber: raceNumber
+            });
+            racerFound = _.find(raceData.registrations, {
                 id: regId
             });
-
             if (racerFound) {
                 throw new Error('Racer already in race');
             }
-            raceData.registrations.add(regId);
-            return raceData.save();
+            return Registration.findOne({
+                id: regId
+            });
+        })
+        .then(function (regData) {
+            if (regData.group !== groupId) {
+                throw new Error('Racer not in group');
+            }
+            raceObj.registrations.add(regId);
+            return raceObj.save();
         })
         .then(function () {
             return res.ok({
                 messange: 'Racer added to race',
-                race: input.race,
-                raceNumber: input.raceNumber
+                race: raceId,
+                raceNumber: raceNumber
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {event: ID, race: ID, raceNumber: INT}
+    // {race: ID, raceNumber: INT}
     removeRacer: function (req, res) {
-        var input = {
-            event: parseInt(req.body.event),
-            race: parseInt(req.body.race),
-            raceNumber: parseInt(req.body.raceNumber)
-        };
-        var regId;
+        var raceId = parseInt(req.body.race);
+        var raceNumber = parseInt(req.body.raceNumber);
 
-        Registration.findOne({
-            event: input.event,
-            raceNumber: input.raceNumber
+        Race.findOne({
+            id: raceId
         })
-        .then(function (regData) {
-            regId = regData.id;
-            return Race.findOne(input.race)
-            .populate('registrations');
-        })
+        .populate('registrations')
         .then(function (raceData) {
-            var racerFound = _.find(raceData.registrations, {
-                id: regId
+            var regId = _.find(raceData.registrations, {
+                raceNumber: raceNumber
             });
 
-            if (!racerFound) {
+            if (!regId) {
                 throw new Error('Racer not in race');
             }
             raceData.registrations.remove(regId);
@@ -212,8 +198,8 @@ var RaceController = {
         .then(function () {
             return res.ok({
                 messange: 'Racer removed from race',
-                race: input.race,
-                raceNumber: input.raceNumber
+                race: raceId,
+                raceNumber: raceNumber
             });
         })
         .catch(function (E) {

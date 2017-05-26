@@ -329,7 +329,6 @@ describe('/controllers/RaceController', function() {
             var actual;
             var req = {
                 body: {
-                    event: '1',
                     race: '5',
                     raceNumber: '10'
                 }
@@ -356,27 +355,16 @@ describe('/controllers/RaceController', function() {
                 ],
                 group: 1
             };
-            var mockGroup = {
-                id: 1,
-                registrations: [
-                    {
-                        id: 1,
-                        raceNumber: 1
-                    }
-                ]
-            };
             var expected = new Error('Racer not in group');
 
             sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
-            sailsMock.mockModel(Group, 'findOne', mockGroup);
             this.timeout(50);
             raceController.addRacer(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Registration.findOne.restore();
                 Race.findOne.restore();
-                Group.findOne.restore();
                 done();
             }, 30);
         });
@@ -384,7 +372,6 @@ describe('/controllers/RaceController', function() {
             var actual;
             var req = {
                 body: {
-                    event: '1',
                     race: '5',
                     raceNumber: '10'
                 }
@@ -415,31 +402,16 @@ describe('/controllers/RaceController', function() {
                 ],
                 group: 1
             };
-            var mockGroup = {
-                id: 1,
-                registrations: [
-                    {
-                        id: 1,
-                        raceNumber: 1
-                    },
-                    {
-                        id: 10,
-                        raceNumber: 10
-                    }
-                ]
-            };
             var expected = new Error('Racer already in race');
 
             sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
-            sailsMock.mockModel(Group, 'findOne', mockGroup);
             this.timeout(50);
             raceController.addRacer(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Registration.findOne.restore();
                 Race.findOne.restore();
-                Group.findOne.restore();
                 done();
             }, 30);
         });
@@ -447,7 +419,6 @@ describe('/controllers/RaceController', function() {
             var actual;
             var req = {
                 body: {
-                    event: '1',
                     race: '5',
                     raceNumber: '10'
                 }
@@ -462,7 +433,8 @@ describe('/controllers/RaceController', function() {
             };
             var mockReg = {
                 id: 10,
-                raceNumber: 10
+                raceNumber: 10,
+                group: 1
             };
             var mockRace = {
                 id: 5,
@@ -473,19 +445,6 @@ describe('/controllers/RaceController', function() {
                     }
                 ],
                 group: 1
-            };
-            var mockGroup = {
-                id: 1,
-                registrations: [
-                    {
-                        id: 1,
-                        raceNumber: 1
-                    },
-                    {
-                        id: 10,
-                        raceNumber: 10
-                    }
-                ]
             };
             var expected = {
                 messange: 'Racer added to race',
@@ -495,7 +454,6 @@ describe('/controllers/RaceController', function() {
 
             sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
-            sailsMock.mockModel(Group, 'findOne', mockGroup);
             mockRace.registrations.add = function () {
                 return true;
             };
@@ -508,7 +466,6 @@ describe('/controllers/RaceController', function() {
                 expect(actual).to.deep.equal(expected);
                 Registration.findOne.restore();
                 Race.findOne.restore();
-                Group.findOne.restore();
                 done();
             }, 30);
         });
@@ -518,7 +475,6 @@ describe('/controllers/RaceController', function() {
             var actual;
             var req = {
                 body: {
-                    event: '1',
                     race: '5',
                     raceNumber: '10'
                 }
@@ -530,10 +486,6 @@ describe('/controllers/RaceController', function() {
                 badRequest: function (obj) {
                     actual = obj;
                 }
-            };
-            var mockReg = {
-                id: 10,
-                raceNumber: 10
             };
             var mockRace = {
                 id: 5,
@@ -547,13 +499,11 @@ describe('/controllers/RaceController', function() {
             };
             var expected = new Error('Racer not in race');
 
-            sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
             this.timeout(50);
             raceController.removeRacer(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
-                Registration.findOne.restore();
                 Race.findOne.restore();
                 done();
             }, 30);
@@ -562,7 +512,6 @@ describe('/controllers/RaceController', function() {
             var actual;
             var req = {
                 body: {
-                    event: '1',
                     race: '5',
                     raceNumber: '10'
                 }
@@ -574,10 +523,6 @@ describe('/controllers/RaceController', function() {
                 badRequest: function (obj) {
                     actual = obj;
                 }
-            };
-            var mockReg = {
-                id: 10,
-                raceNumber: 10
             };
             var mockRace = {
                 id: 5,
@@ -599,7 +544,6 @@ describe('/controllers/RaceController', function() {
                 raceNumber: 10
             };
 
-            sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
             mockRace.registrations.remove = function () {
                 return true;
@@ -611,7 +555,6 @@ describe('/controllers/RaceController', function() {
             raceController.removeRacer(req, res);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
-                Registration.findOne.restore();
                 Race.findOne.restore();
                 done();
             }, 30);
