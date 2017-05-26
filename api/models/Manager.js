@@ -50,7 +50,8 @@ module.exports = {
         }
     },
     beforeCreate: function (values, callback) {
-        if (values.password) {
+        if (values.password && values.password !== '') {
+            console.log('beforeCreate: yes there is password');
             return bcrypt.hash(values.password, null, null, function (err, hash) {
                 if (err) {
                     return callback(err);
@@ -62,7 +63,8 @@ module.exports = {
         return callback();
     },
     beforeUpdate: function (values, callback) {
-        if (values.password) {
+        if (values.password && values.password !== '') {
+            console.log('beforeUpdate: yes there is password');
             // When user updating password
             return bcrypt.hash(values.password, null, null, function (err, hash) {
                 if (err) {

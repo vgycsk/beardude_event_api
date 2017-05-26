@@ -57,7 +57,7 @@ module.exports = {
         }
     },
     beforeCreate: function (values, callback) {
-        if (values.password && values.password !== 'init') {
+        if (values.password && values.password !== '') {
             return bcrypt.hash(values.password, null, null, function (err, hash) {
                 if (err) {
                     return callback(err);
@@ -69,7 +69,7 @@ module.exports = {
         return callback();
     },
     beforeUpdate: function (values, callback) {
-        if (values.password && values.password !== 'init') {
+        if (values.password && values.password !== '') {
             // When user updating password
             return bcrypt.hash(values.password, null, null, function (err, hash) {
                 if (err) {
