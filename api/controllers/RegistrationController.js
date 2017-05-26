@@ -70,9 +70,7 @@ var RegistrationController = {
                 var query = racer;
 
                 query.team = teamData.id;
-                funcs.push(function () {
-                    return accountService.create(query);
-                });
+                funcs.push(accountService.create(query));
             });
             // 2. create racers
             return Q.all(funcs);
@@ -88,9 +86,7 @@ var RegistrationController = {
                     racer: racer.id
                 };
 
-                funcs.push(function () {
-                    return RegistrationController.createReg(regObj);
-                });
+                funcs.push(RegistrationController.createReg(regObj));
             });
             // 3. create regs
             return Q.all(funcs);
@@ -142,13 +138,22 @@ var RegistrationController = {
             return res.badRequest(E);
         });
     },
-    // {event: ID}
+    // {event: ID, (racer: ID || accessCode: STR || raceNumber: INT)}
     getInfo: function (req, res) {
+        var input = req.body;
         var query = {
-            event: parseInt(req.body.event),
-            racer: req.session.racerInfo.id
+            event: parseInt(input.event)
         };
 
+        if (input.racer && input.racer !== '') {
+            query.racer = parseInt(input.racer);
+        } else if (input.accessCode && input.accessCode !== '') {
+            query.accessCode = input.accessCode;
+        } else if (input.raceNumber && input.raceNumber !== '') {
+            query.raceNumber = parseInt(input.raceNumber);
+        } else {
+            throw new Error('Query incomplete');
+        }
         Registration.findOne(query)
         .populate('races')
         .then(function (modelData) {
