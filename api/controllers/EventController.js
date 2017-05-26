@@ -1,4 +1,4 @@
-/* global _, dataService, Event, Manager */
+/* global _, dataService, Event, Group, Manager */
 
 'use strict';
 
@@ -234,7 +234,7 @@ module.exports = {
                 id: groupIds
             })
             .populate('races')
-            .populate('registrations')
+            .populate('registrations');
         })
         .then(function (groupData) {
             if (groupData) {
@@ -251,5 +251,5 @@ module.exports = {
         .catch(function (E) {
             return res.badRequest(E);
         });
-    },
+    }
 };
