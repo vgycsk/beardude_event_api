@@ -19,7 +19,7 @@ module.exports = {
         });
     },
     getInfo: function (req, res) {
-        var result;
+        var result = {};
         var groupId = parseInt(req.params.id);
 
         Group.findOne({
@@ -27,22 +27,29 @@ module.exports = {
         })
         .populate('races')
         .then(function (modelData) {
-            result = modelData;
+            result = modelData.toJSON();
             return Team.find({});
         })
         .then(function (modelData) {
             result.teams = modelData;
             return Registration.find({
+                group: groupId
+            })
+            .populate('racer');
+            /*
+            return Registration.find({
                 group: groupId,
                 paid: true
             })
             .populate('racer');
+            */
         })
         .then(function (modelData) {
             result.registrations = [];
             modelData.forEach(function (reg) {
                 result.registrations.push({
                     racer: {
+                        id: reg.racer.id,
                         team: reg.racer.team,
                         firstName: reg.racer.firstName,
                         lastName: reg.racer.lastName,
