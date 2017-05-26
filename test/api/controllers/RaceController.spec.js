@@ -21,7 +21,7 @@ describe('/controllers/RaceController', function() {
     describe('.create()', function () {
         it('should create a race', function (done) {
             var actual;
-            // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
+            // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL}
             var req = {
                 body: {
                     group: 5,
@@ -155,7 +155,7 @@ describe('/controllers/RaceController', function() {
                 laps: 22,
                 racerNumberAllowed: 60,
                 advancingRules: [],
-                isCheckinOpen: true,
+                isEntryRace: true,
                 requirePacer: true,
                 startTime: '',
                 endTime: '',
@@ -169,7 +169,7 @@ describe('/controllers/RaceController', function() {
                 laps: 22,
                 racerNumberAllowed: 60,
                 advancingRules: [],
-                isCheckinOpen: true,
+                isEntryRace: true,
                 requirePacer: true,
                 startTime: '',
                 endTime: '',
@@ -211,7 +211,7 @@ describe('/controllers/RaceController', function() {
                 laps: 22,
                 racerNumberAllowed: 60,
                 advancingRules: [],
-                isCheckinOpen: true,
+                isEntryRace: true,
                 requirePacer: true,
                 startTime: '',
                 endTime: '',
@@ -226,7 +226,7 @@ describe('/controllers/RaceController', function() {
                 laps: 22,
                 racerNumberAllowed: 60,
                 advancingRules: [],
-                isCheckinOpen: true,
+                isEntryRace: true,
                 requirePacer: true,
                 startTime: '',
                 endTime: '',
@@ -247,7 +247,7 @@ describe('/controllers/RaceController', function() {
     describe('.update()', function () {
         it('should update race', function (done) {
             var actual;
-            // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
+            // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL}
 
             var req = {
                 body: {
@@ -271,7 +271,7 @@ describe('/controllers/RaceController', function() {
                 laps: 22,
                 racerNumberAllowed: 60,
                 advancingRules: [],
-                isCheckinOpen: true,
+                isEntryRace: true,
                 requirePacer: true,
                 startTime: '',
                 endTime: '',
@@ -286,7 +286,7 @@ describe('/controllers/RaceController', function() {
                 laps: 28,
                 racerNumberAllowed: 60,
                 advancingRules: [],
-                isCheckinOpen: true,
+                isEntryRace: true,
                 requirePacer: true,
                 startTime: '',
                 endTime: '',
@@ -303,7 +303,7 @@ describe('/controllers/RaceController', function() {
                     laps: 28,
                     racerNumberAllowed: 60,
                     advancingRules: [],
-                    isCheckinOpen: true,
+                    isEntryRace: true,
                     requirePacer: true,
                     startTime: '',
                     endTime: '',

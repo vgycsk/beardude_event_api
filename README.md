@@ -31,6 +31,8 @@ Scenarios:
 1.4.6  |       |         |              | 將選手移出比賽  |  /race/racer/remove    |
 1.5    |       |         | 帳號管理      |               |  /manager/*       |
 1.6    |       |         | 刪除活動      |               | /event/delete          |
+1.7.1  |       |         | 分配選手    |               | /race/assignRacersToRace |
+1.7.2  |       |         | 移動選手    |               | /race/reassignRacerToRace |
 2.1    |       | 參賽者   | 註冊帳號      |               | (刪掉, 應該是報名比賽同時註冊) |
 2.2.1  |       |         | 報名比賽      | 個人報名(已登入)| /reg/create    |
 2.2.2  |       |         |              | 隊伍報名       | /racer/exist                |

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-/* global Registration */
+/* global _, Registration */
 
 'use strict';
 
@@ -227,6 +227,35 @@ var dataService = {
 
         getCode(code);
         return q.promise;
+    },
+    // options: {toShuffle: BOOL, sortBy: STR}
+    distRacersToRaces: function (racersRaw, raceCount, options) {
+        var result = [];
+        var i;
+        var key = 0;
+        var racers = racersRaw;
+        var sortBy = 'raceNumber';
+
+        if (options.toShuffle) {
+            racers = _.shuffle(racersRaw);
+        }
+        if (options.sortBy) {
+            sortBy = options.sortBy;
+        }
+        for (i = 0; i < raceCount; i += 1) {
+            result[i] = [];
+        }
+        for (i = 0; i < racers.length; i += 1) {
+            result[key].push(racers[i]);
+            key += 1;
+            if (key === raceCount) {
+                key = 0;
+            }
+        }
+        for (i = 0; i < raceCount; i += 1) {
+            result[i] = _.sortBy(result[i], sortBy);
+        }
+        return result;
     }
 };
 

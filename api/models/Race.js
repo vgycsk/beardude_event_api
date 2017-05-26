@@ -33,7 +33,7 @@ module.exports = {
             type: 'array',
             defaultsTo: []
         },
-        isCheckinOpen: {
+        isEntryRace: {
             type: 'boolean',
             required: true,
             defaultsTo: true

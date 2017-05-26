@@ -4,7 +4,7 @@
 
 var Q = require('q');
 var RaceController = {
-    // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
+    // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}
     create: function (req, res) {
         var input = req.body;
         var createObj = {
@@ -15,15 +15,15 @@ var RaceController = {
             racerNumberAllowed: parseInt(input.racerNumberAllowed)
         };
 
-        if (input.isCheckinOpen && input.isCheckinOpen !== '') {
-            createObj.isCheckinOpen = true;
-        } else {
-            createObj.isCheckinOpen = false;
-        }
         if (input.requirePacer && input.requirePacer !== '') {
             createObj.requirePacer = true;
         } else {
             createObj.requirePacer = false;
+        }
+        if (input.isEntryRace && input.isEntryRace !== '') {
+            createObj.isEntryRace = true;
+        } else {
+            createObj.isEntryRace = false;
         }
         Race.create(createObj)
         .then(function (modelData) {
@@ -51,7 +51,7 @@ var RaceController = {
                 laps: modelData.laps,
                 racerNumberAllowed: modelData.racerNumberAllowed,
                 advancingRules: modelData.advancingRules,
-                isCheckinOpen: modelData.isCheckinOpen,
+                isEntryRace: modelData.isEntryRace,
                 requirePacer: modelData.requirePacer,
                 startTime: modelData.startTime,
                 endTime: modelData.endTime,
@@ -79,10 +79,10 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
+    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL}
     update: function (req, res) {
         var input = req.body;
-        var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isCheckinOpen', 'requirePacer'];
+        var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'requirePacer'];
         var updateObj;
         var query = {
             id: parseInt(input.race)
@@ -390,9 +390,7 @@ var RaceController = {
                 return false;
             }
             advancingRules.forEach(function (rule) {
-                funcs.push(function () {
-                    return RaceController.advancingRacerToRace(rule, input.rankings);
-                });
+                funcs.push(RaceController.advancingRacerToRace(rule, input.rankings));
             });
             return Q.all(funcs);
         })
@@ -424,6 +422,70 @@ var RaceController = {
                 result.group = groupData[0].id;
             }
             return res.ok(result);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {race: ID, registrations: [ID, ID]]}
+    // 順序跟排位有關的樣子
+    assignRacersToRace: function (req, res) {
+        var input = req.body;
+
+        input.race = parseInt(input.race);
+        Race.findOne({
+            id: input.race
+        })
+        .populate('registrations')
+        .then(function (raceData) {
+            input.registrations.forEach(function (regId) {
+                raceData.registrations.add(regId);
+            });
+            return raceData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'racers assigned successfully',
+                race: input.race,
+                registrations: input.registrations
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    // {registratration: ID, fromRace: ID, toRace: ID}
+    reassignRacer: function (req, res) {
+        var input = req.body;
+
+        input.registratration = parseInt(input.registratration);
+        input.fromRace = parseInt(input.fromRace);
+        input.toRace = parseInt(input.toRace);
+        Race.finOne({
+            id: input.fromRace
+        })
+        .populate('registrations')
+        .then(function (raceData) {
+            raceData.registrations.remove(input.registratration);
+            return raceData.save();
+        })
+        .then(function () {
+            return Race.finOne({
+                id: input.toRace
+            })
+            .populate('registrations');
+        })
+        .then(function (raceData) {
+            raceData.registrations.add(input.registratration);
+            return raceData.save();
+        })
+        .then(function () {
+            return res.ok({
+                message: 'Racer moved successfully',
+                registration: input.registratration,
+                fromRace: input.fromRace,
+                toRace: input.toRace
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
