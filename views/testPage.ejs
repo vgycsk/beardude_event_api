@@ -205,7 +205,7 @@
                 </ul>
             </li>
             <li>
-                <h3>Update</h3>
+                <h3>Update-related</h3>
                 <ul>
                     <% for (var i = 0; i < params.events.length; i += 1) { %>
                         <li>
@@ -283,6 +283,270 @@
                         </li>
                     <% } %>
                 </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Race</h2>
+        <ul>
+            <li>
+                <h3>Create</h3>
+
+                <form action="/race/create" method="POST">
+                    <ul>
+                        <li>
+                            <label>Group</label>
+                            <input type="number" name="group" />
+                        </li>
+                        <li>
+                            <label>Name</label>
+                            <input type="text" name="name" />
+                        </li>
+                        <li>
+                            <label>Name Cht</label>
+                            <input type="text" name="nameCht" />
+                        </li>
+                        <li>
+                            <label>Laps</label>
+                            <input type="number" name="laps" />
+                        </li>
+                        <li>
+                            <label>racerNumberAllowed</label>
+                            <input type="number" name="racerNumberAllowed" />
+                        </li>
+                        <li>
+                            <label>advancingRules:</label>
+                            <ul>
+                                <li>Rank from: <input type="number" name="advancingRules[][rankFrom]" /></li>
+                                <li>Rank to: <input type="number" name="advancingRules[][rankTo]" /></li>
+                                <li>to Race: <input type="number" name="advancingRules[][toRace]" /></li>
+                                <li>insertAt: <input type="number" name="advancingRules[][insertAt]" /></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label>requirePacer</label>
+                            <input type="checkbox" name="requirePacer" />
+                        </li>
+                        <li>
+                            <label>isEntryRace</label>
+                            <input type="checkbox" name="isEntryRace" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Get info</h3>
+                <ul>
+                    <% for (var i = 0; i < params.races.length; i += 1) { %>
+                        <li>
+                            <label><%= params.races[i].id %> - <%= params.races[i].name %>:</label>
+                            <a href="/race/info/<%= params.races[i].id %>">General</a>
+                            <a href="/race/mgmtInfo/<%= params.races[i].id %>">Management</a>
+                            <a href="/race/getParsedRaceResult/<%= params.races[i].id %>">Parsed race result</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Update</h3>
+                <ul>
+                    <% for (var i = 0; i < params.races.length; i += 1) { %>
+                        <li>
+                            <a href="/race/update/<%= params.races[i].id %>"><%= params.races[i].id %> - <%= params.races[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Delete</h3>
+                <ul>
+                    <% for (var i = 0; i < params.races.length; i += 1) { %>
+                        <li>
+                            <a href="/race/delete/<%= params.races[i].id %>"><%= params.races[i].id %> - <%= params.races[i].name %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h2>Registration</h2>
+        <ul>
+            <li>
+                <h3>signupAndCreateMultiple</h3>
+                <form action="/reg/signupAndCreateMultiple" method="POST">
+                    <ul>
+                        <li>
+                            <label>Event</label>
+                            <input type="number" name="event" />
+                        </li>
+                        <li>
+                            <label>Group</label>
+                            <input type="number" name="group" />
+                        </li>
+                        <li>
+                            <label>Team</label>
+                            <ul>
+                                <li>
+                                    <label>Name: </label><input type="text" name="team[name]" />
+                                </li>
+                                <li>
+                                    <label>Desc: </label><input type="text" name="team[description]" />
+                                </li>
+                                <li>
+                                    <label>url: </label><input type="text" name="team[url]" />
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label>Racers</label>
+                            <ol>
+                                <% for (var i = 0; i < 2; i += 1) { %>
+                                    <li>
+                                        <ul>
+                                            <li>
+                                                <label>email: </label><input type="text" name="racers[<%= i %>][email]" />
+                                            </li>
+                                            <li>
+                                                <label>phone: </label><input type="text" name="racers[<%= i %>][phone]" />
+                                            </li>
+                                            <li>
+                                                <label>firstName: </label><input type="text" name="racers[<%= i %>][firstName]" />
+                                            </li>
+                                            <li>
+                                                <label>lastName: </label><input type="text" name="racers[<%= i %>][lastName]" />
+                                            </li>
+                                            <li>
+                                                <label>nickName: </label><input type="text" name="racers[<%= i %>][nickName]" />
+                                            </li>
+                                            <li>
+                                                <label>Birthday: </label><input type="text" name="racers[<%= i %>][birthday]" />
+                                            </li>
+                                            <li>
+                                                <label>idNumber: </label><input type="text" name="racers[<%= i %>][idNumber]" />
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <% } %>
+                            </ol>
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Get info</h3>
+                <form action="/reg/info" method="POST">
+                    <ul>
+                        <li>
+                            <label>event: </label><input type="number" name="event" /> (required)
+                        </li>
+                        <li>
+                            <label>racer id: </label><input type="number" name="racer" />
+                        </li>
+                        <li>
+                            <label>accessCode: </label><input type="text" name="accessCode" />
+                        </li>
+                        <li>
+                            <label>raceNumber: </label><input type="number" name="raceNumber" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Assign RFID</h3>
+                <form action="/reg/assignRfid" method="POST">
+                  <ul>
+                      <li>
+                          <label>event: </label><input type="number" name="event" />
+                      </li>
+                      <li>
+                          <label>Access code: </label><input type="text" name="accessCode" />
+                      </li>
+                      <li>
+                          <label>epc: </label><input type="text" name="epc" />
+                      </li>
+                  </ul>
+                  <button type="submit">Submit</button>
+                </form>
+                <hr>
+                <h3>Replace RFID</h3>
+                <form action="/reg/replaceRfid" method="POST">
+                  <ul>
+                      <li>
+                          <label>event: </label><input type="number" name="event" />
+                      </li>
+                      <li>
+                          <label>Race number: </label><input type="number" name="raceNumber" />
+                      </li>
+                      <li>
+                          <label>epc: </label><input type="text" name="epc" />
+                      </li>
+                  </ul>
+                  <button type="submit">Submit</button>
+                </form>
+                <hr>
+                <h3>Recycle RFID</h3>
+                <form action="/reg/recycleRfid" method="POST">
+                  <ul>
+                      <li>
+                          <label>epc: </label><input type="text" name="epc" />
+                      </li>
+                  </ul>
+                  <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>admitRacer</h3>
+                <form action="/reg/admitRacer" method="POST">
+                    <ul>
+                        <li>
+                            <label>Race: </label><input type="number" name="race" />
+                        </li>
+                        <li>
+                            <label>epc: </label><input type="text" name="epc" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>updateRaceNote</h3>
+                <form action="/reg/updateRaceNote" method="POST">
+                    <ul>
+                        <li>
+                            <label>Race: </label><input type="number" name="race" />
+                        </li>
+                        <li>
+                            <label>registration: </label><input type="number" name="registration" />
+                        </li>
+                        <li>
+                            <label>note: </label><textarea type="number" name="note"></textarea>
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+                <hr>
+                <h3>updateDisqualification</h3>
+                <form action="/reg/updateDisqualification" method="POST">
+                    <ul>
+                        <li>
+                            <label>Race: </label><input type="number" name="race" />
+                        </li>
+                        <li>
+                            <label>registration: </label><input type="number" name="registration" />
+                        </li>
+                        <li>
+                            <label>note: </label><textarea type="number" name="note"></textarea>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="isDisqualified" /><label>is disqualified</label>
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
             </li>
         </ul>
     </section>
