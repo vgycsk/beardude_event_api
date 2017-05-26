@@ -48,7 +48,7 @@ module.exports.routes = {
     // 7.1.1, 7.1.3
     'get  /race/info/:id': 'RaceController.getGeneralInfo',
     // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3, 6.3.4
-    'get  /race/mgmtInfo/:id': 'ManagerController.getManagementInfo',
+    'get  /race/mgmtInfo/:id': 'RaceController.getManagementInfo',
     // 1.2.8
     'post /race/update': 'RaceController.update',
     // 1.2.6
@@ -62,7 +62,7 @@ module.exports.routes = {
     // 1.2.9
     'post /race/updateAdvancingRules': 'RaceController.updateAdvancingRules',
     // 6.3.7
-    'post /race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
+    'get  /race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
     // 6.3.10
     'post /race/submitRaceResult': 'RaceController.submitRaceResult',
 //   (More race logics)
@@ -138,6 +138,7 @@ module.exports.routes = {
     //'post /team/removeRacer': 'TeamController.removeRacer',
 
     // Test page
+    'get  /race/update/:id': 'PageController.raceUpdatePage',
     'get  /group/update/:id': 'PageController.groupUpdatePage',
     'get  /event/update/:id': 'PageController.eventUpdatePage',
     'get  /manager/update/:id': 'PageController.managerUpdatePage',

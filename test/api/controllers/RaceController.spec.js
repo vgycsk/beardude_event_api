@@ -64,8 +64,8 @@ describe('/controllers/RaceController', function() {
         it('return error when trying to delete a started race', function (done) {
             var actual;
             var req = {
-                body: {
-                    race: 5
+                params: {
+                    id: '5'
                 }
             };
             var res = {
@@ -96,8 +96,8 @@ describe('/controllers/RaceController', function() {
         it('should delete a race', function (done) {
             var actual;
             var req = {
-                body: {
-                    race: 5
+                params: {
+                    id: '5'
                 }
             };
             var res = {
@@ -941,6 +941,35 @@ describe('/controllers/RaceController', function() {
         });
     });
     describe('.getParsedRaceResult()', function () {
+        it('should return error if race not started', function (done) {
+            var actual;
+            var req = {
+                params: {
+                    id: '5'
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                },
+                badRequest: function (obj) {
+                    actual = obj;
+                }
+            };
+            var mock = {
+                id: 5
+            };
+            var expected = new Error('Race not started');
+
+            sailsMock.mockModel(Race, 'findOne', mock);
+            this.timeout(99);
+            raceController.getParsedRaceResult(req, res);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Race.findOne.restore();
+                done();
+            }, 60);
+        });
         it('should return error if race not finished', function (done) {
             var actual;
             var req = {

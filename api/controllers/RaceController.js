@@ -4,12 +4,13 @@
 
 var Q = require('q');
 var RaceController = {
-    // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
+    // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
     create: function (req, res) {
         var input = req.body;
         var createObj = {
             group: parseInt(input.group),
             name: input.name,
+            nameCht: input.nameCht,
             laps: parseInt(input.laps),
             racerNumberAllowed: parseInt(input.racerNumberAllowed)
         };
@@ -81,7 +82,7 @@ var RaceController = {
     // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isCheckinOpen: BOOL, requirePacer: BOOL}
     update: function (req, res) {
         var input = req.body;
-        var fields = ['name', 'laps', 'racerNumberAllowed', 'isCheckinOpen', 'requirePacer'];
+        var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isCheckinOpen', 'requirePacer'];
         var updateObj;
         var query = {
             id: parseInt(input.race)
@@ -102,11 +103,10 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
-    // {race: ID}
+    // /:id
     delete: function (req, res) {
-        var input = req.body;
         var query = {
-            id: parseInt(input.race)
+            id: parseInt(req.params.id)
         };
 
         Race.findOne(query)
@@ -120,7 +120,7 @@ var RaceController = {
         .then(function () {
             return res.ok({
                 message: 'Race deleted',
-                race: input.race
+                race: query.id
             });
         })
         .catch(function (E) {
@@ -323,6 +323,7 @@ var RaceController = {
             return res.badRequest(E);
         });
     },
+    // /:id
     getParsedRaceResult: function (req, res) {
         var query = {
             id: parseInt(req.params.id)
@@ -333,6 +334,9 @@ var RaceController = {
         .then(function (raceData) {
             var result;
 
+            if (!raceData.startTime || raceData.startTime === '') {
+                throw new Error('Race not started');
+            }
             if (!raceData.endTime || raceData.endTime === '') {
                 throw new Error('Race not finished');
             }
