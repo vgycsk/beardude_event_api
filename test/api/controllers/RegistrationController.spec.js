@@ -283,21 +283,12 @@ describe('/controllers/RegistrationController', function() {
         });
     });
     describe('.getInfo()', function () {
-        it('should return registration info', function (done) {
+        it('should return registration info with racer id', function (done) {
             var actual;
             var req = {
                 body: {
-                    event: '1'
-                },
-                session: {
-                    racerInfo: {
-                        id: 1
-                    }
-                }
-            };
-            var res = {
-                ok: function (obj) {
-                    actual = obj;
+                    event: '1',
+                    racer: '1'
                 }
             };
             var mock = {
@@ -329,6 +320,64 @@ describe('/controllers/RegistrationController', function() {
                 rfidRecycled: false,
                 refundRequested: false,
                 refunded: false
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+
+            sailsMock.mockModel(Registration, 'findOne', mock);
+            registrationController.getInfo(req, res);
+            this.timeout(99);
+            setTimeout(function () {
+                expect(actual).to.deep.equal(expected);
+                Registration.findOne.restore();
+                done();
+            }, 50);
+        });
+        it('should return registration info with access code', function (done) {
+            var actual;
+            var mock = {
+                races: [{
+                    id: 1
+                }, {
+                    id: 2
+                }],
+                event: 1,
+                group: 1,
+                accessCode: 'abcd',
+                raceNumber: 1,
+                paid: false,
+                rfidRecycled: false,
+                refundRequested: false,
+                refunded: false
+            };
+            var expected = {
+                races: [{
+                    id: 1
+                }, {
+                    id: 2
+                }],
+                event: 1,
+                group: 1,
+                accessCode: 'abcd',
+                raceNumber: 1,
+                paid: false,
+                rfidRecycled: false,
+                refundRequested: false,
+                refunded: false
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+            var req = {
+                body: {
+                    event: '1',
+                    accessCode: 'abcd'
+                }
             };
 
             sailsMock.mockModel(Registration, 'findOne', mock);
