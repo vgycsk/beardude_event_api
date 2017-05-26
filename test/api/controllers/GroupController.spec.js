@@ -47,7 +47,7 @@ describe('/controllers/GroupController', function() {
         });
     });
     describe('.getInfo()', function () {
-        it('should return filtered event info', function (done) {
+        it('should return filtered group info', function (done) {
             var actual;
             var req = {
                 params: {
@@ -82,6 +82,7 @@ describe('/controllers/GroupController', function() {
                 {
                     id: 1,
                     racer: {
+                        id: 1,
                         team: 1,
                         firstName: 'John',
                         lastName: 'Doe',
@@ -97,6 +98,7 @@ describe('/controllers/GroupController', function() {
                 registrations: [
                     {
                         racer: {
+                            id: 1,
                             team: 1,
                             firstName: 'John',
                             lastName: 'Doe',
@@ -107,12 +109,16 @@ describe('/controllers/GroupController', function() {
                 ]
             };
 
+            mockData.toJSON = function () {
+                return mockData;
+            };
             this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
             sailsMock.mockModel(Team, 'find', mockTeam);
             sailsMock.mockModel(Registration, 'find', mockDataReg);
             groupController.getInfo(req, res);
             setTimeout(function () {
+                delete mockData.toJSON;
                 expect(actual).to.deep.equal(expected);
                 Group.findOne.restore();
                 Team.find.restore();
@@ -122,7 +128,7 @@ describe('/controllers/GroupController', function() {
         });
     });
     describe('.getManagementInfo()', function () {
-        it('should return complete event info', function (done) {
+        it('should return complete group info', function (done) {
             var actual;
             var req = {
                 params: {
