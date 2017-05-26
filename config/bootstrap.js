@@ -34,7 +34,7 @@ module.exports.bootstrap = function(cb) {
     .then(function (managerData) {
         if (managerData.length === 0) {
             return createInitManager(initManagerEmail, tempPassword);
-        } else if (managerData.length === 1 && managerData[0].email === initManagerEmail && !managerData[0].isActive) {
+        } else if (managerData.length === 1 && (managerData[0].email === initManagerEmail) && !managerData[0].isActive) {
             // New account and not logged in yet. Reset password
             return Manager.update({
                 email: initManagerEmail

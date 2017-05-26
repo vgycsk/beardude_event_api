@@ -98,13 +98,13 @@ describe('policies/isActiveManager', function() {
         };
         var expected = 'Unauthorized';
 
-        this.timeout(20);
+        this.timeout(50);
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isActiveManager(req, res, callbackFunc);
         setTimeout(function () {
             assert.equal(actual, expected);
             Manager.findOne.restore();
             done();
-        }, 10);
+        }, 30);
     });
 });
