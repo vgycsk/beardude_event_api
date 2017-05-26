@@ -58,7 +58,7 @@ module.exports.policies = {
 //        signupAndCreate: '',
 //        signupAndCreateMultiple: '',
 //        create: '',
-//        getInfo: '',
+        getInfo: 'isRacerSelfOrTeamLeaderOrManager',
         assignRfid: 'isActiveManager',
         replaceRfid: 'isActiveManager',
         recycleRfid: 'isActiveManager',
