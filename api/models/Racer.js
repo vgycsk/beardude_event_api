@@ -44,12 +44,10 @@ module.exports = {
             type: 'date'
         },
         idNumber: {
-            type: 'string',
-            unique: true
+            type: 'string'
         },
         password: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         isActive: {
             type: 'boolean',

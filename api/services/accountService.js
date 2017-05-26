@@ -85,22 +85,30 @@ module.exports = {
         });
     },
     // Create account. When omitting password, set account inactive and require user to activate
-    create: function (input, modelName) {
-        var addressInput = input.address;
+    create: function (inputRaw, modelName) {
+        var addressInput = inputRaw.address;
         var addressDataObj;
         var modelDataObj;
         var returnPassword;
         var ModelObj = returnModelObj(modelName);
         var q = Q.defer();
+        var i;
+        var input = {};
 
-        if (input.password === '') {
+        for (i in inputRaw) {
+            if (inputRaw.hasOwnProperty(i) && i !== 'address' && inputRaw[i] !== '') {
+                input[i] = inputRaw[i];
+            }
+        }
+        if (input.password) {
+            delete input.confirmPassword;
+            input.isActive = true;
+        } else {
+            // TO DO: send email and notify temp password
             input.password = randomstring.generate();
             input.isActive = false;
             returnPassword = true;
-        } else {
-            input.isActive = true;
         }
-        delete input.confirmPassword;
         ModelObj.findOne({
             email: input.email
         })
