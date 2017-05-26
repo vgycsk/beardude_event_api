@@ -175,7 +175,7 @@ module.exports = {
 
         input.race = parseInt(input.event);
         Event.findOne({
-            id: input.id
+            id: input.event
         })
         .populate('groups')
         .then(function (modelData) {
@@ -188,7 +188,7 @@ module.exports = {
             }
             testerEpc.push(input.epc);
             return Event.update({
-                id: input.id
+                id: input.event
             }, {
                 testerEpc: testerEpc
             });
