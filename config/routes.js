@@ -69,6 +69,9 @@ module.exports.routes = {
     'post /race/assignRacersToRace': 'RaceController.assignRacersToRace',
     // 1.7.2
     'post /race/reassignRacerToRace': 'RaceController.reassignRacer',
+    // 4.2.4, 4.2.5, 4.2.6
+    'get /race/joinReaderRoom': 'RaceController.joinReaderRoom',
+    'post /race/readerRoom': 'RaceController.readerReceiver',
 //   (More race logics)
 
 
@@ -146,5 +149,8 @@ module.exports.routes = {
     'get  /group/update/:id': 'PageController.groupUpdatePage',
     'get  /event/update/:id': 'PageController.eventUpdatePage',
     'get  /manager/update/:id': 'PageController.managerUpdatePage',
-    'get  /': 'PageController.apiTestPage'
+    'get  /': 'PageController.apiTestPage',
+    '/testSocket': {
+      view: 'testSocketPage'
+    }
 };

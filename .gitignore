@@ -26,3 +26,5 @@ build
 
 # Config file
 .sailsrc
+
+yarn.lock
