@@ -490,7 +490,67 @@ var RaceController = {
         .catch(function (E) {
             return res.badRequest(E);
         });
-    }
+    },
+
+    /**
+     * join | register to reader room
+     * java (reader) side doesnt sent by sails.socket.io.get, so making a query string as flag to make sure its socket connection
+     * but just use sails.socket.io.get when js call
+     **/
+     joinReaderRoom: function (req, res) {
+       var query = req.query;
+       var joinSocket = query.sid || req;
+       var isSocket = query.isSocket || req.isSocket;
+       if (!isSocket) {
+           return res.badRequest();
+       }
+
+       // let the connection join the socket channel
+       sails.sockets.join(joinSocket, 'readerSockets');
+       return res.json({
+           result: 'join socket_channel_OK'
+       });
+     },
+
+    /**
+     * reader accessing, including starting, receiving race data, terminating
+     **/
+    readerReceiver : function (req, res) {
+      var isSocket = req.isSocket || req.query.isSocket;
+      var socketReq = req.query.sid || req;
+
+      var input = req.body;
+      var type = input.type;
+      var payload = input.payload;
+
+      if (!isSocket) {
+        return res.badRequest();
+      }
+
+      switch (type) {
+        case 'startreader':
+            sails.sockets.broadcast('readerSockets', 'startreader', { result: 'success'}, socketReq);
+            break;
+
+       case 'rxdata':
+            // change the 'rxdata' for mapping a unique event name to a reader, if there are other readers.
+            console.log('broadcast rxdata');
+            sails.sockets.broadcast('readerSockets', 'rxdata', { result: payload}, socketReq);
+            // TODO: write to DB
+            break;
+
+        case 'terminatereader':
+            sails.sockets.broadcast('readerSockets', 'terminatereader', { result: 'success'}, socketReq);
+            break;
+
+        default:
+            break;
+      }
+
+      return res.json({
+        result: 'type-' + type + '_receive_OK'
+      });
+  }
 };
 
 module.exports = RaceController;
