@@ -81,10 +81,7 @@ module.exports = {
                 throw new Error('Credentials incorrect');
             }
             req.session.managerInfo = modelDataObj;
-            return res.ok({
-                message: 'Logged in',
-                email: modelDataObj.email
-            });
+            return res.redirect('/console');
         })
         .catch(function (E) {
             return res.badRequest(E);
