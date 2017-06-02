@@ -144,13 +144,17 @@ module.exports.routes = {
     // 2.3.8
     //'post /team/removeRacer': 'TeamController.removeRacer',
 
+    //Admin
+    'get  /console': 'PageController.adminPage',
+    'get  /console/login': 'PageController.adminLoginPage',
+
     // Test page
-    'get  /race/update/:id': 'PageController.raceUpdatePage',
-    'get  /team/update/:id': 'PageController.teamUpdatePage',
-    'get  /group/update/:id': 'PageController.groupUpdatePage',
-    'get  /event/update/:id': 'PageController.eventUpdatePage',
-    'get  /manager/update/:id': 'PageController.managerUpdatePage',
-    'get  /': 'PageController.apiTestPage',
+    'get  /race/update/:id': 'TestPageController.raceUpdatePage',
+    'get  /team/update/:id': 'TestPageController.teamUpdatePage',
+    'get  /group/update/:id': 'TestPageController.groupUpdatePage',
+    'get  /event/update/:id': 'TestPageController.eventUpdatePage',
+    'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
+    'get  /': 'TestPageController.apiTestPage',
     '/testSocket': {
       view: 'testSocketPage'
     }
