@@ -18,8 +18,9 @@
         "chai": "*",
         "chai-as-promised": "*",
         "eslint": "*",
-        "grunt": "*",
+        "html-minifier": "3.5.2",
         "istanbul": "0.4.5",
+        "less": "2.7.2",
         "mocha": "3.0.2",
         "sails-mock-models": "*",
         "sinon": "*"
@@ -27,9 +28,10 @@
     "scripts": {
         "coverage": "./scripts/coverage.sh",
         "debug": "node debug app.js",
+        "less": "./scripts/less.sh",
         "lint": "./scripts/lint.sh",
         "lint-report": "./scripts/lint-report.sh",
-        "start": "./scripts/copyAssets.sh; sails lift",
+        "start": "./scripts/clean.sh; ./scripts/copyJs.sh; ./scripts/buildCss.sh; sails lift",
         "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
     },
     "main": "app.js",

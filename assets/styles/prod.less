@@ -1,0 +1,45 @@
+@import "reset.less";
+@import "fonts.less";
+
+html {
+    font-family: "San Francisco", Helvetica;
+    height: 100%;
+}
+body {
+     height: 100%;
+}
+// ########## LIBRARY ########## // 
+.gradient(@color-top, @color-bottom) {
+    background: @color-top; /* Old browsers */
+    background: -moz-linear-gradient(top, @color-top 0%, @color-bottom 100%); /* FF3.6+ */
+    background: -webkit-linear-gradient(top, @color-top 0%, @color-bottom 100%); /* Chrome10+,Safari5.1+ */
+    background: -ms-linear-gradient(top, @color-top 0%, @color-bottom 100%); /* IE10+ */
+    background: linear-gradient(top bottom, @color-top 0%, @color-bottom 100%); /* W3C */
+}
+
+.Cf { // Clearfix
+    *zoom: 1;
+    &:before {
+        content: " ";
+        display: table;
+    }
+    &:after {
+        content: " ";
+        display: table;
+        clear: both;
+    }
+}
+.notxt {
+    position: absolute !important;
+    height: 1px; 
+    width: 1px; 
+    overflow: hidden; 
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */ 
+    clip: rect(1px, 1px, 1px, 1px); 
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+
+@import "login.less";
