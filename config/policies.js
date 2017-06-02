@@ -22,7 +22,7 @@ module.exports.policies = {
         create: 'isActiveManager',
 //        getGeneralInfo: '',
         getManagementInfo: 'isManagerSelf',
-        login: 'isNotLoggedIn',
+        login: 'isNotLoggedInManager',
         logout: 'isManager',
 //        reissuePassword: ''
         update: 'isActiveManager',
@@ -47,7 +47,7 @@ module.exports.policies = {
 //        create: '',
 //        getGeneralInfo: '',
         getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
-        login: 'isNotLoggedIn',
+        login: 'isNotLoggedInRacer',
         logout: 'isRacer',
 //        reissuePassword: ''
         update: 'isRacerSelfOrTeamLeaderOrManager',
