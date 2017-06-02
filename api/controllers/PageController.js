@@ -11,14 +11,6 @@ var pageController = {
         return res.render('layout', {
             page: 'adminLogin'
         });
-    },
-    renderLoginPage: function (res, paramsRaw) {
-        var params = {};
-
-        if (typeof paramsRaw !== 'undefined') {
-            params = paramsRaw;
-        }
-        return res.view('adminLogin', params);
     }
 };
 

@@ -56,7 +56,7 @@ module.exports = function (data) {
             viewData = {};
         }
     }
-    return res.view('errorPages/404', {
+    return res.view('error', {
         title: 'Not Found'
     }, function (err, html) {
         if (err) {

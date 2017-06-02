@@ -52,25 +52,16 @@ module.exports = function (data) {
         }
     }
 
-    return res.view(statusCode, {
-        data: viewData,
-        title: statusTitle
+    return res.view('error', {
+        title: 'Forbidden'
     }, function (err, html) {
-        // If a view error occured, fall back to JSON(P).
         if (err) {
-            //
-            // Additionally:
-            // • If the view was missing, ignore the error but provide a verbose log.
             if (err.code === 'E_VIEW_FAILED') {
                 sails.log.verbose('res.forbidden() :: Could not locate view for error page (sending JSON instead).  Details: ', err);
             } else {
                 sails.log.warn('res.forbidden() :: When attempting to render error page view, an error occured (sending JSON instead).  Details: ', err);
             }
-            return res.send({
-                code: statusCode,
-                status: statusTitle,
-                message: data
-            });
+            return res.jsonx(data);
         }
         return res.send(html);
     });
