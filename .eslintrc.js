@@ -10,6 +10,9 @@ module.exports = {
             "jsx": true
         }
     },
+    "plugins": [
+        "react"
+    ],
     "rules": {
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
