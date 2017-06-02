@@ -1,0 +1,30 @@
+<div class="header">
+    <div class="heading Cf">
+        <h1 class="bdlogo">
+            <span class="b">Beardude</span>
+            <span class="e">Event</span>
+        </h1>
+    </div>
+</div>
+<div class="body">
+    <form action="/manager/login" method="POST">
+        <ul>
+            <li>
+                <label class="notxt" for="email">Email</label>
+                <input type="text" name="email" class="text" placeholder="電子信箱" value="" />
+            </li>
+            <li>
+                <label class="notxt" for="password">密碼</label>
+                <input type="password" name="password" class="text" placeholder="密碼"/>
+            </li>
+        </ul>
+        <div class="ft">
+            <button class="submit" type="submit">登入</button>
+        </div>
+    </form>
+</div>
+<div class="footer">
+    <ul>
+        <li class="copyRight"><span>Copyright &copy; </span><span><% var year = new Date().getFullYear();%><%= year%></span><span> Beardude Inc. All Rights Reserved</span></li>
+    </ul>
+</div>
