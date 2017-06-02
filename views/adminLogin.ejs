@@ -7,11 +7,16 @@
     </div>
 </div>
 <div class="body">
-    <form action="/manager/login" method="POST">
+    <form action="/console/login" method="POST">
+        <% if (typeof error !== 'undefined') { %>
+        <div class="err">
+            <%= error %>
+        </div>
+        <% } %>
         <ul>
             <li>
                 <label class="notxt" for="email">Email</label>
-                <input type="text" name="email" class="text" placeholder="電子信箱" value="" />
+                <input type="text" name="email" class="text" placeholder="電子信箱" <% if (typeof email !== 'undefined') { %>value="<%= email %>"<% } %> />
             </li>
             <li>
                 <label class="notxt" for="password">密碼</label>
