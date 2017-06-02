@@ -2,11 +2,15 @@
 'use strict';
 
 var pageController = {
-    adminPage: function (req, res) {
-        return res.render('console');
+    adminLandingPage: function (req, res) {
+        return res.render('layout', {
+            page: 'adminLanding'
+        });
     },
     adminLoginPage: function (req, res) {
-        return pageController.renderLoginPage(res);
+        return res.render('layout', {
+            page: 'adminLogin'
+        });
     },
     renderLoginPage: function (res, paramsRaw) {
         var params = {};

@@ -32,11 +32,11 @@ module.exports.routes = {
 
     // Manager 1.5
     'post /console/login': 'ManagerController.login',
+    'get /console/logout': 'ManagerController.logout',
     'post /manager/activate': 'ManagerController.activate',
     'post /manager/create': 'ManagerController.create',
     'get  /manager/info/:id': 'ManagerController.getGeneralInfo',
     'get  /manager/mgmtInfo/:id': 'ManagerController.getManagementInfo',
-    'post /manager/logout': 'ManagerController.logout',
     'get  /manager/reissuePassword/:id': 'ManagerController.reissuePassword',
     'post /manager/update': 'ManagerController.update',
     'post /manager/updatePassword': 'ManagerController.updatePassword',
@@ -145,7 +145,7 @@ module.exports.routes = {
     //'post /team/removeRacer': 'TeamController.removeRacer',
 
     //Admin
-    'get  /console': 'PageController.adminPage',
+    'get  /console': 'PageController.adminLandingPage',
     'get  /console/login': 'PageController.adminLoginPage',
 
     // Test page
