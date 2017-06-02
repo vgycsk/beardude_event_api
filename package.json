@@ -18,6 +18,7 @@
         "chai": "*",
         "chai-as-promised": "*",
         "eslint": "*",
+        "grunt": "*",
         "istanbul": "0.4.5",
         "mocha": "3.0.2",
         "sails-mock-models": "*",
@@ -28,7 +29,7 @@
         "debug": "node debug app.js",
         "lint": "./scripts/lint.sh",
         "lint-report": "./scripts/lint-report.sh",
-        "start": "node app.js",
+        "start": "./scripts/copyAssets.sh; sails lift",
         "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
     },
     "main": "app.js",
