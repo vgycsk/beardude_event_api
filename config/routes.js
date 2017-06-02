@@ -129,7 +129,7 @@ module.exports.routes = {
     // 2.3.3
     //'post /team/create': 'TeamController.create',
     // NA
-    'get  /team/getInfo': 'TeamController.getInfo',
+    'get  /team/getInfo/:id': 'TeamController.getInfo',
     // 2.3.4
     //'post /team/delete': 'TeamController.delete',
     // 2.3.2
@@ -146,6 +146,7 @@ module.exports.routes = {
 
     // Test page
     'get  /race/update/:id': 'PageController.raceUpdatePage',
+    'get  /team/update/:id': 'PageController.teamUpdatePage',
     'get  /group/update/:id': 'PageController.groupUpdatePage',
     'get  /event/update/:id': 'PageController.eventUpdatePage',
     'get  /manager/update/:id': 'PageController.managerUpdatePage',
