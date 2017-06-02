@@ -23,10 +23,14 @@ module.exports.policies = {
 //        getGeneralInfo: '',
         getManagementInfo: 'isManagerSelf',
         login: 'isNotLoggedInManager',
-        logout: 'isManager',
+//        logout: '',
 //        reissuePassword: ''
         update: 'isActiveManager',
         updatePassword: 'isActiveManager'
+    },
+    PageController: {
+        adminLandingPage: 'isActiveManager',
+        adminLoginPage: 'isNotLoggedInManager'
     },
     RaceController: {
         create: 'isActiveManager',

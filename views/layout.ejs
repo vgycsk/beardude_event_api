@@ -9,8 +9,14 @@
         <link rel="stylesheet" href="/styles/prod.css" />
     </head>
     <body>
-        <div id="main-container" class="container">
-            <%- body %>
-        </div>
+        <div id="main-container" class="container"><% if (typeof body !== 'undefined') { %><%- body %><% } %></div>
     </body>
+    <% if (typeof page !== 'undefined') { %>
+    <script>
+        var config = {
+            page: "<%= page %>"
+        };
+    </script>
+    <script src="/js/console/bundle.js"></script>
+    <% } %>
 </html>
