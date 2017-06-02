@@ -61,12 +61,12 @@ module.exports = function (data) {
     }, function (err, html) {
         if (err) {
             if (err.code === 'E_VIEW_FAILED') {
-                sails.log.verbose('res.notFound() :: Could not locate view for error page (sending JSON instead).  Details: ',err);
+                sails.log.verbose('res.notFound() :: Could not locate view for error page (sending JSON instead).  Details: ', err);
             } else {
                 sails.log.warn('res.notFound() :: When attempting to render error page view, an error occured (sending JSON instead).  Details: ', err);
             }
             return res.jsonx(data);
         }
         return res.send(html);
-      });
+    });
 };
