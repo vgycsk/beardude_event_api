@@ -11,7 +11,7 @@ module.exports = React.createClass({
     mixins: [libraryMixin],
     handleLogout: function () {
         this.get('/console/logout', function () {
-            return window.location = '/console/login';
+            window.location = '/console/login';
         });
     },
     render: function () {

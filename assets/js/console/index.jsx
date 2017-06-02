@@ -1,4 +1,4 @@
-/* global document, app */
+/* global config, document */
 
 'use strict';
 

@@ -30,14 +30,16 @@ module.exports = React.createClass({
     },
     handleSubmit: function (e) {
         var that = this;
+        var errorCode = 400;
+        var successCode = 200;
 
         e.preventDefault();
         this.post(that.state.url.login, that.state.credentials, function (result) {
-            if (result.code === 400) {
+            if (result.code === errorCode) {
                 that.setState({
                     error: result.message
                 });
-            } else if (result.code === 200) {
+            } else if (result.code === successCode) {
                 window.location = '/console';
             }
         });
