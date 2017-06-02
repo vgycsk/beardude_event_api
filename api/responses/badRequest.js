@@ -31,6 +31,13 @@ module.exports = function (data) {
     res.status(statusCode);
     sails.log.verbose(response, logContent);
     if (req.wantsJSON || sails.config.hooks.views === false) {
+        if (typeof viewData === 'string') {
+            return res.jsonx({
+                status: statusTitle,
+                code: statusCode,
+                message: viewData
+            });
+        }
         return res.jsonx(data);
     }
 

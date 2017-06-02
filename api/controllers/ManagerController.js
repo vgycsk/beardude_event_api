@@ -64,14 +64,8 @@ module.exports = {
         var input = req.body;
         var modelDataObj;
 
-        if (req.session.managerInfo) {
-            return res.badRequest('已登入');
-        }
         if (input.email === '' || input.password === '') {
-            return sails.controllers.page.renderLoginPage(res, {
-                error: '請輸入正確的帳號密碼'
-            });
-            //throw new Error('Please enter valid credentials');
+            return res.badRequest('Please enter valid credentials');
         }
         return Manager.findOne({
             email: input.email
@@ -84,20 +78,13 @@ module.exports = {
         })
         .then(function (authenticated) {
             if (!authenticated) {
-                return sails.controllers.page.renderLoginPage(res, {
-                    email: input.email,
-                    error: '帳號不存在或密碼錯誤'
-                });
-                //throw new Error('Credentials incorrect');
+                throw new Error('Credentials incorrect');
             }
             req.session.managerInfo = modelDataObj;
-            return res.redirect('/console');
-            /*
             return res.ok({
                 message: 'Logged in',
                 email: modelDataObj.email
             });
-            */
         })
         .catch(function (E) {
             return res.badRequest(E);

@@ -35,6 +35,7 @@ module.exports = function (data, options) {
     res.status(statusCode);
     sails.log.silly(response);
     if (req.wantsJSON || sails.config.hooks.views === false) {
+        data.code = statusCode;
         return res.jsonx(data);
     }
 

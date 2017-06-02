@@ -36,6 +36,13 @@ module.exports = function (data) {
     // If the user-agent wants JSON, always respond with JSON
     // If views are disabled, revert to json
     if (req.wantsJSON || sails.config.hooks.views === false) {
+        if (typeof viewData === 'string') {
+            return res.jsonx({
+                status: statusTitle,
+                code: statusCode,
+                message: viewData
+            });
+        }
         return res.jsonx(data);
     }
 
@@ -49,22 +56,17 @@ module.exports = function (data) {
             viewData = {};
         }
     }
-
-    return res.view(statusCode, {
-        data: viewData,
-        title: statusTitle
+    return res.view('errorPages/404', {
+        title: 'Not Found'
     }, function (err, html) {
-        // If a view error occured, fall back to JSON(P).
         if (err) {
             if (err.code === 'E_VIEW_FAILED') {
-                sails.log.verbose('res.notFound() :: Could not locate view for error page (sending JSON instead).  Details: ', err);
+                sails.log.verbose('res.notFound() :: Could not locate view for error page (sending JSON instead).  Details: ',err);
             } else {
                 sails.log.warn('res.notFound() :: When attempting to render error page view, an error occured (sending JSON instead).  Details: ', err);
             }
-            data.code = statusCode;
-            data.status = statusTitle;
             return res.jsonx(data);
         }
         return res.send(html);
-    });
+      });
 };
