@@ -96,5 +96,9 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 8.1    | 賽後    |         | 檢視成績       |              | /event/info/:id |
 8.2    |         |  選手   | 歸還Rfid   |              | /reg/recycleRfid  |
 
-問題：
-1. 摔車怎麼解決
+
+安裝與執行
+
+> npm i
+
+> npm run start
