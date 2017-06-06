@@ -1,6 +1,6 @@
 module.exports.views = {
     engine: 'ejs',
-    layout: true,
+    layout: false,
 
     /****************************************************************************
     *                                                                           *

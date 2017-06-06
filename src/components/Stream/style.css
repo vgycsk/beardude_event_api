@@ -1,0 +1,61 @@
+@import '../../style/includes.css';
+
+.login {
+  display: inline-block;
+  margin: 24px 16px 24px;
+  cursor: pointer;
+}
+
+.trackitem {
+    display: block;
+    width: 360px;
+    padding: 12px;
+    background: #DFDFDF;
+    color: #DF3ABA;
+    margin: 6px 6px;
+    text-align: center;
+}
+
+.container {
+  margin: 24px;
+  flex: 1;
+}
+
+.post {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 12px;
+}
+
+.postNumber {
+  display: inline-block;
+  width: 50px;
+  justify-content: center;
+  align-items: center;
+}
+.postContent {
+  flex: 1;
+  padding-bottom: 12px;
+  border-bottom: solid 1px #EEE;
+  padding-right: 15px;
+}
+
+.postBody {
+  margin-top: 10;
+  font-size: 12;
+  color: lightgray;
+}
+
+.center {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.button {
+  display: inline-block;
+  height: 50px;
+  justify-content: center;
+  align-items: 'center';
+  border-top: solid 1px lightgray;
+}

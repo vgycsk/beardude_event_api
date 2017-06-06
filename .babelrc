@@ -1,0 +1,27 @@
+{
+  "presets": [
+    ["es2015",
+      {
+        "es2015": {
+          "loose": true,
+          "modules": false
+        }
+      }
+    ], "react"
+  ],
+  "plugins": [
+    "transform-object-rest-spread"
+  ],
+  "env": {
+    "production": {
+      "plugins": [
+        [
+          "css-modules-transform", {
+            "generateScopedName": "[name]__[local]___[hash:base64:5]",
+            "extensions": [".css"]
+          }
+        ]
+      ]
+    }
+  }
+}

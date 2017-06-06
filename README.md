@@ -102,3 +102,13 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 > npm i
 
 > npm run start
+
+===
+
+DEV (need two screen):
+
+one screen
+> ./node_modules/.bin/sails lift
+
+the other
+> npm run dev (enter rs if reload fail)
