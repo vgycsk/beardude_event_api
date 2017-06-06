@@ -144,10 +144,6 @@ module.exports.routes = {
     // 2.3.8
     //'post /team/removeRacer': 'TeamController.removeRacer',
 
-    //Admin
-    'get  /console': 'PageController.adminLandingPage',
-    'get  /console/login': 'PageController.adminLoginPage',
-
     // Test page
     'get  /race/update/:id': 'TestPageController.raceUpdatePage',
     'get  /team/update/:id': 'TestPageController.teamUpdatePage',
@@ -157,5 +153,13 @@ module.exports.routes = {
     'get  /': 'TestPageController.apiTestPage',
     '/testSocket': {
       view: 'testSocketPage'
+    },
+    '/console': {
+      view: 'sharePage'
+    },
+
+    // TODO: need fix react-router
+    '/console/admin': {
+      view: 'sharePage'
     }
 };

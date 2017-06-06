@@ -1,0 +1,11 @@
+{
+  "verbose": true,
+  "exec": "rm -rf .tmp/public/js/console/ && NODE_ENV=development webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.js && ./scripts/cpReactLayout.sh",
+  "watch": [
+    "src/",
+    ".babelrc"
+  ],
+  "events": {
+    "restart": "osascript -e 'display notification \"beardude react restarting\" with title \"nodemon\"'"
+  }
+}
