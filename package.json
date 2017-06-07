@@ -65,7 +65,7 @@
     "lint": "./scripts/lint.sh",
     "lint-report": "./scripts/lint-report.sh",
     "start": "./scripts/clean.sh; ./scripts/copyJs.sh; ./scripts/buildCss.sh; sails lift",
-    "dev": "nodemon --config nodemon.json",
+    "dev": "nodemon -e css js --config nodemon.json",
     "build": "NODE_ENV=production webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.js",
     "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
   },
