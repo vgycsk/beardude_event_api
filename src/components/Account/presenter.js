@@ -5,7 +5,6 @@ import css from './style.css'
 class Account extends React.Component {
   componentDidMount () {
     this.props.dispatch(actionCreators.accountInfo())
-    console.log('here props: ', this.props)
   }
   handleInput (field, e) {
     this.props.dispatch(actionCreators.input(field, e.target.value))
