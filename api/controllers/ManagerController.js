@@ -23,6 +23,11 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    getAccountInfo: function (req, res) {
+        return res.ok({
+            manager: req.session.managerInfo
+        });
+    },
     // Get insensitive account info
     getGeneralInfo: function (req, res) {
         Manager.findOne({
@@ -83,7 +88,7 @@ module.exports = {
             req.session.managerInfo = modelDataObj;
             return res.ok({
                 message: 'Logged in',
-                email: modelDataObj.email
+                manager: modelDataObj
             });
         })
         .catch(function (E) {

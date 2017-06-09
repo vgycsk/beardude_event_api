@@ -31,8 +31,9 @@ module.exports.routes = {
     'get  /group/delete/:id': 'GroupController.delete',
 
     // Manager 1.5
-    'post /console/login': 'ManagerController.login',
-    'get /console/logout': 'ManagerController.logout',
+    'post /manager/login': 'ManagerController.login',
+    'get  /manager/logout': 'ManagerController.logout',
+    'get  /manager/account': 'ManagerController.getAccountInfo',
     'post /manager/activate': 'ManagerController.activate',
     'post /manager/create': 'ManagerController.create',
     'get  /manager/info/:id': 'ManagerController.getGeneralInfo',
@@ -154,12 +155,10 @@ module.exports.routes = {
     '/testSocket': {
       view: 'testSocketPage'
     },
-    '/console': {
+    '/console/*': {
       view: 'sharePage'
     },
-
-    // TODO: need fix react-router
-    '/console/admin': {
+    '/console': {
       view: 'sharePage'
     }
 };
