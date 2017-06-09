@@ -30,7 +30,7 @@ var plugins = [
         'fetch': 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch'
   }),
   new HtmlWebpackPlugin({
-      template: './src/sharePage.ejs', // input
+      template: './views/sharePage.ejs', // input
       filename: 'sharePage.ejs'
   })
 ];

@@ -64,7 +64,8 @@
     "less": "./scripts/less.sh",
     "lint": "./scripts/lint.sh",
     "lint-report": "./scripts/lint-report.sh",
-    "start": "./scripts/clean.sh; ./scripts/copyJs.sh; ./scripts/buildCss.sh; sails lift",
+    "startOld": "./scripts/clean.sh; ./scripts/copyJs.sh; ./scripts/buildCss.sh; sails lift",
+    "start": "./scripts/copyView.sh; sails lift",
     "dev": "nodemon -e css js --config nodemon.json",
     "build": "NODE_ENV=production webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.js",
     "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
