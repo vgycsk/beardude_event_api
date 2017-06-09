@@ -35,7 +35,7 @@ module.exports = function (data, options) {
     res.status(statusCode);
     sails.log.silly(response);
     if (req.wantsJSON || sails.config.hooks.views === false) {
-        data.code = statusCode;
+//        data.code = statusCode;
         return res.jsonx(data);
     }
 
@@ -62,8 +62,8 @@ module.exports = function (data, options) {
         data: viewData,
         title: statusTitle
     }, function () {
-        data.code = statusCode;
-        data.status = statusTitle;
+//        data.code = statusCode;
+//        data.status = statusTitle;
         return res.jsonx(data);
     });
 };

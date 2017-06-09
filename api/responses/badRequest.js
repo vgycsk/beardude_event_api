@@ -33,8 +33,8 @@ module.exports = function (data) {
     if (req.wantsJSON || sails.config.hooks.views === false) {
         if (typeof viewData === 'string') {
             return res.jsonx({
-                status: statusTitle,
-                code: statusCode,
+//                status: statusTitle,
+//                code: statusCode,
                 message: viewData
             });
         }
@@ -56,8 +56,8 @@ module.exports = function (data) {
         data: viewData,
         title: statusTitle
     }, function () {
-        data.status = statusTitle;
-        data.code = statusCode;
+//        data.status = statusTitle;
+//        data.code = statusCode;
         return res.jsonx(data);
     });
 };
