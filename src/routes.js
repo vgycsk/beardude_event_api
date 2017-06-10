@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import App from './components/App/presenter'
+import App from './components/App'
 import Stream from './components/Stream'
 import Account from './components/Account'
 

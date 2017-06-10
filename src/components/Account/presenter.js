@@ -3,9 +3,6 @@ import { actionCreators } from '../../ducks/account'
 import css from './style.css'
 
 class Account extends React.Component {
-  componentDidMount () {
-    this.props.dispatch(actionCreators.accountInfo())
-  }
   handleInput (field, e) {
     this.props.dispatch(actionCreators.input(field, e.target.value))
   }

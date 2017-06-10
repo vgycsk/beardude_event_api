@@ -1,3 +1,5 @@
+import { browserHistory } from 'react-router'
+
 // types
 const LOGIN = 'manager/LOGIN'
 const LOGOUT = 'manager/LOGOUT'
@@ -11,8 +13,12 @@ export const actionCreators = {
     try {
       const response = await fetch('/manager/account', {credentials: 'same-origin'})
       const res = await response.json()
+      let payload = {}
 
-      dispatch({type: ACCOUNT_INFO, payload: res.manager})
+      if (res.manager) {
+        payload = res.manager
+      }
+      dispatch({type: ACCOUNT_INFO, payload: payload})
     } catch (e) {
       dispatch({type: LOGIN_ERR, payload: {error: '取得帳號狀態失敗'}})
     }
@@ -36,7 +42,8 @@ export const actionCreators = {
       const response = await fetch('/manager/login', fetchObject)
       const res = await response.json()
 
-      dispatch({type: LOGIN, payload: res.manager})
+      dispatch({type: LOGIN, payload: {manager: res.manager}})
+      browserHistory.push('/console')
     } catch (e) {
       dispatch({type: LOGIN_ERR, payload: {error: '登入失敗'}})
     }
@@ -66,11 +73,15 @@ export const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case ACCOUNT_INFO: {
+      if (action.payload.manager) {
         nextState.manager = action.payload.manager
+      }
+      nextState.isChecked = true
     }
     case LOGIN: {
       if (!state.manager) {
         nextState.manager = action.payload
+        nextState.isChecked = true
       }
     }
     case LOGOUT: {
