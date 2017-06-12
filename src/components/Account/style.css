@@ -31,7 +31,6 @@ input:-webkit-autofill {
     font-size: 15px;
 }
 .mainHeader {
-  display: none;
     font-weight: 100;
     height: 45px;
     position: relative;
