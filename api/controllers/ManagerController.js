@@ -15,7 +15,6 @@ module.exports = {
         return accountService.create(input, 'Manager')
         .then(function (result) {
             return res.ok({
-                message: 'Account created',
                 manager: result
             });
         })
@@ -35,13 +34,13 @@ module.exports = {
         })
         .populate('events')
         .then(function (modelData) {
-            var result = {
+            return res.ok({
+              manager: {
                 firstName: modelData.firstName,
                 lastName: modelData.lastName,
                 isActive: modelData.isActive
-            };
-
-            return res.ok(result);
+              }
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -58,7 +57,9 @@ module.exports = {
             var result = modelData;
 
             delete result.password;
-            return res.ok(result);
+            return res.ok({
+              manager: result
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -85,9 +86,9 @@ module.exports = {
             if (!authenticated) {
                 throw new Error('Credentials incorrect');
             }
+            delete modelDataObj.password;
             req.session.managerInfo = modelDataObj;
             return res.ok({
-                message: 'Logged in',
                 manager: modelDataObj
             });
         })
