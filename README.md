@@ -115,4 +115,4 @@ the other
 
 ===
 Wireframe
-Version 1(https://user-images.githubusercontent.com/6611716/27020412-b7552d10-4f73-11e7-8c01-3b22ca7f1a7d.jpg)
+![beardude race wireframe ver1](https://user-images.githubusercontent.com/6611716/27020412-b7552d10-4f73-11e7-8c01-3b22ca7f1a7d.jpg)
