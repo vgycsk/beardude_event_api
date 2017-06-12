@@ -220,7 +220,7 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Already registered');
+            var expected = 'Already registered';
             var mock = {
                 id: 1,
                 event: 1,
@@ -231,7 +231,7 @@ describe('/controllers/RegistrationController', function() {
             registrationController.create(req, res);
             this.timeout(99);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 50);
@@ -409,13 +409,13 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Racer already has RFID');
+            var expected = 'Racer already has RFID';
 
             sailsMock.mockModel(Registration, 'findOne', mock);
             registrationController.assignRfid(req, res);
             this.timeout(50);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 25);
@@ -437,13 +437,13 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('RFID already assigned to another racer');
+            var expected = 'RFID already assigned to another racer';
 
             sailsMock.mockModel(Registration, 'findOne', mock);
             registrationController.assignRfid(req, res);
             this.timeout(50);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 25);
@@ -509,13 +509,13 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Racer not assigned RFID yet');
+            var expected = 'Racer not assigned RFID yet';
 
             sailsMock.mockModel(Registration, 'findOne', mock);
             registrationController.replaceRfid(req, res);
             this.timeout(50);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 25);
@@ -542,7 +542,7 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('RFID already assigned to another racer');
+            var expected = 'RFID already assigned to another racer';
 
             sailsMock.mockModel(Registration, 'findOne', mock);
             registrationController.replaceRfid(req, res);
@@ -550,7 +550,7 @@ describe('/controllers/RegistrationController', function() {
             sailsMock.mockModel(Registration, 'findOne', mock1);
             this.timeout(50);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 25);
@@ -651,7 +651,7 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Race number already assigned');
+            var expected = 'Race number already assigned';
             var mock = [
                 {
                     id: 1,
@@ -672,7 +672,7 @@ describe('/controllers/RegistrationController', function() {
             sailsMock.mockModel(Registration, 'findOne', mock1);
             this.timeout(50);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 25);
@@ -738,13 +738,13 @@ describe('/controllers/RegistrationController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Racer not in this race');
+            var expected = 'Racer not in this race';
 
             sailsMock.mockModel(Registration, 'findOne');
             registrationController.admitRacer(req, res);
             this.timeout(50);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 done();
             }, 25);

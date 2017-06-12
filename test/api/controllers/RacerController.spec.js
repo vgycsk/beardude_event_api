@@ -203,7 +203,7 @@ describe('/controllers/RacerController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Credentials incorrect');
+            var expected = 'Credentials incorrect';
             var mock;
             var that = this;
 
@@ -221,7 +221,7 @@ describe('/controllers/RacerController', function() {
                 that.timeout(1000);
                 racerController.login(req, res);
                 return setTimeout(function () {
-                    expect(actual).to.deep.equal(expected);
+                    expect(actual.message).to.equal(expected);
                     Racer.findOne.restore();
                     return done();
                 }, 500);

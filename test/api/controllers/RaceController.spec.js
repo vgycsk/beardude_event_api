@@ -82,13 +82,13 @@ describe('/controllers/RaceController', function() {
                 name: 'new race',
                 startTime: '2017-10-10T08:00:00-08:00'
             };
-            var expected = new Error('Cannot delete a started race');
+            var expected = 'Cannot delete a started race';
 
             sailsMock.mockModel(Race, 'findOne', mock);
             this.timeout(50);
             raceController.delete(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Race.findOne.restore();
                 done();
             }, 30);
@@ -355,14 +355,14 @@ describe('/controllers/RaceController', function() {
                 ],
                 group: 1
             };
-            var expected = new Error('Racer not in group');
+            var expected = 'Racer not in group';
 
             sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
             this.timeout(50);
             raceController.addRacer(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 Race.findOne.restore();
                 done();
@@ -402,14 +402,14 @@ describe('/controllers/RaceController', function() {
                 ],
                 group: 1
             };
-            var expected = new Error('Racer already in race');
+            var expected = 'Racer already in race';
 
             sailsMock.mockModel(Registration, 'findOne', mockReg);
             sailsMock.mockModel(Race, 'findOne', mockRace);
             this.timeout(50);
             raceController.addRacer(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Registration.findOne.restore();
                 Race.findOne.restore();
                 done();
@@ -497,13 +497,13 @@ describe('/controllers/RaceController', function() {
                 ],
                 group: 1
             };
-            var expected = new Error('Racer not in race');
+            var expected = 'Racer not in race';
 
             sailsMock.mockModel(Race, 'findOne', mockRace);
             this.timeout(50);
             raceController.removeRacer(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Race.findOne.restore();
                 done();
             }, 30);
@@ -709,13 +709,13 @@ describe('/controllers/RaceController', function() {
                 id: 5,
                 racerNumberAllowed: 30
             };
-            var expected = new Error('Rule setting exceeds max racer');
+            var expected = 'Rule setting exceeds max racer';
 
             sailsMock.mockModel(Race, 'findOne', mock);
             this.timeout(50);
             raceController.updateAdvancingRules(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Race.findOne.restore();
                 done();
             }, 30);
@@ -780,14 +780,14 @@ describe('/controllers/RaceController', function() {
                     }
                 ]
             };
-            var expected = new Error('Rule setting exceeds max racer');
+            var expected = 'Rule setting exceeds max racer';
 
             sailsMock.mockModel(Race, 'findOne', mock);
             sailsMock.mockModel(Group, 'findOne', mockGroup);
             this.timeout(99);
             raceController.updateAdvancingRules(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Race.findOne.restore();
                 Group.findOne.restore();
                 done();
@@ -902,13 +902,13 @@ describe('/controllers/RaceController', function() {
             var mock = {
                 id: 5
             };
-            var expected = new Error('Race not started');
+            var expected = 'Race not started';
 
             sailsMock.mockModel(Race, 'findOne', mock);
             this.timeout(99);
             raceController.getParsedRaceResult(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Race.findOne.restore();
                 done();
             }, 60);
@@ -932,13 +932,13 @@ describe('/controllers/RaceController', function() {
                 id: 5,
                 startTime: '2017-10-10T08:00:00-08:00'
             };
-            var expected = new Error('Race not finished');
+            var expected = 'Race not finished';
 
             sailsMock.mockModel(Race, 'findOne', mock);
             this.timeout(99);
             raceController.getParsedRaceResult(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Race.findOne.restore();
                 done();
             }, 60);

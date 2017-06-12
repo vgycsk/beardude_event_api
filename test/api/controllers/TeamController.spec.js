@@ -4,12 +4,10 @@
 var teamController = require('../../../api/controllers/TeamController.js');
 var sailsMock = require('sails-mock-models');
 var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
 var expect = chai.expect;
 var Q = require('q');
 var sinon = require('sinon');
 
-chai.use(chaiAsPromised);
 describe('/controllers/TeamController', function() {
     var sandbox;
 

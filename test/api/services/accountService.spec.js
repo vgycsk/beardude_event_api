@@ -4,14 +4,12 @@
 var accountService = require('../../../api/services/accountService.js');
 var bcrypt = require('bcrypt-nodejs');
 var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
 var expect = chai.expect;
 var sailsMock = require('sails-mock-models');
 var randomstring = require('randomstring');
 var sinon = require('sinon');
 var Q = require('q');
 
-chai.use(chaiAsPromised);
 describe('services/accountService', function() {
     var sandbox;
 
@@ -178,7 +176,7 @@ describe('services/accountService', function() {
                 confirmPassword: '123'
             };
             var actual;
-            var expected = new Error('Account exists');
+            var expected = 'Account exists';
             var mockData = {
                 id: 5,
                 email: 'info@beardude.com'
@@ -198,7 +196,7 @@ describe('services/accountService', function() {
             this.timeout(99);
             accountService.create(input, 'Manager');
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Manager.findOne.restore();
                 done();
             }, 50);
@@ -318,7 +316,7 @@ describe('services/accountService', function() {
                     actual = msg;
                 }
             };
-            var expected = new Error('Cannot reissue password to activated account');
+            var expected = 'Cannot reissue password to activated account';
             var mockData = {
                 id: 5,
                 email: 'info@beardude.com',
@@ -330,7 +328,7 @@ describe('services/accountService', function() {
             Manager.findOne.restore();
             this.timeout(30);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 done();
             }, 10);
         });

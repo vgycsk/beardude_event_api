@@ -6,12 +6,10 @@ var assert = require('assert');
 var bcrypt = require('bcrypt-nodejs');
 var sinon = require('sinon');
 var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
 var expect = chai.expect;
 var sailsMock = require('sails-mock-models');
 var randomstring = require('randomstring');
 
-chai.use(chaiAsPromised);
 describe('services/dataService', function() {
     var sandbox;
 
@@ -363,14 +361,16 @@ describe('services/dataService', function() {
             var actual;
 
             sailsMock.mockModel(Registration, 'findOne');
-            actual = dataService.returnAccessCode(1);
             sandbox.stub(randomstring, 'generate').callsFake(function () {
                 return 'abcd';
             });
-
-            expect(actual).to.eventually.equal(expected);
-            Registration.findOne.restore();
-            done();
+            actual = dataService.returnAccessCode(1);
+            this.timeout(99);
+            setTimeout(function () {
+              expect(actual).to.eventually.equal(expected);
+              Registration.findOne.restore();
+              done();
+            }, 80);
         });
     });
 });
