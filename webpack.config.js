@@ -27,13 +27,13 @@ var plugins = [
     allChunks: true
   }),
   new webpack.ProvidePlugin({
-        'fetch': 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch'
+    'fetch': 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch'
   }),
   new HtmlWebpackPlugin({
-      template: './views/sharePage.ejs', // input
-      filename: 'sharePage.ejs'
+    template: './views/sharePage.ejs', // input
+    filename: 'sharePage.ejs'
   })
-];
+]
 
 if (process.env.NODE_ENV === 'production') {
   plugins.push(
@@ -46,75 +46,75 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 module.exports = {
-    module: {
-        rules: [
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: [
           {
-              test: /\.(js|jsx)$/,
-              exclude: /node_modules/,
-              use: [
-                {
-                  loader: 'babel-loader'
-                }
-              ]
+            loader: 'babel-loader'
+          }
+        ]
 
+      },
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          use: [
+            {
+              loader: 'css-loader',
+              query: {
+                modules: true,
+                importLoaders: 1,
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+                sourceMap: false
+              }
             },
             {
-              test: /\.css$/,
-              use: ExtractTextPlugin.extract({
-                use: [
-                  {
-                    loader: 'css-loader',
-                    query: {
-                      modules: true,
-                      importLoaders: 1,
-                      localIdentName: '[name]__[local]___[hash:base64:5]',
-                      sourceMap: false
-                    }
-                  },
-                  {
-                    loader: 'postcss-loader'
-                  }
-                ]
-              })
+              loader: 'postcss-loader'
             }
-        ]
-    },
-    entry: {
-      main: [
-        './src/index'
-      ],
-      vendor: [
-        'react', 'react-dom', 'redux', 'react-redux', 'redux-thunk'
-      ]
-    },
-    devtool: 'source-map',
-    output: {
-        path: path.resolve(__dirname, '.tmp/public/js/console'),
-        filename: '[name].[chunkhash].js',
-        chunkFilename: '[name].[chunkhash].js',
-        sourceMapFilename: 'bundle.js.map',
-        publicPath: '/js/console'
-    },
-    plugins: plugins,
-    stats: {
-      assets: true,
-      cached: false,
-      children: false,
-      chunks: false,
-      chunkModules: false,
-      chunkOrigins: false,
-      colors: true,
-      errors: true,
-      errorDetails: true,
-      hash: false,
-      modules: false,
-      publicPath: true,
-      reasons: false,
-      source: false,
-      timings: false,
-      version: false,
-      warnings: false
-    }
+          ]
+        })
+      }
+    ]
+  },
+  entry: {
+    main: [
+      'babel-polyfill', './src/index'
+    ],
+    vendor: [
+      'react', 'react-dom', 'redux', 'react-redux', 'redux-thunk'
+    ]
+  },
+  devtool: 'source-map',
+  output: {
+    path: path.resolve(__dirname, '.tmp/public/js/console'),
+    filename: '[name].[chunkhash].js',
+    chunkFilename: '[name].[chunkhash].js',
+    sourceMapFilename: 'bundle.js.map',
+    publicPath: '/js/console'
+  },
+  plugins: plugins,
+  stats: {
+    assets: true,
+    cached: false,
+    children: false,
+    chunks: false,
+    chunkModules: false,
+    chunkOrigins: false,
+    colors: true,
+    errors: true,
+    errorDetails: true,
+    hash: false,
+    modules: false,
+    publicPath: true,
+    reasons: false,
+    source: false,
+    timings: false,
+    version: false,
+    warnings: false
+  }
 }
 /*
 options: {

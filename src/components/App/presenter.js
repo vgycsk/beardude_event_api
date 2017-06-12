@@ -3,7 +3,6 @@ import { actionCreators } from '../../ducks/account'
 import React from 'react'
 import css from './style.css'
 
-
 class App extends React.Component {
   bouncer () {
     let toAllow = true

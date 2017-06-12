@@ -1,11 +1,10 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import Stream from './presenter'
+import Admin from './presenter'
 
 const mapStateToProps = (state) => ({
   loading: state.posts.loading,
-  error: state.posts.error,
-  posts: state.posts.posts
+  error: state.posts.error
 })
 
-export default withRouter(connect(mapStateToProps)(Stream))
+export default withRouter(connect(mapStateToProps)(Admin))
