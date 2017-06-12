@@ -55,12 +55,6 @@ input:-webkit-autofill {
 .logoB, .logoE {
     padding: 0 0 0 2px;
 }
-.pageMsg {
-    color: #fff;
-    font-size: 56px;
-    font-weight: 100;
-    letter-spacing: 2px;
-}
 .errMsg {
     line-height: 32px;
     color: yellow;
