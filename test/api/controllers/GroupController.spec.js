@@ -4,10 +4,8 @@
 var groupController = require('../../../api/controllers/GroupController.js');
 var sailsMock = require('sails-mock-models');
 var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
 var expect = chai.expect;
 
-chai.use(chaiAsPromised);
 describe('/controllers/GroupController', function() {
     describe('.create()', function () {
         it('should create a group', function (done) {
@@ -212,15 +210,15 @@ describe('/controllers/GroupController', function() {
             var mockData = {
                 id: 1,
                 name: 'new group',
-                registration: [1, 2, 3]
+                registrations: [1, 2, 3]
             };
-            var expected = new Error('Cannot delete group that has racers registered');
+            var expected = 'Cannot delete group that has racers registered';
 
             this.timeout(99);
             sailsMock.mockModel(Group, 'findOne', mockData);
             groupController.delete(req, res);
             setTimeout(function () {
-                expect(actual).to.deep.equal(expected);
+                expect(actual.message).to.equal(expected);
                 Group.findOne.restore();
                 done();
             }, 30);
