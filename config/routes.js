@@ -7,10 +7,12 @@ module.exports.routes = {
     'post /event/create': 'EventController.create',
     // 3.1 -
     'get  /event/info/:id': 'EventController.getGeneralInfo',
+    // 3.1
+    'get  /event/getEvents': 'EventController.getEvents',
     // 1.3
-    'post /event/managers/add': 'EventController.addManagers',
+//    'post /event/managers/add': 'EventController.addManagers',
     // 1.3
-    'post /event/managers/remove': 'EventController.removeManagers',
+//    'post /event/managers/remove': 'EventController.removeManagers',
     // 1.2.7 -
     'post /event/update': 'EventController.update',
     // 1.2.10 -

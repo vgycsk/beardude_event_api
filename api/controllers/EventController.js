@@ -35,11 +35,22 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    getEvents: function (req, res) {
+        Event.find({})
+        .then(function (modelData) {
+            return res.ok({
+                events: modelData
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     getGeneralInfo: function (req, res) {
         Event.findOne({
             id: parseInt(req.params.id)
         })
-        .populate('managers')
+//        .populate('managers')
         .populate('groups')
         .then(function (modelData) {
             return res.ok(modelData);
@@ -48,6 +59,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    /*
     // {event: ID, managers: [ID1, ID2]}
     addManagers: function (req, res) {
         var input = req.body;
@@ -140,6 +152,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    */
     // {event: ID, isRegistrationOpen: BOOL, isTeamRegistrationOpen, BOOL, isPublic: BOOL}
     updateSwitch: function (req, res) {
         var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];

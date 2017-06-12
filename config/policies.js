@@ -3,9 +3,10 @@
 module.exports.policies = {
     EventController: {
         create: 'isActiveManager',
+        getEvents: 'isActiveManager',
 //        getGeneralInfo: '',
-        addManagers: 'isActiveManager',
-        removeManagers: 'isActiveManager',
+//        addManagers: 'isActiveManager',
+//        removeManagers: 'isActiveManager',
         update: 'isActiveManager',
         updateSwitch: 'isActiveManager',
         assignTesterRfid: 'isActiveManager'
