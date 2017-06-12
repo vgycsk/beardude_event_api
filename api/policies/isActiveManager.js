@@ -14,5 +14,5 @@ module.exports = function (req, res, callback) {
             return res.forbidden('Unauthorized');
         });
     }
-    return res.notFound();
+    return res.forbidden('Unauthorized');
 };

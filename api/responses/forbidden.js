@@ -21,7 +21,7 @@ module.exports = function (data) {
     var response = 'Sending 403 ("Forbidden") response';
     var sails = req._sails;
     var statusCode = 403;
-//    var statusTitle = 'Forbidden';
+    var statusTitle = 'Forbidden';
     var viewData = data;
 
     // Set status code
@@ -51,7 +51,10 @@ module.exports = function (data) {
             viewData = {};
         }
     }
-
+    return res.jsonx({
+        message: statusTitle
+    });
+    /*
     return res.view('error', {
         title: 'Forbidden'
     }, function (err, html) {
@@ -65,5 +68,6 @@ module.exports = function (data) {
         }
         return res.send(html);
     });
+    */
 };
 

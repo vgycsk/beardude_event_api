@@ -50,6 +50,10 @@ module.exports = function (data) {
             viewData = {};
         }
     }
+    return res.jsonx({
+        message: statusTitle
+    });
+    /*
     delete viewData.rawStack;
     delete viewData.stack;
     return res.guessView({
@@ -60,4 +64,5 @@ module.exports = function (data) {
 //        data.code = statusCode;
         return res.jsonx(data);
     });
+    */
 };
