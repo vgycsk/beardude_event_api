@@ -51,7 +51,7 @@ describe('policies/isActiveManager', function() {
         });
     });
 
-    it('should return Login required if no session data found', function (done) {
+    it('should return -Unauthorized if no session data found', function (done) {
         var req = {
             session: {}
         };
@@ -65,7 +65,7 @@ describe('policies/isActiveManager', function() {
         var callbackFunc = function () {
             return 'verified';
         };
-        var expected = 'Login required';
+        var expected = 'Unauthorized';
 
         sailsMock.mockModel(Manager, 'findOne', mockData);
         isActiveManager(req, res, callbackFunc);

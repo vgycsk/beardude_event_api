@@ -46,7 +46,7 @@ describe('policies/isNotLoggedInManager', function() {
             return 'verified';
         };
         var res = {
-            forbidden: function (str) {
+            badRequest: function (str) {
                 actual = str;
             }
         };
