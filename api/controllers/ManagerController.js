@@ -52,7 +52,7 @@ module.exports = {
             id: req.params.id
         })
         .populate('address')
-        .populate('events')
+//        .populate('events')
         .then(function (modelData) {
             var result = modelData;
 
@@ -77,7 +77,7 @@ module.exports = {
             email: input.email
         })
         .populate('address')
-        .populate('events')
+//        .populate('events')
         .then(function (modelData) {
             modelDataObj = modelData;
             return dataService.authenticate(input.password, modelDataObj.password);
