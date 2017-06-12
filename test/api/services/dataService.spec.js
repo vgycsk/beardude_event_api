@@ -9,6 +9,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var sailsMock = require('sails-mock-models');
 var randomstring = require('randomstring');
+var Q = require('q');
 
 describe('services/dataService', function() {
     var sandbox;
@@ -360,17 +361,24 @@ describe('services/dataService', function() {
             var expected = 'abcd';
             var actual;
 
-            sailsMock.mockModel(Registration, 'findOne');
-            sandbox.stub(randomstring, 'generate').callsFake(function () {
-                return 'abcd';
+            sandbox.stub(Q, 'defer').callsFake(function () {
+                return {
+                    resolve: function (obj) {
+                        actual = obj;
+                    },
+                    reject: function (obj) {
+                        actual = obj;
+                    }
+                };
             });
+            sailsMock.mockModel(Registration, 'findOne');
             actual = dataService.returnAccessCode(1);
-            this.timeout(99);
+            this.timeout(200);
             setTimeout(function () {
-              expect(actual).to.eventually.equal(expected);
+              expect(actual.length).to.equal(4);
               Registration.findOne.restore();
               done();
-            }, 80);
+            }, 150);
         });
     });
 });
