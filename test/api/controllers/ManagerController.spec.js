@@ -68,7 +68,6 @@ describe('/controllers/ManagerController', function() {
                 }
             };
             var expected = {
-                message: 'Account created',
                 manager: {
                     id: 1
                 }
@@ -91,6 +90,41 @@ describe('/controllers/ManagerController', function() {
         });
     });
 
+/*
+  \    getAccountInfo: function (req, res) {
+        return res.ok({
+            manager: req.session.managerInfo
+        });
+    },
+*/
+    describe('.getAccountInfo()', function () {
+        it('should return account info when logged in', function (done) {
+            var actual;
+            var req = {
+                session: {
+                    managerInfo: {
+                      id: 1,
+                      email: 'info@beardude.com'
+                    }
+                }
+            };
+            var res = {
+                ok: function (obj) {
+                    actual = obj;
+                }
+            };
+            var expected = {
+                manager: {
+                    id: 1,
+                    email: 'info@beardude.com'
+                }
+            };
+
+            managerController.getAccountInfo(req, res);
+            expect(actual).to.deep.equal(expected);
+            done();
+        });
+    });
     describe('.getGeneralInfo()', function () {
         it('should return filtered info', function (done) {
             var actual;
@@ -111,9 +145,11 @@ describe('/controllers/ManagerController', function() {
                 isActive: true
             };
             var expected = {
-                firstName: 'John',
-                lastName: 'Doe',
-                isActive: true
+                manager: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    isActive: true
+                }
             };
 
             sailsMock.mockModel(Manager, 'findOne', mock);
@@ -148,10 +184,12 @@ describe('/controllers/ManagerController', function() {
                 password: '123'
             };
             var expected = {
-                id: 1,
-                firstName: 'John',
-                lastName: 'Doe',
-                isActive: true
+                manager: {
+                    id: 1,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    isActive: true
+                }
             };
 
             sailsMock.mockModel(Manager, 'findOne', mock);
@@ -166,27 +204,6 @@ describe('/controllers/ManagerController', function() {
     });
 
     describe('.login()', function () {
-        it('should return message if already logged in', function (done) {
-            var actual;
-            var req = {
-                session: {
-                    managerInfo: {
-                        id: 1,
-                        email: 'info@beardude.com'
-                    }
-                }
-            };
-            var res = {
-                badRequest: function (obj) {
-                    actual = obj;
-                }
-            };
-            var expected = 'Already logged in';
-
-            managerController.login(req, res);
-            expect(actual).to.equal(expected);
-            done();
-        });
         it('should return error message if password incorrect', function (done) {
             var actual;
             var req = {
@@ -204,7 +221,7 @@ describe('/controllers/ManagerController', function() {
                     actual = obj;
                 }
             };
-            var expected = new Error('Credentials incorrect');
+            var expected = 'Credentials incorrect';
             var mock;
             var that = this;
 
@@ -222,7 +239,7 @@ describe('/controllers/ManagerController', function() {
                 that.timeout(1000);
                 managerController.login(req, res);
                 return setTimeout(function () {
-                    expect(actual).to.deep.equal(expected);
+                    expect(actual.message).to(expected);
                     Manager.findOne.restore();
                     return done();
                 }, 500);
@@ -243,8 +260,10 @@ describe('/controllers/ManagerController', function() {
                 }
             };
             var expected = {
-                message: 'Logged in',
-                email: 'info@beardude.com'
+                manager: {
+                    id: 1,
+                    email: 'info@beardude.com'
+                }
             };
             var mock;
             var that = this;
