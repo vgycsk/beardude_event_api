@@ -29,10 +29,6 @@ module.exports.policies = {
         update: 'isActiveManager',
         updatePassword: 'isActiveManager'
     },
-    PageController: {
-        adminLandingPage: 'isActiveManager',
-        adminLoginPage: 'isNotLoggedInManager'
-    },
     RaceController: {
         create: 'isActiveManager',
 //        getGeneralInfo: '',
