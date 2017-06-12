@@ -108,7 +108,11 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 DEV (need two screen):
 
 one screen
-> ./node_modules/.bin/sails lift
+> npm run start
 
 the other
 > npm run dev (enter rs if reload fail)
+
+===
+Wireframe
+Version 1(https://user-images.githubusercontent.com/6611716/27020412-b7552d10-4f73-11e7-8c01-3b22ca7f1a7d.jpg)
