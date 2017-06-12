@@ -6,7 +6,7 @@ import css from './style.css'
 class App extends React.Component {
   bouncer () {
     let toAllow = true
-    const pathname = browserHistory.getCurrentLocation().pathname
+    const pathname = this.props.match.url
     const isLoginPage = pathname.match(/^\/console\/login(\/?)$/g)
 
     if (this.props.account.manager && this.props.account.manager.email) {
