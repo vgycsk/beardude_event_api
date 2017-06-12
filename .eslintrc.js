@@ -80,7 +80,7 @@ module.exports = {
             "exceptions": ["E", "e", "I", "i", "j", "Q", "q", "V"]
         }],
         "id-match": "error",
-        "indent": "error",
+        "indent": "off",
         "init-declarations": "off",
         "jsx-quotes": "error",
         "key-spacing": "error",
