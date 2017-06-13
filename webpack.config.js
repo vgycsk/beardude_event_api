@@ -68,7 +68,7 @@ module.exports = {
                 modules: true,
                 importLoaders: 1,
                 localIdentName: '[name]__[local]___[hash:base64:5]',
-                sourceMap: false
+                sourceMap: true
               }
             },
             {
@@ -89,10 +89,9 @@ module.exports = {
   },
   devtool: 'source-map',
   output: {
-    path: path.resolve(__dirname, '.tmp/public/js/console'),
+    path: path.join(__dirname, '.tmp/public/js/console'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
-    sourceMapFilename: 'bundle.js.map',
     publicPath: '/js/console'
   },
   plugins: plugins,
