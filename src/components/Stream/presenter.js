@@ -1,5 +1,6 @@
 import React from 'react'
 import { actionCreators } from '../../ducks/posts'
+import 'url-search-params-polyfill'
 import styles from './style.css'
 
 class Stream extends React.Component {
@@ -34,7 +35,7 @@ class Stream extends React.Component {
   }
 
   render () {
-    const {posts, loading, error} = this.props
+    const {posts, loading, error, match, location} = this.props
 
     if (loading) {
       return (
@@ -56,6 +57,11 @@ class Stream extends React.Component {
 
     return (
       <div className={styles.container}>
+        <div>
+          <span>Hello Admin</span>
+          <p>{`match.url --> ${match.url}`}</p>
+          <p>{`location.search --> ${new URLSearchParams(location.search)}`}</p>
+        </div>
         <ul className={styles.container}>
           {posts.map(this.renderPost)}
         </ul>

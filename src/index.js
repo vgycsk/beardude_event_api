@@ -1,22 +1,25 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, browserHistory } from 'react-router'
-import { syncHistoryWithStore } from 'react-router-redux'
 import { Provider } from 'react-redux'
-import configureStore from './stores/configureStore'
-import Routes from './routes'
+import { configureStore } from './stores/configureStore'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+
+import App from './components/App'
+import Stream from './components/Stream/'
+import Admin from './components/Admin/presenter'
 
 import './style/index.css'
 
 const store = configureStore()
 
-// router
-const history = syncHistoryWithStore(browserHistory, store)
-
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history}>
-      {Routes}
+    <Router>
+      <div>
+        <Route exact path='/console/login' component={App} />
+        <Route path='/console/admin' component={Admin} />
+        <Route path='/console/stream' component={Stream} />
+      </div>
     </Router>
   </Provider>,
   document.getElementById('main-container')

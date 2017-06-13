@@ -28,3 +28,4 @@ build
 .sailsrc
 
 yarn.lock
+package-lock.json
