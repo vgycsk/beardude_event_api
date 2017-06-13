@@ -6,7 +6,7 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-body, body>div {
+body, body>div, body>div>div {
     height: 100%;
 }
 input:-webkit-autofill {

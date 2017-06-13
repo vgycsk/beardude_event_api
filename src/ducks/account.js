@@ -1,5 +1,3 @@
-import { browserHistory } from 'react-router'
-
 // types
 const LOGIN = 'manager/LOGIN'
 const LOGOUT = 'manager/LOGOUT'
@@ -13,7 +11,6 @@ export const actionCreators = {
     try {
       const response = await fetch('/manager/account', {credentials: 'same-origin'})
       const res = await response.json()
-
       dispatch({type: ACCOUNT_INFO, payload: res})
     } catch (e) {
       dispatch({type: LOGIN_ERR, payload: {error: '取得帳號狀態失敗'}})
@@ -39,7 +36,6 @@ export const actionCreators = {
       const res = await response.json()
 
       dispatch({type: LOGIN, payload: res})
-      browserHistory.push('/console')
     } catch (e) {
       dispatch({type: LOGIN_ERR, payload: {error: '登入失敗'}})
     }
@@ -64,32 +60,37 @@ const initialState = {
     error: ''
   }
 }
-export const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
+  const {type, payload, error} = action
   let nextState = {...state}
 
   switch (action.type) {
     case ACCOUNT_INFO: {
-      if (action.payload.manager) {
-        nextState.manager = action.payload.manager
+      if (payload.manager) {
+        nextState.manager = payload.manager
+        nextState.isAuthenticated = true
       }
       nextState.isChecked = true
+      break
     }
     case LOGIN: {
-      if (!state.manager) {
-        nextState.manager = action.payload.manager
-        nextState.isChecked = true
-      }
+      nextState.manager = payload.manager
+      nextState.isChecked = true
+      nextState.isAuthenticated = true
+      break
     }
     case LOGOUT: {
-      if (state.manager) {
-        delete nextState.manager
-      }
+      delete nextState.manager
+      nextState.isAuthenticated = false
+      break
     }
     case LOGIN_ERR: {
-      nextState.credentials.error = action.payload.error
+      nextState.credentials.error = payload.error
+      break
     }
     case ENTER_CREDENTIALS: {
-      nextState.credentials[action.payload.field] = action.payload.value
+      nextState.credentials[payload.field] = payload.value
+      break
     }
   }
   return nextState

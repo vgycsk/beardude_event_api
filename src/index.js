@@ -2,11 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { configureStore } from './stores/configureStore'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-import App from './components/App'
 import Stream from './components/Stream/'
 import Admin from './components/Admin/presenter'
+import Event from './components/Event'
+import Account from './components/Account'
+import NotFound from './components/NotFound/presenter'
 
 import './style/index.css'
 
@@ -16,9 +18,13 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Route exact path='/console/login' component={App} />
-        <Route path='/console/admin' component={Admin} />
-        <Route path='/console/stream' component={Stream} />
+        <Switch>
+          <Route path='/console/login' component={Account} />
+          <Route path='/console' component={Event} />
+          <Route path='/console/admin' component={Admin} />
+          <Route path='/console/stream' component={Stream} />
+          <Route component={NotFound} />
+        </Switch>
       </div>
     </Router>
   </Provider>,
