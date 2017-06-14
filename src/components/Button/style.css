@@ -38,4 +38,15 @@
     box-shadow: 0 0 10px #768a8f;
     color: #ebf5fc;
     font-size: 32px;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+}
+.bigIcon:link,
+.bigIcon:visited {
+    color: #ebf5fc;
+}
+a.bigIcon {
+    font-size: 15px;
+    line-height: 120px
 }
