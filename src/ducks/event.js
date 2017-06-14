@@ -24,17 +24,17 @@ const initialState = {
   events: []
 }
 export const reducer = (state = initialState, action) => {
-  let nextState = {...state}
+  const {type, payload, error} = action
 
-  switch (action.type) {
+  switch (type) {
     case GET_EVENTS: {
-      nextState.events = action.payload.events
+      return {...state, event: payload.events}
     }
     case EVENT_ERR: {
-      nextState.error = action.payload.error
+      return {...state, error: payload.error}
     }
   }
-  return nextState
+  return state
 }
 
 export default reducer
