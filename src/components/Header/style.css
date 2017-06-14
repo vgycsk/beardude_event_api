@@ -25,6 +25,7 @@
     text-decoration: none;
 }
 .logoB, .logoE {
+    font-weight: 300;
     padding: 0 0 0 2px;
 }
 .navContainer,
@@ -47,8 +48,15 @@
     color: #ebf5fc;
     padding: 0 0 0 15px;
 }
-.nav {
+.navContainer:after {
+    display: block;
+    content: "|";
+    float: right;
     color: #ebf5fc;
+    padding: 0 0 0 15px;
+}
+.nav {
+    color: #69acd8;
     text-decoration: none;
     font-size: 15px;
 }
