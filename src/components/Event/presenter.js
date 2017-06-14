@@ -25,12 +25,10 @@ class Event extends React.Component {
     return (<div className={css.container}>
       <Header />
       <div className={css.mainBody}>
-          <div className={css.body}>
-            <ul className={css.iconView}>
-              <li className={css.iconItem}><Button style="bigIcon" onClick={this.handleCreateEvent} text="+"/></li>
-              {eventList}
-            </ul>
-          </div>
+        <ul className={css.iconView}>
+          <li><Button style="bigIcon" url="/console/event/new" onClick={this.handleCreateEvent} text="+"/></li>
+          {eventList}
+        </ul>
       </div>
       <Footer />
     </div>)
