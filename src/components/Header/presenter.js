@@ -47,7 +47,7 @@ class Header extends Component {
       accountInfo = this.renderAccountInfo()
       nav = this.renderNav()
     } else {
-      return (<Redirect to={'/console/login'}/>)
+      return <Redirect to={'/console/login'} />
     }
     return (<div className={css.mainHeader}>
         <div className={css.heading}>
