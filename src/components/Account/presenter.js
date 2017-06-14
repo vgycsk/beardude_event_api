@@ -3,9 +3,14 @@ import { Redirect } from 'react-router-dom'
 import { actionCreators } from '../../ducks/account'
 import Header from '../Header'
 import Footer from '../Footer'
+import Button from '../Button'
 import css from './style.css'
 
 class Account extends React.Component {
+  constructor (props) {
+    super(props)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
   handleInput (field, e) {
     this.props.dispatch(actionCreators.input(field, e.target.value))
   }
@@ -40,7 +45,7 @@ class Account extends React.Component {
                   </li>
               </ul>
               <div className={css.ft}>
-                  <button className={css.submit} onClick={this.handleSubmit.bind(that)} type="submit">登入</button>
+              <Button onClick={this.handleSubmit} text="登入" />
               </div>
             </div>
           </div>
