@@ -59,6 +59,17 @@ module.exports = {
 
       },
       {
+        test: /\.(png|jpg|woff)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000
+            }
+          }
+        ]
+      },
+      {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           use: [
@@ -92,7 +103,7 @@ module.exports = {
     path: path.join(__dirname, '.tmp/public/js/console'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
-    publicPath: '/js/console'
+    publicPath: '/js/console/'
   },
   plugins: plugins,
   stats: {

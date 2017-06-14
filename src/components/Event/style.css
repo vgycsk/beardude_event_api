@@ -10,37 +10,6 @@
     overflow: auto;
     font-size: 15px;
 }
-
-.errMsg {
-    line-height: 32px;
-    color: yellow;
-    text-align: center;
-}
-.text1 {
-    width: 320px;
-    height: 40px;
-    line-height: 40px;
-    font-size: 16px;
-    border: 1px solid #aaa;
-    padding: 12px;
-    font-family: "San Francisco";
-    border-bottom: 0;
-    border-radius: 6px 6px 0 0;
-}
-.text2 {
-    width: 320px;
-    height: 40px;
-    line-height: 40px;
-    font-size: 16px;
-    border: 1px solid #aaa;
-    padding: 12px;
-    font-family: "San Francisco";
-    border-radius: 0 0 6px 6px;
-}
-.ft {
-    text-align: center;
-}
-
 .iconView {
     overflow-y: scroll;
     overflow: auto;
