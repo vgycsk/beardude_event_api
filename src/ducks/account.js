@@ -62,38 +62,29 @@ const initialState = {
 }
 const reducer = (state = initialState, action) => {
   const {type, payload, error} = action
-  let nextState = {...state}
 
-  switch (action.type) {
+  switch (type) {
     case ACCOUNT_INFO: {
-      if (payload.manager) {
-        nextState.manager = payload.manager
-        nextState.isAuthenticated = true
-      }
-      nextState.isChecked = true
-      break
+      return (payload.manager) ? {...state, manager: payload.manager, isAuthenticated: true} : {...state}
     }
     case LOGIN: {
-      nextState.manager = payload.manager
-      nextState.isChecked = true
-      nextState.isAuthenticated = true
-      break
+      return {...state, manager: payload.manager, isAuthenticated: true}
     }
     case LOGOUT: {
-      delete nextState.manager
-      nextState.isAuthenticated = false
-      break
+      return {...state, isAuthenticated: false, manager: undefined}
     }
     case LOGIN_ERR: {
+      let nextState = {...state}
       nextState.credentials.error = payload.error
-      break
+      return nextState
     }
     case ENTER_CREDENTIALS: {
+      let nextState = {...state}
       nextState.credentials[payload.field] = payload.value
-      break
+      return nextState
     }
   }
-  return nextState
+  return state
 }
 
 export default reducer
