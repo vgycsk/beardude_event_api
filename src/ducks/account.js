@@ -11,9 +11,13 @@ export const actionCreators = {
     try {
       const response = await fetch('/manager/account', {credentials: 'same-origin'})
       const res = await response.json()
-      dispatch({type: ACCOUNT_INFO, payload: res})
+
+      if (response.status === 200) {
+        return dispatch({type: ACCOUNT_INFO, payload: res})
+      }
+      throw res.message
     } catch (e) {
-      dispatch({type: LOGIN_ERR, payload: {error: '取得帳號狀態失敗'}})
+      dispatch({type: LOGIN_ERR, payload: {error: e}})
     }
   },
   input: (field, value) => (dispatch) => {
@@ -35,9 +39,12 @@ export const actionCreators = {
       const response = await fetch('/manager/login', fetchObject)
       const res = await response.json()
 
-      dispatch({type: LOGIN, payload: res})
+      if (response.status === 200) {
+        return dispatch({type: LOGIN, payload: res})
+      }
+      throw res.message
     } catch (e) {
-      dispatch({type: LOGIN_ERR, payload: {error: '登入失敗'}})
+      dispatch({type: LOGIN_ERR, payload: {error: e}})
     }
   },
   logout: () => async (dispatch, getState) => {
@@ -45,9 +52,12 @@ export const actionCreators = {
       const response = await fetch('/manager/logout', {credentials: 'same-origin'})
       const manager = await response.json()
 
-      dispatch({type: LOGOUT})
+      if (response.status === 200) {
+        return dispatch({type: LOGOUT})
+      }
+      throw res.message
     } catch (e) {
-      dispatch({type: LOGIN_ERR, payload: {error: '登出失敗'}})
+      dispatch({type: LOGIN_ERR, payload: {error: e}})
     }
   }
 }
