@@ -6,7 +6,6 @@ var WebpackCleanupPlugin = require('webpack-cleanup-plugin')
 var ManifestPlugin = require('webpack-manifest-plugin')
 var WebpackChunkHash = require('webpack-chunk-hash')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
-
 var plugins = [
   new WebpackCleanupPlugin({
     exclude: ['webpack.json', '.gitignore'],
@@ -31,7 +30,8 @@ var plugins = [
   }),
   new HtmlWebpackPlugin({
     template: './views/sharePage.ejs', // input
-    filename: 'sharePage.ejs'
+    filename: 'sharePage.ejs',
+    favicon: './src/assets/imgs/favicon.ico'
   })
 ]
 
