@@ -8,7 +8,7 @@ import Stream from './components/Stream/'
 import Admin from './components/Admin/presenter'
 import Event from './components/Event'
 import Account from './components/Account'
-import NotFound from './components/NotFound/presenter'
+import NotFound from './components/NotFound'
 
 import './style/index.css'
 

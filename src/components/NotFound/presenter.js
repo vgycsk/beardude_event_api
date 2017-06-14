@@ -1,5 +1,4 @@
 import React from 'react'
-import 'url-search-params-polyfill'
 import css from './style.css'
 
 const NotFound = () => {
