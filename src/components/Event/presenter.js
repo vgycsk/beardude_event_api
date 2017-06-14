@@ -19,7 +19,7 @@ class Event extends React.Component {
       return (<Redirect to={'/console/login'}/>)
     }
     const eventList = (this.props.event && this.props.event.events) ? this.props.event.events.map(raceEvent => <li key={'event-' + raceEvent.id}><Button style="bigIcon" text={raceEvent.nameCht} url={"/console/event/" + raceEvent.id}/></li>) : ''
-    return (<div className={css.container}>
+    return (<div>
       <Header />
       <div className={css.mainBody}>
         <ul className={css.iconView}>

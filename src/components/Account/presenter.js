@@ -30,7 +30,7 @@ class Account extends React.Component {
     if (this.props.account.isAuthenticated) {
       return (<Redirect to={'/console'}/>)
     }
-    return (<div className={css.container}>
+    return (<div>
       <Header />
       <div className={css.mainBody}>
           <div className={css.body}>
