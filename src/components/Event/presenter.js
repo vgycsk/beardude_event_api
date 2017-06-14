@@ -1,35 +1,28 @@
 import React from 'react'
-import { Redirect } from 'react-router-dom'
+import BaseComponent from '../BaseComponent'
 import { actionCreators } from '../../ducks/event'
-import { actionCreators as accountActionCreators } from '../../ducks/account'
 import css from './style.css'
 import Header from '../Header'
 import Footer from '../Footer'
+import Button from '../Button'
 
-class Event extends React.Component {
+class Event extends BaseComponent {
+  constructor (props) {
+    super(props)
+    this.dispatch = this.props.dispatch
+  }
   componentDidMount () {
-    if (!this.props.account.isAuthenticated) {
-      this.props.dispatch(accountActionCreators.accountInfo())
-    }
-    this.props.dispatch(actionCreators.getEvents())
+    this.dispatch(actionCreators.getEvents())
   }
   render () {
-    if (!this.props.account.isAuthenticated) {
-      return (<Redirect to={'/console/login'}/>)
-    }
-    const that = this
-    const eventList = (this.props.event && this.props.event.events) ? this.props.event.events.map(raceEvent => <li key={'event-' + raceEvent.id}>{raceEvent.nameCht}</li>) : <li>empty</li>
-    return (<div className={css.container}>
+    const eventList = (this.props.event && this.props.event.events) ? this.props.event.events.map(raceEvent => <li key={'event-' + raceEvent.id}><Button style='bigIcon' text={raceEvent.nameCht} url={'/console/event/' + raceEvent.id}/></li>) : ''
+    return (<div>
       <Header />
       <div className={css.mainBody}>
-          <div className={css.body}>
-            <div>
-              <ul>{eventList}</ul>
-              <div className={css.ft}>
-                footer
-              </div>
-            </div>
-          </div>
+        <ul className={css.iconView}>
+          <li><Button style='bigIconCreate' url='/console/event/new' text='+' /></li>
+          {eventList}
+        </ul>
       </div>
       <Footer />
     </div>)

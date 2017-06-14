@@ -10,17 +10,17 @@ import Event from './components/Event'
 import Account from './components/Account'
 import NotFound from './components/NotFound'
 
-import './style/index.css'
+import css from './style/index.css'
 
 const store = configureStore()
 
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <div>
+      <div className={css.container}>
         <Switch>
           <Route path='/console/login' component={Account} />
-          <Route path='/console' component={Event} />
+          <Route exact path='/console' component={Event} />
           <Route path='/console/admin' component={Admin} />
           <Route path='/console/stream' component={Stream} />
           <Route component={NotFound} />

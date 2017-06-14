@@ -1,31 +1,43 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
+import BaseComponent from '../BaseComponent'
 import { actionCreators } from '../../ducks/account'
 import Header from '../Header'
 import Footer from '../Footer'
+import Button from '../Button'
 import css from './style.css'
 
-class Account extends React.Component {
-  handleInput (field, e) {
-    this.props.dispatch(actionCreators.input(field, e.target.value))
+class Account extends BaseComponent {
+  constructor (props) {
+    super(props)
+    this.dispatch = this.props.dispatch
+    this._bind('handleSubmit', 'handleInput')
+  }
+  handleInput (field) {
+    return (e) => {
+      this.dispatch(actionCreators.input(field, e.currentTarget.value))
+    }
   }
   handleSubmit () {
-    this.props.dispatch(actionCreators.login())
+    const { email, password } = this.props.account.credentials
+    if (email && password) {
+      this.dispatch(actionCreators.login())
+    }
   }
   componentDidMount () {
     if (!this.props.account.isAuthenticated) {
-      this.props.dispatch(actionCreators.accountInfo())
+      this.dispatch(actionCreators.accountInfo())
     }
   }
   render () {
-    const credentials = this.props.account.credentials
-    const that = this
+    const { credentials } = this.props.account
     const err = (credentials.error === '') ? '' : <div className={css.errMsg}>{credentials.error}</div>
 
     if (this.props.account.isAuthenticated) {
-      return (<Redirect to={'/console'}/>)
+      return <Redirect to={'/console'} />
     }
-    return (<div className={css.container}>
+
+    return (<div>
       <Header />
       <div className={css.mainBody}>
           <div className={css.body}>
@@ -33,14 +45,14 @@ class Account extends React.Component {
               {err}
               <ul>
                   <li className={css.li}>
-                      <input type="text" className={css.text1} onChange={this.handleInput.bind(that, 'email')}  placeholder="電子信箱" />
+                      <input type='text' className={css.text1} onChange={this.handleInput('email')}  placeholder='電子信箱' />
                   </li>
                   <li className={css.li}>
-                      <input type="password" className={css.text2} onChange={this.handleInput.bind(that, 'password')} placeholder="密碼" />
+                      <input type='password' className={css.text2} onChange={this.handleInput('password')} placeholder='密碼' />
                   </li>
               </ul>
               <div className={css.ft}>
-                  <button className={css.submit} onClick={this.handleSubmit.bind(that)} type="submit">登入</button>
+              <Button onClick={this.handleSubmit} text='登入' />
               </div>
             </div>
           </div>

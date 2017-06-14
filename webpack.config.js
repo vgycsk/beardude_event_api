@@ -6,7 +6,6 @@ var WebpackCleanupPlugin = require('webpack-cleanup-plugin')
 var ManifestPlugin = require('webpack-manifest-plugin')
 var WebpackChunkHash = require('webpack-chunk-hash')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
-
 var plugins = [
   new WebpackCleanupPlugin({
     exclude: ['webpack.json', '.gitignore'],
@@ -31,7 +30,8 @@ var plugins = [
   }),
   new HtmlWebpackPlugin({
     template: './views/sharePage.ejs', // input
-    filename: 'sharePage.ejs'
+    filename: 'sharePage.ejs',
+    favicon: './src/assets/imgs/favicon.ico'
   })
 ]
 
@@ -57,6 +57,17 @@ module.exports = {
           }
         ]
 
+      },
+      {
+        test: /\.(png|jpg|woff)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000
+            }
+          }
+        ]
       },
       {
         test: /\.css$/,
@@ -92,7 +103,7 @@ module.exports = {
     path: path.join(__dirname, '.tmp/public/js/console'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
-    publicPath: '/js/console'
+    publicPath: '/js/console/'
   },
   plugins: plugins,
   stats: {

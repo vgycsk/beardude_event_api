@@ -1,0 +1,55 @@
+.regular {
+    border: 0;
+    border-radius: 5px;
+    padding: 8px 24px;
+    font-size: 15px;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 1px;
+    background: #158fe2;
+}
+.disabled {
+    background: #b7dbff;
+    border: 0;
+    border-radius: 5px;
+    padding: 8px 24px;
+    font-size: 15px;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 1px;
+    background: #158fe2;
+}
+.table {
+    
+}
+
+.bigIcon {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+    border: 0;
+    background: linear-gradient(top,
+        rgba(255, 255, 255, 0.75) 0%,
+        rgba(255, 255, 255, 0.6) 10%,
+        rgba(255, 255, 255, 0.5) 90%,
+        rgba(221, 221, 221, 0.65) 100%
+    );
+    box-shadow: 0 0 10px #768a8f;
+    color: #ebf5fc;
+    font-size: 15px;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+}
+.bigIcon:link,
+.bigIcon:visited {
+    color: #ebf5fc;
+}
+a.bigIcon {
+    line-height: 120px
+}
+.bigIconCreate {
+    composes: bigIcon;
+    font-size: 36px;
+}
