@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Redirect } from 'react-router-dom'
 import { actionCreators } from '../../ducks/account'
 import css from './style.css'
 
 class Header extends Component {
+  componentDidMount () {
+    if (!this.props.account.isAuthenticated) {
+      this.props.dispatch(actionCreators.accountInfo())
+    }
+  }
   constructor (props) {
     super(props)
     this.state = {
@@ -41,6 +46,8 @@ class Header extends Component {
     if (this.props.account.isAuthenticated) {
       accountInfo = this.renderAccountInfo()
       nav = this.renderNav()
+    } else {
+      return (<Redirect to={'/console/login'}/>)
     }
     return (<div className={css.mainHeader}>
         <div className={css.heading}>
