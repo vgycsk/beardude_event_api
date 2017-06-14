@@ -10,8 +10,10 @@ export const actionCreators = {
     try {
       const response = await fetch('/event/getEvents', {credentials: 'same-origin'})
       const res = await response.json()
-
-      dispatch({type: GET_EVENTS, payload: res})
+      if (response.status === 200) {
+        return dispatch({type: GET_EVENTS, payload: res})
+      }
+      throw res.message
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
     }
@@ -28,7 +30,7 @@ export const reducer = (state = initialState, action) => {
 
   switch (type) {
     case GET_EVENTS: {
-      return {...state, event: payload.events}
+      return {...state, events: payload.events}
     }
     case EVENT_ERR: {
       return {...state, error: payload.error}

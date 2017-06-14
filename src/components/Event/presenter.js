@@ -5,6 +5,7 @@ import { actionCreators as accountActionCreators } from '../../ducks/account'
 import css from './style.css'
 import Header from '../Header'
 import Footer from '../Footer'
+import Button from '../Button'
 
 class Event extends React.Component {
   componentDidMount () {
@@ -13,22 +14,22 @@ class Event extends React.Component {
     }
     this.props.dispatch(actionCreators.getEvents())
   }
+  handleCreateEvent () {
+    console.log('here')
+  }
   render () {
     if (!this.props.account.isAuthenticated) {
       return (<Redirect to={'/console/login'}/>)
     }
-    const that = this
-    const eventList = (this.props.event && this.props.event.events) ? this.props.event.events.map(raceEvent => <li key={'event-' + raceEvent.id}>{raceEvent.nameCht}</li>) : <li>empty</li>
+    const eventList = (this.props.event && this.props.event.events) ? this.props.event.events.map(raceEvent => <li key={'event-' + raceEvent.id}><Button style="bigIcon" text={raceEvent.nameCht} url={"/console/event/" + raceEvent.id}/></li>) : ''
     return (<div className={css.container}>
       <Header />
       <div className={css.mainBody}>
           <div className={css.body}>
-            <div>
-              <ul>{eventList}</ul>
-              <div className={css.ft}>
-                footer
-              </div>
-            </div>
+            <ul className={css.iconView}>
+              <li className={css.iconItem}><Button style="bigIcon" onClick={this.handleCreateEvent} text="+"/></li>
+              {eventList}
+            </ul>
           </div>
       </div>
       <Footer />
