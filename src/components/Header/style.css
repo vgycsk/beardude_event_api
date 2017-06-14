@@ -23,6 +23,29 @@
 .logoB, .logoE {
     padding: 0 0 0 2px;
 }
+.navContainer,
+.navContainer li {
+    position: relative;
+    display: inline-block;
+    height: 45px;
+    line-height: 45px;
+    margin: 0 20px;
+    vertical-align: top;
+}
+.navContainer {
+    float: right;
+    margin: 0 60px 0 0;
+}
+.nav {
+    color: #ebf5fc;
+    text-decoration: none;
+    font-size: 15px;
+}
+.navActive {
+    compose: nav;
+    color: #fff;
+    font-weight: 700;
+}
 .account {
     position: relative;
     margin: 0 10px 0 0;
@@ -66,7 +89,8 @@
     display: block;
     text-indent: 10px;
 }
-.aMenuItem:link, .aMenuItem:visited {
+.aMenuItem:link,
+.aMenuItem:visited {
     text-decoration: none;
     color: #ebf5fc;
 }
