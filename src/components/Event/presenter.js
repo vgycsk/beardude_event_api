@@ -14,9 +14,6 @@ class Event extends React.Component {
     }
     this.props.dispatch(actionCreators.getEvents())
   }
-  handleCreateEvent () {
-    console.log('here')
-  }
   render () {
     if (!this.props.account.isAuthenticated) {
       return (<Redirect to={'/console/login'}/>)
@@ -26,7 +23,7 @@ class Event extends React.Component {
       <Header />
       <div className={css.mainBody}>
         <ul className={css.iconView}>
-          <li><Button style="bigIcon" url="/console/event/new" onClick={this.handleCreateEvent} text="+"/></li>
+          <li><Button style="bigIconCreate" url="/console/event/new" text="+" /></li>
           {eventList}
         </ul>
       </div>

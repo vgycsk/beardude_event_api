@@ -37,7 +37,7 @@
     );
     box-shadow: 0 0 10px #768a8f;
     color: #ebf5fc;
-    font-size: 32px;
+    font-size: 15px;
     display: block;
     text-decoration: none;
     text-align: center;
@@ -47,6 +47,9 @@
     color: #ebf5fc;
 }
 a.bigIcon {
-    font-size: 15px;
     line-height: 120px
+}
+.bigIconCreate {
+    composes: bigIcon;
+    font-size: 36px;
 }
