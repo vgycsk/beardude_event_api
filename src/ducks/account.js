@@ -1,5 +1,3 @@
-import { browserHistory } from 'react-router'
-
 // types
 const LOGIN = 'manager/LOGIN'
 const LOGOUT = 'manager/LOGOUT'
@@ -13,7 +11,6 @@ export const actionCreators = {
     try {
       const response = await fetch('/manager/account', {credentials: 'same-origin'})
       const res = await response.json()
-
       dispatch({type: ACCOUNT_INFO, payload: res})
     } catch (e) {
       dispatch({type: LOGIN_ERR, payload: {error: '取得帳號狀態失敗'}})
@@ -39,7 +36,6 @@ export const actionCreators = {
       const res = await response.json()
 
       dispatch({type: LOGIN, payload: res})
-      browserHistory.push('/console')
     } catch (e) {
       dispatch({type: LOGIN_ERR, payload: {error: '登入失敗'}})
     }
@@ -64,35 +60,31 @@ const initialState = {
     error: ''
   }
 }
-export const reducer = (state = initialState, action) => {
-  let nextState = {...state}
+const reducer = (state = initialState, action) => {
+  const {type, payload, error} = action
 
-  switch (action.type) {
+  switch (type) {
     case ACCOUNT_INFO: {
-      if (action.payload.manager) {
-        nextState.manager = action.payload.manager
-      }
-      nextState.isChecked = true
+      return (payload.manager) ? {...state, manager: payload.manager, isAuthenticated: true} : {...state}
     }
     case LOGIN: {
-      if (!state.manager) {
-        nextState.manager = action.payload.manager
-        nextState.isChecked = true
-      }
+      return {...state, manager: payload.manager, isAuthenticated: true}
     }
     case LOGOUT: {
-      if (state.manager) {
-        delete nextState.manager
-      }
+      return {...state, isAuthenticated: false, manager: undefined}
     }
     case LOGIN_ERR: {
-      nextState.credentials.error = action.payload.error
+      let nextState = {...state}
+      nextState.credentials.error = payload.error
+      return nextState
     }
     case ENTER_CREDENTIALS: {
-      nextState.credentials[action.payload.field] = action.payload.value
+      let nextState = {...state}
+      nextState.credentials[payload.field] = payload.value
+      return nextState
     }
   }
-  return nextState
+  return state
 }
 
 export default reducer

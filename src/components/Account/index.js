@@ -1,10 +1,11 @@
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import Account from './presenter'
 
 const mapStateToProps = (state) => {
   return {
-    credentials: state.account.credentials
+    account: state.account
   }
 }
 
-export default connect(mapStateToProps)(Account)
+export default withRouter(connect(mapStateToProps)(Account))

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import App from './presenter'
 import { withRouter } from 'react-router-dom'
+import Header from './presenter'
 
 const mapStateToProps = (state) => {
   return {
@@ -8,4 +8,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default withRouter(connect(mapStateToProps)(App))
+export default withRouter(connect(mapStateToProps)(Header))
