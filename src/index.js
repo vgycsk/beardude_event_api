@@ -9,6 +9,7 @@ import Stream from './components/Stream/'
 import Admin from './components/Admin/presenter'
 import EventList from './components/EventList'
 import Account from './components/Account'
+import Racer from './components/Racer'
 import NotFound from './components/NotFound'
 
 import css from './style/index.css'

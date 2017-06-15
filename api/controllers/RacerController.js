@@ -26,7 +26,24 @@ module.exports = {
     activate: function (req, res) {
         return accountService.activate(req, res, 'Racer');
     },
-    /*
+    getRacers: function (req, res) {
+      Racer.find({})
+      .then(function (modelData) {
+          var result = modelData.map(function (racer) {
+              var temp = racer;
+
+              delete temp.password;
+              return temp;
+          });
+          return res.ok({
+              racers: result
+          });
+      })
+      .catch(function (E) {
+          return res.badRequest(E);
+      });
+    },
+
     create: function (req, res) {
         var input = req.body;
 
@@ -41,22 +58,21 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    */
+
     // Get insensitive account info
     getGeneralInfo: function (req, res) {
         Racer.findOne({
             id: req.params.id
         })
-        .populate('events')
-        .populate('races')
+        .populate('team')
         .then(function (modelData) {
-            var result = {
-                firstName: modelData.firstName,
-                lastName: modelData.lastName,
-                isActive: modelData.isActive
-            };
-
-            return res.ok(result);
+            return res.ok({
+                racer: {
+                    firstName: modelData.firstName,
+                    lastName: modelData.lastName,
+                    isActive: modelData.isActive
+                }
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -68,13 +84,15 @@ module.exports = {
             id: req.params.id
         })
         .populate('address')
-        .populate('events')
-        .populate('races')
+        .populate('registrations')
+        .populate('team')
         .then(function (modelData) {
             var result = modelData;
 
             delete result.password;
-            return res.ok(result);
+            return res.ok({
+              racer: result
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -100,10 +118,10 @@ module.exports = {
             if (!authenticated) {
                 throw new Error('Credentials incorrect');
             }
+            delete modelDataObj.password
             req.session.racerInfo = modelDataObj;
             return res.ok({
-                message: 'Logged in',
-                email: modelDataObj.email
+              racer: modelDataObj
             });
         })
         .catch(function (E) {
