@@ -138,6 +138,76 @@
         </ul>
     </section>
     <section>
+        <h2>Racer</h2>
+        <ul>
+            <li>
+                <h3>Create</h3>
+                <form action="/racer/create" method="POST">
+                    <ul>
+                        <li>
+                            <label>Email</label>
+                            <input type="text" name="email" />
+                        </li>
+                        <li>
+                            <label>Phone</label>
+                            <input type="text" name="phone" />
+                        </li>
+                        <li>
+                            <label>FirstName</label>
+                            <input type="text" name="firstName" />
+                        </li>
+                        <li>
+                            <label>LastName</label>
+                            <input type="text" name="lastName" />
+                        </li>
+                        <li>
+                            <label>birthday</label>
+                            <input type="date" name="birthday" />
+                        </li>
+                        <li>
+                            <label>ID Number</label>
+                            <input type="text" name="idNumber" />
+                        </li>
+                        
+                        <% include ./partials/address %>
+                        <li>
+                            <label>password</label>
+                            <input type="password" name="password" />
+                        </li>
+                        <li>
+                            <label>Confirm password</label>
+                            <input type="password" name="confirmPassword" />
+                        </li>
+                    </ul>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+            <li>
+                <h3>Get info</h3>
+                <ul>
+                    <% for (var i = 0; i < params.racers.length; i += 1) { %>
+                        <li>
+                            <label><%= params.racers[i].id %> - <%= params.racers[i].firstName %> <%= params.racers[i].lastName %>:</label> 
+                            <a href="/racer/info/<%= params.racers[i].id %>">General</a>
+                            <a href="/racer/mgmtInfo/<%= params.racers[i].id %>">Management</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+            <li>
+                <h3>Update</h3>
+                <ul>
+                    <% for (var i = 0; i < params.racers.length; i += 1) { %>
+                        <li>
+                            <label>
+                            <a href="/racer/update/<%= params.racers[i].id %>"><%= params.racers[i].id %> - <%= params.racers[i].firstName %> <%= params.racers[i].lastName %>:</label> </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
         <h2>Event</h2>
         <ul>
             <li>
