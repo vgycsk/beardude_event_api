@@ -9,16 +9,13 @@
     overflow-y: scroll;
     overflow: auto;
     font-size: 15px;
-}
-.iconView {
-    overflow-y: scroll;
-    overflow: auto;
+
     height: 100%;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
 }
-.iconView li {
+.mainBody li {
     margin: 3%;
 }
