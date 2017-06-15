@@ -92,15 +92,18 @@ button {
     display: inline-block;
     min-width: 45px;
     height: 45px;
-    line-height: 38px;
+    line-height: 42px;
     position: relative;
     border: 0;
     background: 0;
     border-right: 1px solid #ccc;
     color: #2f8bf1;
     font-size: 13px;
+    padding: 0 15px;
 }
 .listFtIcon {
     composes: listFt;
     font-size: 21px;
+    line-height: 38px;
+    padding: 0;
 }

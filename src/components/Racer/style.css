@@ -1,92 +1,160 @@
 @import '../../style/includes.css';
 
 .mainBody {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .body {
-    position: relative;
-    margin: 45px 0 0 0;
-    height: 100%;
-    overflow: hidden;
-    background: #fff;
-    display: flex;
-    align-items: stretch;
+  position: relative;
+  margin: 45px 0 0 0;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  align-items: stretch;
 }
-.listWrap {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    overflow: auto;
-    width: 210px;
-    border-right: 1px solid #ccc;
-    background: #f9f9f9;
-    flex-shrink: 0;
+.list {
+  width: 210px;
+  border-right: 1px solid #ccc;
+  background: #f9f9f9;
+  flex-shrink: 0;
 }
-.listWrap>ul {
-    overflow: hidden;
+.edit {
+  flex-grow: 1;
+  position: relative;
 }
+.bd {
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overflow: auto;
+}
+.bdReadOnly {
+  composes: bd;
+}
+.bdReadOnly input,
+.bdReadOnly textarea {
+  border-color: #fff;
+}
+.bdReadOnly:before {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  content: " ";
+  z-index: 10;
+}
+.content {
+  position: relative;
+  height: 100%;
+  overflow-x: hidden;
+}
+
 .li {
-    position: relative;
-    height: 43px;
-    line-height: 43px;
+  position: relative;
+  height: 43px;
+  line-height: 43px;
 }
 .li:after {
-    position: absolute;
-    display: block;
-    content: " ";
-    width: 100%;
-    height: 1px;
-    left: 10px;
-    bottom: -1px;
-    background: #fefefe;
+  position: absolute;
+  display: block;
+  content: " ";
+  width: 100%;
+  height: 1px;
+  left: 10px;
+  bottom: -1px;
+  background: #fefefe;
 }
 .selected {
-    composes: li;
-    background: #e0f0fb;
+  composes: li;
+  background: #e0f0fb;
 }
 .selected:after {
-    background: #b6def5;
+  display: none;
 }
-.listWrap .ft {
-    position: absolute;
-    left: 0;
-    bottom: 45px;
-    height: 45px;
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    width: 210px;
+.selected button {
+  margin: 0;
+  text-indent: 15px;
+  border-bottom: 1px solid #b6def5;
 }
-.editWrap {
-    flex-grow: 1;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    overflow: auto;
+.selected:after {
+  background: #b6def5;
 }
-.editWrap .ft {
-    position: absolute;
-    right: 0;
-    bottom: 45px;
-    height: 45px;
-    width: 100%;
-    border-top: 1px solid #ccc;
-    color: blue;
+.ft {
+  position: absolute;
+  left: 0;
+  bottom: 45px;
+  height: 45px;
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  width: 100%;
 }
-.form {
-    position: relative;
-    overflow: hidden;
-    height: 100%;
+
+.section {
+  position: relative;
+  padding: 20px;
+  color: #777;
+  font-size: 15px;
+}
+.section:after {
+  position: absolute;
+  display: block;
+  content: "";
+  right: 0;
+  bottom: 0;
+  width: 97%;
+  height: 1px;
+  background: #ccc;
+}
+.section:last-child {
+  padding-bottom: 40px;
+}
+.section:last-child:after {
+  display: none;
+}
+h3 {
+  font-size: 24px;
+  color: #000;
+  font-weight: 300;
+}
+h4 {
+  color: #aaa;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  margin: 0 0 18px 0;
+}
+.label {
+  display: inline-block;
+  width: 90px;
+  margin: 0 10px 0 0;
+  text-align: right;
+}
+.row {
+  margin: 0 0 12px 0;
+}
+.input {
+  display: inline-block;
+  width: 360px;
+  padding: 10px;
+  line-height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  outline: none;
+  font-weight: 300;
 }
 /*
 position: absolute;
-    display: block;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    content: " ";
-    z-index: 10;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  content: " ";
+  z-index: 10;
 */

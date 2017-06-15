@@ -1,5 +1,6 @@
 // types
 const GET_RACERS = 'racer/GET_RACERS'
+const EDIT_RACER = 'racer/EDIT_RACER'
 const SELECT_RACERS = 'racer/SELECT_RACERS'
 const RACER_ERR = 'racer/RACER_ERR'
 
@@ -18,11 +19,15 @@ export const actionCreators = {
       dispatch({type: RACER_ERR, payload: {error: e}})
     }
   },
+  input: (field, value) => (dispatch) => {
+    dispatch({type: EDIT_RACER, payload: {field, value}})  
+  },
   selectRacer: (id) => async (dispatch, getState) => {
-    let racers = getState().racer.racers
-    const racerIndex = racers.findIndex(racer => racer.id === id)
+    let racerStore = getState().racer
+    const racerIndex = (id === -1) ? undefined : racerStore.racers.findIndex(racer => racer.id === id)
 
-    if (racers[racerIndex].upToDate) {
+    if (racerStore.selectedRacerIndex === racerIndex) { return }
+    if (id === -1 || racerStore.racers[racerIndex].upToDate) {
       return dispatch({type: SELECT_RACERS, payload: {selectedRacerIndex: racerIndex}})
     }
     try {
@@ -41,22 +46,26 @@ export const actionCreators = {
 // reducers
 const initialState = {
   selectedRacerIndex: undefined,
-  updatedRacer: undefined, // keep new and modified racer info
+  racerInEdit: undefined, // keep new and modified racer info
   racers: []
 }
 const reducer = (state = initialState, action) => {
   const {type, payload, error} = action
 
   switch (type) {
+    case EDIT_RACER: {
+      let nextState = {...state}
+      nextState.racerInEdit[payload.field] = payload.value
+      return nextState
+    }
     case GET_RACERS: {
       return {...state, racers: payload.racers}
     }
     case SELECT_RACERS: {
-      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex}
+      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex, racerInEdit: undefined}
       if (payload.racer) {
         nextState.racers[payload.selectedRacerIndex] = {...payload.racer, upToDate: true}
       }
-      delete nextState.updatedRacer
       return nextState
     }
     case RACER_ERR: {
