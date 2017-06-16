@@ -101,6 +101,10 @@ button {
     font-size: 13px;
     padding: 0 15px;
 }
+.listFtDisabled {
+  composes: listFt;
+  color: #ccc;;
+}
 .listFtIcon {
     composes: listFt;
     font-size: 21px;

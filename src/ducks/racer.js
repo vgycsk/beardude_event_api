@@ -45,8 +45,8 @@ export const actionCreators = {
 
 // reducers
 const initialState = {
-  selectedRacerIndex: undefined,
-  racerInEdit: undefined, // keep new and modified racer info
+  selectedRacerIndex: -1,
+  racerInEdit: {}, // keep new and modified racer info
   racers: []
 }
 const reducer = (state = initialState, action) => {
@@ -54,7 +54,7 @@ const reducer = (state = initialState, action) => {
 
   switch (type) {
     case EDIT_RACER: {
-      let nextState = {...state}
+      let nextState = {...state, racerInEdit: state.racerInEdit || {}}
       nextState.racerInEdit[payload.field] = payload.value
       return nextState
     }
@@ -62,7 +62,7 @@ const reducer = (state = initialState, action) => {
       return {...state, racers: payload.racers}
     }
     case SELECT_RACERS: {
-      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex, racerInEdit: undefined}
+      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex, racerInEdit: {}}
       if (payload.racer) {
         nextState.racers[payload.selectedRacerIndex] = {...payload.racer, upToDate: true}
       }
