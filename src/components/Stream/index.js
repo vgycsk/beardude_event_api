@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import Stream from './presenter'
 
 const mapStateToProps = (state) => ({
@@ -8,4 +7,4 @@ const mapStateToProps = (state) => ({
   posts: state.posts.posts
 })
 
-export default withRouter(connect(mapStateToProps)(Stream))
+export default connect(mapStateToProps)(Stream)

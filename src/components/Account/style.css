@@ -10,6 +10,24 @@
     overflow: auto;
     font-size: 15px;
 }
+.heading {
+    position: relative;
+    display: inline-block;
+}
+.bdlogo {
+    position: relative;
+    float: left;
+    font-size: 14.5px;
+    height: 45px;
+    line-height: 45px;
+    font-size: 17px;
+    margin: 0 0 0 10px;
+    color: #ebf5fc;
+    letter-spacing: 0.4px;
+}
+.logoB, .logoE {
+    padding: 0 0 0 2px;
+}
 .errMsg {
     line-height: 32px;
     color: yellow;
@@ -47,4 +65,10 @@
 .ft {
     text-align: center;
     margin: 15px 0 0 0;
+}
+.loading {
+  font-size: 24px;
+  font-weight: 100;
+  letter-spacing: 2px;
+  color: #fff;
 }
