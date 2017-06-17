@@ -30,11 +30,11 @@ class Account extends BaseComponent {
     }
   }
   render () {
-    const { credentials } = this.props.account
+    const { credentials, isAuthenticated } = this.props.account
     const { from } = this.props.location.state || { from: { pathname: '/console' } }
     const err = (credentials.error === '') ? '' : <div className={css.errMsg}>{credentials.error}</div>
 
-    if (this.props.account.isAuthenticated) {
+    if (isAuthenticated) {
       return <Redirect to={from} />
     }
 
@@ -47,7 +47,7 @@ class Account extends BaseComponent {
       </div>
       <div className={css.mainBody}>
         <div className={css.body}>
-            { !this.props.location.state
+            { !this.props.location.state || !isAuthenticated
               ? <div>
                 {err}
                 <ul>
