@@ -99,7 +99,30 @@
                             <label>LastName</label>
                             <input type="text" name="lastName" />
                         </li>
-                        <% include ./partials/address %>
+                        <li>
+                            <label>Street</label>
+                            <input type="text" name="street" value="<%= street %>" />
+                        </li>
+                        <li>
+                            <label>district</label>
+                            <input type="text" name="district" value="<%= district %>" />
+                        </li>
+                        <li>
+                            <label>city</label>
+                            <input type="text" name="city" value="<%= city %>" />
+                        </li>
+                        <li>
+                            <label>county</label>
+                            <input type="text" name="county" value="<%= county %>" />
+                        </li>
+                        <li>
+                            <label>Country</label>
+                            <input type="text" name="country" value="<%= country %>" />
+                        </li>
+                        <li>
+                            <label>zip</label>
+                            <input type="text" name="zip" value="<%= zip %>" />
+                        </li>
                         <li>
                             <label>password</label>
                             <input type="password" name="password" />
