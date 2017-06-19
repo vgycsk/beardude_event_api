@@ -37,7 +37,7 @@ class Header extends BaseComponent {
       showAccountMenu: false
     }
 
-    if (!this.props.account.isAuthenticated) {
+    if (this.props.account.isAuthenticated === undefined) {
       this.props.dispatch(actionCreators.accountInfo())
     }
     this._bind('handleLogout', 'handleToggleAccountMenu')
@@ -50,7 +50,7 @@ class Header extends BaseComponent {
     this.setState({showAccountMenu: !this.state.showAccountMenu})
   }
   render () {
-    if (this.props.account.isAuthenticated !== undefined && this.props.account.isAuthenticated !== 1) {
+    if (this.props.account.isAuthenticated !== undefined && !this.props.account.isAuthenticated) {
       return <Redirect to='/console/login' />
     }
     return (<div className={css.mainHeader}>
