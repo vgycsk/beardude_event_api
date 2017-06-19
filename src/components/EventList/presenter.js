@@ -1,20 +1,20 @@
 import React from 'react'
-import BaseComponent from '../BaseComponent'
+// import BaseComponent from '../BaseComponent'
 import { actionCreators } from '../../ducks/event'
 import css from './style.css'
 import Header from '../Header'
 import Footer from '../Footer'
 import Button from '../Button'
 
-const EventList = ({ events = [] }) =>
+const EventBrick = ({ events = [] }) =>
 events.length > 0
 ? events.map(raceEvent =>
   <li key={'event-' + raceEvent.id}>
-    <Button style='bigIcon' text={raceEvent.nameCht} url={'/console/event/' + raceEvent.id} />
+    <Button style='bigIcon' text={raceEvent.nameCht} url={'/console/event/set/' + raceEvent.id} />
   </li>)
 : null
 
-class Event extends BaseComponent {
+class EventList extends React.PureComponent {
   constructor (props) {
     super(props)
     this.dispatch = this.props.dispatch
@@ -30,7 +30,7 @@ class Event extends BaseComponent {
         <div className={css.mainBody}>
           <ul className={css.iconView}>
             <li><Button style='bigIconCreate' url='/console/event/new' text='+' /></li>
-            {EventList({...event})}
+            {EventBrick({...event})}
           </ul>
         </div>
         <Footer />
@@ -39,4 +39,4 @@ class Event extends BaseComponent {
   }
 }
 
-export default Event
+export default EventList

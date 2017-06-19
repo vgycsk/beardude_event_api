@@ -32,6 +32,10 @@ class Account extends BaseComponent {
     const { from } = this.props.location.state || { from: { pathname: '/console' } }
     const err = (credentials.error === '') ? '' : <div className={css.errMsg}>{credentials.error}</div>
 
+    console.log('account ----')
+    console.log(this.props.location.state)
+    console.log(isAuthenticated)
+
     if (isAuthenticated) {
       return <Redirect to={from} />
     }
