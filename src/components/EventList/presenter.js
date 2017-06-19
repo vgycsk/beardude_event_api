@@ -17,7 +17,6 @@ events.length > 0
 class Event extends BaseComponent {
   constructor (props) {
     super(props)
-    console.log(this.props);
     this.dispatch = this.props.dispatch
   }
   componentDidMount () {

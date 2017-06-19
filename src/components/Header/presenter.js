@@ -51,7 +51,10 @@ class Header extends BaseComponent {
   }
   render () {
     if (this.props.account.isAuthenticated !== undefined && !this.props.account.isAuthenticated) {
-      return <Redirect to='/console/login' />
+      return <Redirect to={{
+        pathname: '/console/login',
+        state: { from: this.props.location }
+      }} />
     }
     return (<div className={css.mainHeader}>
         <div className={css.heading}>

@@ -90,8 +90,6 @@ class Racer extends BaseComponent {
     this.setState({ readOnly: (this.state.readOnly) ? false : true })
   }
   handleSelect (index) { return (e) => {
-    console.log('this.props.racer.selectedRacerIndex: ', this.props.racer.selectedRacerIndex)
-    console.log('index: ', index)
     this.dispatch(actionCreators.selectRacer(index))
     this.setState({ readOnly: true })
   }}
@@ -108,7 +106,8 @@ class Racer extends BaseComponent {
     this.dispatch(actionCreators.getRacers())
   }
   render () {
-    return (<div><Header /><div className={css.mainBody}><div className={css.body}>
+    const { location } = this.props
+    return (<div><Header location={location} /><div className={css.mainBody}><div className={css.body}>
       <div className={css.list}><Table bdStyle={{height: this.state.tableHeight}} content={render.list.bd.content(this)} ft={render.list.ft(this)} /></div>
       { (this.props.racer.selectedRacerIndex !== -1) && <div className={css.edit}><Table bdStyle = {{height: this.state.tableHeight}} content = {render.edit.bd.content(this)} readOnly = {this.state.readOnly} ft = {this.state.readOnly ? render.edit.ftReadOnly(this) : render.edit.ft(this)} /></div> }
       </div></div></div>)
