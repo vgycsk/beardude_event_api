@@ -4,6 +4,20 @@ import { NavLink, Redirect } from 'react-router-dom'
 import { actionCreators } from '../../ducks/account'
 import css from './style.css'
 
+const navs = {
+  base: [
+    { name: '活動', url: '/console/event' },
+    { name: '選手', url: '/console/racer' },
+    { name: '隊伍', url: '/console/team' }
+  ],
+  event: [
+    { name: '賽制', url: '/console/event' },
+    { name: 'RFID 操作', url: '/console/RFID' },
+    { name: '賽制操作', url: '/console/eventMatch' },
+    { name: 'Stream', url: '/console/stream'}
+  ]
+}
+
 const renderAccountInfo = (that) => (<div className={css.account}>
   <a className={css.accountLink} onClick={that.handleToggleAccountMenu}>{that.props.account.manager.email}</a>
   { that.state.showAccountMenu && <ul className={css.accountMenu}>
@@ -45,7 +59,7 @@ class Header extends BaseComponent {
             </h1>
         </div>
       { this.props.account.manager && renderAccountInfo(this) }
-      { this.props.nav && renderNav(this.props.nav) }
+      { this.props.nav && renderNav(navs[this.props.nav]) }
     </div>)
   }
 }
