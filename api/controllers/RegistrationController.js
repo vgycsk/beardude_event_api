@@ -22,7 +22,7 @@ var RegistrationController = {
         });
         return q.promise;
     },
-    // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, address: {}...} }
+    // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, ...} }
     signupAndCreate: function (req, res) {
         var input = {
             event: parseInt(req.body.event),
@@ -51,7 +51,7 @@ var RegistrationController = {
     // 情境1: 隊伍跟選手都是新的 -> 1) 輸入隊伍及選手資料 2) 報名
     // 情境2: 已註冊帳號想團報-> 1) 登入 2) 註冊車隊 3) 註冊或選擇選手 4) 報名
     // 這個是情境1用的
-    // {event: ID, group: ID, team: {name: STR, desc: STR, url: STR}, racers: [{email: STR, address: {}...}]}
+    // {event: ID, group: ID, team: {name: STR, desc: STR, url: STR}, racers: [{email: STR, ...}]}
     signupAndCreateMultiple: function (req, res) {
         var input = req.body;
         var teamObj;

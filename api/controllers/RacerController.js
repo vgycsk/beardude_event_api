@@ -83,7 +83,6 @@ module.exports = {
         Racer.findOne({
             id: req.params.id
         })
-        .populate('address')
         .populate('registrations')
         .populate('team')
         .then(function (modelData) {
@@ -108,7 +107,6 @@ module.exports = {
         return Racer.findOne({
             email: input.email
         })
-        .populate('address')
         .populate('team')
         .then(function (modelData) {
             modelDataObj = modelData;

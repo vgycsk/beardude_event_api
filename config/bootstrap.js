@@ -18,10 +18,7 @@ module.exports.bootstrap = function(cb) {
             isActive: false
         };
 
-        Address.create({})
-        .then(function (addressData) {
-            managerObj.address = addressData.id;
-            return Manager.create(managerObj);
+        Manager.create(managerObj);
         })
         .then(function (managerData) {
             return q.resolve(managerData);

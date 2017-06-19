@@ -51,7 +51,6 @@ module.exports = {
         Manager.findOne({
             id: req.params.id
         })
-        .populate('address')
 //        .populate('events')
         .then(function (modelData) {
             var result = modelData;
@@ -76,7 +75,6 @@ module.exports = {
         return Manager.findOne({
             email: input.email
         })
-        .populate('address')
 //        .populate('events')
         .then(function (modelData) {
             modelDataObj = modelData;

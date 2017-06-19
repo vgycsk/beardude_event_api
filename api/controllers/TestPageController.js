@@ -15,13 +15,11 @@ var returnParams = function (session) {
     .then(function (eventData) {
         params.events = eventData;
         return Manager.find({})
-        .populate('events')
-        .populate('address');
+        .populate('events');
     })
     .then(function (managerData) {
         params.managers = managerData;
-        return Racer.find({})
-        .populate('address');
+        return Racer.find({});
     })
     .then(function (racerData) {
         params.racers = racerData;
