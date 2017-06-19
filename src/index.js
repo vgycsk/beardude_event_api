@@ -28,6 +28,7 @@ ReactDOM.render(
           <Route path='/console/event/set:id' component={NotFound} />
           <Route path='/console/RFID' component={Admin} />
           <Route path='/console/eventMatch' component={NotFound} />
+          <Route path='/console/racer' component={Racer} />
           <Route path='/console/admin' component={Admin} />
           <Route path='/console/stream' component={Stream} />
           <Route component={NotFound} />
