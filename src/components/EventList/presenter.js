@@ -25,9 +25,15 @@ class Event extends BaseComponent {
   }
   render () {
     const { event, location } = this.props
+    const nav = [
+      { name: '賽制', url: '/console/event' },
+      { name: 'RFID 操作', url: '/console/RFID' },
+      { name: '賽制操作', url: '/console/eventMatch' },
+      { name: 'Stream', url: '/console/stream'}
+    ]
     return (
       <div>
-        <Header location={location} />
+        <Header location={location} nav={nav} />
         <div className={css.mainBody}>
           <ul className={css.iconView}>
             <li><Button style='bigIconCreate' url='/console/event/new' text='+' /></li>
