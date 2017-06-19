@@ -16,15 +16,6 @@ var returnSessionObj = function (req, modelName) {
     }
     return req.session.racerInfo;
 };
-var returnUpdateFields = function (modelName) {
-    var managerUpdateFields = ['email', 'phone', 'firstName', 'lastName'];
-    var racerUpdateFields = ['email', 'phone', 'firstName', 'lastName', 'birthday', 'idNumber'];
-
-    if (modelName === 'Manager') {
-        return managerUpdateFields;
-    }
-    return racerUpdateFields;
-};
 
 module.exports = {
     /*
@@ -155,40 +146,6 @@ module.exports = {
             return res.ok({
                 message: 'Temporary password created',
                 password: newPassword
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // Update fields speficied in returnUpdateFields function
-    update: function (req, res, modelName) {
-        var input = req.body;
-        var updateObj = {};
-        var resultObj = input;
-        var ModelObj = returnModelObj(modelName);
-        var fields = returnUpdateFields(modelName);
-
-        ModelObj.findOne({
-            id: parseInt(input.id)
-        })
-        .then(function (modelData) {
-            updateObj = dataService.returnUpdateObj(fields, input, modelData);
-            if (updateObj) {
-                return ModelObj.update({
-                    id: input.id
-                }, updateObj);
-            }
-            return false;
-        })
-        .then(function (modelData) {
-            if (modelData) {
-                resultObj = modelData[0];
-            }
-            return res.ok({
-                message: 'Account updated',
-                accountType: modelName,
-                account: resultObj
             });
         })
         .catch(function (E) {
