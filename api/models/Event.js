@@ -47,6 +47,10 @@ module.exports = {
             required: true,
             defaultsTo: false
         },
+        maxTeamRacerPerGroup: {
+          type: 'integer',
+          defaultsTo: 4
+        },
         isRegistrationOpen: {
             type: 'boolean',
             required: true,

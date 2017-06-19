@@ -24,6 +24,10 @@ module.exports = {
             type: 'string',
             required: true
         },
+        racersAllowed: {
+          type: 'integer',
+          required: true
+        },
         rules: {
             type: 'string'
         },

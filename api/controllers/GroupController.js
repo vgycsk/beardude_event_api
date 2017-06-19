@@ -18,6 +18,28 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    getAvailableSpot: function (req, res) {
+        var groupId = req.params.id;
+        var racersAllowed;
+
+        Group.findOne({
+            id: groupId
+        })
+        .then(function (groupData) {
+            racersAllowed = groupData.racersAllowed;
+            return Registration.count({
+                group: groupId
+            });
+        })
+        .then(function (regCountData) {
+            return res.ok({
+                availableSpot: racersAllowed - regCountData
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     getInfo: function (req, res) {
         var result = {};
         var groupId = parseInt(req.params.id);

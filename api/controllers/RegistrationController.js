@@ -4,12 +4,78 @@
 
 var Q = require('q');
 var RegistrationController = {
+    // {event, ID, group: ID, team: ID}
+    checkIfRegistrationAllowed: function (input) {
+        var q = Q.defer();
+        var maxTeamRacerPerGroup;
+        var teamId = input.team;
+        var racersAllowed;
+
+        Event.findOne({
+            id: input.event
+        })
+        .then(function (eventData) {
+            maxTeamRacerPerGroup = eventData.maxTeamRacerPerGroup;
+            return Registration.find({
+                group: input.group
+            })
+            .populate('racer');
+        })
+        .then(function (regData) {
+            var registeredTeamMemberCount = 0;
+
+            regData.racer.forEach(function (racer) {
+                if (racer.team === teamId) {
+                    registeredTeamMemberCount += 1;
+                }
+            });
+            if (registeredTeamMemberCount >= maxTeamRacerPerGroup) {
+                return q.resolve({
+                    allowed: false,
+                    message: 'Exceed max number of same-team racer registering for the same group'
+                });
+            }
+            return Group.findOne({
+                id: input.group
+            });
+        })
+        .then(function (groupData) {
+            racersAllowed = groupData.racersAllowed;
+
+            return Registration.count({
+                group: input.group
+            });
+        })
+        .then(function (regCount) {
+            if (regCount >= racersAllowed) {
+                return q.resolve({
+                    allowed: false,
+                    message: 'Exceed max number of registeration for the group'
+                });
+            }
+            return q.resolve({
+                allowed: true
+            });
+        })
+        .catch(function (E) {
+            return q.reject(E);
+        })
+        return q.promise;
+    },
     // {event, ID, group: ID, racer: ID}
     createReg: function (input) {
         var q = Q.defer();
         var query = input;
+        var maxTeamRacerPerGroup;
+        var teamId;
 
-        dataService.returnAccessCode()
+        RegistrationController.checkIfRegistrationAllowed(input)
+        .then(function (result) {
+            if (result.allowed) {
+                return dataService.returnAccessCode();
+            }
+            throw new Error(result.message);
+        })
         .then(function (accessCode) {
             query.accessCode = accessCode;
             return Registration.create(query);
