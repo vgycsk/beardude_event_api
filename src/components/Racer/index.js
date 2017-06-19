@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import Racer from './presenter'
 
 const mapStateToProps = (state) => {
@@ -8,4 +7,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default withRouter(connect(mapStateToProps)(Racer))
+export default connect(mapStateToProps)(Racer)
