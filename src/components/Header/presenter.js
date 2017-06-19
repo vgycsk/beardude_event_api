@@ -27,7 +27,7 @@ const renderAccountInfo = (that) => (<div className={css.account}>
 </div>)
 
 const renderNav = (navs) => (<ul className={css.navContainer}>
-  { navs.map(nav => <li><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url}>{nav.name}</NavLink></li>) }
+  { navs.map(nav => <li key={nav.name}><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url}>{nav.name}</NavLink></li>) }
 </ul>)
 
 class Header extends BaseComponent {
