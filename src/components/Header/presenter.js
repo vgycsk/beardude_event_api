@@ -6,20 +6,12 @@ import css from './style.css'
 
 const navs = {
   base: [
-<<<<<<< HEAD
     { name: '活動', url: '/console' },
-=======
-    { name: '活動', url: '/console/event' },
->>>>>>> Use new header
     { name: '選手', url: '/console/racer' },
     { name: '隊伍', url: '/console/team' }
   ],
   event: [
-<<<<<<< HEAD
-    { name: '賽制', url: '/console' },
-=======
     { name: '賽制', url: '/console/event' },
->>>>>>> Use new header
     { name: 'RFID 操作', url: '/console/RFID' },
     { name: '賽制操作', url: '/console/eventMatch' },
     { name: 'Stream', url: '/console/stream'}
@@ -58,7 +50,6 @@ class Header extends BaseComponent {
     this.setState({showAccountMenu: !this.state.showAccountMenu})
   }
   render () {
-<<<<<<< HEAD
     if (this.props.account.isAuthenticated !== undefined && !this.props.account.isAuthenticated) {
       return <Redirect to='/console/login' />
     }
@@ -66,12 +57,6 @@ class Header extends BaseComponent {
         <div className={css.heading}>
             <h1 className={css.bdlogo}>
               <a href="/console">
-=======
-    return (<div className={css.mainHeader}>
-        <div className={css.heading}>
-            <h1 className={css.bdlogo}>
-              <a href="/console/event">
->>>>>>> Use new header
                 <span className={css.logoB}>Beardude</span> <span className={css.logoE}>Event</span>
               </a>
             </h1>

@@ -29,7 +29,7 @@ class Account extends BaseComponent {
   }
   render () {
     const { credentials, isAuthenticated } = this.props.account // isAuthenticated === undefined just means store is not ready yet
-    const { from } = this.props.location.state || { from: { pathname: '/console/event' } }
+    const { from } = this.props.location.state || { from: { pathname: '/console' } }
     const err = (credentials.error === '') ? '' : <div className={css.errMsg}>{credentials.error}</div>
 
     if (isAuthenticated) {
