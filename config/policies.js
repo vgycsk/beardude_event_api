@@ -47,6 +47,7 @@ module.exports.policies = {
         activate: 'isInactive',
 //        create: '',
 //        getGeneralInfo: '',
+        getRacers: 'isActiveManager',
         getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
         login: 'isNotLoggedInRacer',
         logout: 'isRacer',

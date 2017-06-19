@@ -52,7 +52,12 @@ module.exports = {
         }
         accountService.create(input, 'Racer')
         .then(function (result) {
-            return res.ok(result);
+            var modResult = result;
+
+            delete modResult.password;
+            return res.ok({
+              racer: modResult
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
