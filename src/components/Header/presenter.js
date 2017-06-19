@@ -6,12 +6,12 @@ import css from './style.css'
 
 const navs = {
   base: [
-    { name: '活動', url: '/console/event' },
+    { name: '活動', url: '/console' },
     { name: '選手', url: '/console/racer' },
     { name: '隊伍', url: '/console/team' }
   ],
   event: [
-    { name: '賽制', url: '/console/event' },
+    { name: '賽制', url: '/console' },
     { name: 'RFID 操作', url: '/console/RFID' },
     { name: '賽制操作', url: '/console/eventMatch' },
     { name: 'Stream', url: '/console/stream'}
@@ -50,10 +50,13 @@ class Header extends BaseComponent {
     this.setState({showAccountMenu: !this.state.showAccountMenu})
   }
   render () {
+    if (this.props.account.isAuthenticated !== 1) {
+      return <Redirect to='/console/login' />
+    }
     return (<div className={css.mainHeader}>
         <div className={css.heading}>
             <h1 className={css.bdlogo}>
-              <a href="/console/event">
+              <a href="/console">
                 <span className={css.logoB}>Beardude</span> <span className={css.logoE}>Event</span>
               </a>
             </h1>

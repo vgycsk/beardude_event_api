@@ -75,7 +75,7 @@ const reducer = (state = initialState, action) => {
 
   switch (type) {
     case ACCOUNT_INFO: {
-      return (payload.manager) ? {...state, manager: payload.manager, isAuthenticated: true} : {...state, isAuthenticated: false}
+      return (payload.manager) ? {...state, manager: payload.manager, isAuthenticated: (payload.manager) ? 1 : false} : {...state, isAuthenticated: false}
     }
     case LOGIN: {
       return {...state, manager: payload.manager, isAuthenticated: true}
