@@ -96,7 +96,7 @@ button {
     position: relative;
     border: 0;
     background: 0;
-    border-right: 1px solid #ccc;
+    outline: 1px solid #ccc;
     color: #2f8bf1;
     font-size: 13px;
     padding: 0 15px;

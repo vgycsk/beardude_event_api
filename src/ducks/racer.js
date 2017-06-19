@@ -40,13 +40,16 @@ export const actionCreators = {
     } catch (e) {
       dispatch({type: RACER_ERR, payload: {error: e}})
     }
+  },
+  submit: () => (dispatch, getState) => {
+    console.log('data: ', getState().racer.racerInEdit)
   }
 }
 
 // reducers
 const initialState = {
   selectedRacerIndex: -1,
-  racerInEdit: {}, // keep new and modified racer info
+  racerInEdit: undefined, // keep new and modified racer info
   racers: []
 }
 const reducer = (state = initialState, action) => {
@@ -62,7 +65,7 @@ const reducer = (state = initialState, action) => {
       return {...state, racers: payload.racers}
     }
     case SELECT_RACERS: {
-      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex, racerInEdit: {}}
+      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex, racerInEdit: undefined}
       if (payload.racer) {
         nextState.racers[payload.selectedRacerIndex] = {...payload.racer, upToDate: true}
       }
