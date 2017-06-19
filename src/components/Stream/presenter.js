@@ -6,9 +6,6 @@ import styles from './style.css'
 class Stream extends React.Component {
   constructor (props) {
     super(props)
-
-    console.log(props)
-
     this.renderPost = this.renderPost.bind(this)
   }
 

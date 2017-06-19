@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import Admin from './presenter'
 
 const mapStateToProps = (state) => ({
@@ -7,4 +6,4 @@ const mapStateToProps = (state) => ({
   error: state.posts.error
 })
 
-export default withRouter(connect(mapStateToProps)(Admin))
+export default connect(mapStateToProps)(Admin)

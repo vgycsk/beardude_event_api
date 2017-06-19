@@ -1,5 +1,4 @@
 import React from 'react'
-import 'url-search-params-polyfill'
 
 const Admin = ({match, location, history}) => {
   console.log(history)

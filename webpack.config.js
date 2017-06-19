@@ -95,7 +95,7 @@ module.exports = {
       'babel-polyfill', './src/index'
     ],
     vendor: [
-      'react', 'react-dom', 'redux', 'react-redux', 'redux-thunk'
+      'react', 'react-dom', 'redux', 'react-redux', 'redux-thunk', 'url-search-params-polyfill'
     ]
   },
   devtool: 'source-map',

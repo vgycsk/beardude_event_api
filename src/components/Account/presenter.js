@@ -1,8 +1,7 @@
 import React from 'react'
-import { Redirect } from 'react-router-dom'
 import BaseComponent from '../BaseComponent'
 import { actionCreators } from '../../ducks/account'
-import Header from '../Header'
+import { Redirect } from 'react-router-dom'
 import Footer from '../Footer'
 import Button from '../Button'
 import css from './style.css'
@@ -25,37 +24,46 @@ class Account extends BaseComponent {
     }
   }
   componentDidMount () {
+    // maybe remove this
     if (!this.props.account.isAuthenticated) {
       this.dispatch(actionCreators.accountInfo())
     }
   }
   render () {
-    const { credentials } = this.props.account
+    const { credentials, isAuthenticated } = this.props.account // isAuthenticated === undefined just means store is not ready yet
+    const { from } = this.props.location.state || { from: { pathname: '/console' } }
     const err = (credentials.error === '') ? '' : <div className={css.errMsg}>{credentials.error}</div>
 
-    if (this.props.account.isAuthenticated) {
-      return <Redirect to={'/console'} />
+    if (isAuthenticated) {
+      return <Redirect to={from} />
     }
 
     return (<div>
-      <Header />
+      <div className={css.heading}>
+        <h1 className={css.bdlogo}>
+          <span className={css.logoB}>Beardude</span>
+          <span className={css.logoE}>Event</span>
+        </h1>
+      </div>
       <div className={css.mainBody}>
-          <div className={css.body}>
-            <div>
-              {err}
-              <ul>
+        <div className={css.body}>
+            { !this.props.location.state || isAuthenticated !== undefined
+              ? <div>
+                {err}
+                <ul>
                   <li className={css.li}>
-                      <input type='text' className={css.text1} onChange={this.handleInput('email')}  placeholder='電子信箱' />
+                    <input type='text' className={css.text1} onChange={this.handleInput('email')} placeholder='電子信箱' />
                   </li>
                   <li className={css.li}>
-                      <input type='password' className={css.text2} onChange={this.handleInput('password')} placeholder='密碼' />
+                    <input type='password' className={css.text2} onChange={this.handleInput('password')} placeholder='密碼' />
                   </li>
-              </ul>
-              <div className={css.ft}>
-              <Button onClick={this.handleSubmit} text='登入' />
+                </ul>
+                <div className={css.ft}>
+                  <Button onClick={this.handleSubmit} text='登入' />
+                </div>
               </div>
-            </div>
-          </div>
+            : <div className={css.loading}>Loading...</div> }
+        </div>
       </div>
       <Footer />
     </div>)

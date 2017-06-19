@@ -43,8 +43,12 @@
 }
 .navActive {
     compose: nav;
+    padding: 4px 12px;
     color: #fff;
     font-weight: 700;
+    border-radius: 6px;
+    background: rgba(221, 221, 221, 0.48);
+    border: solid 1px #fff;
 }
 .account {
     position: relative;
