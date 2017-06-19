@@ -10,6 +10,10 @@ class Account extends BaseComponent {
   constructor (props) {
     super(props)
     this.dispatch = this.props.dispatch
+
+    if (this.props.account.isAuthenticated === undefined) {
+      this.props.dispatch(actionCreators.accountInfo())
+    }
     this._bind('handleSubmit', 'handleInput')
   }
   handleInput (field) {
@@ -21,12 +25,6 @@ class Account extends BaseComponent {
     const { email, password } = this.props.account.credentials
     if (email && password) {
       this.dispatch(actionCreators.login())
-    }
-  }
-  componentDidMount () {
-    // maybe remove this
-    if (!this.props.account.isAuthenticated) {
-      this.dispatch(actionCreators.accountInfo())
     }
   }
   render () {
@@ -47,7 +45,7 @@ class Account extends BaseComponent {
       </div>
       <div className={css.mainBody}>
         <div className={css.body}>
-            { !this.props.location.state || isAuthenticated !== undefined
+            { !this.props.location.state
               ? <div>
                 {err}
                 <ul>

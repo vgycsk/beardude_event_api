@@ -27,7 +27,7 @@ class Event extends BaseComponent {
     const { event, location } = this.props
     return (
       <div>
-        <Header location={location} />
+        <Header location={location} nav='base' />
         <div className={css.mainBody}>
           <ul className={css.iconView}>
             <li><Button style='bigIconCreate' url='/console/event/new' text='+' /></li>

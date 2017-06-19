@@ -2,6 +2,7 @@ import { PureComponent } from 'react'
 
 class BaseComponent extends PureComponent {
   _bind (...methods) {
+    console.log('this? ', this)
     methods.forEach((method) => {
       if (this[method]) {
         this[method] = this[method].bind(this)

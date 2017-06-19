@@ -17,8 +17,12 @@
     line-height: 45px;
     font-size: 17px;
     margin: 0 0 0 10px;
-    color: #ebf5fc;
     letter-spacing: 0.4px;
+}
+.bdlogo a:link,
+.bdlogo a:visited {
+    color: #ebf5fc;
+    text-decoration: none;
 }
 .logoB, .logoE {
     padding: 0 0 0 2px;
@@ -34,7 +38,14 @@
 }
 .navContainer {
     float: right;
-    margin: 0 60px 0 0;
+    margin: 0 40px 0 0;
+}
+.navContainer:after {
+    display: block;
+    content: "|";
+    float: right;
+    color: #ebf5fc;
+    padding: 0 0 0 15px;
 }
 .nav {
     color: #ebf5fc;
