@@ -62,21 +62,25 @@ const render = {
       content: (that) => {
         const store = that.props.racer
         return <ul> { store.racers &&
-          store.racers.map((racer, index) => render.list.bd.item({ className: (store.selectedRacerIndex === index) ? css.selected : css.li, key: racer.id, onClick: that.handleSelect(racer.id), text: racer.firstName + racer.lastName }))
+          store.racers.map((racer, index) => render.list.bd.item({ className: (store.selectedRacerIndex === index) ? css.selected : css.li, key: 'racer-' + index, onClick: that.handleSelect(index), text: (racer.id) ? racer.firstName + racer.lastName : '新增'}))
         } </ul>
       },
       item: ({className, key, onClick, text}) => { return <li className={className} key={key}><Button onClick={onClick} style='list' text={text} /></li> }
     },
-    ft: (that) => { return <div className={css.ft}><Button style='listFtIcon' text='+' /></div>}
+    ft: (that) => { return <div className={css.ft}><Button style='listFtIcon' text='+' onClick={that.handleCreate} /></div>}
   }
 }
 
 class Racer extends BaseComponent {
   constructor (props) {
     super(props)
-    this.state = { tableHeight: returnTableHeight(), readOnly: true, selectedCategoryIndex: 0 }
+    this.state = { tableHeight: returnTableHeight(), readOnly: true }
     this.dispatch = this.props.dispatch
-    this._bind('handleInput', 'handleEditToggle', 'handleSelect', 'handleSubmit', 'handleUpdateTableHeight')
+    this._bind('handleCreate', 'handleInput', 'handleEditToggle', 'handleSelect', 'handleSubmit', 'handleUpdateTableHeight')
+  }
+  handleCreate () {
+    this.dispatch(actionCreators.create())
+    this.setState({ readOnly: false })
   }
   handleInput (field) { return (e) => {
     const value = (field === 'isActive') ? ((e.target.value === 'true') ? false : true) : e.currentTarget.value
@@ -85,17 +89,16 @@ class Racer extends BaseComponent {
   handleEditToggle () {
     this.setState({ readOnly: (this.state.readOnly) ? false : true })
   }
-  handleSelectCategory (index) {return (e) => {
-    this.setState({selectedCategoryIndex: index})
-  }}
-  handleSelect (id) { return (e) => {
-    e.stopPropagation()
-    this.dispatch(actionCreators.selectRacer(id))
-    this.setState({ readOnly: true, selectedCategoryIndex: 0 })
+  handleSelect (index) { return (e) => {
+    console.log('this.props.racer.selectedRacerIndex: ', this.props.racer.selectedRacerIndex)
+    console.log('index: ', index)
+    this.dispatch(actionCreators.selectRacer(index))
+    this.setState({ readOnly: true })
   }}
   handleSubmit () {
     this.dispatch(actionCreators.submit())
-    this.setState({ readOnly: true })
+    // TO DO: overlay dialog
+//    this.setState({ readOnly: true })
   }
   handleUpdateTableHeight () {
     this.setState({ tableHeight: returnTableHeight() })
@@ -106,7 +109,7 @@ class Racer extends BaseComponent {
   }
   render () {
     return (<div><Header /><div className={css.mainBody}><div className={css.body}>
-      <div className={css.list}><Table bdStyle={{height: this.state.tableHeight}} content={render.list.bd.content(this)} ft={render.list.ft()} /></div>
+      <div className={css.list}><Table bdStyle={{height: this.state.tableHeight}} content={render.list.bd.content(this)} ft={render.list.ft(this)} /></div>
       { (this.props.racer.selectedRacerIndex !== -1) && <div className={css.edit}><Table bdStyle = {{height: this.state.tableHeight}} content = {render.edit.bd.content(this)} readOnly = {this.state.readOnly} ft = {this.state.readOnly ? render.edit.ftReadOnly(this) : render.edit.ft(this)} /></div> }
       </div></div></div>)
   }

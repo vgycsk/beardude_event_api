@@ -1,4 +1,5 @@
 // types
+const CREATE_RACER = 'racer/CREATE_RACER'
 const GET_RACERS = 'racer/GET_RACERS'
 const EDIT_RACER = 'racer/EDIT_RACER'
 const SELECT_RACERS = 'racer/SELECT_RACERS'
@@ -7,6 +8,9 @@ const SUBMIT_RACER = 'racer/SUBMIT_RACER'
 
 // actions
 export const actionCreators = {
+  create: () => (dispatch) => {
+    dispatch({type: CREATE_RACER})
+  },
   getRacers: () => async (dispatch, getState) => {
     try {
       const response = await fetch('/racer/getRacers', {credentials: 'same-origin'})
@@ -23,19 +27,17 @@ export const actionCreators = {
   input: (field, value) => (dispatch) => {
     dispatch({type: EDIT_RACER, payload: {field, value}})  
   },
-  selectRacer: (id) => async (dispatch, getState) => {
+  selectRacer: (index) => async (dispatch, getState) => {
     let racerStore = getState().racer
-    const racerIndex = (id === -1) ? undefined : racerStore.racers.findIndex(racer => racer.id === id)
 
-    if (racerStore.selectedRacerIndex === racerIndex) { return }
-    if (id === -1 || racerStore.racers[racerIndex].upToDate) {
-      return dispatch({type: SELECT_RACERS, payload: {selectedRacerIndex: racerIndex}})
+    if (racerStore.racers[index].upToDate) {
+      return dispatch({type: SELECT_RACERS, payload: {selectedRacerIndex: index}})
     }
     try {
-      const response = await fetch('/racer/mgmtInfo/' + id, {credentials: 'same-origin'})
+      const response = await fetch('/racer/mgmtInfo/' + racerStore.racers[index].id, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
-        return dispatch({type: SELECT_RACERS, payload: {...res, selectedRacerIndex: racerIndex}})
+        return dispatch({type: SELECT_RACERS, payload: {...res, selectedRacerIndex: index}})
       }
       throw res.message
     } catch (e) {
@@ -61,7 +63,7 @@ export const actionCreators = {
       }
       throw res.message
     } catch (e) {
-      dispatch({type: SUBMIT_RACER, payload: {error: e}})
+      dispatch({type: RACER_ERR, payload: {error: e}})
     }
   }
 }
@@ -76,6 +78,12 @@ const reducer = (state = initialState, action) => {
   const {type, payload, error} = action
 
   switch (type) {
+    case CREATE_RACER: {
+      let nextState = {...state}
+      nextState.selectedRacerIndex = nextState.racers.length
+      nextState.racers.push({})
+      return nextState
+    }
     case EDIT_RACER: {
       let nextState = {...state, racerInEdit: state.racerInEdit || {}}
       nextState.racerInEdit[payload.field] = payload.value
@@ -93,9 +101,7 @@ const reducer = (state = initialState, action) => {
     }
     case SUBMIT_RACER: {
       let nextState = {...state, racerInEdit: undefined}
-        console.log('payload: ', payload)
       if (payload.racer) {
-        console.log('payload.racer?  ', payload.racer)
         nextState.racers[payload.selectedRacerIndex] = {...payload.racer, upToDate: true}
       }
       return nextState
