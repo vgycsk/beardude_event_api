@@ -38,12 +38,12 @@ const render = {
 
         inputs.forEach(input => {
           input.onChange = that.handleInput(input.field)
-          input.value = (that.props.racer.racerInEdit && that.props.racer.racerInEdit[input.field]) ? that.props.racer.racerInEdit[input.field] : that.props.racer.racers[that.props.racer.selectedRacerIndex][input.field]
+          input.value = (that.props.racer.racerInEdit && that.props.racer.racerInEdit[input.field] !== undefined) ? that.props.racer.racerInEdit[input.field] : that.props.racer.racers[that.props.racer.selectedRacerIndex][input.field]
         })
         return <div>{ render.edit.bd.section({ heading: '身份', inputs: basicInputs }) } { render.edit.bd.section({ heading: '更改密碼', inputs: passwordInputs }) } { render.edit.bd.section({ heading: '聯絡地址', inputs: addressInputs }) }</div>
       },
       input: {
-        checkbox: ({onChange, value}) => { return <input type='checkbox' onChange={onChange} checked={value} />},
+        checkbox: ({onChange, value}) => { return <input type='checkbox' onChange={onChange} checked={value} value={value} />},
         password: ({onChange, value}) => { return <input className={css.input} type='password' onChange={onChange} value={value} />},
         text: ({onChange, value}) => { return <input className={css.input} type='text' onChange={onChange} value={value} />}
       },
@@ -74,12 +74,13 @@ const render = {
 class Racer extends BaseComponent {
   constructor (props) {
     super(props)
-    this.state = { tableHeight: returnTableHeight(), readOnly: true, selectedCategoryIndex: 0, showPasswordFields: false }
+    this.state = { tableHeight: returnTableHeight(), readOnly: true, selectedCategoryIndex: 0 }
     this.dispatch = this.props.dispatch
-    this._bind('handleInput', 'handleEditToggle', 'handlePasswordFieldsToggle', 'handleSelect', 'handleSubmit', 'handleUpdateTableHeight')
+    this._bind('handleInput', 'handleEditToggle', 'handleSelect', 'handleSubmit', 'handleUpdateTableHeight')
   }
   handleInput (field) { return (e) => {
-    this.dispatch(actionCreators.input(field, e.currentTarget.value))
+    const value = (field === 'isActive') ? ((e.target.value === 'true') ? false : true) : e.currentTarget.value
+    this.dispatch(actionCreators.input(field, value))
   }}
   handleEditToggle () {
     this.setState({ readOnly: (this.state.readOnly) ? false : true })
@@ -92,13 +93,9 @@ class Racer extends BaseComponent {
     this.dispatch(actionCreators.selectRacer(id))
     this.setState({ readOnly: true, selectedCategoryIndex: 0 })
   }}
-  handlePasswordFieldsToggle () { return (e) => {
-    console.log('newState 123 123: ', newState)
-    const newState = (this.state.showPasswordFields) ? false : true
-    this.setState({ showPasswordFields: newState})
-  }}
   handleSubmit () {
     this.dispatch(actionCreators.submit())
+    this.setState({ readOnly: true })
   }
   handleUpdateTableHeight () {
     this.setState({ tableHeight: returnTableHeight() })
