@@ -18,8 +18,7 @@ module.exports.bootstrap = function(cb) {
             isActive: false
         };
 
-        Manager.create(managerObj);
-        })
+        Manager.create(managerObj)
         .then(function (managerData) {
             return q.resolve(managerData);
         });
