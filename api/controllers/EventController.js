@@ -3,6 +3,7 @@
 'use strict';
 
 var moment = require('moment');
+var Q = require('q');
 
 module.exports = {
     // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
@@ -164,17 +165,33 @@ module.exports = {
         .populate('registrations')
         .populate('races')
         .then(function (groupData) {
-            var racerIds = [];
+            var funcs = [];
+
             resultObj.groups = groupData;
-            groupData.registrations.forEach(function (reg) {
-                racerIds.push(reg.racer);
+            groupData.forEach(function (group) {
+                var temp = [];
+
+                group.registrations.forEach(function (reg) {
+                    temp.push(reg.racer);
+                });
+                funcs.push(Racer.find({
+                    id: temp
+                }));
             });
-            return Racer.find({
-                id: racerIds
-            });
+            return Q.all(funcs);
         })
-        .then(function (racerData) {
-            resultObj.racers = racerData;
+        .then(function (racerArraysData) {
+            resultObj.groups.forEach(function (group, index) {
+                var racers = racerArraysData[index];
+
+                group.registrations.forEach(function (reg) {
+                    racers.forEach(function (racer) {
+                        if (reg.racer === racer.id) {
+                            reg.racer = racer;
+                        }
+                    })
+                });
+            });
             return res.ok(resultObj);
         })
         .catch(function (E) {

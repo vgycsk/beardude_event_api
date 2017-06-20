@@ -7,6 +7,7 @@ module.exports.policies = {
 //        getGeneralInfo: '',
 //        addManagers: 'isActiveManager',
 //        removeManagers: 'isActiveManager',
+        getGroupsAndRacersOfEvent: 'isActiveManager',
         update: 'isActiveManager',
         updateSwitch: 'isActiveManager',
         assignTesterRfid: 'isActiveManager'
