@@ -22,13 +22,20 @@ let passwordInputs = [
   { label: '確認新密碼', field: 'confirmPassword', type: 'password' }
 ]
 let addressInputs = [
-  {label: '街道', field: 'street'},
-  {label: '區', field: 'district'},
-  {label: '城市', field: 'city'},
-  {label: '鄉鎮', field: 'county'},
-  {label: '國家', field: 'country'},
-  {label: '郵遞區號', field: 'zip'}
+  { label: '街道', field: 'street' },
+  { label: '區', field: 'district' },
+  { label: '城市', field: 'city' },
+  { label: '鄉鎮', field: 'county' },
+  { label: '國家', field: 'country' },
+  { label: '郵遞區號', field: 'zip' }
 ]
+const returnTeamInputs = (that) => {
+  const racer = that.props.racer.racers[that.props.racer.selectedRacerIndex]
+  return [
+    { label: '車隊', field: 'name', disabled: true, value: racer.team.name },
+    { label: '隊長', field: 'leader', type: 'checkbox', disabled: true, value: (racer.id === racer.team.id) ? true : false}
+  ]
+}
 
 const render = {
   edit: {
@@ -40,14 +47,14 @@ const render = {
           input.onChange = that.handleInput(input.field)
           input.value = (that.props.racer.racerInEdit && that.props.racer.racerInEdit[input.field] !== undefined) ? that.props.racer.racerInEdit[input.field] : that.props.racer.racers[that.props.racer.selectedRacerIndex][input.field]
         })
-        return <div>{ render.edit.bd.section({ heading: '身份', inputs: basicInputs }) } { render.edit.bd.section({ heading: '更改密碼', inputs: passwordInputs }) } { render.edit.bd.section({ heading: '聯絡地址', inputs: addressInputs }) }</div>
+        return <div>{ render.edit.bd.section({ heading: '身份', inputs: basicInputs }) } { render.edit.bd.section({ heading: '更改密碼', inputs: passwordInputs }) } { render.edit.bd.section({ heading: '聯絡地址', inputs: addressInputs }) } { render.edit.bd.section({ heading: '所屬車隊', inputs: returnTeamInputs(that) }) }</div>
       },
       input: {
-        checkbox: ({onChange, value}) => { return <input type='checkbox' onChange={onChange} checked={value} value={value} />},
-        password: ({onChange, value}) => { return <input className={css.input} type='password' onChange={onChange} value={value} />},
-        text: ({onChange, value}) => { return <input className={css.input} type='text' onChange={onChange} value={value} />}
+        checkbox: ({disabled, onChange, value}) => { return <input type='checkbox' onChange={onChange} checked={value} value={value} disabled={disabled} />},
+        password: ({disabled, onChange, value}) => { return <input className={css.input} type='password' onChange={onChange} value={value} disabled={disabled} />},
+        text: ({disabled, onChange, value}) => { return <input className={css.input} type='text' onChange={onChange} value={value} disabled={disabled} />}
       },
-      item: ({className = css.row, label, field, onChange, type = 'text', value}) => { return <div className={className} key={field}><label className={css.label}>{label}</label>{ render.edit.bd.input[type]({onChange, value}) }</div> },
+      item: ({className = css.row, disabled, label, field, onChange, type = 'text', value}) => { return <div className={className} key={field}><label className={css.label}>{label}</label>{ render.edit.bd.input[type]({disabled, onChange, value}) }</div> },
       section: ({heading, inputs}) => { return <div className={css.section}><h3>{ heading }</h3> { inputs.map(input =>  render.edit.bd.item({ ...input })) }</div>
       }
     },

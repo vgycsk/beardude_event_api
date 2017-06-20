@@ -117,6 +117,9 @@ h3 {
   outline: none;
   font-weight: 300;
 }
+.input:disabled {
+    border-color: #fff;
+}
 .right {
   float: right;
 }
