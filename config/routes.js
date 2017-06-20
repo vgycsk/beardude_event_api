@@ -32,6 +32,7 @@ module.exports.routes = {
     'get /group/getAvailableSpot/:id': 'GroupController.getAvailableSpot',
     // 3.2, 3.3, 3.4, 5.2.*
     'get  /group/info/:id': 'GroupController.getInfo',
+
     // 1.2.2
     'post /group/update': 'GroupController.update',
     // 1.2.3
