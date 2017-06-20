@@ -153,6 +153,34 @@ module.exports = {
         });
     },
     */
+    // event id
+    getGroupsAndRacersOfEvent: function (req, res) {
+        var eventId = req.params.id;
+        var resultObj = {};
+
+        Group.find({
+            event: eventId
+        })
+        .populate('registrations')
+        .populate('races')
+        .then(function (groupData) {
+            var racerIds = [];
+            resultObj.groups = groupData;
+            groupData.registrations.forEach(function (reg) {
+                racerIds.push(reg.racer);
+            });
+            return Racer.find({
+                id: racerIds
+            });
+        })
+        .then(function (racerData) {
+            resultObj.racers = racerData;
+            return res.ok(resultObj);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     // {event: ID, isRegistrationOpen: BOOL, isTeamRegistrationOpen, BOOL, isPublic: BOOL}
     updateSwitch: function (req, res) {
         var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];
