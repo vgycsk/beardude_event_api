@@ -11,9 +11,6 @@ module.exports = {
             via: 'managers'
         },
 
-        address: {
-            model: 'Address'
-        },
         email: {
             type: 'email',
             required: true,
@@ -35,6 +32,30 @@ module.exports = {
         password: {
             type: 'string',
             required: true
+        },
+        street: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        district: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        city: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        county: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        country: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        zip: {
+            type: 'string',
+            defaultsTo: ''
         },
         isActive: {
             type: 'boolean',

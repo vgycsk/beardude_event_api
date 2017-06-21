@@ -1,3 +1,7 @@
+button {
+    font-family: "San Francisco";
+    letter-spacing: 0.5px;
+}
 .regular {
     border: 0;
     border-radius: 5px;
@@ -19,17 +23,13 @@
     letter-spacing: 1px;
     background: #158fe2;
 }
-.table {
-    
-}
-
 .bigIcon {
     position: relative;
     width: 120px;
     height: 120px;
     border-radius: 30px;
     border: 0;
-    background: linear-gradient(top,
+    background: linear-gradient(180deg,
         rgba(255, 255, 255, 0.75) 0%,
         rgba(255, 255, 255, 0.6) 10%,
         rgba(255, 255, 255, 0.5) 90%,
@@ -41,15 +41,73 @@
     display: block;
     text-decoration: none;
     text-align: center;
+    line-height: 120px;
+    outline: none;
 }
 .bigIcon:link,
 .bigIcon:visited {
     color: #ebf5fc;
 }
-a.bigIcon {
-    line-height: 120px
-}
 .bigIconCreate {
     composes: bigIcon;
     font-size: 36px;
+}
+.list {
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    text-decoration: none;
+    color: #555;
+    margin: 0 0 0 10px;
+    padding: 0 10px 0 0;
+    text-indent: 5px;
+    border: 0;
+    background: 0;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    outline: none;
+}
+.count {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-indent: 0;
+    text-align: center;
+    color: #dedede;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-family: cursive, 'Courier';
+    background: #555;
+    font-size: 13px;
+    min-width: 30px;
+}
+.listFt {
+    display: inline-block;
+    min-width: 45px;
+    height: 45px;
+    line-height: 42px;
+    position: relative;
+    border: 0;
+    background: 0;
+    outline: 1px solid #ccc;
+    color: #2f8bf1;
+    font-size: 13px;
+    padding: 0 15px;
+}
+.listFtDisabled {
+  composes: listFt;
+  color: #ccc;;
+}
+.listFtIcon {
+    composes: listFt;
+    font-size: 21px;
+    line-height: 38px;
+    padding: 0;
 }

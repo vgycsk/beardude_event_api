@@ -1,4 +1,4 @@
-/* global Address, dataService, Manager, Racer */
+/* global dataService, Manager, Racer */
 
 'use strict';
 
@@ -15,15 +15,6 @@ var returnSessionObj = function (req, modelName) {
         return req.session.managerInfo;
     }
     return req.session.racerInfo;
-};
-var returnUpdateFields = function (modelName) {
-    var managerUpdateFields = ['email', 'phone', 'firstName', 'lastName'];
-    var racerUpdateFields = ['email', 'phone', 'firstName', 'lastName', 'birthday', 'idNumber'];
-
-    if (modelName === 'Manager') {
-        return managerUpdateFields;
-    }
-    return racerUpdateFields;
 };
 
 module.exports = {
@@ -86,8 +77,6 @@ module.exports = {
     },
     // Create account. When omitting password, set account inactive and require user to activate
     create: function (inputRaw, modelName) {
-        var addressInput = inputRaw.address;
-        var addressDataObj;
         var modelDataObj;
         var returnPassword;
         var ModelObj = returnModelObj(modelName);
@@ -96,7 +85,7 @@ module.exports = {
         var input = {};
 
         for (i in inputRaw) {
-            if (inputRaw.hasOwnProperty(i) && i !== 'address' && inputRaw[i] !== '') {
+            if (inputRaw.hasOwnProperty(i) && inputRaw[i] !== '') {
                 input[i] = inputRaw[i];
             }
         }
@@ -116,23 +105,10 @@ module.exports = {
             if (typeof modelData !== 'undefined') {
                 throw new Error('Account exists');
             }
-            delete input.address;
             return ModelObj.create(input);
         })
         .then(function (modelData) {
             modelDataObj = modelData;
-            return Address.create(addressInput);
-        })
-        .then(function (addressData) {
-            addressDataObj = addressData;
-            return ModelObj.update({
-                id: modelDataObj.id
-            }, {
-                address: addressDataObj.id
-            });
-        })
-        .then(function () {
-            modelDataObj.address = addressDataObj;
             if (returnPassword) {
                 modelDataObj.password = input.password;
             } else {
@@ -170,47 +146,6 @@ module.exports = {
             return res.ok({
                 message: 'Temporary password created',
                 password: newPassword
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // Update fields speficied in returnUpdateFields function
-    update: function (req, res, modelName) {
-        var input = req.body;
-        var addressObj = input.address;
-        var updateObj = {};
-        var resultObj = input;
-        var ModelObj = returnModelObj(modelName);
-        var fields = returnUpdateFields(modelName);
-
-        ModelObj.findOne({
-            id: parseInt(input.id)
-        })
-        .then(function (modelData) {
-            updateObj = dataService.returnUpdateObj(fields, input, modelData);
-            if (updateObj) {
-                return ModelObj.update({
-                    id: input.id
-                }, updateObj);
-            }
-            return false;
-        })
-        .then(function (modelData) {
-            if (modelData) {
-                resultObj = modelData[0];
-            }
-            return Address.update({
-                id: addressObj.id
-            }, addressObj);
-        })
-        .then(function (addressData) {
-            resultObj.address = addressData[0];
-            return res.ok({
-                message: 'Account updated',
-                accountType: modelName,
-                account: resultObj
             });
         })
         .catch(function (E) {

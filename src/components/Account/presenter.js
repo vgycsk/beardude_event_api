@@ -45,7 +45,7 @@ class Account extends BaseComponent {
       </div>
       <div className={css.mainBody}>
         <div className={css.body}>
-            { !this.props.location.state
+            { !this.props.location.state || isAuthenticated !== undefined
               ? <div>
                 {err}
                 <ul>

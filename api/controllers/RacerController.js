@@ -26,7 +26,24 @@ module.exports = {
     activate: function (req, res) {
         return accountService.activate(req, res, 'Racer');
     },
-    /*
+    getRacers: function (req, res) {
+      Racer.find({})
+      .then(function (modelData) {
+          var result = modelData.map(function (racer) {
+              var temp = racer;
+
+              delete temp.password;
+              return temp;
+          });
+          return res.ok({
+              racers: result
+          });
+      })
+      .catch(function (E) {
+          return res.badRequest(E);
+      });
+    },
+
     create: function (req, res) {
         var input = req.body;
 
@@ -35,28 +52,32 @@ module.exports = {
         }
         accountService.create(input, 'Racer')
         .then(function (result) {
-            return res.ok(result);
+            var modResult = result;
+
+            delete modResult.password;
+            return res.ok({
+              racer: modResult
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    */
+
     // Get insensitive account info
     getGeneralInfo: function (req, res) {
         Racer.findOne({
             id: req.params.id
         })
-        .populate('events')
-        .populate('races')
+        .populate('team')
         .then(function (modelData) {
-            var result = {
-                firstName: modelData.firstName,
-                lastName: modelData.lastName,
-                isActive: modelData.isActive
-            };
-
-            return res.ok(result);
+            return res.ok({
+                racer: {
+                    firstName: modelData.firstName,
+                    lastName: modelData.lastName,
+                    isActive: modelData.isActive
+                }
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -67,14 +88,15 @@ module.exports = {
         Racer.findOne({
             id: req.params.id
         })
-        .populate('address')
-        .populate('events')
-        .populate('races')
+        .populate('registrations')
+        .populate('team')
         .then(function (modelData) {
             var result = modelData;
 
             delete result.password;
-            return res.ok(result);
+            return res.ok({
+              racer: result
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -90,7 +112,6 @@ module.exports = {
         return Racer.findOne({
             email: input.email
         })
-        .populate('address')
         .populate('team')
         .then(function (modelData) {
             modelDataObj = modelData;
@@ -100,10 +121,10 @@ module.exports = {
             if (!authenticated) {
                 throw new Error('Credentials incorrect');
             }
+            delete modelDataObj.password
             req.session.racerInfo = modelDataObj;
             return res.ok({
-                message: 'Logged in',
-                email: modelDataObj.email
+              racer: modelDataObj
             });
         })
         .catch(function (E) {
@@ -119,8 +140,54 @@ module.exports = {
     reissuePassword: function (req, res) {
         return accountService.reissuePassword(req, res, 'Racer');
     },
-    update: function (req, res) {
-        return accountService.update(req, res, 'Racer');
+    // Update fields speficied in returnUpdateFields function
+    update: function (req, res, modelName) {
+        var input = req.body;
+        var resultObj;
+        var fields = ['email', 'phone', 'firstName', 'lastName', 'nickName', 'birthday', 'idNumber', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive'];
+
+        Racer.findOne({
+            id: parseInt(input.id)
+        })
+        .then(function (modelData) {
+            var updateObj = {};
+            var toUpdate;
+
+            if (input.password && input.password !== input.confirmPassword) {
+                return res.badRequest('Password and confirm-password mismatch');
+            }
+            fields.forEach(function (field) {
+              if (typeof input[field] !== 'undefined') {
+                  updateObj[field] = input[field];
+                  toUpdate = true;
+              }
+            });
+            if (toUpdate) {
+                return Racer.update({
+                    id: input.id
+                }, updateObj);
+            }
+            return false;
+        })
+        .then(function (modelData) {
+            return Racer.findOne({
+                id: input.id
+            })
+            .populate('registrations')
+            .populate('team');
+        })
+        .then(function (modelData) {
+            var result = modelData;
+
+            delete result.password;
+            console.log('result: ', result);
+            return res.ok({
+              racer: result
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
     },
     updatePassword: function (req, res) {
         return accountService.updatePassword(req, res, 'Racer');

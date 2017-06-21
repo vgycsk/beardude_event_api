@@ -11,7 +11,7 @@ const navs = {
     { name: '隊伍', url: '/console/team' }
   ],
   event: [
-    { name: '賽制', url: '/console' },
+    { name: '賽制', url: '/console/event' },
     { name: 'RFID 操作', url: '/console/RFID' },
     { name: '賽制操作', url: '/console/eventMatch' },
     { name: 'Stream', url: '/console/stream'}
@@ -51,7 +51,10 @@ class Header extends BaseComponent {
   }
   render () {
     if (this.props.account.isAuthenticated !== undefined && !this.props.account.isAuthenticated) {
-      return <Redirect to='/console/login' />
+      return <Redirect to={{
+        pathname: '/console/login',
+        state: { from: this.props.location }
+      }} />
     }
     return (<div className={css.mainHeader}>
         <div className={css.heading}>

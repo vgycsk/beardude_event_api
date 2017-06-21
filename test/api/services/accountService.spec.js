@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-/* global Address, afterEach, beforeEach, describe, it, Manager, Racer */
+/* global afterEach, beforeEach, describe, it, Manager, Racer */
 
 var accountService = require('../../../api/services/accountService.js');
 var bcrypt = require('bcrypt-nodejs');
@@ -212,18 +212,11 @@ describe('services/accountService', function() {
                 id: 5,
                 email: 'info@beardude.com',
                 password: 'PewPewPew',
-                address: {
-                    id: 1,
-                    street: '123'
-                }
+                street: '123'
             };
             var mockData = {
                 id: 5,
                 email: 'info@beardude.com'
-            };
-            var mockAddress = {
-                id: 1,
-                street: '123'
             };
 
             sandbox.stub(Q, 'defer').callsFake(function () {
@@ -239,14 +232,12 @@ describe('services/accountService', function() {
             sandbox.stub(randomstring, 'generate').callsFake(function () {
                 return 'PewPewPew';
             });
-            sailsMock.mockModel(Address, 'create', mockAddress);
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
             accountService.create(input, 'Manager');
             this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
-                Address.create.restore();
                 Manager.findOne.restore();
                 Manager.create.restore();
                 done();
@@ -262,18 +253,11 @@ describe('services/accountService', function() {
             var expected = {
                 id: 5,
                 email: 'info@beardude.com',
-                address: {
-                    id: 1,
-                    street: '123'
-                }
+                street: '123'
             };
             var mockData = {
                 id: 5,
                 email: 'info@beardude.com'
-            };
-            var mockAddress = {
-                id: 1,
-                street: '123'
             };
 
             sandbox.stub(Q, 'defer').callsFake(function () {
@@ -286,14 +270,12 @@ describe('services/accountService', function() {
                     }
                 };
             });
-            sailsMock.mockModel(Address, 'create', mockAddress);
             sailsMock.mockModel(Manager, 'findOne');
             sailsMock.mockModel(Manager, 'create', mockData);
             accountService.create(input, 'Manager');
             this.timeout(99);
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
-                Address.create.restore();
                 Manager.findOne.restore();
                 Manager.create.restore();
                 done();
@@ -384,8 +366,7 @@ describe('services/accountService', function() {
                 body: {
                     id: 1,
                     firstName: 'Jane',
-                    lastName: 'Doh',
-                    address: 1
+                    lastName: 'Doh'
                 }
             };
             var actual;
@@ -404,11 +385,8 @@ describe('services/accountService', function() {
                     id: 1,
                     email: 'info@beardude.com',
                     firstName: 'Jane',
-                    Doe: 'Doh',
-                    address: {
-                        id: 1,
-                        street: '123'
-                    }
+                    lastName: 'Doh',
+                    street: '123'
                 }
             };
             var mockData = {
@@ -428,7 +406,6 @@ describe('services/accountService', function() {
                 street: '123'
             }];
 
-            sailsMock.mockModel(Address, 'update', mockDataAddr);
             sailsMock.mockModel(Manager, 'findOne', mockData);
             sailsMock.mockModel(Manager, 'update', mockData1);
 
@@ -438,7 +415,6 @@ describe('services/accountService', function() {
             setTimeout(function () {
                 expect(actual).to.deep.equal(expected);
                 Manager.update.restore();
-                Address.update.restore();
                 done();
             }, 50);
         });

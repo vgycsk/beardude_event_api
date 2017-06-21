@@ -5,24 +5,20 @@ var randomstring = require('randomstring');
 var Q = require('q');
 
 module.exports.bootstrap = function(cb) {
-    var initManagerEmail = 'info@beardude.com';
+    var initManagerEmail = 'azaitw@github.com';
     var tempPassword = randomstring.generate();
     var createInitManager = function (email, password) {
         var q = Q.defer();
         var managerObj = {
             email: email,
-            phone: '0905252302',
+            phone: '12345678',
             firstName: 'Azai',
             lastName: 'Chan',
             password: password,
             isActive: false
         };
 
-        Address.create({})
-        .then(function (addressData) {
-            managerObj.address = addressData.id;
-            return Manager.create(managerObj);
-        })
+        Manager.create(managerObj)
         .then(function (managerData) {
             return q.resolve(managerData);
         });

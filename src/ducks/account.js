@@ -78,7 +78,7 @@ const reducer = (state = initialState, action) => {
       return (payload.manager) ? {...state, manager: payload.manager, isAuthenticated: true} : {...state, isAuthenticated: false}
     }
     case LOGIN: {
-      return {...state, manager: payload.manager, isAuthenticated: true}
+      return {...state, manager: payload.manager, isAuthenticated: 1}
     }
     case LOGOUT: {
       return {...state, isAuthenticated: false, manager: undefined}

@@ -26,7 +26,11 @@ body, body>div, body>div>div {
 .container {
     width: 100%;
     height: 100%;
-    background: #57a6b0 url('../assets/imgs/bg7.png');
+    background: linear-gradient(180deg,
+        #034f84 0%,
+        #64b0b1 55%,
+        #afc978 100%
+    );
     background-attachment: fixed;
     background-size: contain;
 }

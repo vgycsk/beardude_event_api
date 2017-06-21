@@ -84,8 +84,9 @@ module.exports.routes = {
     // Racer 2.4
     'post /racer/activate': 'RacerController.activate',
     // Create while registering for an event
-    //'post /racer/create': 'RacerController.create',
+    'post /racer/create': 'RacerController.create',
     'get  /racer/info/:id': 'RacerController.getGeneralInfo',
+    'get  /racer/getRacers': 'RacerController.getRacers',
     'get  /racer/mgmtInfo/:id': 'RacerController.getManagementInfo',
     'post /racer/login': 'RacerController.login',
     'post /racer/logout': 'RacerController.logout',

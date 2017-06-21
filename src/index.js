@@ -9,6 +9,7 @@ import Stream from './components/Stream/'
 import Admin from './components/Admin/presenter'
 import EventList from './components/EventList'
 import Account from './components/Account'
+import Racer from './components/Racer'
 import NotFound from './components/NotFound'
 
 import css from './style/index.css'
@@ -27,6 +28,7 @@ ReactDOM.render(
           <Route path='/console/event/set:id' component={NotFound} />
           <Route path='/console/RFID' component={Admin} />
           <Route path='/console/eventMatch' component={NotFound} />
+          <Route path='/console/racer' component={Racer} />
           <Route path='/console/admin' component={Admin} />
           <Route path='/console/stream' component={Stream} />
           <Route component={NotFound} />

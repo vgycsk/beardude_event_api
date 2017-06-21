@@ -10,9 +10,6 @@ module.exports = {
             via: 'racer'
         },
 
-        address: {
-            model: 'Address'
-        },
         team: {
             model: 'Team'
         },
@@ -40,14 +37,39 @@ module.exports = {
         nickName: {
             type: 'string'
         },
+        // YYYY/MM/DD
         birthday: {
-            type: 'date'
+            type: 'string'
         },
         idNumber: {
             type: 'string'
         },
         password: {
             type: 'string'
+        },
+        street: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        district: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        city: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        county: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        country: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        zip: {
+            type: 'string',
+            defaultsTo: ''
         },
         isActive: {
             type: 'boolean',
