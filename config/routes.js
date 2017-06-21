@@ -13,6 +13,9 @@ module.exports.routes = {
 //    'post /event/managers/add': 'EventController.addManagers',
     // 1.3
 //    'post /event/managers/remove': 'EventController.removeManagers',
+
+    'get  /event/getGroupsAndRacersOfEvent/:id': 'EventController.getGroupsAndRacersOfEvent',
+
     // 1.2.7 -
     'post /event/update': 'EventController.update',
     // 1.2.10 -

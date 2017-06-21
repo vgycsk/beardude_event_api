@@ -3,6 +3,7 @@
 'use strict';
 
 var moment = require('moment');
+var Q = require('q');
 
 module.exports = {
     // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
@@ -153,6 +154,50 @@ module.exports = {
         });
     },
     */
+    // event id
+    getGroupsAndRacersOfEvent: function (req, res) {
+        var eventId = req.params.id;
+        var resultObj = {};
+
+        Group.find({
+            event: eventId
+        })
+        .populate('registrations')
+        .populate('races')
+        .then(function (groupData) {
+            var funcs = [];
+
+            resultObj.groups = groupData;
+            groupData.forEach(function (group) {
+                var temp = [];
+
+                group.registrations.forEach(function (reg) {
+                    temp.push(reg.racer);
+                });
+                funcs.push(Racer.find({
+                    id: temp
+                }));
+            });
+            return Q.all(funcs);
+        })
+        .then(function (racerArraysData) {
+            resultObj.groups.forEach(function (group, index) {
+                var racers = racerArraysData[index];
+
+                group.registrations.forEach(function (reg) {
+                    racers.forEach(function (racer) {
+                        if (reg.racer === racer.id) {
+                            reg.racer = racer;
+                        }
+                    })
+                });
+            });
+            return res.ok(resultObj);
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     // {event: ID, isRegistrationOpen: BOOL, isTeamRegistrationOpen, BOOL, isPublic: BOOL}
     updateSwitch: function (req, res) {
         var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];

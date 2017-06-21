@@ -72,7 +72,7 @@ var RaceController = {
             id: req.params.id
         })
         .populate('registrations')
-        .populate('group')
+//        .populate('group')
         .then(function (modelData) {
             return res.ok(modelData);
         })

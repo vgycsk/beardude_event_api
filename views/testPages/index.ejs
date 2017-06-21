@@ -198,8 +198,9 @@
                 <h3>Get info</h3>
                 <ul>
                     <% for (var i = 0; i < params.events.length; i += 1) { %>
-                        <li>
-                            <a href="/event/info/<%= params.events[i].id %>"><%= params.events[i].id %> - <%= params.events[i].name %></a>
+                        <li><%= params.events[i].id %> - <%= params.events[i].name %> -
+                            <a href="/event/info/<%= params.events[i].id %>">General Info</a>
+                            <a href="/event/getGroupsAndRacersOfEvent/<%= params.events[i].id %>">Groups and Racers%></a>
                         </li>
                     <% } %>
                 </ul>
