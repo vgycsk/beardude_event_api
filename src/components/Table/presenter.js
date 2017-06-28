@@ -6,7 +6,9 @@ const Table = ({bdStyle = {}, content = '', ft = '', readOnly = false}) => (<div
   <div className={(readOnly) ? css.bdReadOnly : css.bdClass} style={bdStyle}>
     <div className={css.content}>{content}</div>
   </div>
-  <div className={css.ft}>{ft}</div>
+  <div className={css.tableFt}>{ft}</div>
 </div>)
 
 export default Table
+
+// export let render = {}
