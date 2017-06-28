@@ -74,6 +74,6 @@ module.exports.policies = {
 //        teamExist: '',
 //        create: '',
 //        getInfo: '',
-        update: 'isRacerSelfOrTeamLeaderOrManager'
+        update: 'isTeamLeaderOrManager'
     }
 };
