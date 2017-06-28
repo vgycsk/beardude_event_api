@@ -33,7 +33,7 @@ const returnTeamInputs = (that) => {
   const racer = that.props.racer.racers[that.props.racer.selectedRacerIndex]
   return [
     { label: '車隊', field: 'name', disabled: true, value: (racer.team) ? racer.team.name : '(無)'},
-    { label: '隊長', field: 'leader', type: 'checkbox', disabled: true, value: (racer.team && racer.id === racer.team.id) ? true : false}
+    { label: '隊長', field: 'leader', type: 'checkbox', disabled: true, value: (racer.team && (racer.id === racer.team.leader)) ? true : false}
   ]
 }
 
