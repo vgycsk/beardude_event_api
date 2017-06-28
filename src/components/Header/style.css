@@ -3,7 +3,7 @@
 .mainHeader {
     height: 45px;
     position: relative;
-    z-index: 10;
+    z-index: 20;
 }
 .heading {
     position: relative;

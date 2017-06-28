@@ -130,26 +130,22 @@ module.exports.routes = {
     'post /reg/updateDisqualification': 'RegistrationController.updateDisqualification',
 
     // Team
-    // 之後再開放進階隊伍管理功能
     // 2.2.2
-    'post /team/exist': 'TeamController.teamExist',
+    'post /team/nameAvailable': 'TeamController.nameAvailable',
     // 2.3.3
-    //'post /team/create': 'TeamController.create',
-    // NA
+    'post /team/create': 'TeamController.create',
+    // 1.4.1
     'get  /team/getInfo/:id': 'TeamController.getInfo',
+    // 1.4.1
+    'get  /team/getTeams': 'TeamController.getTeams',
     // 2.3.4
     //'post /team/delete': 'TeamController.delete',
-    // 2.3.2
+    // 2.3.2, 2.3.7, 2.3.8
     'post /team/update': 'TeamController.update',
-
     // 2.3.5
-    //'post /team/apply': 'TeamController.applyForTeam',
+    //'post /team/invite': 'TeamController.invite',
     // 2.3.6
-    //'post /team/unapply': 'TeamController.unapplyForTeam',
-    // 2.3.7
-    //'post /team/approveRacer': 'TeamController.approveRacer',
-    // 2.3.8
-    //'post /team/removeRacer': 'TeamController.removeRacer',
+    //'post /team/acceptInvitation': 'TeamController.acceptInvitation',
 
     // Test page
     'get  /race/update/:id': 'TestPageController.raceUpdatePage',

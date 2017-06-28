@@ -5,21 +5,19 @@
 var Q = require('q');
 var TeamController = {
     // {name: STR}
-    teamExist: function (req, res) {
-        var uniqueName = dataService.sluggify(req.body.name);
-
+    nameAvailable: function (req, res) {
         Team.findOne({
-            uniqueName: uniqueName
+            name: req.body.name
         })
         .then(function (result) {
-            var msg = false;
+            var msg = true;
 
             if (result) {
-                msg = true;
+                msg = false;
             }
             return res.ok({
                 name: req.body.name,
-                exist: msg
+                available: msg
             });
         })
         .catch(function (E) {
@@ -31,7 +29,7 @@ var TeamController = {
         var q = Q.defer();
         var obj = {
             name: input.name,
-            uniqueName: dataService.sluggify(input.name),
+            nameCht: input.nameCht,
             description: input.description,
             url: input.url
         };
@@ -93,160 +91,74 @@ var TeamController = {
             id: parseInt(req.params.id)
         })
         .populate('racers')
-        .populate('racersApplication')
-        .then(function (teamData) {
-            var result = teamData;
-
-            result.racers.forEach(function (racer) {
-                if (racer.id === result.leader) {
-                    result.leader = racer;
-                }
-            });
-            return res.ok(result);
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {team: ID}
-    update: function (req, res) {
-        var input = req.body;
-        var fields = ['name', 'description', 'url'];
-        var updateObj;
-
-        Team.findOne({
-            id: parseInt(input.team)
-        })
-        .then(function (modelData) {
-            updateObj = dataService.returnUpdateObj(fields, input, modelData);
-            return Team.update({
-                id: input.team
-            }, updateObj);
-        })
         .then(function (teamData) {
             return res.ok({
-                message: 'Team updated',
-                team: teamData[0]
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    }
-    /*
-    // {team: ID}
-    applyForTeam: function (req, res) {
-        var input = req.body;
-
-        Racer.update({
-            id: req.session.racerInfo.id
-        }, {
-            teamApplication: parseInt(input.team)
-        })
-        .then(function () {
-            res.ok({
-                message: 'Team application sent',
-                team: input.team
+                team: teamData
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {team: ID}
-    unapplyForTeam: function (req, res) {
-        var input = req.body;
-
-        Racer.findOne({
-            id: req.session.racerInfo.id
-        })
-        .populate('teamApplication')
-        .then(function (modelData) {
-            var teamApplication = modelData.teamApplication;
-
-            modelData.teamApplication.remove(teamApplication);
-            modelData.save();
-        })
-        .then(function () {
-            res.ok({
-                message: 'Team application removed',
-                team: input.team
+    getTeams: function (req, res) {
+        Team.find({})
+        .then(function (teamData) {
+            return res.ok({
+                teams: teamData
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     },
-    // {team: ID, racer: ID}
-    approveRacer: function (req, res) {
+    // {id: ID}
+    update: function (req, res) {
         var input = req.body;
+        var fields = ['name', 'nameCht', 'description', 'url', 'leader'];
+        var queryObj = {
+            id: parseInt(input.id)
+        };
 
-        input.racer = parseInt(input.racer);
-        Team.findOne({
-            id: parseInt(input.team)
-        })
-        .populate('racers')
-        .populate('racersApplication')
+        Team.findOne(queryObj)
         .then(function (modelData) {
-            var racerToAdd;
+            var updateObj = dataService.returnUpdateObj(fields, input);
 
-            modelData.racersApplication.forEach(function (racer) {
-                if (racer === input.racer) {
-                    racerToAdd = input.racer;
+            if (updateObj.leader) {
+                updateObj.leader = parseInt(updateObj.leader);
+            }
+            return Team.update(queryObj, updateObj);
+        })
+        .then(function () {
+            return Team.findOne(queryObj)
+            .populate('racers');
+        })
+        .then(function (modelData) {
+            input.racers.forEach(function (racer) {
+                if (racer.toAdd) {
+                    modelData.racers.add(racer.id);
+                } else if (racer.toRemove) {
+                    modelData.racers.remove(racer.id);
                 }
             });
-            if (!racerToAdd) {
-                throw new Error('Racer application not found');
-            }
-            modelData.racers.add(input.racer);
-            modelData.racersApplication.remove(input.racer);
             return modelData.save();
         })
         .then(function () {
+            return Team.findOne(queryObj)
+            .populate('racers');
+        })
+        .then(function (modeldata) {
             return res.ok({
-                message: 'Racer added to your team',
-                racer: input.racer
-            });
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {team: ID, racer: ID}
-    removeRacer: function (req, res) {
-        var input = req.body;
-
-        input.racer = parseInt(input.racer);
-        Team.findOne({
-            id: parseInt(input.team)
-        })
-        .populate('racers')
-        .then(function (teamData) {
-            var found;
-
-            teamData.racers.forEach(function (racer) {
-                if (racer.id === input.racer) {
-                    found = true;
-                }
-            });
-            if (!found) {
-                throw new Error('Racer not in the team');
-            }
-            teamData.racers.remove(input.racer);
-            return teamData.save();
-        })
-        .then(function () {
-            return res.ok({
-                message: 'Racers removed',
-                team: input.team,
-                racer: input.racer
+                team: modeldata
             });
         })
         .catch(function (E) {
             return res.badRequest(E);
         });
     }
-    */
+    // {id: ID, racer: ID}
+    // invite: function (req, res) {},
+    // {id: ID, racer: ID}
+    // acceptInvitation: function (req, res) {}
 };
 
 module.exports = TeamController;
