@@ -91,8 +91,7 @@ const reducer = (state = initialState, action) => {
       return nextState
     }
     case CREATE_RACER: {
-      let nextState = {...state}
-      nextState.selectedIndex = nextState.racers.length
+      let nextState = {...state, selectedIndex: state.racers.length}
       nextState.racers.push({})
       return nextState
     }

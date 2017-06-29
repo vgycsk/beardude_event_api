@@ -105,7 +105,7 @@ const reducer = (state = initialState, action) => {
           if (racer.toAdd) {
             nextState.inEdit.racers.splice(index, 1)
           } else {
-            racer.toRemove = (payload.toRestore) ? false : true
+            racer.toRemove = !payload.toRestore
           }
         }
       })
