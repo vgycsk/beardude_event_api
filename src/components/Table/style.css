@@ -46,7 +46,7 @@
 .content {
   position: relative;
   overflow-x: hidden;
-  padding: 0 0 90px 0;
+  padding: 0 0 133px 0;
 }
 .readOnly {
   composes: content;
@@ -153,4 +153,8 @@ textarea {
 }
 input:disabled, textarea:disabled {
     border-color: #fff;
+}
+
+.right {
+  float: right;
 }

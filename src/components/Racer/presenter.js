@@ -5,6 +5,7 @@ import Header from '../Header'
 import Button from '../Button'
 import Table from '../Table'
 import css from './style.css'
+import { renderInput } from '../Table/presenter'
 
 const valueFunc = (store, field) => (store.inEdit && store.inEdit[field] !== undefined) ? store.inEdit[field] : store.racers[store.selectedIndex][field]
 const listNameFunc = (racer) => (racer.id) ? racer.lastName + racer.firstName : '新增'
@@ -35,21 +36,11 @@ const returnTeamInputs = (racer) => [
   { label: '隊長', field: 'leader', type: 'checkbox', disabled: true, value: (racer.team && (racer.id === racer.team.leader)) ? true : false}
 ]
 const render = {
-  input: {
-    checkbox: ({disabled, onChange, value}) => <input type='checkbox' onChange={onChange} checked={value} value={value} disabled={disabled} />,
-    password: ({disabled, onChange, value}) => <input type='password' onChange={onChange} value={value} disabled={disabled} />,
-    text: ({disabled, onChange, value}) => <input type='text' onChange={onChange} value={value} disabled={disabled} />
-  },
-  item: ({disabled, label, field, onChange, type = 'text', value}) => <li key={field}><label>{label}</label>{ render.input[type]({disabled, onChange, value}) }</li>,
-  section: ({heading, inputs, key}) => <section key={key}><h3>{ heading }</h3><ul>{ inputs.map(input =>  render.item({ ...input })) }</ul></section>,
-  ft: (that) => { return (<span>{ (that.props.racer.inEdit)
-    ? <Button style='listFt' onClick={that.handleSubmit} text='儲存' /> : <Button style='listFtDisabled' text='儲存' /> }
-    <span className={css.right}><Button style='listFt' onClick={that.handleEditToggle} text='取消' /></span></span>)
-  },
-  ftReadOnly: (that) => { return <Button style='listFt' onClick={that.handleEditToggle} text='編輯' /> }
+  item: ({disabled, label, field, onChange, type = 'text', value}) => <li key={field}><label>{label}</label>{ renderInput[type]({disabled, onChange, value}) }</li>,
+  section: ({heading, inputs, key}) => <section key={key}><h3>{ heading }</h3><ul>{ inputs.map(input =>  render.item({ ...input })) }</ul></section>
 }
 
-class Racer extends BaseComponent {
+export default class Racer extends BaseComponent {
   constructor (props) {
     super(props)
     this.state = { readOnly: true }
@@ -76,8 +67,7 @@ class Racer extends BaseComponent {
   }}
   handleSubmit () {
     this.dispatch(actionCreators.submit())
-    // TO DO: overlay dialog
-//    this.setState({ readOnly: true })
+    this.setState({ readOnly: true })
   }
   componentDidMount () {
     this.dispatch(actionCreators.getRacers())
@@ -90,10 +80,7 @@ class Racer extends BaseComponent {
       render.section({ heading: '聯絡地址', inputs: returnAddressInputs(store, this.handleInput), key: 'sec-2' }),
       render.section({ heading: '所屬車隊', inputs: returnTeamInputs(store.racers[store.selectedIndex]), key: 'sec-3' })
     ] : []
-    const editFt = (this.state.readOnly) ? render.ftReadOnly(this) : render.ft(this)
 
-    return (<div><Header location={this.props.location} /><div className={css.mainBody}><Table list={store.racers} selectedIndex={store.selectedIndex} editBody={editBd} editFt={editFt} listNameFunc={listNameFunc} readOnly={this.state.readOnly} handleSelect={this.handleSelect} handleCreate={this.handleCreate} /></div></div>)
+    return (<div><Header location={this.props.location} /><div className={css.mainBody}><Table list={store.racers} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={(this.props.racer.inEdit ? true : false)} readOnly={this.state.readOnly} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleCreate={this.handleCreate} /></div></div>)
   }
 }
-
-export default Racer
