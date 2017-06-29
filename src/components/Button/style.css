@@ -88,9 +88,9 @@ button {
 }
 .listFt {
     display: inline-block;
-    min-width: 45px;
-    height: 45px;
-    line-height: 42px;
+    min-width: 36px;
+    height: 36px;
+    line-height: 30px;
     position: relative;
     border: 0;
     background: 0;
@@ -106,6 +106,5 @@ button {
 .listFtIcon {
     composes: listFt;
     font-size: 21px;
-    line-height: 38px;
     padding: 0;
 }

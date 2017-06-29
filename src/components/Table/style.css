@@ -36,8 +36,8 @@
 .tableFt {
   position: absolute;
   left: 0;
-  bottom: 45px;
-  height: 45px;
+  bottom: 46px;
+  height: 36px;
   border-top: 1px solid #ccc;
   width: 100%;
   background: #fff;
@@ -46,7 +46,7 @@
 .content {
   position: relative;
   overflow-x: hidden;
-  padding: 0 0 133px 0;
+  padding: 0 0 124px 0;
 }
 .readOnly {
   composes: content;
@@ -71,8 +71,8 @@
 }
 .li {
   position: relative;
-  height: 43px;
-  line-height: 43px;
+  height: 39px;
+  line-height: 39px;
 }
 .li:after {
   position: absolute;
