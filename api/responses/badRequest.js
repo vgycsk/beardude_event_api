@@ -51,7 +51,7 @@ module.exports = function (data) {
         }
     }
     return res.jsonx({
-        message: statusTitle
+        message: viewData.message
     });
     /*
     delete viewData.rawStack;
