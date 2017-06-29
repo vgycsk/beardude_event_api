@@ -12,6 +12,7 @@ import Account from './components/Account'
 import Racer from './components/Racer'
 import Team from './components/Team'
 import NotFound from './components/NotFound'
+import Manager from  './components/Manager'
 
 import css from './style/index.css'
 
@@ -32,6 +33,7 @@ ReactDOM.render(
           <Route path='/console/racer' component={Racer} />
           <Route path='/console/team' component={Team} />
           <Route path='/console/admin' component={Admin} />
+          <Route path='/console/manager' component={Manager} />
           <Route path='/console/stream' component={Stream} />
           <Route component={NotFound} />
         </Switch>

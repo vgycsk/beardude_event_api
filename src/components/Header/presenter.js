@@ -8,7 +8,8 @@ const navs = {
   base: [
     { name: '活動', url: '/console' },
     { name: '選手', url: '/console/racer' },
-    { name: '隊伍', url: '/console/team' }
+    { name: '隊伍', url: '/console/team' },
+    { name: '管理員', url: '/console/manager' }
   ],
   event: [
     { name: '賽制', url: '/console/event' },
