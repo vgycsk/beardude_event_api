@@ -30,11 +30,9 @@ module.exports = {
       Racer.find({})
       .then(function (modelData) {
           var result = modelData.map(function (racer) {
-              var temp = racer;
-
-              delete temp.password;
-              return temp;
+              return racer.toJSON();
           });
+
           return res.ok({
               racers: result
           });
@@ -52,11 +50,8 @@ module.exports = {
         }
         accountService.create(input, 'Racer')
         .then(function (result) {
-            var modResult = result;
-
-            delete modResult.password;
             return res.ok({
-              racer: modResult
+              racer: result.toJSON()
             });
         })
         .catch(function (E) {
@@ -91,11 +86,8 @@ module.exports = {
         .populate('registrations')
         .populate('team')
         .then(function (modelData) {
-            var result = modelData;
-
-            delete result.password;
             return res.ok({
-              racer: result
+              racer: modelData.toJSON()
             });
         })
         .catch(function (E) {
@@ -177,11 +169,8 @@ module.exports = {
             .populate('team');
         })
         .then(function (modelData) {
-            var result = modelData;
-
-            delete result.password;
             return res.ok({
-              racer: result
+              racer: modelData.toJSON()
             });
         })
         .catch(function (E) {
