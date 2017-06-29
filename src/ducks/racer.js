@@ -1,4 +1,5 @@
 // types
+const CANCEL_EDIT = 'racer/CANCEL_EDIT'
 const CREATE_RACER = 'racer/CREATE_RACER'
 const GET_RACERS = 'racer/GET_RACERS'
 const EDIT_RACER = 'racer/EDIT_RACER'
@@ -8,6 +9,9 @@ const SUBMIT_RACER = 'racer/SUBMIT_RACER'
 
 // actions
 export const actionCreators = {
+  cancelEdit: () => (dispatch) => {
+    dispatch({type: CANCEL_EDIT})
+  },
   create: () => (dispatch) => {
     dispatch({type: CREATE_RACER})
   },
@@ -31,13 +35,13 @@ export const actionCreators = {
     let racerStore = getState().racer
 
     if (racerStore.racers[index].upToDate) {
-      return dispatch({type: SELECT_RACERS, payload: {selectedRacerIndex: index}})
+      return dispatch({type: SELECT_RACERS, payload: {selectedIndex: index}})
     }
     try {
       const response = await fetch('/racer/mgmtInfo/' + racerStore.racers[index].id, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
-        return dispatch({type: SELECT_RACERS, payload: {...res, selectedRacerIndex: index}})
+        return dispatch({type: SELECT_RACERS, payload: {...res, selectedIndex: index}})
       }
       throw res.message
     } catch (e) {
@@ -46,7 +50,7 @@ export const actionCreators = {
   },
   submit: () => async (dispatch, getState) => {
     const store = getState().racer
-    const racerId = store.racers[store.selectedRacerIndex].id
+    const racerId = store.racers[store.selectedIndex].id
     try {
       const response = await fetch((racerId) ? '/racer/update' : '/racer/create', {
         method: 'post',
@@ -55,11 +59,11 @@ export const actionCreators = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ...store.racerInEdit, id: racerId})
+        body: JSON.stringify({ ...store.inEdit, id: racerId})
       })
       const res = await response.json()
       if (response.status === 200) {
-        return dispatch({type: SUBMIT_RACER, payload: {...res, selectedRacerIndex: store.selectedRacerIndex}})
+        return dispatch({type: SUBMIT_RACER, payload: {...res, selectedIndex: store.selectedIndex}})
       }
       throw res.message
     } catch (e) {
@@ -70,39 +74,47 @@ export const actionCreators = {
 
 // reducers
 const initialState = {
-  selectedRacerIndex: -1,
-  racerInEdit: undefined, // keep new and modified racer info
+  selectedIndex: -1,
+  inEdit: undefined, // keep new and modified racer info
   racers: []
 }
 const reducer = (state = initialState, action) => {
   const {type, payload, error} = action
 
   switch (type) {
+    case CANCEL_EDIT: {
+      let nextState = {...state, inEdit: undefined}
+      if (!nextState.racers[nextState.racers.length - 1].id) {
+        nextState.selectedIndex = -1
+        nextState.racers.pop()
+      }
+      return nextState
+    }
     case CREATE_RACER: {
       let nextState = {...state}
-      nextState.selectedRacerIndex = nextState.racers.length
+      nextState.selectedIndex = nextState.racers.length
       nextState.racers.push({})
       return nextState
     }
     case EDIT_RACER: {
-      let nextState = {...state, racerInEdit: state.racerInEdit || {}}
-      nextState.racerInEdit[payload.field] = payload.value
+      let nextState = {...state, inEdit: state.inEdit || {}}
+      nextState.inEdit[payload.field] = payload.value
       return nextState
     }
     case GET_RACERS: {
       return {...state, racers: payload.racers}
     }
     case SELECT_RACERS: {
-      let nextState = {...state, selectedRacerIndex: payload.selectedRacerIndex, racerInEdit: undefined}
+      let nextState = {...state, selectedIndex: payload.selectedIndex, inEdit: undefined}
       if (payload.racer) {
-        nextState.racers[payload.selectedRacerIndex] = {...payload.racer, upToDate: true}
+        nextState.racers[payload.selectedIndex] = {...payload.racer, upToDate: true}
       }
       return nextState
     }
     case SUBMIT_RACER: {
-      let nextState = {...state, racerInEdit: undefined}
+      let nextState = {...state, inEdit: undefined}
       if (payload.racer) {
-        nextState.racers[payload.selectedRacerIndex] = {...payload.racer, upToDate: true}
+        nextState.racers[payload.selectedIndex] = {...payload.racer, upToDate: true}
       }
       return nextState
     }
