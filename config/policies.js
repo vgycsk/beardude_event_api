@@ -23,6 +23,7 @@ module.exports.policies = {
         activate: 'isInactive',
         create: 'isActiveManager',
 //        getGeneralInfo: '',
+        getManagers: 'isActiveManager',
         getManagementInfo: 'isManagerSelf',
         login: 'isNotLoggedInManager',
 //        logout: '',

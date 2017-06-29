@@ -42,6 +42,7 @@ module.exports.routes = {
     'post /manager/activate': 'ManagerController.activate',
     'post /manager/create': 'ManagerController.create',
     'get  /manager/info/:id': 'ManagerController.getGeneralInfo',
+    'get  /manager/getManagers': 'ManagerController.getManagers',
     'get  /manager/mgmtInfo/:id': 'ManagerController.getManagementInfo',
     'get  /manager/reissuePassword/:id': 'ManagerController.reissuePassword',
     'post /manager/update': 'ManagerController.update',
