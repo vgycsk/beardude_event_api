@@ -54,6 +54,10 @@
     color: #ebf5fc;
     padding: 0 0 0 15px;
 }
+.navContainer a:hover {
+    color: #158fe2;
+    text-decoration: none;
+}
 .nav {
     color: #ebf5fc;
     text-decoration: none;
@@ -67,6 +71,9 @@
     border-radius: 6px;
     background: rgba(221, 221, 221, 0.48);
     border: solid 1px #fff;
+}
+.navActive:hover {
+  color: #eee;
 }
 .account {
     position: relative;
@@ -84,6 +91,10 @@
     padding: 1px 25px 0 0;
     color: #ebf5fc;
     cursor: pointer;
+}
+.accountLink:hover {
+    color: #158fe2;
+    text-decoration: none;
 }
 .accountLink:before {
     position: absolute;
@@ -116,6 +127,7 @@
     text-decoration: none;
     color: #ebf5fc;
 }
+
 .accountMenu {
     margin: 0;
     background: rgba(0, 0, 0, 0.3);

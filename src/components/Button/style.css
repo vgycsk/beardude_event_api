@@ -42,6 +42,10 @@ button {
 .bigIcon:visited {
     color: #ebf5fc;
 }
+.bigIcon:hover {
+    color: #158fe2;
+    text-decoration: none;
+}
 .bigIconCreate {
     composes: bigIcon;
     font-size: 36px;
