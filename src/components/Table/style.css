@@ -36,7 +36,7 @@
 .tableFt {
   position: absolute;
   left: 0;
-  bottom: 46px;
+  bottom: 45px;
   height: 36px;
   border-top: 1px solid #ccc;
   width: 100%;
@@ -153,8 +153,4 @@ textarea {
 }
 input:disabled, textarea:disabled {
     border-color: #fff;
-}
-
-.right {
-  float: right;
 }

@@ -3,7 +3,7 @@ import Button from '../Button'
 import css from './style.css'
 
 const renderList = ({selectedIndex, index, handleSelect, name}) => <li className={(selectedIndex === index) ? css.selected : css.li} key={'list-' + index}><Button onClick={handleSelect(index)} style='list' text={name} /></li>
-const renderFt = ({inEdit, handleSubmit, handleEditToggle}) => <span>{inEdit ? <Button style='listFt' onClick={handleSubmit} text='儲存' /> : <Button style='listFtDisabled' text='儲存' />}<span className={css.right}><Button style='listFt' onClick={handleEditToggle} text='取消' /></span></span>
+const renderFt = ({inEdit, handleSubmit, handleEditToggle}) => <span>{inEdit ? <Button style='listFt' onClick={handleSubmit} text='儲存' /> : <Button style='listFtDisabled' text='儲存' />}<Button style='listFtRight' onClick={handleEditToggle} text='取消' /></span>
 const renderFtReadOnly = ({handleEditToggle}) => <Button style='listFt' onClick={handleEditToggle} text='編輯' />
 
 const Table = ({ list, selectedIndex, editBody, inEdit, listNameFunc, readOnly, handleSelect, handleCreate, handleEditToggle, handleSubmit}) => (<div className={css.body}>
