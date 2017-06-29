@@ -70,11 +70,13 @@ export default class Racer extends BaseComponent {
     this.setState({ readOnly: true })
   }
   componentDidMount () {
-    this.dispatch(actionCreators.getRacers())
+    if (!this.props.racer.racers) {
+      this.dispatch(actionCreators.getRacers())
+    }
   }
   render () {
     const store = this.props.racer
-    const editBd = (store.racers[store.selectedIndex]) ? [
+    const editBd = (store.racers && store.selectedIndex > -1 && store.racers[store.selectedIndex]) ? [
       render.section({ heading: '身份', inputs: returnBasicInputs(store, this.handleInput), key: 'sec-0' }),
       render.section({ heading: '更改密碼', inputs: returnPasswordInputs(store, this.handleInput), key: 'sec-1' }),
       render.section({ heading: '聯絡地址', inputs: returnAddressInputs(store, this.handleInput), key: 'sec-2' }),

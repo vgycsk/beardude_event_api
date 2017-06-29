@@ -7,7 +7,7 @@ const renderFt = ({inEdit, handleSubmit, handleEditToggle}) => <span>{inEdit ? <
 const renderFtReadOnly = ({handleEditToggle}) => <Button style='listFt' onClick={handleEditToggle} text='編輯' />
 
 const Table = ({ list, selectedIndex, editBody, inEdit, listNameFunc, readOnly, handleSelect, handleCreate, handleEditToggle, handleSubmit}) => (<div className={css.body}>
-  <div className={css.list}>{ (list.length > 0) && 
+  <div className={css.list}>{ (list && list.length > 0) &&
     <div className={css.table}>
       <div className={css.tableBd}>
         <div className={css.content}>

@@ -76,7 +76,7 @@ export const actionCreators = {
 const initialState = {
   selectedIndex: -1,
   inEdit: undefined, // keep new and modified racer info
-  racers: []
+  racers: undefined
 }
 const reducer = (state = initialState, action) => {
   const {type, payload, error} = action

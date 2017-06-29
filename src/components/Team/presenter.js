@@ -17,7 +17,7 @@ const returnInputs = (store, onChange) => [
   { label: '網址', field: 'url', onChange: onChange('url'), value: valueFunc(store, 'url') }
 ]
 const render = {
-  inputSection: ({store, inputFunc}) => <section key='sec-input'><h3>隊伍資料</h3><ul>{store.teams[store.selectedIndex] && returnInputs(store, inputFunc).map(input =>  render.item({ ...input })) }</ul></section>,
+  inputSection: ({store, inputFunc}) => <section key='sec-input'><h3>隊伍資料</h3><ul>{returnInputs(store, inputFunc).map(input =>  render.item({ ...input }))}</ul></section>,
   memberSection: ({store, inputFunc, deleteFunc}) => {
     const team = store.teams[store.selectedIndex]
     const teamRacers = (store.selectedIndex !== -1) ? (store.inEdit && store.inEdit.racers) ? store.inEdit.racers : team.racers : []
@@ -76,17 +76,21 @@ export default class Team extends BaseComponent {
     this.setState({ readOnly: true })
   }
   componentDidMount () {
-    this.dispatch(actionCreators.getTeams())
-    this.dispatch(racerActionCreators.getRacers())
+    if (!this.props.team.teams) {
+      this.dispatch(actionCreators.getTeams())
+    }
+    if (!this.props.racer.racers) {
+      this.dispatch(racerActionCreators.getRacers())
+    }
   }
   render () {
     const store = this.props.team
     const newMemberSection = (!this.state.readOnly) ? render.newMemberSection({racers: this.props.racer.racers, addFunc: this.handleAddRacer}) : ''
-    const editBd = [
+    const editBd = (store.teams && store.selectedIndex > -1 && store.teams[store.selectedIndex]) ? [
       render.inputSection({store, inputFunc: this.handleInput}),
       render.memberSection({store, inputFunc: this.handleInput, deleteFunc: this.handleRemoveRacer}),
       newMemberSection
-    ]
+    ] : []
 
     return (<div><Header location={this.props.location} nav='base' /><div className={css.mainBody}>
       <Table list={store.teams} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={this.props.team.inEdit ? true : false} readOnly={this.state.readOnly} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} handleCreate={this.handleCreate} />
