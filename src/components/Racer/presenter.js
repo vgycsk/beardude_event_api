@@ -81,6 +81,6 @@ export default class Racer extends BaseComponent {
       render.section({ heading: '所屬車隊', inputs: returnTeamInputs(store.racers[store.selectedIndex]), key: 'sec-3' })
     ] : []
 
-    return (<div><Header location={this.props.location} /><div className={css.mainBody}><Table list={store.racers} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={(this.props.racer.inEdit ? true : false)} readOnly={this.state.readOnly} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleCreate={this.handleCreate} /></div></div>)
+    return (<div><Header location={this.props.location} nav='base' /><div className={css.mainBody}><Table list={store.racers} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={(this.props.racer.inEdit ? true : false)} readOnly={this.state.readOnly} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleCreate={this.handleCreate} /></div></div>)
   }
 }

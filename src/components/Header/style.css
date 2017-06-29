@@ -33,7 +33,7 @@
     display: inline-block;
     height: 45px;
     line-height: 45px;
-    margin: 0 20px;
+    margin: 0 12px;
     vertical-align: top;
 }
 .navContainer {
@@ -62,15 +62,16 @@
     color: #ebf5fc;
     text-decoration: none;
     font-size: 15px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: solid 1px transparent;
 }
 .navActive {
     compose: nav;
-    padding: 4px 12px;
     color: #fff;
     font-weight: 700;
-    border-radius: 6px;
     background: rgba(221, 221, 221, 0.48);
-    border: solid 1px #fff;
+    border-color: #fff;
 }
 .navActive:hover {
   color: #eee;

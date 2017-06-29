@@ -88,7 +88,7 @@ export default class Team extends BaseComponent {
       newMemberSection
     ]
 
-    return (<div><Header location={this.props.location} /><div className={css.mainBody}>
+    return (<div><Header location={this.props.location} nav='base' /><div className={css.mainBody}>
       <Table list={store.teams} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={this.props.team.inEdit ? true : false} readOnly={this.state.readOnly} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} handleCreate={this.handleCreate} />
     </div></div>)
   }
