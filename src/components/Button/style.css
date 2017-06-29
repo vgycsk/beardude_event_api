@@ -13,15 +13,9 @@ button {
     background: #158fe2;
 }
 .disabled {
-    background: #b7dbff;
-    border: 0;
-    border-radius: 5px;
-    padding: 8px 24px;
-    font-size: 15px;
-    color: #fff;
-    text-decoration: none;
-    letter-spacing: 1px;
-    background: #158fe2;
+    composes: regular;
+    background: #ddd;
+    color: #aaa;
 }
 .bigIcon {
     position: relative;
