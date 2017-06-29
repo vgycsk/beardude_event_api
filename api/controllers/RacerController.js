@@ -180,7 +180,6 @@ module.exports = {
             var result = modelData;
 
             delete result.password;
-            console.log('result: ', result);
             return res.ok({
               racer: result
             });
