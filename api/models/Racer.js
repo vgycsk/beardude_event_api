@@ -13,10 +13,6 @@ module.exports = {
         team: {
             model: 'Team'
         },
-        //申請轉隊
-        teamApplication: {
-            model: 'Team'
-        },
 
         email: {
             type: 'email',
