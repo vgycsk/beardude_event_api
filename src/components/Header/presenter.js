@@ -8,7 +8,8 @@ const navs = {
   base: [
     { name: '活動', url: '/console' },
     { name: '選手', url: '/console/racer' },
-    { name: '隊伍', url: '/console/team' }
+    { name: '隊伍', url: '/console/team' },
+    { name: '管理員', url: '/console/manager' }
   ],
   event: [
     { name: '賽制', url: '/console/event' },
@@ -27,7 +28,7 @@ const renderAccountInfo = (that) => (<div className={css.account}>
 </div>)
 
 const renderNav = (navs) => (<ul className={css.navContainer}>
-  { navs.map(nav => <li key={nav.name}><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url}>{nav.name}</NavLink></li>) }
+  { navs.map(nav => <li key={nav.name}><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url} exact>{nav.name}</NavLink></li>) }
 </ul>)
 
 class Header extends BaseComponent {
@@ -35,10 +36,6 @@ class Header extends BaseComponent {
     super(props)
     this.state = {
       showAccountMenu: false
-    }
-
-    if (this.props.account.isAuthenticated === undefined) {
-      this.props.dispatch(actionCreators.accountInfo())
     }
     this._bind('handleLogout', 'handleToggleAccountMenu')
   }
@@ -60,7 +57,8 @@ class Header extends BaseComponent {
         <div className={css.heading}>
             <h1 className={css.bdlogo}>
               <a href="/console">
-                <span className={css.logoB}>Beardude</span> <span className={css.logoE}>Event</span>
+                <span className={css.logoB}>Beardude</span>
+                <span className={css.logoE}>Event</span>
               </a>
             </h1>
         </div>

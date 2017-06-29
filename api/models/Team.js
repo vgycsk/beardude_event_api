@@ -7,21 +7,18 @@ module.exports = {
             collection: 'Racer',
             via: 'team'
         },
-        racersApplication: {
-            collection: 'Racer',
-            via: 'teamApplication'
-        },
 
         leader: {
             model: 'Racer'
         },
+
         name: {
             type: 'string',
-            required: true
-        },
-        uniqueName: {
-            type: 'string',
+            required: true,
             unique: true
+        },
+        nameCht: {
+            type: 'string'
         },
         description: {
             type: 'string'

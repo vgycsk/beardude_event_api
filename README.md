@@ -43,9 +43,9 @@ Scenarios:
 2.3.2  |       |         |              | 修改隊伍資料    | /team/update    |
 2.3.3  |       |         |              | 新增隊伍       | /team/create    |
 2.3.4  |       |         |              | 刪除隊伍       | /team/delete    |
-2.3.5  |       |         |              |  申請加入隊伍   | /team/apply    |
-2.3.6  |       |         |              | 取消申請加入隊伍 | /team/unapply    |
-2.3.7  |       |         |              | 同意入隊申請    | /team/approveRacer    |
+2.3.5  |       |         |              |  邀請加入隊伍   | /team/invite    |
+2.3.6  |       |         |              | 同意邀請加入隊伍 | /team/acceptInvitation |
+2.3.7  |       |         |              | 新增隊員        | /team/addRacer    |
 2.3.8  |       |         |              | 刪除隊員       | /team/removeRacer    |
 2.4    |       |         |              | 帳號管理        | /racer/*            |
 3.1    |       |  觀眾    | 觀看比賽動態   | 觀看活動內容    | /event/info/:id   |

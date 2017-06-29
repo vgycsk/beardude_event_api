@@ -23,7 +23,8 @@ module.exports.policies = {
         activate: 'isInactive',
         create: 'isActiveManager',
 //        getGeneralInfo: '',
-        getManagementInfo: 'isManagerSelf',
+        getManagers: 'isActiveManager',
+        getManagementInfo: 'isActiveManager',
         login: 'isNotLoggedInManager',
 //        logout: '',
 //        reissuePassword: ''
@@ -51,7 +52,7 @@ module.exports.policies = {
         getRacers: 'isActiveManager',
         getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
         login: 'isNotLoggedInRacer',
-        logout: 'isRacer',
+//        logout: '',
 //        reissuePassword: ''
         update: 'isRacerSelfOrTeamLeaderOrManager',
         updatePassword: 'isRacerSelfOrTeamLeaderOrManager'
@@ -74,6 +75,6 @@ module.exports.policies = {
 //        teamExist: '',
 //        create: '',
 //        getInfo: '',
-        update: 'isRacerSelfOrTeamLeaderOrManager'
+        update: 'isTeamLeaderOrManager'
     }
 };

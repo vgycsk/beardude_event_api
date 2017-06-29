@@ -3,7 +3,7 @@
 .mainHeader {
     height: 45px;
     position: relative;
-    z-index: 10;
+    z-index: 20;
 }
 .heading {
     position: relative;
@@ -25,7 +25,7 @@
     text-decoration: none;
 }
 .logoB, .logoE {
-    padding: 0 0 0 2px;
+    padding: 0 0 0 5px;
 }
 .navContainer,
 .navContainer li {
@@ -33,7 +33,7 @@
     display: inline-block;
     height: 45px;
     line-height: 45px;
-    margin: 0 20px;
+    margin: 0 12px;
     vertical-align: top;
 }
 .navContainer {
@@ -54,19 +54,27 @@
     color: #ebf5fc;
     padding: 0 0 0 15px;
 }
+.navContainer a:hover {
+    color: #158fe2;
+    text-decoration: none;
+}
 .nav {
     color: #ebf5fc;
     text-decoration: none;
     font-size: 15px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: solid 1px transparent;
 }
 .navActive {
     compose: nav;
-    padding: 4px 12px;
     color: #fff;
     font-weight: 700;
-    border-radius: 6px;
     background: rgba(221, 221, 221, 0.48);
-    border: solid 1px #fff;
+    border-color: #fff;
+}
+.navActive:hover {
+  color: #eee;
 }
 .account {
     position: relative;
@@ -84,6 +92,10 @@
     padding: 1px 25px 0 0;
     color: #ebf5fc;
     cursor: pointer;
+}
+.accountLink:hover {
+    color: #158fe2;
+    text-decoration: none;
 }
 .accountLink:before {
     position: absolute;
@@ -116,6 +128,7 @@
     text-decoration: none;
     color: #ebf5fc;
 }
+
 .accountMenu {
     margin: 0;
     background: rgba(0, 0, 0, 0.3);

@@ -32,7 +32,7 @@ module.exports = {
         Manager.findOne({
             id: req.params.id
         })
-        .populate('events')
+//        .populate('events')
         .then(function (modelData) {
             return res.ok({
               manager: {
@@ -46,6 +46,21 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    getManagers: function (req, res) {
+        Manager.find({})
+        .then(function (modelData) {
+            var result = modelData.map(function (obj) {
+                return obj.toJSON();
+            });
+
+            return res.ok({
+                managers: result
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     // Get complete account info
     getManagementInfo: function (req, res) {
         Manager.findOne({
@@ -53,11 +68,8 @@ module.exports = {
         })
 //        .populate('events')
         .then(function (modelData) {
-            var result = modelData;
-
-            delete result.password;
             return res.ok({
-              manager: result
+              manager: modelData.toJSON()
             });
         })
         .catch(function (E) {
@@ -111,7 +123,7 @@ module.exports = {
         var input = req.body;
         var updateObj = {};
         var resultObj;
-        var fields = ['email', 'phone', 'firstName', 'lastName', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive'];
+        var fields = ['email', 'phone', 'firstName', 'lastName', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive'];
 
         Manager.findOne({
             id: parseInt(input.id)
@@ -129,6 +141,11 @@ module.exports = {
                   toUpdate = true;
               }
             });
+            if (toUpdate) {
+                return Manager.update({
+                    id: input.id
+                }, updateObj);
+            }
             return false;
         })
         .then(function (modelData) {
@@ -137,11 +154,8 @@ module.exports = {
             });
         })
         .then(function (modelData) {
-            var result = modelData;
-
-            delete result.password;
             return res.ok({
-              manager: result
+              manager: modelData.toJSON()
             });
         })
         .catch(function (E) {

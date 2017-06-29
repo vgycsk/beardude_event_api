@@ -13,10 +13,6 @@ module.exports = {
         team: {
             model: 'Team'
         },
-        //申請轉隊
-        teamApplication: {
-            model: 'Team'
-        },
 
         email: {
             type: 'email',
@@ -74,6 +70,14 @@ module.exports = {
         isActive: {
             type: 'boolean',
             required: true
+        },
+        toJSON: function () {
+            var obj = this.toObject();
+
+            delete obj.password;
+            delete obj.createdAt;
+            delete obj.updatedAt;
+            return obj;
         }
     },
     beforeCreate: function (values, callback) {
