@@ -56,7 +56,8 @@ class Header extends BaseComponent {
         <div className={css.heading}>
             <h1 className={css.bdlogo}>
               <a href="/console">
-                <span className={css.logoB}>Beardude</span> <span className={css.logoE}>Event</span>
+                <span className={css.logoB}>Beardude</span>
+                <span className={css.logoE}>Event</span>
               </a>
             </h1>
         </div>
