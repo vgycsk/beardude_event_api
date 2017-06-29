@@ -7,46 +7,39 @@ import Button from '../Button'
 import Table from '../Table'
 import css from './style.css'
 
-const returnInputs = (store, onChange) => {
-  const valueFunc = (store, field) => (store.inEdit && store.inEdit[field] !== undefined) ? store.inEdit[field] : store.teams[store.selectedIndex][field]
-  return [
-    { label: '名稱', field: 'name', onChange: onChange('name'), value: valueFunc(store, 'name') },
-    { label: '中文名稱', field: 'nameCht', onChange: onChange('nameCht'), value: valueFunc(store, 'nameCht') },
-    { label: '描述', field: 'description', type: 'textarea', onChange: onChange('description'), value: valueFunc(store, 'description') },
-    { label: '網址', field: 'url', onChange: onChange('url'), value: valueFunc(store, 'url') }
-  ]
-}
+const valueFunc = (store, field) => (store.inEdit && store.inEdit[field] !== undefined) ? store.inEdit[field] : store.teams[store.selectedIndex][field]
 const listNameFunc = (team) => (team.id) ? ((team.nameCht && team.nameCht !== '') ? team.nameCht : team.name) : '新增'
+const returnInputs = (store, onChange) => [
+  { label: '名稱', field: 'name', onChange: onChange('name'), value: valueFunc(store, 'name') },
+  { label: '中文名稱', field: 'nameCht', onChange: onChange('nameCht'), value: valueFunc(store, 'nameCht') },
+  { label: '描述', field: 'description', type: 'textarea', onChange: onChange('description'), value: valueFunc(store, 'description') },
+  { label: '網址', field: 'url', onChange: onChange('url'), value: valueFunc(store, 'url') }
+]
 const render = {
-  inputSection: ({store, inputFunc}) => <section><h3>隊伍資料</h3><ul>{store.teams[store.selectedIndex] && returnInputs(store, inputFunc).map(input =>  render.item({ ...input })) }</ul></section>,
+  inputSection: ({store, inputFunc}) => <section key='sec-input'><h3>隊伍資料</h3><ul>{store.teams[store.selectedIndex] && returnInputs(store, inputFunc).map(input =>  render.item({ ...input })) }</ul></section>,
   memberSection: ({store, inputFunc, deleteFunc}) => {
     const team = store.teams[store.selectedIndex]
     const teamRacers = (store.selectedIndex !== -1) ? (store.inEdit && store.inEdit.racers) ? store.inEdit.racers : team.racers : []
-    return (<section><h3>成員</h3><table><thead><tr><th>姓名</th><th>隊長</th><th className={css.ctrl}></th></tr></thead>
+    return (<section key='sec-member'><h3>成員</h3><table><thead><tr><th>姓名</th><th>隊長</th><th className={css.ctrl}></th></tr></thead>
       <tbody>{teamRacers && teamRacers.map(racer => render.tableItem({ racer: racer, leader: (store.inEdit && store.inEdit.leader !== undefined) ? store.inEdit.leader : team.leader, onChange: inputFunc, onDelete: deleteFunc }))}</tbody></table></section>)
   },
-  newMemberSection: ({racers, addFunc}) => <section><h3>新增隊員</h3><div className={css.addList}><ul>{ (racers.length > 0) && racers.map(racer => { if (!racer.team) {return render.newMemberOption({racer, onClick: addFunc})}} )}</ul></div></section>,
+  newMemberSection: ({racers, addFunc}) => <section key='sec-newMember'><h3>新增隊員</h3><div className={css.addList}><ul>{ (racers.length > 0) && racers.map(racer => { if (!racer.team) {return render.newMemberOption({racer, onClick: addFunc})}} )}</ul></div></section>,
   input: {
     text: ({disabled, onChange, value}) => {return <input type='text' onChange={onChange} value={value} disabled={disabled} />},
     textarea: ({disabled, onChange, value}) => {return <textarea onChange={onChange} value={value} disabled={disabled} />}
   },
-  item: ({className = css.row, disabled, label, field, onChange, type = 'text', value}) => { return <li key={field}><label>{label}</label>{ render.input[type]({disabled, onChange, value}) }</li> },
-  tableItem: ({racer, leader, onChange, onDelete}) => { return (<tr key={'item-' + racer.id}>
+  item: ({disabled, label, field, onChange, type = 'text', value}) => { return <li key={field}><label>{label}</label>{ render.input[type]({disabled, onChange, value}) }</li> },
+  tableItem: ({racer, leader, onChange, onDelete}) => (<tr key={'item-' + racer.id}>
     <td>{racer.lastName + racer.firstName}</td>
-    <td className={css.center}>
-      <input onChange={onChange('leader')} type='radio' value={racer.id} checked={(leader === racer.id) ? 'checked' : ''} /></td>
+    <td className={css.center}><input onChange={onChange('leader')} type='radio' value={racer.id} checked={(leader === racer.id) ? 'checked' : ''} /></td>
     <td className={css.ctrl}>{(racer.toAdd || (racer.id !== leader && !racer.toRemove)) && <Button onClick={onDelete(racer.id)} text='刪除' />}
-        {(!racer.toAdd && racer.toRemove) && <Button onClick={onDelete(racer.id, true)} text='還原' />}
+      {(!racer.toAdd && racer.toRemove) && <Button onClick={onDelete(racer.id, true)} text='還原' />}
     </td>
-  </tr>)},
+  </tr>),
   newMemberOption: ({racer, onClick}) => <li key={'racerOption-' + racer.id}><Button text={racer.lastName + ' ' + racer.firstName} onClick={onClick(racer)} /></li>,
-  ft: (that) => { return (<span>{ (that.props.team.inEdit)
-    ? <Button style='listFt' onClick={that.handleSubmit} text='儲存' /> : <Button style='listFtDisabled' text='儲存' /> }
-    <span className={css.right}><Button style='listFt' onClick={that.handleEditToggle} text='取消' /></span></span>)
-  },
-  ftReadOnly: (that) => { return <Button style='listFt' onClick={that.handleEditToggle} text='編輯' /> }
+  ft: (that) => <span>{that.props.team.inEdit ? <Button style='listFt' onClick={that.handleSubmit} text='儲存' /> : <Button style='listFtDisabled' text='儲存' />}<span className={css.right}><Button style='listFt' onClick={that.handleEditToggle} text='取消' /></span></span>,
+  ftReadOnly: (that) => <Button style='listFt' onClick={that.handleEditToggle} text='編輯' />
 }
-
 class Team extends BaseComponent {
   constructor (props) {
     super(props)
@@ -92,14 +85,16 @@ class Team extends BaseComponent {
   }
   render () {
     const store = this.props.team
-    const editBd = (<div className={this.state.readOnly ? css.readOnly : css.content}>
-      {render.inputSection({store, inputFunc: this.handleInput})}
-      {render.memberSection({store, inputFunc: this.handleInput, deleteFunc: this.handleRemoveRacer})}
-      {!this.state.readOnly && render.newMemberSection({racers: this.props.racer.racers, addFunc: this.handleAddRacer})}
-    </div>)
+    const editBd = [
+      render.inputSection({store, inputFunc: this.handleInput}),
+      render.memberSection({store, inputFunc: this.handleInput, deleteFunc: this.handleRemoveRacer}),
+      (!this.state.readOnly) ? render.newMemberSection({racers: this.props.racer.racers, addFunc: this.handleAddRacer}) : ''
+    ]
     const editFt = (this.state.readOnly) ? render.ftReadOnly(this) : render.ft(this)
 
-    return (<div><Header location={this.props.location} /><div className={css.mainBody}><Table list={store.teams} selectedIndex={store.selectedIndex} editBody={editBd} editFt={editFt} listNameFunc={listNameFunc} selectFunc={this.handleSelect} createFunc={this.handleCreate} /></div></div>)
+    return (<div><Header location={this.props.location} /><div className={css.mainBody}>
+      <Table list={store.teams} selectedIndex={store.selectedIndex} editBody={editBd} readOnly={this.state.readOnly} editFt={editFt} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleCreate={this.handleCreate} />
+    </div></div>)
   }
 }
 

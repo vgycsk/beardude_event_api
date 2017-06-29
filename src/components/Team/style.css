@@ -13,32 +13,6 @@
   float: right;
 }
 
-.content {
-  position: relative;
-  overflow-x: hidden;
-  padding: 0 0 90px 0;
-}
-.readOnly {
-  composes: content;
-}
-.readOnly:before {
-  position: absolute;
-  display: block;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  content: " ";
-  z-index: 10;
-}
-.readOnly input[type=text],
-.readOnly input[type=password],
-.readOnly textarea {
-  border-color: #fff;
-}
-.readOnly .ctrl {
-  display: none;
-}
 .addList {
   margin: 0 0 0 100px;
 }
