@@ -51,7 +51,7 @@ module.exports.policies = {
         getRacers: 'isActiveManager',
         getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
         login: 'isNotLoggedInRacer',
-        logout: 'isRacer',
+//        logout: '',
 //        reissuePassword: ''
         update: 'isRacerSelfOrTeamLeaderOrManager',
         updatePassword: 'isRacerSelfOrTeamLeaderOrManager'
