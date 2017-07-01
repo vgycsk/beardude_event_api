@@ -28,7 +28,7 @@ ReactDOM.render(
         <Switch>
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
-          <Route path='/console/event/set:id' component={NotFound} />
+          <Route path='/console/event/:id' component={EventManager} />
           <Route path='/console/RFID' component={Admin} />
           <Route path='/console/eventMatch' component={NotFound} />
           <Route path='/console/racer' component={Racer} />

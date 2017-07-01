@@ -24,10 +24,11 @@ export const actionCreators = {
       type: GET_SELECTED_EVENT,
       payload: {
         selectedEvent: {
-          title: 'new event',
-          regDate: '2017-6-30',
-          startDate: '2017-6-30',
-          endDate: '2017-6-30',
+          activity: '夜市繞繞賽但是不烙賽',
+          eventName: 'new event',
+          regDate: '2017-06-30',
+          openDate: '2017-06-30',
+          endDate: '2017-06-30',
           group: [
             {
               id: 'event-group-random',
