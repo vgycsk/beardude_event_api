@@ -55,9 +55,9 @@
 }
 
 .managerList {
+  position: relative;
   display: flex;
   flex-direction: row;
-
   margin: 0 16px 32px;
   border-left: solid 6px RGBA(66, 66, 66, 0.8);
   padding: 0 16px;
@@ -91,7 +91,7 @@
 }
 
 .managerList li {
-  display: block;
+  display: flex;
   padding: 16px 16px;
   color: #fff;
   margin-right: 8px;
@@ -99,6 +99,66 @@
   cursor: pointer;
 }
 
-.managerList li:hover {
+.itemExpand {
+  flex: 1 1 128px;
+}
+
+.redTxt {
+  color: #fa1229;
+}
+
+.managerList li:active {
   background: RGBA(243, 243, 243, 0.4);
+}
+
+.editPanel {
+  position: absolute;
+  bottom: 0;
+  display: inline-flex;
+  background: RGBA(255, 255, 255, 0.6);
+  border-radius: 2px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.editPanel input {
+  max-width: 360px;
+}
+
+.editPanel > div {
+  margin: 12px 6px;
+}
+
+.editPanel > div > div {
+  margin: 6px 0;
+}
+
+.editPanel > div > div > span {
+  display: inline-block;
+  padding: 6px 12px;
+  text-align: center;
+  background: RGBA(255, 255, 255, 0.6);
+  color: #333;
+  border: solid 1px #fff;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.editPanel > span {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  background: RGBA(255, 255, 255, 0.6);
+  color: #333;
+  border: solid 1px #fff;
+  border-radius: 4px;
+}
+
+.hidden,
+[hidden] {
+    display: none !important;
 }

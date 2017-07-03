@@ -31,7 +31,7 @@ export const actionCreators = {
           endDate: '2017-06-30',
           group: [
             {
-              id: 'event-group-random',
+              id: '00001',
               title: '公路車男子',
               maxCount: 180,
               count: 160,
@@ -63,7 +63,7 @@ export const actionCreators = {
               ]
             },
             {
-              id: 'event-group-random',
+              id: '00002',
               title: '公路車女子',
               maxCount: 180,
               count: 160,
@@ -95,7 +95,7 @@ export const actionCreators = {
               ]
             },
             {
-              id: 'event-group-random',
+              id: '00003',
               title: '場地車',
               maxCount: 180,
               count: 160,
