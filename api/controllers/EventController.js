@@ -54,7 +54,9 @@ module.exports = {
 //        .populate('managers')
         .populate('groups')
         .then(function (modelData) {
-            return res.ok(modelData);
+            return res.ok({
+              event: modelData
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
