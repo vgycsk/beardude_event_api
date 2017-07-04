@@ -21,7 +21,7 @@ export const actionCreators = {
     }
   },
   input: (field, value) => (dispatch) => {
-    dispatch({type: ENTER_CREDENTIALS, payload: {field, value}})  
+    dispatch({type: ENTER_CREDENTIALS, payload: {field, value}})
   },
   login: () => async (dispatch, getState) => {
     let credentials = getState().account.credentials

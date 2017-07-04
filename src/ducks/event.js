@@ -1,7 +1,6 @@
-import { browserHistory } from 'react-router'
-
 // types
 const GET_EVENTS = 'event/GET_EVENTS'
+const GET_SELECTED_EVENT = 'event/GET_SELECTED_EVENT'
 const EVENT_ERR = 'event/EVENT_ERR'
 
 // actions
@@ -17,7 +16,123 @@ export const actionCreators = {
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
     }
+  },
+  getSelectedEvent: (id) => {
+    console.log(id)
+    return id === 'new'
+    ? {
+      type: GET_SELECTED_EVENT,
+      payload: {
+        selectedEvent: {
+          activity: '夜市繞繞賽但是不烙賽',
+          eventName: 'new event',
+          regDate: '2017-06-30',
+          openDate: '2017-06-30',
+          endDate: '2017-06-30',
+          group: [
+            {
+              id: '00001',
+              title: '公路車男子',
+              maxCount: 180,
+              count: 160,
+              subGroup: [
+                {
+                  id: '12321434',
+                  title: '資格賽-1',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '資格賽-2',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '排位賽',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '決賽',
+                  maxCount: 80,
+                  count: 60
+                }
+              ]
+            },
+            {
+              id: '00002',
+              title: '公路車女子',
+              maxCount: 180,
+              count: 160,
+              subGroup: [
+                {
+                  id: '12321434',
+                  title: '資格賽-1',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '資格賽-2',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '排位賽',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '決賽',
+                  maxCount: 80,
+                  count: 60
+                }
+              ]
+            },
+            {
+              id: '00003',
+              title: '場地車',
+              maxCount: 180,
+              count: 160,
+              subGroup: [
+                {
+                  id: '12321434',
+                  title: '資格賽-1',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '資格賽-2',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '排位賽',
+                  maxCount: 80,
+                  count: 60
+                },
+                {
+                  id: '12321434',
+                  title: '決賽',
+                  maxCount: 80,
+                  count: 60
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+    : {}
   }
+
 }
 
 // reducers
@@ -31,6 +146,9 @@ export const reducer = (state = initialState, action) => {
   switch (type) {
     case GET_EVENTS: {
       return {...state, events: payload.events}
+    }
+    case GET_SELECTED_EVENT: {
+      return {...state, selectedEvent: payload.selectedEvent, error: payload.error}
     }
     case EVENT_ERR: {
       return {...state, error: payload.error}

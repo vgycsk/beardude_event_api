@@ -7,6 +7,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "bcrypt-nodejs": "0.0.3",
+    "classnames": "^2.2.5",
     "ejs": "2.3.4",
     "history": "^4.6.1",
     "moment": "2.18.1",
@@ -54,13 +55,13 @@
     "postcss-loader": "^2.0.5",
     "sails-mock-models": "*",
     "sinon": "*",
+    "standard": "^10.0.2",
     "url-loader": "0.5.9",
     "webpack": "^2.6.1",
     "webpack-chunk-hash": "^0.4.0",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-manifest-plugin": "^1.1.0",
-    "whatwg-fetch": "2.0.3",
-    "standard": "^10.0.2"
+    "whatwg-fetch": "2.0.3"
   },
   "scripts": {
     "coverage": "./scripts/coverage.sh",

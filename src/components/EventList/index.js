@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
-import Event from './presenter'
+import EventList from './presenter'
 
 const mapStateToProps = (state) => ({
   event: state.event
 })
 
-export default connect(mapStateToProps)(Event)
+export default connect(mapStateToProps)(EventList)

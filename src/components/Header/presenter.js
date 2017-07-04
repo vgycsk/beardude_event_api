@@ -15,7 +15,7 @@ const navs = {
     { name: '賽制', url: '/console/event' },
     { name: 'RFID 操作', url: '/console/RFID' },
     { name: '賽制操作', url: '/console/eventMatch' },
-    { name: 'Stream', url: '/console/stream'}
+    { name: 'Stream', url: '/console/stream' }
   ]
 }
 

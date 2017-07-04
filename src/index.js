@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Stream from './components/Stream/'
 import Admin from './components/Admin/presenter'
 import EventList from './components/EventList'
+import EventManager from './components/EventManager'
 import Account from './components/Account'
 import Racer from './components/Racer'
 import Team from './components/Team'
@@ -27,7 +28,7 @@ ReactDOM.render(
         <Switch>
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
-          <Route path='/console/event/set:id' component={NotFound} />
+          <Route path='/console/event/:id' component={EventManager} />
           <Route path='/console/RFID' component={Admin} />
           <Route path='/console/eventMatch' component={NotFound} />
           <Route path='/console/racer' component={Racer} />

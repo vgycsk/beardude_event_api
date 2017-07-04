@@ -1,0 +1,164 @@
+.loading {
+  font-size: 24px;
+  font-weight: 100;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 200px auto;
+}
+
+.info {
+  margin: 48px 16px;
+  border-left: solid 6px RGBA(66, 66, 66, 0.8);
+  padding: 0 16px;
+  color: #E0E4E9;
+}
+
+.info div {
+  margin-bottom: 4px;
+}
+
+.info div:nth-last-child(1) {
+  margin: 0;
+}
+
+.info input {
+  border: 0px;
+  border-bottom: solid 1px #E0E4E9;
+  background: RGBA(66, 66, 66, 0.2);
+  color: #fff;
+  font-size: 18px;
+  margin-left: 8px;
+  outline: none;
+  margin-right: 8px;
+  padding: 4px 8px;
+}
+
+.actTitle {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 18px;
+}
+
+.actTitle span {
+  font-size: 14px;
+  opacity: .8;
+  color: #E0E4E9;
+}
+
+.actTitle .name::before {
+  content: "\00a0 \00a0";
+}
+
+.actTitle .name {
+  font-size: 18px;
+  color: #fff;
+}
+
+.managerList {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  margin: 0 16px 32px;
+  border-left: solid 6px RGBA(66, 66, 66, 0.8);
+  padding: 0 16px;
+  color: #E0E4E9;
+  font-size: 14px;
+}
+
+.managerList > div:nth-child(1) {
+  flex: 1 1 auto;
+}
+
+.managerList > div:nth-child(2) {
+  flex: 1 1 auto;
+}
+
+.managerList > div:nth-child(3) {
+  flex: 2 1 260px;
+}
+
+.head {
+  display: block;
+  background: RGBA(66, 66, 66, 0.8);
+  color: #E0E4E9;
+  margin-right: 8px;
+  padding: 8px 16px;
+}
+
+.managerList ul {
+  height: 320px;
+  overflow-y: scroll;
+}
+
+.managerList li {
+  display: flex;
+  padding: 16px 16px;
+  color: #fff;
+  margin-right: 8px;
+  border-bottom: solid 1px RGBA(66, 66, 66, 0.8);
+  cursor: pointer;
+}
+
+.itemExpand {
+  flex: 1 1 128px;
+}
+
+.redTxt {
+  color: #fa1229;
+}
+
+.managerList li:active {
+  background: RGBA(243, 243, 243, 0.4);
+}
+
+.editPanel {
+  position: absolute;
+  bottom: 0;
+  display: inline-flex;
+  background: RGBA(255, 255, 255, 0.6);
+  border-radius: 2px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.editPanel input {
+  max-width: 360px;
+}
+
+.editPanel > div {
+  margin: 12px 6px;
+}
+
+.editPanel > div > div {
+  margin: 6px 0;
+}
+
+.editPanel > div > div > span {
+  display: inline-block;
+  padding: 6px 12px;
+  text-align: center;
+  background: RGBA(255, 255, 255, 0.6);
+  color: #333;
+  border: solid 1px #fff;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.editPanel > span {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  background: RGBA(255, 255, 255, 0.6);
+  color: #333;
+  border: solid 1px #fff;
+  border-radius: 4px;
+}
+
+.hidden,
+[hidden] {
+    display: none !important;
+}
