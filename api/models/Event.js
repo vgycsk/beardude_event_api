@@ -21,6 +21,7 @@ module.exports = {
             type: 'string',
             required: true
         },
+        // 選手背號
         assignedRaceNumber: {
             type: 'integer',
             defaultsTo: 1

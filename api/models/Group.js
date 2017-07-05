@@ -30,6 +30,9 @@ module.exports = {
         // [{racer: ID, time: mm:ss}, {}, {}...]
         result: {
             type: 'array'
+        },
+        racerNumberAllowed: {
+            type: 'integer'
         }
     }
 };
