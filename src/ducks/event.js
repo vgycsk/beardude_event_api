@@ -17,20 +17,25 @@ export const actionCreators = {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
     }
   },
-  getSelectedEvent: (id) => {
-    console.log(id)
-    return id === 'new'
-    ? {
-      type: GET_SELECTED_EVENT,
-      payload: {}
+  getSelectedEvent: (id) => async (dispatch, getState) => {
+    const store = getState().event.selectedEvent
+
+    try {
+      const response = await fetch('/api/event/info/' + id, {credentials: 'same-origin'})
+      const res = await response.json()
+      if (response.status === 200) {
+        return dispatch({type: GET_SELECTED_EVENT, payload: {...res}})
+      }
+      throw res.message
+    } catch (e) {
+      dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
     }
-    : {}
   }
 }
 
 // reducers
 const initialState = {
-  selectedEvent: {},
+  selectedEvent: undefined,
   events: []
 }
 export const reducer = (state = initialState, action) => {
@@ -41,7 +46,7 @@ export const reducer = (state = initialState, action) => {
       return {...state, events: payload.events}
     }
     case GET_SELECTED_EVENT: {
-      return {...state, selectedEvent: payload.selectedEvent, error: payload.error}
+      return {...state, selectedEvent: payload.event}
     }
     case EVENT_ERR: {
       return {...state, error: payload.error}
