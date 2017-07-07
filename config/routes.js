@@ -9,27 +9,24 @@ module.exports.routes = {
     'get  /api/event/info/:id': 'EventController.getGeneralInfo',
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
-    // 1.3
-//    'post /api/event/managers/add': 'EventController.addManagers',
-    // 1.3
-//    'post /api/event/managers/remove': 'EventController.removeManagers',
-
-    'get  /api/event/getGroupsAndRacersOfEvent/:id': 'EventController.getGroupsAndRacersOfEvent',
-
-    // 1.2.7 -
+    // 1.2.7 -, 1.2.10 -
     'post /api/event/update': 'EventController.update',
-    // 1.2.10 -
-    'post /api/event/updateSwitch': 'EventController.updateSwitch',
     // 4.2.3
     'post /api/event/assignTesterRfid': 'EventController.assignTesterRfid',
     // 1.6
     'get  /api/event/delete/:id': 'EventController.delete',
+    // 1.3
+//    'post /api/event/managers/add': 'EventController.addManagers',
+    // 1.3
+//    'post /api/event/managers/remove': 'EventController.removeManagers',
 
     // Group
     // 1.2.1
     'post /api/group/create': 'GroupController.create',
     // 3.2, 3.3, 3.4, 5.2.*
     'get  /api/group/info/:id': 'GroupController.getInfo',
+    'get  /api/group/mgmtInfo/:id': 'GroupController.getManagementInfo',
+
     // 1.2.2
     'post /api/group/update': 'GroupController.update',
     // 1.2.3

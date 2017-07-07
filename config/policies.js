@@ -3,14 +3,14 @@
 module.exports.policies = {
     EventController: {
         create: 'isActiveManager',
-        getEvents: 'isActiveManager',
 //        getGeneralInfo: '',
+        getEvents: 'isActiveManager',
 //        addManagers: 'isActiveManager',
 //        removeManagers: 'isActiveManager',
         getGroupsAndRacersOfEvent: 'isActiveManager',
         update: 'isActiveManager',
-        updateSwitch: 'isActiveManager',
-        assignTesterRfid: 'isActiveManager'
+        assignTesterRfid: 'isActiveManager',
+        delete: 'isActiveManager'
     },
     GroupController: {
         create: 'isActiveManager',

@@ -61,6 +61,9 @@ module.exports = {
         testerEpc: {
             type: 'array',
             defaultsTo: []
+        },
+        toJSON: function () {
+            return this.toObject();
         }
     }
 };
