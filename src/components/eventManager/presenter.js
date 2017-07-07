@@ -5,8 +5,11 @@ import { actionCreators } from '../../ducks/event'
 
 import css from './style.css'
 import { Dialogue } from '../Dialogue/presenter'
+import Button from '../Button'
 import Header from '../Header'
 import Footer from '../Footer'
+
+const valueFunc = (state, store, field) => (state && state[field] !== undefined) ? state[field] : store[field]
 
 const GroupList = ({groups, name, dragStart, dragOver, dragEnd, deleteHandler}) =>
   <ul>
@@ -18,31 +21,35 @@ const returnDateTime = (timestamp) => {
   const t = new Date(timestamp + 28800000) // taipei diff
   return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + 'T' + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2)
 }
-const returnTimestamp = (dateTime) => new Date(dateTime).getTime()
 
 export class EventManager extends BaseComponent {
   constructor (props) {
     super(props)
     console.log(this.props)
     this.state = {
+      inEdit: undefined,
       editPanel: 0,
       showDialogue: 0,
       dialoguePosHandler: null
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleDateChange', 'editPanelHandler', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler', 'dialogueNagitiveHandler')
+    this._bind('handleInput', 'handleSubmit', 'editPanelHandler', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler', 'dialogueNagitiveHandler')
   }
   componentDidMount () {
     this.dispatch(actionCreators.getSelectedEvent(this.props.match.params.id || 'new'))
   }
-  handleDateChange (name) { return (e) => {
-    console.log('name: ', name)
-    console.log(name + E.currentTarget.value)
+  handleInput (field) { return (e) => {
+    let value = (e.target.value === 'true' || e.target.value === 'false') ? (e.target.value === 'true' ? false : true) : e.target.value
+    const stateObj = { inEdit: (this.state.inEdit) ? this.state.inEdit : { id: this.props.selectedEvent.id } }
+
+// let server handle this
+//    if (field === 'startTime' || field === 'endTime') { value = returnTimestamp(value) }
+    stateObj.inEdit[field] = value
+    this.setState(stateObj)
   }}
-  handleInputToggle (field) { return (e) => {
-    const value = (e.target.value === 'true') ? false : true
-//    this.dispatch(actionCreators.input(field, value))
-    console.log('value: ', value)
+  handleSubmit (content) { return (e) => {
+    const onSuccess = () => this.setState({inEdit: undefined})
+    this.dispatch(actionCreators.submit(this.state.inEdit, onSuccess))
   }}
   dragStartHandler (E) {
     console.log(`drag start - ${E.currentTarget.dataset.id}`)
@@ -97,34 +104,36 @@ export class EventManager extends BaseComponent {
       return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div>
     }
     const groups = selectedEvent.groups
-    const { editPanel, showDialogue } = this.state
-
+    const { inEdit, editPanel, showDialogue } = this.state
     return (<div>
       <Header location={location} nav='event' />
       <div className={css.mainBody}>
-        <div className={css.info}>
+        <section>
           <ul>
             <li>
               <label>活動名稱（中）</label>
-              <input type='text' defaultValue={selectedEvent.nameCht} className={css.title} placeholder='event name' maxLength={120} onChange={this.handleDateChange('nameCht')} />
+              <input type='text' value={valueFunc(inEdit, selectedEvent, 'nameCht')} onChange={this.handleInput('nameCht')} />
               <label>名稱（英）</label>
-              <input type='text' defaultValue={selectedEvent.name} className={css.title} placeholder='event name' maxLength={120} onChange={this.handleDateChange('name')} />
+              <input type='text' value={valueFunc(inEdit, selectedEvent, 'name')} onChange={this.handleInput('name')} />
             </li>
             <li>
-              <label>開始時間</label><input type='datetime-local' value={returnDateTime(selectedEvent.startTime)} onChange={this.handleDateChange('startTime')} />
-              <label>結束時間</label><input type='datetime-local' value={returnDateTime(selectedEvent.endTime)} onChange={this.handleDateChange('endTime')} />
+              <label>開始時間</label>
+              <input type='datetime-local' value={(inEdit && inEdit.startTime) ? inEdit.startTime : returnDateTime(selectedEvent.startTime)} onChange={this.handleInput('startTime')} />
+              <label>結束時間</label>
+              <input type='datetime-local' value={(inEdit && inEdit.endTime) ? inEdit.endTime : returnDateTime(selectedEvent.endTime)} onChange={this.handleInput('endTime')} />
             </li>
             <li>
-              <label>公開活動</label><input type='checkbox' checked={selectedEvent.isPublic} value={selectedEvent.isPublic} onChange={this.handleInputToggle('isPublic')} />
+              <label>地點</label>
+              <input type='text' value={valueFunc(inEdit, selectedEvent, 'location')} onChange={this.handleInput('location')} />
             </li>
             <li>
-              <label>開放隊伍報名</label><input type='checkbox' checked={selectedEvent.isTeamRegistrationOpen} value={selectedEvent.isTeamRegistrationOpen} onChange={this.handleInputToggle('isTeamRegistrationOpen')} />
-            </li>
-            <li>
-              <label>開放個人報名</label><input type='checkbox' checked={selectedEvent.isRegistrationOpen} value={selectedEvent.isRegistrationOpen} onChange={this.handleInputToggle('isRegistrationOpen')} />
+              <label>公開活動</label><input type='checkbox' checked={valueFunc(inEdit, selectedEvent, 'isPublic')} value={valueFunc(inEdit, selectedEvent, 'isPublic')} onChange={this.handleInput('isPublic')} />  
+              <label>開放隊伍報名</label><input type='checkbox' checked={valueFunc(inEdit, selectedEvent, 'isTeamRegistrationOpen')} value={valueFunc(inEdit, selectedEvent, 'isTeamRegistrationOpen')} onChange={this.handleInput('isTeamRegistrationOpen')} />  
+              <label>開放個人報名</label><input type='checkbox' checked={valueFunc(inEdit, selectedEvent, 'isRegistrationOpen')} value={valueFunc(inEdit, selectedEvent, 'isRegistrationOpen')} onChange={this.handleInput('isRegistrationOpen')} />
+              <span className={css.right}>{ (inEdit) ? <Button text='儲存' onClick={this.handleSubmit('event')} /> : <Button text='儲存' style='disabled' /> }</span>
             </li>
           </ul>
-        </div>
+        </section>
         <div className={css.managerList}>
           <div>
             <span className={css.head}>組別</span>

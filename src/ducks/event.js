@@ -1,6 +1,8 @@
 // types
 const GET_EVENTS = 'event/GET_EVENTS'
 const GET_SELECTED_EVENT = 'event/GET_SELECTED_EVENT'
+const SUBMIT_EVENT = 'event/SUBMIT'
+
 const EVENT_ERR = 'event/EVENT_ERR'
 
 // actions
@@ -20,6 +22,9 @@ export const actionCreators = {
   getSelectedEvent: (id) => async (dispatch, getState) => {
     const store = getState().event.selectedEvent
 
+    if (id === 'new') {
+        return dispatch({type: GET_SELECTED_EVENT, payload: { event: { groups: [] } }})
+    }
     try {
       const response = await fetch('/api/event/info/' + id, {credentials: 'same-origin'})
       const res = await response.json()
@@ -30,6 +35,29 @@ export const actionCreators = {
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
     }
+  },
+  submit: (obj, successCallback) => async (dispatch) => {
+    try {
+      const response = await fetch((obj.id) ? '/api/event/update' : '/api/event/create', {
+        method: 'post',
+        credentials: 'same-origin',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+      })
+      const res = await response.json()
+      if (response.status === 200) {
+        dispatch({type: SUBMIT_EVENT, payload: {...res}})
+        return successCallback()
+      }
+      throw res.message
+
+    } catch (e) {
+      dispatch({type: EVENT_ERR, payload: {error: e}})
+    }
+
   }
 }
 
@@ -47,6 +75,9 @@ export const reducer = (state = initialState, action) => {
     }
     case GET_SELECTED_EVENT: {
       return {...state, selectedEvent: payload.event}
+    }
+    case SUBMIT_EVENT: {
+      return {...state, selectedEvent: {...payload.event, upToDate: true}}
     }
     case EVENT_ERR: {
       return {...state, error: payload.error}
