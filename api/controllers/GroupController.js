@@ -73,11 +73,7 @@ module.exports = {
         })
         .populate('races')
         .then(function (modelData) {
-            result = modelData;
-            return Team.find({});
-        })
-        .then(function (modelData) {
-            result.teams = modelData;
+            result = modelData.toJSON();
             return Registration.find({
                 group: groupId
             })
@@ -85,6 +81,15 @@ module.exports = {
         })
         .then(function (modelData) {
             result.registrations = modelData;
+            result.registrations.map(function (reg, i) {
+              var temp = {
+                  id: reg.racer.id,
+                  firstName: reg.racer.firstName,
+                  lastName: reg.racer.lastName
+              };
+              result.registrations[i].racer = temp;
+            })
+
             return res.ok(result);
         })
         .catch(function (E) {
