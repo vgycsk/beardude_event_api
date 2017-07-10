@@ -5,19 +5,19 @@
         "name": "Night Market Crit: Taipei",
         "nameCht": "夜市繞圈賽",
         "assignedRaceNumber": 300,
-        "startTime": 1495843200000,
-        "endTime": 1495972800000,
+        "startTime": 1501113600000,
+        "endTime": 1501243200000,
         "lapDistance": 1100,
         "location": "Taipei",
         "isPublic": true,
         "isRegistrationOpen": false,
-        "isTeamRegistrationOpen": false,
+        "isTeamRegistrationOpen": true,
         "testerEpc": [
           "e01923123333123",
           "e01923123333123a"
         ],
         "createdAt": "2017-05-25T05:16:12.378Z",
-        "updatedAt": "2017-07-07T12:32:28.450Z",
+        "updatedAt": "2017-07-09T05:21:33.567Z",
         "id": 6
       }
     ],
@@ -51,6 +51,22 @@
         "updatedAt": "2017-06-20T07:43:18.062Z",
         "id": 4,
         "racerNumberAllowed": 100
+      },
+      {
+        "nameCht": "bmx車",
+        "name": "bmx",
+        "createdAt": "2017-07-10T09:09:11.231Z",
+        "updatedAt": "2017-07-10T09:09:11.231Z",
+        "id": 5
+      },
+      {
+        "event": 6,
+        "nameCht": "bmx車",
+        "name": "bmx",
+        "createdAt": "2017-07-10T09:11:31.745Z",
+        "updatedAt": "2017-07-10T09:24:43.561Z",
+        "id": 6,
+        "racerNumberAllowed": 50
       }
     ],
     "image": [],
@@ -387,14 +403,14 @@
       "nameCht": {
         "type": "string"
       },
+      "racerNumberAllowed": {
+        "type": "integer"
+      },
       "rules": {
         "type": "string"
       },
       "result": {
         "type": "array"
-      },
-      "racerNumberAllowed": {
-        "type": "integer"
       },
       "id": {
         "type": "integer",
@@ -785,7 +801,7 @@
       "id": 6
     },
     "group": {
-      "id": 4
+      "id": 6
     },
     "image": {},
     "manager": {
