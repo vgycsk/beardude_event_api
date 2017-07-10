@@ -32,20 +32,13 @@ module.exports = {
             result.teams = modelData;
             return Registration.find({
                 group: groupId
+//                paid: true
             })
             .populate('racer');
-            /*
-            return Registration.find({
-                group: groupId,
-                paid: true
-            })
-            .populate('racer');
-            */
         })
         .then(function (modelData) {
-            result.registrations = [];
-            modelData.forEach(function (reg) {
-                result.registrations.push({
+            result.registrations = modelData.map(function (reg) {
+                return {
                     racer: {
                         id: reg.racer.id,
                         team: reg.racer.team,
@@ -54,7 +47,7 @@ module.exports = {
                         nickName: reg.racer.nickName
                     },
                     raceNumber: reg.raceNumber
-                });
+                }
             });
             return res.ok(result);
         })
@@ -69,7 +62,6 @@ module.exports = {
         Group.findOne({
             id: groupId
         })
-        .populate('races')
         .then(function (modelData) {
             result = modelData.toJSON();
             return Registration.find({
@@ -87,8 +79,16 @@ module.exports = {
               };
               result.registrations[i].racer = temp;
             })
-
-            return res.ok(result);
+            return Race.find({
+              group: groupId
+            })
+            .populate('registrations');
+        })
+        .then(function (modelData) {
+          result.races = modelData
+          return res.ok({
+            group: result
+          });
         })
         .catch(function (E) {
             return res.badRequest(E);

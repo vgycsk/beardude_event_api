@@ -62,6 +62,30 @@ module.exports = {
             return res.badRequest(E);
         });
     },
+    getManagementInfo: function (req, res) {
+        var eventId = parseInt(req.params.id);
+        var result;
+
+        Event.findOne({
+            id: eventId
+        })
+        .then(function (modelData) {
+            result = modelData.toJSON();
+            return Group.find({
+              event: eventId
+            })
+            .populate('registrations');
+        })
+        .then(function (modelData) {
+            result.groups = modelData;
+            return res.ok({
+              event: result
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
     /*
     // {event: ID, managers: [ID1, ID2]}
     addManagers: function (req, res) {
