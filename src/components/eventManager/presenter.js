@@ -10,47 +10,74 @@ import Header from '../Header'
 import Footer from '../Footer'
 
 const valueFunc = (state, store, field) => (state && state[field] !== undefined) ? state[field] : store[field]
+const returnDateTime = (timestamp) => {
+  const t = new Date(timestamp + 28800000) // taipei diff
+  return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + 'T' + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
+}
+const nameInputs = [{ label: '活動名稱（中）', field: 'nameCht'}, { label: '名稱（英）', field: 'name'}, { label: '地點', field: 'location'}]
+const timeInputs = [{ label: '開始時間', field: 'startTime'},{ label: '結束時間', field: 'endTime'}]
+const checkInputs = [{ label: '公開活動', field: 'isPublic'}, { label: '開放隊伍報名', field: 'isTeamRegistrationOpen'}, { label: '開放個人報名', field: 'isRegistrationOpen'}]
+const renderInfo = (eventInEdit, selectedEvent, onChange, submit) => <section><ul>
+  <li>{nameInputs.map((val, i) => <span key={'name-' + i}><label>{val.label}</label><input type='text' value={valueFunc(eventInEdit, selectedEvent,val.field)} onChange={onChange(val.field)} /></span>)}</li>
+  <li>{timeInputs.map((val, i) => <span key={'time-' + i}><label>{val.label}</label><input type='datetime-local' value={(eventInEdit && eventInEdit[val.field]) ? eventInEdit[val.field] : returnDateTime(selectedEvent[val.field])} onChange={onChange(val.field)} /></span>)}</li>
+  <li>{checkInputs.map((val, i) => <span key={'time-' + i}><label>{val.label}</label><input type='checkbox' checked={valueFunc(eventInEdit, selectedEvent,val.field)} value={valueFunc(eventInEdit, selectedEvent,val.field)} onChange={onChange(val.field)} /></span>)}<span className={css.right}>{ (eventInEdit) ? <Button text='儲存' onClick={submit()} /> : <Button text='儲存' style='disabled' /> }</span>
+</li>
+</ul></section>
 
 const GroupList = ({groups, name, dragStart, dragOver, dragEnd, deleteHandler}) =>
   <ul>
     { groups.map((V, I) => <li key={`gp_${I}`} data-id={V.id} data-group={name} draggable='true' onDragStart={dragStart} onDragOver={dragOver} onDragEnd={dragEnd} ><span className={css.itemExpand}>{`${V.name} (?/${V.racerNumberAllowed})`}</span><span className={css.redTxt} onClick={deleteHandler}>delete</span></li>) }
   </ul>
 
-//yyyy-mm-ddThh:mm
-const returnDateTime = (timestamp) => {
-  const t = new Date(timestamp + 28800000) // taipei diff
-  return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + 'T' + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2)
-}
-
 export class EventManager extends BaseComponent {
   constructor (props) {
     super(props)
     console.log(this.props)
     this.state = {
-      inEdit: undefined,
+      eventinEdit: undefined,
+      groupSelected: -1,
+      raceSelected: -1,
+      racerSelected: -1,
+      groupInEdit: undefined,
       editPanel: 0,
       showDialogue: 0,
       dialoguePosHandler: null
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleInput', 'handleSubmit', 'editPanelHandler', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler', 'dialogueNagitiveHandler')
+    this._bind('handleAddGroup', 'handleCancelAddGroup', 'handleEditGroup', 'handleInputEvent', 'handleSubmitEvent', 'handleSubmitGroup', 'editPanelHandler', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler', 'dialogueNagitiveHandler')
   }
   componentDidMount () {
     this.dispatch(actionCreators.getSelectedEvent(this.props.match.params.id || 'new'))
   }
-  handleInput (field) { return (e) => {
+  handleAddGroup () {
+    const onSuccess = () => this.setState({groupSelected: this.props.selectedEvent.groups.length - 1, groupInEdit: {event: this.props.selectedEvent.id}})
+    this.dispatch(actionCreators.addGroup(onSuccess))
+  }
+  handleCancelAddGroup () {
+    const onSuccess = () => this.setState({groupSelected: - 1, groupInEdit: undefined})
+    this.dispatch(actionCreators.cancelAddGroup(onSuccess))
+  }
+  handleEditGroup () {
+    this.setState({groupInEdit: { id: this.props.selectedEvent.groups[this.state.groupSelected].id}})
+  }
+  handleInputEvent (field) { return (e) => {
     let value = (e.target.value === 'true' || e.target.value === 'false') ? (e.target.value === 'true' ? false : true) : e.target.value
-    const stateObj = { inEdit: (this.state.inEdit) ? this.state.inEdit : { id: this.props.selectedEvent.id } }
-
-// let server handle this
-//    if (field === 'startTime' || field === 'endTime') { value = returnTimestamp(value) }
-    stateObj.inEdit[field] = value
-    this.setState(stateObj)
+    this.setState({ eventInEdit: (this.state.eventInEdit) ? {...this.state.eventInEdit, [field]: value} : { id: this.props.selectedEvent.id, [field]: value } })
   }}
-  handleSubmit (content) { return (e) => {
-    const onSuccess = () => this.setState({inEdit: undefined})
-    this.dispatch(actionCreators.submit(this.state.inEdit, onSuccess))
+  handleInputGroup (field) { return (e) => {
+    this.setState({ groupInEdit: (this.state.groupInEdit) ? {...this.state.groupInEdit, [field]: e.target.value} : {[field]: e.target.value}})
   }}
+  handleSelect (field, index) { return (e) => {
+    this.setState({[field + 'Selected']: index})
+  }}
+  handleSubmitEvent () {
+    const onSuccess = () => this.setState({eventInEdit: undefined})
+    this.dispatch(actionCreators.submitEvent(this.state.eventInEdit, onSuccess))
+  }
+  handleSubmitGroup () {
+    const onSuccess = () => this.setState({groupInEdit: undefined})
+    this.dispatch(actionCreators.submitGroup(this.state.groupInEdit, this.state.groupSelected, onSuccess))
+  }
   dragStartHandler (E) {
     console.log(`drag start - ${E.currentTarget.dataset.id}`)
     this.dragItem = {
@@ -100,56 +127,33 @@ export class EventManager extends BaseComponent {
   }
   render () {
     const { location, selectedEvent } = this.props
-    if (!selectedEvent) {
-      return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div>
-    }
+
+    if (!selectedEvent) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
     const groups = selectedEvent.groups
-    const { inEdit, editPanel, showDialogue } = this.state
+    const { eventInEdit, editPanel, groupSelected, groupInEdit, showDialogue } = this.state
     return (<div>
       <Header location={location} nav='event' />
       <div className={css.mainBody}>
-        <section>
-          <ul>
-            <li>
-              <label>活動名稱（中）</label>
-              <input type='text' value={valueFunc(inEdit, selectedEvent, 'nameCht')} onChange={this.handleInput('nameCht')} />
-              <label>名稱（英）</label>
-              <input type='text' value={valueFunc(inEdit, selectedEvent, 'name')} onChange={this.handleInput('name')} />
-            </li>
-            <li>
-              <label>開始時間</label>
-              <input type='datetime-local' value={(inEdit && inEdit.startTime) ? inEdit.startTime : returnDateTime(selectedEvent.startTime)} onChange={this.handleInput('startTime')} />
-              <label>結束時間</label>
-              <input type='datetime-local' value={(inEdit && inEdit.endTime) ? inEdit.endTime : returnDateTime(selectedEvent.endTime)} onChange={this.handleInput('endTime')} />
-            </li>
-            <li>
-              <label>地點</label>
-              <input type='text' value={valueFunc(inEdit, selectedEvent, 'location')} onChange={this.handleInput('location')} />
-            </li>
-            <li>
-              <label>公開活動</label><input type='checkbox' checked={valueFunc(inEdit, selectedEvent, 'isPublic')} value={valueFunc(inEdit, selectedEvent, 'isPublic')} onChange={this.handleInput('isPublic')} />  
-              <label>開放隊伍報名</label><input type='checkbox' checked={valueFunc(inEdit, selectedEvent, 'isTeamRegistrationOpen')} value={valueFunc(inEdit, selectedEvent, 'isTeamRegistrationOpen')} onChange={this.handleInput('isTeamRegistrationOpen')} />  
-              <label>開放個人報名</label><input type='checkbox' checked={valueFunc(inEdit, selectedEvent, 'isRegistrationOpen')} value={valueFunc(inEdit, selectedEvent, 'isRegistrationOpen')} onChange={this.handleInput('isRegistrationOpen')} />
-              <span className={css.right}>{ (inEdit) ? <Button text='儲存' onClick={this.handleSubmit('event')} /> : <Button text='儲存' style='disabled' /> }</span>
-            </li>
-          </ul>
-        </section>
+        {renderInfo(eventInEdit, selectedEvent, this.handleInputEvent, this.handleSubmitEvent)}
         <div className={css.managerList}>
           <div>
-            <span className={css.head}>組別</span>
-              { groups.length > 0 ? <GroupList {...{groups, name: 'group', deleteHandler: this.deleteEventHandler, dragStart: this.dragStartHandler, dragOver: this.dragOverHandler, dragEnd: this.dragEndHandler}} /> : null }
-            <div className={css.editPanel}>
-              <div className={classes(!(editPanel === 1) && css.hidden)}>
-                <div>
-                  <input type='text' placeholder='new group name' />
-                </div>
-                <div><span>OK</span><span onClick={this.editPanelHandler(0)} >cancel</span></div>
-              </div>
-              <span className={classes((editPanel !== 0) && css.hidden)} onClick={this.editPanelHandler(1)}>+</span>
-            </div>
+            <h3>組別</h3>
+            <ul>
+              {groups.map((V, I) => <li className={groupSelected === I ? css.selected : css.li } key={'gp_' + I}>{((groupSelected === I) && groupInEdit)
+                ? <span>
+                    <input type='text' placeholder='名稱 (中)' value={groupInEdit.nameCht ? groupInEdit.nameCht : V.nameCht} onChange={this.handleInputGroup('nameCht')}/>
+                    <input type='text' placeholder='名稱 (英)' value={groupInEdit.name ? groupInEdit.name : V.name} onChange={this.handleInputGroup('name')} />
+                    <input type='number' placeholder='名額' value={groupInEdit.racerNumberAllowed ? groupInEdit.racerNumberAllowed : V.racerNumberAllowed} onChange={this.handleInputGroup('racerNumberAllowed')} />
+                  </span>
+                : <Button style='list' text={V.nameCht ? V.nameCht : V.name} counter={'?/' + V.racerNumberAllowed} onClick={this.handleSelect('group', I)}/>
+              }</li>)}
+            </ul>
+            {groupInEdit
+              ? <span><Button style='listFt' text='儲存' onClick={this.handleSubmitGroup} /><span className={css.right}><Button style='listFt' text='取消' onClick={this.handleCancelAddGroup}/></span></span>
+              : <span><Button style='listFtIcon' text='+' onClick={this.handleAddGroup} /> {groupSelected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={this.handleEditGroup} /></span>}</span> }
           </div>
           <div>
-            <span className={css.head}>組別賽制</span>
+            <h3>組別賽制</h3>
               { groups.length > 0 ? <GroupList {...{groups, name: 'race', deleteHandler: this.deleteEventHandler, dragStart: this.dragStartHandler, dragOver: this.dragOverHandler, dragEnd: this.dragEndHandler}} /> : null }
             <div className={css.editPanel}>
               <div className={classes(!(editPanel === 2) && css.hidden)}>
@@ -162,7 +166,7 @@ export class EventManager extends BaseComponent {
             </div>
           </div>
           <div>
-            <span className={css.head}>選手</span>
+            <h3>選手</h3>
           </div>
         </div>
       </div>

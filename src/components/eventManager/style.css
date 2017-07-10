@@ -22,7 +22,6 @@
   padding: 0 16px;
   color: #E0E4E9;
 }
-
 .mainBody section input {
   border: 0px;
   border-bottom: solid 1px #E0E4E9;
@@ -47,7 +46,7 @@
   font-size: 14px;
   opacity: .8;
   color: #E0E4E9;
-  margin: 0 0 0 50px;
+  margin: 0 0 0 20px;
 }
 .mainBody section label::first-child {
   margin: 0;
@@ -73,19 +72,20 @@
 }
 
 .managerList > div:nth-child(1) {
-  flex: 1 1 auto;
+  width: 33%;
+  flex-shrink: 0;
 }
 
 .managerList > div:nth-child(2) {
-  flex: 1 1 auto;
+  width: 33%;
+  flex-shrink: 0;
 }
 
 .managerList > div:nth-child(3) {
-  flex: 2 1 260px;
+  flex-grow: 1;
 }
 
-.head {
-  display: block;
+.managerList h3 {
   background: RGBA(66, 66, 66, 0.8);
   color: #E0E4E9;
   margin-right: 8px;
@@ -98,19 +98,24 @@
   overflow: auto;
 }
 
-.managerList li {
+.li {
   display: flex;
-  padding: 16px 16px;
   color: #fff;
   margin-right: 8px;
-  border-bottom: solid 1px RGBA(66, 66, 66, 0.8);
+  height: 39px;
+  line-height: 39px;
   cursor: pointer;
 }
-
-.itemExpand {
-  flex: 1 1 128px;
+.selected {
+  composes: li;
+  background: rgba(255,255,255, 0.4);
 }
-
+.managerList li input {
+  height: 30px;
+  width: 29%;
+  margin: 4px 0 0 3%;
+  color: #000;
+}
 .redTxt {
   color: #fa1229;
 }
@@ -118,12 +123,19 @@
 .managerList li:active {
   background: RGBA(243, 243, 243, 0.4);
 }
+.managerList .ft {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 39px;
+  background: RGBA(255, 255, 255, 0.4);
+}
 
 .editPanel {
   position: absolute;
   bottom: 0;
-  display: inline-flex;
   background: RGBA(255, 255, 255, 0.6);
+  border: 0;
   border-radius: 2px;
   align-items: flex-start;
   justify-content: flex-start;
