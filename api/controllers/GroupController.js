@@ -6,11 +6,9 @@ module.exports = {
     // { event: ID, name: STR, nameCht: STR, rules: STR }
     create: function (req, res) {
         var input = req.body;
-
         Group.create(input)
         .then(function (modelData) {
             return res.ok({
-                message: 'Group created',
                 group: modelData
             });
         })
@@ -96,7 +94,7 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {group: ID}
+    // {id: ID}
     delete: function (req, res) {
         var query = {
             id: parseInt(req.params.id)
@@ -137,19 +135,18 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {group: ID, name: STR, nameCht: STR, rules: ARRAY}
+    // {id: ID, name: STR, nameCht: STR, racerNumberAllowed: INT, rules: ARRAY}
     update: function (req, res) {
         var input = req.body;
-        var fields = ['name', 'nameCht', 'rules'];
+        var fields = ['name', 'nameCht', 'racerNumberAllowed', 'rules'];
         var query = {
-            id: parseInt(input.group)
+            id: parseInt(input.id)
         };
         var updateObj = dataService.returnUpdateObj(fields, input);
 
         Group.update(query, updateObj)
         .then(function (modelData) {
             return res.ok({
-                message: 'Group updated',
                 group: modelData[0]
             });
         })
