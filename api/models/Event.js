@@ -35,7 +35,7 @@ module.exports = {
       type: 'integer',
       required: true
     },
-        // meter
+    // meter
     lapDistance: {
       type: 'integer'
     },

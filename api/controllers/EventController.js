@@ -1,8 +1,9 @@
-/* global _, dataService, Event, Group */
+/* global _, dataService, Event, Group, Race */
 
 'use strict'
 
 var moment = require('moment')
+var Q = require('q')
 
 module.exports = {
   // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
@@ -15,7 +16,10 @@ module.exports = {
     Event.create(input)
       .then(function (V) {
         resultObj = V
-        V.events.add(req.session.managerInfo.id)
+        return Event.findOne({ id: V.id }).populate('managers')
+      })
+      .then(function (V) {
+        V.managers.add(req.session.managerInfo.id)
         return V.save()
       })
       .then(function () {
@@ -55,9 +59,21 @@ module.exports = {
         result = V.toJSON()
         return Group.find({event: eventId}).populate('registrations')
       })
-      .then(function (modelData) {
-        result.groups = modelData
-        return res.ok({event: result})
+      .then(function (V) {
+        var funcs = []
+
+        result.groups = V.map(function (group) {
+          funcs.push(Race.find({group: group.id}).populate('registrations'))
+          return group.toJSON()
+        }) || []
+        return Q.all(funcs)
+      })
+      .then(function (V) {
+        result.groups = result.groups.map(function (group, I) {
+          group.races = V[I]
+          return group
+        })
+        return res.ok({ event: result })
       })
       .catch(function (E) {
         return res.badRequest(E)
@@ -81,11 +97,8 @@ module.exports = {
         }
         return Event.update(query, updateObj)
       })
-      .then(function () {
-        return Event.findOne(query).populate('groups')
-      })
-      .then(function (modelData) {
-        return res.ok({event: modelData})
+      .then(function (V) {
+        return res.ok({event: V[0]})
       })
       .catch(function (E) {
         return res.badRequest(E)

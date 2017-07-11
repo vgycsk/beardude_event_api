@@ -1,4 +1,4 @@
-/* global dataService, Group, Race, Registration, Team */
+/* global dataService, Group, Registration, Team */
 
 'use strict'
 
@@ -33,29 +33,6 @@ module.exports = {
             racer: {id: reg.racer.id, firstName: reg.racer.firstName, lastName: reg.racer.lastName, nickName: reg.racer.nickName, team: reg.racer.team}
           }
         })
-        return res.ok({group: result})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  getManagementInfo: function (req, res) {
-    var groupId = parseInt(req.params.id)
-    var result
-
-    Group.findOne({id: groupId})
-      .then(function (V) {
-        result = V.toJSON()
-        return Registration.find({group: groupId}).populate('racer')
-      })
-      .then(function (V) {
-        result.registrations = V.map(function (reg) {
-          return {id: reg.racer.id, firstName: reg.racer.firstName, lastName: reg.racer.lastName}
-        })
-        return Race.find({group: groupId}).populate('registrations')
-      })
-      .then(function (V) {
-        result.races = V
         return res.ok({group: result})
       })
       .catch(function (E) {
