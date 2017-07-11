@@ -40,7 +40,8 @@ module.exports = {
         },
         requirePacer: {
             type: 'boolean',
-            required: true
+            required: true,
+            defaultsTo: true
         },
         pacerEpc: {
             type: 'string'

@@ -8,28 +8,10 @@ var RaceController = {
     // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}
     create: function (req, res) {
         var input = req.body;
-        var createObj = {
-            group: parseInt(input.group),
-            name: input.name,
-            nameCht: input.nameCht,
-            laps: parseInt(input.laps),
-            racerNumberAllowed: parseInt(input.racerNumberAllowed)
-        };
 
-        if (input.requirePacer && input.requirePacer !== '') {
-            createObj.requirePacer = true;
-        } else {
-            createObj.requirePacer = false;
-        }
-        if (input.isEntryRace && input.isEntryRace !== '') {
-            createObj.isEntryRace = true;
-        } else {
-            createObj.isEntryRace = false;
-        }
-        Race.create(createObj)
+        Race.create(input)
         .then(function (modelData) {
             return res.ok({
-                message: 'Race created',
                 race: modelData
             });
         })
@@ -45,22 +27,22 @@ var RaceController = {
         .populate('registrations')
         .populate('group')
         .then(function (modelData) {
-            var result = {
-                registrations: modelData.registrations,
-                group: modelData.group,
-                name: modelData.name,
-                laps: modelData.laps,
-                racerNumberAllowed: modelData.racerNumberAllowed,
-                advancingRules: modelData.advancingRules,
-                isEntryRace: modelData.isEntryRace,
-                requirePacer: modelData.requirePacer,
-                startTime: modelData.startTime,
-                endTime: modelData.endTime,
-                recordsHashTable: modelData.recordsHashTable,
-                result: modelData.result
-            };
-
-            return res.ok(result);
+            return res.ok({
+                race: {
+                    registrations: modelData.registrations,
+                    group: modelData.group,
+                    name: modelData.name,
+                    laps: modelData.laps,
+                    racerNumberAllowed: modelData.racerNumberAllowed,
+                    advancingRules: modelData.advancingRules,
+                    isEntryRace: modelData.isEntryRace,
+                    requirePacer: modelData.requirePacer,
+                    startTime: modelData.startTime,
+                    endTime: modelData.endTime,
+                    recordsHashTable: modelData.recordsHashTable,
+                    result: modelData.result
+                }
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -74,7 +56,9 @@ var RaceController = {
         .populate('registrations')
 //        .populate('group')
         .then(function (modelData) {
-            return res.ok(modelData);
+            return res.ok({
+                race: modelData
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -84,20 +68,19 @@ var RaceController = {
     update: function (req, res) {
         var input = req.body;
         var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'requirePacer'];
-        var updateObj;
+        var updateObj = dataService.returnUpdateObj(fields, input);
         var query = {
-            id: parseInt(input.race)
+            id: parseInt(input.id)
         };
 
-        Race.findOne(query)
-        .then(function (modelData) {
-            updateObj = dataService.returnUpdateObj(fields, input, modelData);
-            return Race.update(query, updateObj);
+        Race.update(query, updateObj)
+        .then(function () {
+            return Race.findOne(query)
+            .populate('registrations');
         })
         .then(function (modelData) {
             return res.ok({
-                message: 'Race updated',
-                race: modelData[0]
+                race: modelData
             });
         })
         .catch(function (E) {
@@ -120,7 +103,6 @@ var RaceController = {
         })
         .then(function () {
             return res.ok({
-                message: 'Race deleted',
                 race: query.id
             });
         })

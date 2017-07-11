@@ -99,36 +99,22 @@ module.exports = {
         var query = {
             id: parseInt(req.params.id)
         };
-        var racesToDestroy = [];
 
-        // Validate: only can delete those without registration
-        Group.findOne({
-            id: query
-        })
+        Group.findOne(query)
         .populate('registrations')
         .populate('races')
         .then(function (modelData) {
             if (modelData.registrations.length > 0) {
                 throw new Error('Cannot delete group that has racers registered');
             }
-            modelData.races.forEach(function (race) {
-                racesToDestroy.push(race.id);
-            });
-            if (racesToDestroy.length === 0) {
-                return false;
+            if (modelData.races.length > 0) {
+                throw new Error('Cannot delete group that contains races');
             }
-            return Race.destroy({
-                id: racesToDestroy
-            });
-        })
-        .then(function () {
             return Group.destroy(query);
         })
         .then(function () {
             return res.ok({
-                message: 'Group deleted',
-                group: query.id,
-                races: racesToDestroy
+                group: query.id
             });
         })
         .catch(function (E) {
