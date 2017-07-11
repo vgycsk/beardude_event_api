@@ -11,31 +11,31 @@
  */
 
 module.exports = {
-    blueprints: {
-        shortcuts: false
+  blueprints: {
+    shortcuts: false
+  },
+  connections: {
+    aws: {
+      key: '',
+      secret: '',
+      region: 'ap-northeast-1',
+      bucket: ''
     },
-    connections: {
-        aws: {
-            key: '',
-            secret: '',
-            region: 'ap-northeast-1',
-            bucket: ''
-        },
-        mysql: {
-            adapter: 'sails-mysql',
-            host: 'azai.synology.me',
-            port: 33306,
-            user: 'engine',
-            password: 'BeardudeEngineZhuandao1022',
-            database: 'emrv_api'
-        }
-    },
-    log: {
-        level: 'silent'
-    },
-    models: {
-        connection: 'mysql',
-        migrate: 'safe'
-    },
-    port: 80
-};
+    mysql: {
+      adapter: 'sails-mysql',
+      host: 'azai.synology.me',
+      port: 33306,
+      user: 'engine',
+      password: 'BeardudeEngineZhuandao1022',
+      database: 'emrv_api'
+    }
+  },
+  log: {
+    level: 'silent'
+  },
+  models: {
+    connection: 'mysql',
+    migrate: 'safe'
+  },
+  port: 80
+}

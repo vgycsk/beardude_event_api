@@ -18,41 +18,40 @@
  */
 
 module.exports = function (data) {
-    var logContent = data || '';
-    var req = this.req;
-    var res = this.res;
-    var response = 'Sending 400 ("Bad Request") response';
-    var sails = req._sails;
-    var statusCode = 400;
-    var statusTitle = 'Bad Request';
-    var viewData = data;
+  var logContent = data || ''
+  var req = this.req
+  var res = this.res
+  var response = 'Sending 400 ("Bad Request") response'
+  var sails = req._sails
+  var statusCode = 400
+  var viewData = data
 
     // Set status code
-    res.status(statusCode);
-    sails.log.verbose(response, logContent);
-    if (req.wantsJSON || sails.config.hooks.views === false) {
-        if (typeof viewData === 'string') {
-            return res.jsonx({
+  res.status(statusCode)
+  sails.log.verbose(response, logContent)
+  if (req.wantsJSON || sails.config.hooks.views === false) {
+    if (typeof viewData === 'string') {
+      return res.jsonx({
 //                status: statusTitle,
 //                code: statusCode,
-                message: viewData
-            });
-        }
-        return res.jsonx(data);
+        message: viewData
+      })
     }
+    return res.jsonx(data)
+  }
 
-    if (!(viewData instanceof Error) && typeof viewData === 'object') {
-        try {
-            viewData = require('util').inspect(data, {
-                depth: null
-            });
-        } catch (e) {
-            viewData = {};
-        }
+  if (!(viewData instanceof Error) && typeof viewData === 'object') {
+    try {
+      viewData = require('util').inspect(data, {
+        depth: null
+      })
+    } catch (e) {
+      viewData = {}
     }
-    return res.jsonx({
-        message: viewData.message
-    });
+  }
+  return res.jsonx({
+    message: viewData.message
+  })
     /*
     delete viewData.rawStack;
     delete viewData.stack;
@@ -65,4 +64,4 @@ module.exports = function (data) {
         return res.jsonx(data);
     });
     */
-};
+}
