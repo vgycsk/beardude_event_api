@@ -1,6 +1,6 @@
 import React from 'react'
 import BaseComponent from '../BaseComponent'
-import classes from 'classnames'
+import { Redirect } from 'react-router-dom'
 import { actionCreators } from '../../ducks/event'
 
 import css from './style.css'
@@ -8,123 +8,133 @@ import { Dialogue } from '../Dialogue/presenter'
 import Button from '../Button'
 import Header from '../Header'
 import Footer from '../Footer'
+import { renderInput } from '../Table/presenter'
 
-const valueFunc = (state, store, field) => (state && state[field] !== undefined) ? state[field] : store[field]
-const returnDateTime = (timestamp) => {
+const valueFunc = (modified, original, field) => (modified && modified[field] !== undefined) ? modified[field] : original[field]
+const returnDateTime = (timestamp, forDisplay) => {
   const t = new Date(timestamp + 28800000) // taipei diff
-  return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + 'T' + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
+  return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + (forDisplay ? ' ' : 'T') + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
 }
-const nameInputs = [{label: '活動名稱（中）', field: 'nameCht'}, {label: '名稱（英）', field: 'name'}, {label: '地點', field: 'location'}]
-const timeInputs = [{label: '開始時間', field: 'startTime'},{label: '結束時間', field: 'endTime'}]
-const checkInputs = [{label: '公開活動', field: 'isPublic'}, {label: '開放隊伍報名', field: 'isTeamRegistrationOpen'}, {label: '開放個人報名', field: 'isRegistrationOpen'}]
-const groupInfo = [{label: '名稱 (中)', field: 'nameCht'}, {label: '名稱 (英)', field: 'name'}, {label: '名額', field: 'racerNumberAllowed', type: 'number'}]
-const raceInfo = [{label: '名稱 (中)', field: 'nameCht'}, {label: '名稱 (英)', field: 'name'}, {label: '名額', field: 'racerNumberAllowed', type: 'number'}, {label: '圈數', field: 'laps', type: 'number'} ]
-
-const renderInfo = (eventInEdit, selectedEvent, onChange, submit) => <section><ul>
-  <li>{nameInputs.map((val, i) => <span key={'name-' + i}><label>{val.label}</label><input type='text' value={valueFunc(eventInEdit, selectedEvent,val.field)} onChange={onChange(val.field)} /></span>)}</li>
-  <li>{timeInputs.map((val, i) => <span key={'time-' + i}><label>{val.label}</label><input type='datetime-local' value={(eventInEdit && eventInEdit[val.field]) ? eventInEdit[val.field] : returnDateTime(selectedEvent[val.field])} onChange={onChange(val.field)} /></span>)}</li>
-  <li>{checkInputs.map((val, i) => <span key={'time-' + i}><label>{val.label}</label><input type='checkbox' checked={valueFunc(eventInEdit, selectedEvent,val.field)} value={valueFunc(eventInEdit, selectedEvent,val.field)} onChange={onChange(val.field)} /></span>)}<span className={css.right}>{ (eventInEdit) ? <Button text='儲存' onClick={submit()} /> : <Button text='儲存' style='disabled' /> }</span>
-</li>
-</ul></section>
-const renderList = (inputs, array, selected, inEdit, onChange, onSelect) => <ul>
-  {array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>{((selected === I) && inEdit)
-    ? <span>{inputs.map((V, I) => <input key={'input_' + I} type={V.type ? V.type : 'text'} placeholder={V.label} value={inEdit[V.field] ? inEdit[V.field] : array[selected][V.field]} onChange={onChange(V.field)}/>)}</span>
-    : <Button style='list' text={V.nameCht ? V.nameCht : V.name} counter={V.registrations.length + '/' + V.racerNumberAllowed} onClick={onSelect(I)}/>
-  }</li>)}
-</ul>
-const renderFt = (inEdit, selected, onSubmit, onCancel, onDelete, onAdd, onEdit) => <span>{inEdit
-  ? <span><Button style='listFt' text='儲存' onClick={onSubmit} /><Button style='listFt' text='取消' onClick={onCancel}/><span className={css.right}><Button style='listFtAlert' text='刪除' onClick={onDelete} /></span></span>
-  : <span><Button style='listFtIcon' text='+' onClick={onAdd} /> {selected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={onEdit} /></span>}</span> }</span>
-
+const returnInputs = {
+  event: (modified, original) => [
+    {label: '中文名稱', field: 'nameCht', type: 'text'},
+    {label: '英文名稱', field: 'name', type: 'text'},
+    {label: '地點', field: 'location', type: 'text'},
+    {label: '跑道長度(公尺)', field: 'lapDistance', type: 'number'},
+    {label: '開始時間', field: 'startTime', type: 'datetime', value: (modified && modified.startTime) ? modified.startTime : returnDateTime(original.startTime)},
+    {label: '結束時間', field: 'endTime', type: 'datetime', value: (modified && modified.endTime) ? modified.endTime : returnDateTime(original.endTime)},
+    {label: '公開活動', field: 'isPublic', type: 'checkbox'},
+    {label: '隊伍報名', field: 'isTeamRegistrationOpen', type: 'checkbox'},
+    {label: '個人報名', field: 'isRegistrationOpen', type: 'checkbox'}
+  ],
+  group: () => [
+    {label: '中文名稱', field: 'nameCht', type: 'text'},
+    {label: '英文名稱', field: 'name', type: 'text'},
+    {label: '名額', field: 'racerNumberAllowed', type: 'number'}
+  ],
+  race: () => [
+    {label: '中文名稱', field: 'nameCht', type: 'text'},
+    {label: '英文名稱', field: 'name', type: 'text'},
+    {label: '名額', field: 'racerNumberAllowed', type: 'number'},
+    {label: '圈數', field: 'laps', type: 'number'}
+  ]
+}
+const title = { event: '活動', group: '組別', race: '賽事' }
+const render = {
+  delete: (model, original, onDelete) => {
+    if (model === 'event' && original.groups.length === 0) {
+      return <Button style='alert' onClick={onDelete(model)} text='刪除' />
+    } else if (model === 'group' && original.races.length === 0 && original.registrations.length === 0) {
+      return <Button style='alert' onClick={onDelete(model)} text='刪除' />
+    } else if (model === 'race' && original.registrations.length === 0) {
+      return <Button style='alert' onClick={onDelete(model)} text='刪除' />
+    }
+    return  <Button style='disabled' text='刪除' />
+  },
+  info: ({event, onEdit}) => <div className={css.info}>
+    <h2>{event.nameCht}</h2>
+    <h3>{event.name} <span className={css.time}>{returnDateTime(event.startTime, true)} - {returnDateTime(event.endTime, true)}</span></h3>
+    <ul className={css.lights}>
+      <li className={event.isPublic ? css.on : css.off}>公開活動</li>
+      <li className={event.isTeamRegistrationOpen ? css.on : css.off}>隊伍報名</li>
+      <li className={event.isRegistrationOpen ? css.on : css.off}>個人報名</li>
+    </ul>
+    <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
+  </div>,
+  ft: (selected, model, onEdit, editObj) => <span>
+  <Button style='listFtIcon' text='+' onClick={onEdit(model, {})} /> {selected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={onEdit(model, editObj)} /></span>}</span>,
+  list: ({array, selected, onSelect}) => <ul>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><Button style='list' text={V.nameCht ? V.nameCht : V.name} counter={(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed} onClick={onSelect(I)}/>
+  }</li>)}</ul>,
+  overlay: ({model, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
+  <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
+    <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)) })}</li>)}</ul>
+    <div className={css.boxFt}>
+      {modified ? <Button text='儲存' onClick={onSubmit(model)} /> : <Button style='disabled' text='儲存'/>}
+      {original.id && render.delete(model, original, onDelete)}
+      <Button onClick={onCancel} text='取消'/>
+    </div>
+  </div>
+}
 export class EventManager extends BaseComponent {
   constructor (props) {
     super(props)
     this.state = {
-      eventinEdit: undefined,
-      groupInEdit: undefined,
+      model: undefined,
+      modified: undefined,
+      original: undefined,
       groupSelected: -1,
-      raceInEdit: undefined,
-      raceSelected: -1,
-      showDialogue: 0,
-      dialoguePosHandler: null
+      raceSelected: -1
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleAddGroup', 'handleAddRace', 'handleCancelAddGroup', 'handleCancelAddRace', 'handleDeleteGroup', 'handleDeleteRace', 'handleEditGroup', 'handleEditRace', 'handleInputEvent', 'handleSubmitEvent', 'handleSubmitGroup', 'handleSubmitRace', 'handleSelectGroup', 'handleSelectRace', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler', 'dialogueNagitiveHandler')
+    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleSubmit', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
   }
   componentDidMount () {
-    this.dispatch(actionCreators.getSelectedEvent(this.props.match.params.id || 'new'))
+    const onSuccess = () => this.setState({model: 'event', original: {}})
+    this.dispatch(actionCreators.getEvent(this.props.match.params.id, onSuccess))
   }
-  handleAddGroup () {
-    const onSuccess = () => this.setState({groupSelected: this.props.selectedEvent.groups.length - 1, groupInEdit: {event: this.props.selectedEvent.id}})
-    this.dispatch(actionCreators.addGroup(onSuccess))
-  }
-  handleAddRace () {
-    const group = this.props.selectedEvent.groups[this.state.groupSelected]
-    const onSuccess = () => this.setState({raceSelected: group.races.length - 1, raceInEdit: {group: group.id}})
-    this.dispatch(actionCreators.addRace(this.state.groupSelected, onSuccess))
-  }
-  handleCancelAddGroup () {
-    const onSuccess = () => this.setState({groupSelected: - 1, groupInEdit: undefined})
-    this.dispatch(actionCreators.cancelAddGroup(onSuccess))
-  }
-  handleCancelAddRace () {
-    const onSuccess = () => this.setState({raceSelected: - 1, raceInEdit: undefined})
-    this.dispatch(actionCreators.cancelAddRace(this.state.groupSelected, onSuccess))
-  }
-  handleDeleteGroup () {
-    const group = this.props.selectedEvent.groups[this.state.groupSelected]
-    if (group.registrations.length === 0 && group.races.length === 0) {
-      const onSuccess = () => this.setState({groupSelected: - 1, groupInEdit: undefined})
-      this.dispatch(actionCreators.deleteGroup(this.state.groupSelected, group.id, onSuccess))
-    }
-  }
-  handleDeleteRace () {
-    const race = this.props.selectedEvent.groups[this.state.groupSelected].races[this.state.raceSelected]
-    if (race.registrations.length === 0) {
-      const onSuccess = () => this.setState({raceSelected: - 1, raceInEdit: undefined})
-      this.dispatch(actionCreators.deleteRace(this.state.groupSelected, this.state.raceSelected, race.id, onSuccess))
-    }
-  }
-  handleEditGroup () {
-    this.setState({groupInEdit: { id: this.props.selectedEvent.groups[this.state.groupSelected].id}})
-  }
-  handleEditRace () {
-    this.setState({raceInEdit: { id: this.props.selectedEvent.groups[this.state.groupSelected].races[this.state.raceSelected].id}})
-  }
-  handleInputEvent (field) { return (e) => {
-    let value = (e.target.value === 'true' || e.target.value === 'false') ? (e.target.value === 'true' ? false : true) : e.target.value
-    this.setState({ eventInEdit: (this.state.eventInEdit) ? {...this.state.eventInEdit, [field]: value} : { id: this.props.selectedEvent.id, [field]: value } })
+  handleStartEdit (model, object) { return (e) => {
+    this.setState({model: model, original: object})
   }}
-  handleInputGroup (field) { return (e) => {
-    this.setState({ groupInEdit: (this.state.groupInEdit) ? {...this.state.groupInEdit, [field]: e.target.value} : {[field]: e.target.value}})
+  handleCancelEdit () {
+    this.setState({model: undefined, modified: undefined, original: undefined})
+  }
+  handleDelete (model) { return (e) => {
+    let stateObj = {model: undefined, modified: undefined, original: undefined}
+    let onSuccess = () => this.setState(stateObj)
+    stateObj[model + 'Selected'] = -1
+    this.dispatch(actionCreators.delete(this.state, onSuccess))
   }}
-  handleInputRace (field) { return (e) => {
-    this.setState({ raceInEdit: (this.state.raceInEdit) ? {...this.state.raceInEdit, [field]: e.target.value} : {[field]: e.target.value}})
+  handleInput (field) { return (e) => {
+    const val = (e.target.value === 'true' || e.target.value === 'false') ? (e.target.value === 'true' ? false : true) : e.target.value
+    this.setState({modified: (this.state.modified ? {...this.state.modified, [field]: val } : {[field]: val})})
+  }}
+  handleSubmit (model) { return (e) => {
+    let stateObj = {model: undefined, modified: undefined, original: undefined}
+    let state = {... this.state}
+    let onSuccess = () => this.setState(stateObj)
+    if (!state.original.id) {
+      switch (model) {
+      case 'event':
+        onSuccess = () => <Redirect to={{pathname: '/console/event/' + this.props.event.id}} />
+        break;
+      case 'group':
+        state.modified.event = this.props.event.id
+        state.groupSelected = stateObj.groupSelected = this.props.event.groups.length
+        break;
+      case 'race':
+        state.modified.group = this.props.event.groups[this.state.groupSelected].id
+        state.raceSelected = stateObj.raceSelected = this.props.event.groups[this.state.groupSelected].races.length
+        break;
+      }
+    }
+    this.dispatch(actionCreators.submit(state, onSuccess))
   }}
   handleSelectRace (index) { return (e) => {
     this.setState({raceSelected: (this.state.raceSelected === index) ? -1 : index})
   }}
   handleSelectGroup (index) { return (e) => {
-    if (!this.state.raceInEdit) {
-      const onSuccess = () => this.setState({groupSelected: (this.state.groupSelected === index) ? -1 : index, raceSelected: -1})
-      if (!this.props.selectedEvent.groups[index].races) {
-         return this.dispatch(actionCreators.getGroup(this.props.selectedEvent.groups[index].id, index, onSuccess))
-      }
-      onSuccess()
-    }
+    this.setState({groupSelected: (this.state.groupSelected === index) ? -1 : index, raceSelected: -1})
   }}
-  handleSubmitEvent () {
-    const onSuccess = () => this.setState({eventInEdit: undefined})
-    this.dispatch(actionCreators.submitEvent(this.state.eventInEdit, onSuccess))
-  }
-  handleSubmitGroup () {
-    const onSuccess = () => this.setState({groupInEdit: undefined})
-    this.dispatch(actionCreators.submitGroup(this.state.groupInEdit, this.state.groupSelected, onSuccess))
-  }
-  handleSubmitRace () {
-    const onSuccess = () => this.setState({raceInEdit: undefined})
-    this.dispatch(actionCreators.submitRace(this.state.raceInEdit, this.state.groupSelected, this.state.raceSelected, onSuccess))
-  }
   dragStartHandler (E) {
     console.log(`drag start - ${E.currentTarget.dataset.id}`)
     this.dragItem = {
@@ -159,34 +169,30 @@ export class EventManager extends BaseComponent {
     E.preventDefault()
     console.log(`delete ${E.currentTarget.dataset.name} - ${E.currentTarget.parentNode.dataset.id}`)
   }
-  dialogueNagitiveHandler (E) {
-    E.preventDefault()
-    this.setState({
-      showDialogue: 0
-    })
-  }
   render () {
-    const { location, selectedEvent } = this.props
-    const { eventInEdit, groupInEdit, groupSelected, raceInEdit, raceSelected, showDialogue } = this.state
-    if (!selectedEvent) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
-    return (<div>
-      <Header location={location} nav='event' />
+    const { location, event } = this.props
+    const { modified, original, model, groupSelected, raceSelected } = this.state
+    if (event === -1) {
+      return <Redirect to={{pathname: '/console'}} />
+    } else if (!event) {
+      return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div>
+    }
+    return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' />
       <div className={css.mainBody}>
-        {renderInfo(eventInEdit, selectedEvent, this.handleInputEvent, this.handleSubmitEvent)}
+        {render.info({event, onEdit: this.handleStartEdit('event', event)})}
         <div className={css.managerList}>
           <div><h3>組別</h3>
-            {renderList(groupInfo, selectedEvent.groups, groupSelected, groupInEdit, this.handleInputGroup, this.handleSelectGroup)}
-            {renderFt(groupInEdit, groupSelected, this.handleSubmitGroup, this.handleCancelAddGroup, this.handleDeleteGroup, this.handleAddGroup, this.handleEditGroup)}
+            {event.groups && render.list({array: event.groups, selected: groupSelected, onSelect: this.handleSelectGroup})}
+            {render.ft(groupSelected, 'group', this.handleStartEdit, event.groups[groupSelected])}
           </div>
           <div><h3>組別賽制</h3>
-            {groupSelected !== -1 && selectedEvent.groups[groupSelected].races && renderList(raceInfo, selectedEvent.groups[groupSelected].races, raceSelected, raceInEdit, this.handleInputRace, this.handleSelectRace)}
-            {(groupSelected !== -1) && renderFt(raceInEdit, raceSelected, this.handleSubmitRace, this.handleCancelAddRace, this.handleDeleteRace, this.handleAddRace, this.handleEditRace)}
+            {groupSelected !== -1 && render.list({array: event.groups[groupSelected].races, selected: raceSelected, onSelect: this.handleSelectRace})}
+            {groupSelected !== -1 && render.ft(raceSelected, 'race', this.handleStartEdit, event.groups[groupSelected].races[raceSelected])}
           </div>
-          <div><h3>選手賽籍</h3>
-          </div>
+          <div><h3>選手賽籍</h3></div>
         </div>
       </div>
-      { <Dialogue {...{enable: showDialogue, msg: this.alertMsg, title: 'move event', nagitiveHandler: this.dialogueNagitiveHandler}} /> }
+      <Dialogue content={model && render.overlay({model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete})} />
     </div>)
   }
 }

@@ -32,7 +32,9 @@ const Table = ({ list, selectedIndex, editBody, inEdit, listNameFunc, readOnly, 
 export default Table
 export const renderInput = {
   checkbox: ({disabled, onChange, value}) => <input type='checkbox' onChange={onChange} checked={value} value={value} disabled={disabled} />,
+  datetime: ({disabled, onChange, value}) => <input type='datetime-local' onChange={onChange} value={value} disabled={disabled} />,
   password: ({disabled, onChange, value}) => <input type='password' onChange={onChange} value={value} disabled={disabled} />,
   text: ({disabled, onChange, value}) => <input type='text' onChange={onChange} value={value} disabled={disabled} />,
+  number: ({disabled, onChange, value}) => <input type='number' onChange={onChange} value={value} disabled={disabled} />,
   textarea: ({disabled, onChange, value}) => <textarea onChange={onChange} value={value} disabled={disabled} />
 }

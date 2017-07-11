@@ -1,3 +1,9 @@
+.wrap {
+  
+}
+.fixed>div {
+  position: fixed;
+}
 .mainBody {
   position: absolute;
   top: 0;
@@ -15,51 +21,50 @@
   margin: 200px auto;
   text-align: center;
 }
-
-.mainBody section {
-  margin: 48px 16px;
-  border-left: solid 6px RGBA(66, 66, 66, 0.8);
-  padding: 0 16px;
-  color: #E0E4E9;
-}
-.mainBody section input {
-  border: 0px;
-  border-bottom: solid 1px #E0E4E9;
-  background: RGBA(66, 66, 66, 0.2);
+.info {
+  position: relative;
+  margin: 50px 0 15px 0;
+  padding: 10px 25px;
+  width: 100%;
   color: #fff;
-  font-size: 18px;
-  margin-left: 8px;
-  outline: none;
-  margin-right: 8px;
-  padding: 4px 8px;
 }
-
-.mainBody section input::placeholder {
+.info h2 {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.4px;
+  margin: 0 0 3px 0;
+}
+.info h3 {
+  font-size: 15px;
+  font-weight: 300;
   color: #ddd;
+  letter-spacing: 0.3px;
+  display: inline-block;
 }
-.mainBody section>ul li {
-  padding: 8px 16px;
-  font-size: 18px;
+.info .btn {
+  position: absolute;
+  bottom: 10px;
+  right: 25px;
 }
-
-.mainBody section label {
-  font-size: 14px;
-  opacity: .8;
-  color: #E0E4E9;
+.lights {
+  display: inline-block;
   margin: 0 0 0 20px;
 }
-.mainBody section label::first-child {
-  margin: 0;
+.lights li {
+  font-size: 11px;
+  display: inline-block;
+  border: 0;
+  border-radius: 20px;
+  background: #aaa;
+  padding: 1px 5px;
+  margin: 0 20px 0 0;
 }
-.mainBody section .name::before {
-  content: "\00a0 \00a0";
+.lights .on {
+  background: #0c0;
 }
-
-.mainBody section .name {
-  font-size: 18px;
-  color: #fff;
+.time {
+  margin: 0 0 0 20px;
 }
-
 .managerList {
   position: relative;
   display: flex;
@@ -130,57 +135,11 @@
   height: 39px;
   background: RGBA(255, 255, 255, 0.4);
 }
-
-.editPanel {
-  position: absolute;
-  bottom: 0;
-  background: RGBA(255, 255, 255, 0.6);
-  border: 0;
-  border-radius: 2px;
-  align-items: flex-start;
-  justify-content: flex-start;
-  flex-direction: column;
-  z-index: 999;
+.boxFt {
+  margin: 20px 0 0 110px;
 }
-
-.editPanel input {
-  max-width: 360px;
-}
-
-.editPanel > div {
-  margin: 12px 6px;
-}
-
-.editPanel > div > div {
-  margin: 6px 0;
-}
-
-.editPanel > div > div > span {
-  display: inline-block;
-  padding: 6px 12px;
-  text-align: center;
-  background: RGBA(255, 255, 255, 0.6);
-  color: #333;
-  border: solid 1px #fff;
-  border-radius: 4px;
-  margin-right: 6px;
-}
-
-.editPanel > span {
-  display: inline-block;
-  width: 26px;
-  height: 26px;
-  text-align: center;
-  line-height: 26px;
-  background: RGBA(255, 255, 255, 0.6);
-  color: #333;
-  border: solid 1px #fff;
-  border-radius: 4px;
-}
-
-.hidden,
-[hidden] {
-    display: none !important;
+.boxFt button {
+  margin: 0 30px 0 0;
 }
 .right {
   float: right;
