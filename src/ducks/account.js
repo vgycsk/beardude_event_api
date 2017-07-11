@@ -1,3 +1,5 @@
+/* global fetch */
+
 // types
 const LOGIN = 'manager/LOGIN'
 const LOGOUT = 'manager/LOGOUT'
@@ -26,12 +28,12 @@ export const actionCreators = {
   login: () => async (dispatch, getState) => {
     let credentials = getState().account.credentials
     let fetchObject = {
-        method: 'post',
-        credentials: 'same-origin',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
     }
     delete credentials.error
     fetchObject.body = JSON.stringify(credentials)
@@ -50,7 +52,7 @@ export const actionCreators = {
   logout: () => async (dispatch, getState) => {
     try {
       const response = await fetch('/api/manager/logout', {credentials: 'same-origin'})
-      const manager = await response.json()
+      const res = await response.json()
 
       if (response.status === 200) {
         return dispatch({type: LOGOUT})
@@ -71,7 +73,7 @@ const initialState = {
   }
 }
 const reducer = (state = initialState, action) => {
-  const {type, payload, error} = action
+  const {type, payload} = action
 
   switch (type) {
     case ACCOUNT_INFO: {

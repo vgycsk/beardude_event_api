@@ -1,3 +1,5 @@
+/* global fetch */
+
 // types
 const ADD_GROUP = 'event/ADD_GROUP'
 const GET_GROUP = 'event/GET_GROUP'
@@ -5,7 +7,6 @@ const CANCEL_ADD_GROUP = 'event/CANCEL_ADD_GROUP'
 const DELETE_GROUP = 'event/DELETE_GROUP'
 
 const ADD_RACE = 'event/ADD_RACE'
-const GET_RACE = 'event/GET_RACE'
 const CANCEL_ADD_RACE = 'event/CANCEL_ADD_RACE'
 const DELETE_RACE = 'event/DELETE_RACE'
 
@@ -16,12 +17,14 @@ const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
 const EVENT_ERR = 'event/EVENT_ERR'
 
-const returnSubmitObj = (obj) => { return {
-  method: 'post',
-  credentials: 'same-origin',
-  headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-  body: JSON.stringify(obj)
-}}
+const returnSubmitObj = (obj) => {
+  return {
+    method: 'post',
+    credentials: 'same-origin',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(obj)
+  }
+}
 // actions
 export const actionCreators = {
   addGroup: (successCallback) => (dispatch) => {
@@ -49,7 +52,6 @@ export const actionCreators = {
         return successCallback()
       }
       throw res.message
-
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: e}})
     }
@@ -63,7 +65,6 @@ export const actionCreators = {
         return successCallback()
       }
       throw res.message
-
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: e}})
     }
@@ -82,23 +83,20 @@ export const actionCreators = {
   },
   getGroup: (id, index, successCallback) => async (dispatch) => {
     try {
-      const response = await fetch( '/api/group/mgmtInfo/' + id, {credentials: 'same-origin'})
+      const response = await fetch('/api/group/mgmtInfo/' + id, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
         dispatch({type: GET_GROUP, payload: {...res, index: index}})
         return successCallback()
       }
       throw res.message
-
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: e}})
     }
   },
   getSelectedEvent: (id) => async (dispatch, getState) => {
-    const store = getState().event.selectedEvent
-
     if (id === 'new') {
-        return dispatch({type: GET_SELECTED_EVENT, payload: { event: { groups: [] } }})
+      return dispatch({type: GET_SELECTED_EVENT, payload: { event: { groups: [] } }})
     }
     try {
       const response = await fetch('/api/event/mgmtInfo/' + id, {credentials: 'same-origin'})
@@ -120,7 +118,6 @@ export const actionCreators = {
         return successCallback()
       }
       throw res.message
-
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: e}})
     }
@@ -134,7 +131,6 @@ export const actionCreators = {
         return successCallback()
       }
       throw res.message
-
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: e}})
     }
@@ -148,7 +144,6 @@ export const actionCreators = {
         return successCallback()
       }
       throw res.message
-
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: e}})
     }
@@ -161,7 +156,7 @@ const initialState = {
   events: []
 }
 export const reducer = (state = initialState, action) => {
-  const {type, payload, error} = action
+  const {type, payload} = action
 
   switch (type) {
     case ADD_GROUP: {
@@ -176,7 +171,7 @@ export const reducer = (state = initialState, action) => {
     }
     case CANCEL_ADD_GROUP: {
       let nextState = {...state}
-      if (!nextState.selectedEvent.groups[nextState.selectedEvent.groups.length -1].id) {
+      if (!nextState.selectedEvent.groups[nextState.selectedEvent.groups.length - 1].id) {
         nextState.selectedEvent.groups.pop()
       }
       return nextState

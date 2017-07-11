@@ -1,3 +1,5 @@
+/* global fetch */
+
 import { actionCreators as racerActionCreators } from './racer'
 
 // types
@@ -9,15 +11,15 @@ const SELECT_TEAM = 'team/SELECT_TEAM'
 const SUBMIT_TEAM = 'team/SUBMIT_TEAM'
 const ADD_RACER = 'team/ADD_RACER'
 const REMOVE_RACER = 'team/REMOVE_RACER'
-const TEAM_ERR  ='team/TEAM_ERR'
+const TEAM_ERR = 'team/TEAM_ERR'
 
 // actions
 export const actionCreators = {
   addRacer: (racer) => (dispatch) => {
-    dispatch({type: ADD_RACER, payload: { racer } })
+    dispatch({type: ADD_RACER, payload: {racer}})
   },
   removeRacer: (id, toRestore) => (dispatch) => {
-    dispatch({type: REMOVE_RACER, payload: { id, toRestore } })
+    dispatch({type: REMOVE_RACER, payload: {id, toRestore}})
   },
   create: () => (dispatch) => {
     dispatch({type: CREATE_TEAM})
@@ -39,7 +41,7 @@ export const actionCreators = {
     }
   },
   input: (field, value) => (dispatch) => {
-    dispatch({type: EDIT_TEAM, payload: {field, value}})  
+    dispatch({type: EDIT_TEAM, payload: {field, value}})
   },
   selectTeam: (index) => async (dispatch, getState) => {
     let teamStore = getState().team
@@ -66,10 +68,10 @@ export const actionCreators = {
         method: 'post',
         credentials: 'same-origin',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ...store.inEdit, id: teamId})
+        body: JSON.stringify({ ...store.inEdit, id: teamId })
       })
       const res = await response.json()
       if (response.status === 200) {
@@ -90,7 +92,7 @@ const initialState = {
   teams: undefined
 }
 const reducer = (state = initialState, action) => {
-  const {type, payload, error} = action
+  const {type, payload} = action
 
   switch (type) {
     case ADD_RACER: {
