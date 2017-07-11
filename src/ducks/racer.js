@@ -1,3 +1,5 @@
+/* global fetch */
+
 // types
 const CANCEL_EDIT = 'racer/CANCEL_EDIT'
 const CREATE_RACER = 'racer/CREATE_RACER'
@@ -29,7 +31,7 @@ export const actionCreators = {
     }
   },
   input: (field, value) => (dispatch) => {
-    dispatch({type: EDIT_RACER, payload: {field, value}})  
+    dispatch({type: EDIT_RACER, payload: {field, value}})
   },
   selectRacer: (index) => async (dispatch, getState) => {
     let racerStore = getState().racer
@@ -56,10 +58,10 @@ export const actionCreators = {
         method: 'post',
         credentials: 'same-origin',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ...store.inEdit, id: racerId})
+        body: JSON.stringify({ ...store.inEdit, id: racerId })
       })
       const res = await response.json()
       if (response.status === 200) {
@@ -79,7 +81,7 @@ const initialState = {
   racers: undefined
 }
 const reducer = (state = initialState, action) => {
-  const {type, payload, error} = action
+  const {type, payload} = action
 
   switch (type) {
     case CANCEL_EDIT: {

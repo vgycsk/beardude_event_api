@@ -15,45 +15,45 @@
  */
 
 module.exports = function (data) {
-    var logContent = data || '';
-    var req = this.req;
-    var res = this.res;
-    var response = 'Sending 403 ("Forbidden") response';
-    var sails = req._sails;
-    var statusCode = 403;
-    var statusTitle = 'Forbidden';
-    var viewData = data;
+  var logContent = data || ''
+  var req = this.req
+  var res = this.res
+  var response = 'Sending 403 ("Forbidden") response'
+  var sails = req._sails
+  var statusCode = 403
+  var statusTitle = 'Forbidden'
+  var viewData = data
 
     // Set status code
-    res.status(statusCode);
-    sails.log.verbose(response, logContent);
+  res.status(statusCode)
+  sails.log.verbose(response, logContent)
 
     // If the user-agent wants JSON, always respond with JSON
     // If views are disabled, revert to json
-    if (req.wantsJSON || sails.config.hooks.views === false) {
-        if (typeof viewData === 'string') {
-            return res.jsonx({
+  if (req.wantsJSON || sails.config.hooks.views === false) {
+    if (typeof viewData === 'string') {
+      return res.jsonx({
 //                status: statusTitle,
 //                code: statusCode,
-                message: viewData
-            });
-        }
-        return res.jsonx(data);
+        message: viewData
+      })
     }
+    return res.jsonx(data)
+  }
 
     // Attempt to prettify data for views, if it's a non-error object
-    if (!(viewData instanceof Error) && typeof viewData === 'object') {
-        try {
-            viewData = require('util').inspect(data, {
-                depth: null
-            });
-        } catch (e) {
-            viewData = {};
-        }
+  if (!(viewData instanceof Error) && typeof viewData === 'object') {
+    try {
+      viewData = require('util').inspect(data, {
+        depth: null
+      })
+    } catch (e) {
+      viewData = {}
     }
-    return res.jsonx({
-        message: statusTitle
-    });
+  }
+  return res.jsonx({
+    message: statusTitle
+  })
     /*
     return res.view('error', {
         title: 'Forbidden'
@@ -69,5 +69,4 @@ module.exports = function (data) {
         return res.send(html);
     });
     */
-};
-
+}

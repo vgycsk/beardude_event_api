@@ -1,21 +1,21 @@
 module.exports = {
-    attributes: {
+  attributes: {
         // uuid
-        name: 'string',
+    name: 'string',
 
         // original name
-        fileName: 'string',
+    fileName: 'string',
 
         // file size
-        size: 'integer',
+    size: 'integer',
 
         // local file
-        fd: 'string',
+    fd: 'string',
 
         // {width: 120, height: 90}
-        dimension: 'json',
+    dimension: 'json',
 
         // 1. local  2. trashed  3. active
-        fileStatus: 'string'
-    }
-};
+    fileStatus: 'string'
+  }
+}

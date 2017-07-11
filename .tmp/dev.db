@@ -58,15 +58,6 @@
         "createdAt": "2017-07-10T09:09:11.231Z",
         "updatedAt": "2017-07-10T09:09:11.231Z",
         "id": 5
-      },
-      {
-        "event": 6,
-        "nameCht": "bmx車",
-        "name": "bmx",
-        "createdAt": "2017-07-10T09:11:31.745Z",
-        "updatedAt": "2017-07-10T09:24:43.561Z",
-        "id": 6,
-        "racerNumberAllowed": 50
       }
     ],
     "image": [],
@@ -111,7 +102,7 @@
         "name": "Heat 1",
         "nameCht": "資格賽1",
         "laps": 15,
-        "racerNumberAllowed": 60,
+        "racerNumberAllowed": 50,
         "isCheckinOpen": false,
         "isEntryRace": true,
         "requirePacer": false,
@@ -119,24 +110,39 @@
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-05-26T04:34:03.891Z",
-        "updatedAt": "2017-05-26T10:41:04.007Z",
+        "updatedAt": "2017-07-10T15:50:52.079Z",
         "id": 1,
         "pacerEpc": "e019231233333"
       },
       {
-        "group": 2,
-        "name": "Heat 2",
-        "nameCht": "資格賽2",
-        "laps": 10,
-        "racerNumberAllowed": 60,
-        "isEntryRace": true,
-        "requirePacer": false,
+        "group": 3,
+        "nameCht": "資格賽1",
+        "name": "Qualification",
+        "racerNumberAllowed": 50,
+        "laps": 15,
         "advancingRules": [],
+        "isEntryRace": true,
+        "requirePacer": true,
         "testerEpc": [],
         "recordsHashTable": {},
-        "createdAt": "2017-05-26T05:25:55.091Z",
-        "updatedAt": "2017-05-26T05:25:55.091Z",
-        "id": 3
+        "createdAt": "2017-07-10T14:23:45.765Z",
+        "updatedAt": "2017-07-10T14:23:45.765Z",
+        "id": 4
+      },
+      {
+        "group": 3,
+        "nameCht": "資格賽2",
+        "name": "Qualification2",
+        "racerNumberAllowed": 50,
+        "laps": 15,
+        "advancingRules": [],
+        "isEntryRace": true,
+        "requirePacer": true,
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-07-10T14:27:48.934Z",
+        "updatedAt": "2017-07-10T14:27:48.934Z",
+        "id": 5
       }
     ],
     "racer": [
@@ -543,7 +549,8 @@
         "defaultsTo": true
       },
       "requirePacer": {
-        "type": "boolean"
+        "type": "boolean",
+        "defaultsTo": true
       },
       "pacerEpc": {
         "type": "string"
@@ -808,7 +815,7 @@
       "id": 3
     },
     "race": {
-      "id": 3
+      "id": 6
     },
     "racer": {
       "id": 9

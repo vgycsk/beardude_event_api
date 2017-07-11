@@ -1,3 +1,5 @@
+/* global fetch */
+
 export const types = {
   FETCH_POSTS_REQUEST: 'FETCH_POSTS_REQUEST',
   FETCH_POSTS_RESPONSE: 'FETCH_POSTS_RESPONSE',

@@ -1,1 +1,1 @@
-./node_modules/.bin/eslint --env browser --env node --ignore-path .eslintignore api/**/*.js config/**/*.js test/**/*.js test/**/*.spec.js
+./node_modules/.bin/standard api/**/*.js config/**/*.js test/**/*.js test/**/*.spec.js src/**/*.js

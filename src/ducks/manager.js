@@ -1,3 +1,5 @@
+/* global fetch */
+
 // types
 const CANCEL_EDIT = 'manager/CANCEL_EDIT'
 const CREATE_MANAGER = 'manager/CREATE_MANAGER'
@@ -29,7 +31,7 @@ export const actionCreators = {
     }
   },
   input: (field, value) => (dispatch) => {
-    dispatch({type: EDIT_MANAGER, payload: {field, value}})  
+    dispatch({type: EDIT_MANAGER, payload: {field, value}})
   },
   selectManager: (index) => async (dispatch, getState) => {
     let managerStore = getState().manager
@@ -55,11 +57,8 @@ export const actionCreators = {
       const response = await fetch((managerId) ? '/api/manager/update' : '/api/manager/create', {
         method: 'post',
         credentials: 'same-origin',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...store.inEdit, id: managerId})
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...store.inEdit, id: managerId })
       })
       const res = await response.json()
       if (response.status === 200) {
@@ -79,7 +78,7 @@ const initialState = {
   managers: undefined
 }
 const reducer = (state = initialState, action) => {
-  const {type, payload, error} = action
+  const {type, payload} = action
 
   switch (type) {
     case CANCEL_EDIT: {
