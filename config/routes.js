@@ -57,7 +57,7 @@ module.exports.routes = {
     // 1.2.8
     'post /api/race/update': 'RaceController.update',
     // 1.2.6
-    'post /api/race/delete': 'RaceController.delete',
+    'get /api/race/delete/:id': 'RaceController.delete',
     // 1.4.5, 6.2.4
     'post /api/race/racer/add': 'RaceController.addRacer',
     // 1.4.6
