@@ -59,7 +59,7 @@ export const actionCreators = {
   submit: (state, successCallback) => async (dispatch) => {
     const types = { event: SUBMIT_EVENT, group: SUBMIT_GROUP, race: SUBMIT_RACE }
     try {
-      const response = await fetch((state.original.id) ? `/api/${state.model}/update` : `api/${state.model}/create`, {
+      const response = await fetch((state.original.id) ? `/api/${state.model}/update` : `/api/${state.model}/create`, {
         method: 'post',
         credentials: 'same-origin',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },

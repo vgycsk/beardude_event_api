@@ -42,14 +42,12 @@ const returnInputs = {
 const title = { event: '活動', group: '組別', race: '賽事' }
 const render = {
   delete: (model, original, onDelete) => {
-    if (model === 'event' && original.groups.length === 0) {
-      return <Button style='alert' onClick={onDelete(model)} text='刪除' />
-    } else if (model === 'group' && original.races.length === 0 && original.registrations.length === 0) {
-      return <Button style='alert' onClick={onDelete(model)} text='刪除' />
-    } else if (model === 'race' && original.registrations.length === 0) {
+    if ( (model === 'event' && original.groups.length === 0) ||
+      (model === 'group' && original.races.length === 0 && original.registrations.length === 0) ||
+      (model === 'race' && original.registrations.length === 0) ) {
       return <Button style='alert' onClick={onDelete(model)} text='刪除' />
     }
-    return  <Button style='disabled' text='刪除' />
+    return <Button style='disabled' text='刪除' />
   },
   info: ({event, onEdit}) => <div className={css.info}>
     <h2>{event.nameCht}</h2>
@@ -63,8 +61,7 @@ const render = {
   </div>,
   ft: (selected, model, onEdit, editObj) => <span>
   <Button style='listFtIcon' text='+' onClick={onEdit(model, {})} /> {selected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={onEdit(model, editObj)} /></span>}</span>,
-  list: ({array, selected, onSelect}) => <ul>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><Button style='list' text={V.nameCht ? V.nameCht : V.name} counter={(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed} onClick={onSelect(I)}/>
-  }</li>)}</ul>,
+  list: ({array, selected, onSelect}) => <ul>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><Button style='list' text={V.nameCht ? V.nameCht : V.name} counter={(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed} onClick={onSelect(I)} /></li>)}</ul>,
   overlay: ({model, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
   <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
     <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)) })}</li>)}</ul>
@@ -100,7 +97,7 @@ export class EventManager extends BaseComponent {
   }
   handleDelete (model) { return (e) => {
     let stateObj = {model: undefined, modified: undefined, original: undefined}
-    let onSuccess = () => this.setState(stateObj)
+    const onSuccess = () => this.setState(stateObj)
     stateObj[model + 'Selected'] = -1
     this.dispatch(actionCreators.delete(this.state, onSuccess))
   }}
@@ -115,7 +112,7 @@ export class EventManager extends BaseComponent {
     if (!state.original.id) {
       switch (model) {
       case 'event':
-        onSuccess = () => <Redirect to={{pathname: '/console/event/' + this.props.event.id}} />
+        stateObj.model = -1
         break;
       case 'group':
         state.modified.event = this.props.event.id
@@ -176,6 +173,9 @@ export class EventManager extends BaseComponent {
       return <Redirect to={{pathname: '/console'}} />
     } else if (!event) {
       return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div>
+    }
+    if (model === -1) {
+      return <Redirect to={{pathname: '/console/event/' + event.id}} />
     }
     return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' />
       <div className={css.mainBody}>
