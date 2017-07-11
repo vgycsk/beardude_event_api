@@ -1,0 +1,827 @@
+{
+  "data": {
+    "event": [
+      {
+        "name": "Night Market Crit: Taipei",
+        "nameCht": "夜市繞圈賽",
+        "assignedRaceNumber": 300,
+        "startTime": 1501113600000,
+        "endTime": 1501243200000,
+        "lapDistance": 1100,
+        "location": "Taipei",
+        "isPublic": true,
+        "isRegistrationOpen": false,
+        "isTeamRegistrationOpen": true,
+        "testerEpc": [
+          "e01923123333123",
+          "e01923123333123a"
+        ],
+        "createdAt": "2017-05-25T05:16:12.378Z",
+        "updatedAt": "2017-07-09T05:21:33.567Z",
+        "id": 6
+      }
+    ],
+    "group": [
+      {
+        "event": 6,
+        "name": "Track Bike",
+        "nameCht": "場地車",
+        "rules": "固定齒",
+        "createdAt": "2017-05-25T05:20:21.236Z",
+        "updatedAt": "2017-05-25T05:20:37.184Z",
+        "id": 2,
+        "racerNumberAllowed": 100
+      },
+      {
+        "event": 6,
+        "name": "Road - Men",
+        "nameCht": "公路車 - 男子",
+        "rules": "",
+        "createdAt": "2017-06-20T07:43:06.852Z",
+        "updatedAt": "2017-06-20T07:43:06.852Z",
+        "id": 3,
+        "racerNumberAllowed": 150
+      },
+      {
+        "event": 6,
+        "name": "Road - Women",
+        "nameCht": "公路車 - 女子",
+        "rules": "",
+        "createdAt": "2017-06-20T07:43:18.062Z",
+        "updatedAt": "2017-06-20T07:43:18.062Z",
+        "id": 4,
+        "racerNumberAllowed": 100
+      },
+      {
+        "nameCht": "bmx車",
+        "name": "bmx",
+        "createdAt": "2017-07-10T09:09:11.231Z",
+        "updatedAt": "2017-07-10T09:09:11.231Z",
+        "id": 5
+      },
+      {
+        "event": 6,
+        "nameCht": "bmx車",
+        "name": "bmx",
+        "createdAt": "2017-07-10T09:11:31.745Z",
+        "updatedAt": "2017-07-10T09:24:43.561Z",
+        "id": 6,
+        "racerNumberAllowed": 50
+      }
+    ],
+    "image": [],
+    "manager": [
+      {
+        "email": "info@beardude.com",
+        "phone": "0905252302",
+        "firstName": "Azai",
+        "lastName": "Chan",
+        "password": "$2a$10$3OxHI5BMzkdiBe5mDy/ADO1yAK1fIZOLal.xsUWKsHjbiFjEiNDK.",
+        "isActive": true,
+        "createdAt": "2017-05-24T07:20:57.604Z",
+        "updatedAt": "2017-06-29T15:14:14.296Z",
+        "id": 2,
+        "street": "12F No,66 Sanchung Rd.",
+        "district": "Nangang",
+        "city": "Taipei City",
+        "country": "Taiwan",
+        "zip": "115"
+      },
+      {
+        "email": "ajasc4@gmail.com",
+        "phone": "0227274523",
+        "lastName": "詹",
+        "firstName": "凱盛",
+        "isActive": true,
+        "password": "$2a$10$.T5G4dkjGZ2xwFXTh0Qz.eRl9fKG8z94FNdbFEzaLjUKWN8.Pu5oW",
+        "street": "",
+        "district": "",
+        "city": "",
+        "county": "",
+        "country": "",
+        "zip": "",
+        "createdAt": "2017-06-29T15:21:34.244Z",
+        "updatedAt": "2017-06-29T15:21:34.244Z",
+        "id": 3
+      }
+    ],
+    "race": [
+      {
+        "group": 2,
+        "name": "Heat 1",
+        "nameCht": "資格賽1",
+        "laps": 15,
+        "racerNumberAllowed": 60,
+        "isCheckinOpen": false,
+        "isEntryRace": true,
+        "requirePacer": false,
+        "advancingRules": [],
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-05-26T04:34:03.891Z",
+        "updatedAt": "2017-05-26T10:41:04.007Z",
+        "id": 1,
+        "pacerEpc": "e019231233333"
+      },
+      {
+        "group": 2,
+        "name": "Heat 2",
+        "nameCht": "資格賽2",
+        "laps": 10,
+        "racerNumberAllowed": 60,
+        "isEntryRace": true,
+        "requirePacer": false,
+        "advancingRules": [],
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-05-26T05:25:55.091Z",
+        "updatedAt": "2017-05-26T05:25:55.091Z",
+        "id": 3
+      }
+    ],
+    "racer": [
+      {
+        "email": "ajasc4@gmail.com",
+        "phone": "0920120123",
+        "firstName": "阿才",
+        "lastName": "李",
+        "team": 13,
+        "password": "$2a$10$7QC0Rn6XWvLMaWUYBoiu0udi6Cn1JeTWUSUKoDssNDS2J1PLVkAZ6",
+        "isActive": true,
+        "createdAt": "2017-05-26T09:02:20.056Z",
+        "updatedAt": "2017-06-19T10:06:17.529Z",
+        "id": 3,
+        "nickName": "才才",
+        "idNumber": "A111222333",
+        "street": "武林街10號5樓之1",
+        "city": "台北市",
+        "country": "台灣",
+        "zip": "100",
+        "district": "中正區"
+      },
+      {
+        "email": "mightybj@gmail.com",
+        "phone": "0909123123",
+        "firstName": "阿炮",
+        "lastName": "許",
+        "team": 15,
+        "password": "$2a$10$VLF1IxTtCppnRBn5zWdk6OPtgCh1GrcVTXEzluYCz3nr0YAMcToue",
+        "isActive": false,
+        "createdAt": "2017-05-26T09:02:20.303Z",
+        "updatedAt": "2017-06-28T09:34:14.678Z",
+        "id": 4,
+        "nickName": "炮炮",
+        "idNumber": "M111222333",
+        "street": "林口街80巷73號3樓",
+        "city": "台北市",
+        "country": "台灣",
+        "zip": "199"
+      },
+      {
+        "email": "wonghong@gmail.com",
+        "phone": "0955123123",
+        "firstName": "Hong",
+        "lastName": "Wong",
+        "team": null,
+        "password": "$2a$10$6ovr6RQqt/gXnygCYUX9heWMYSZFa0xMGlLQ1yA3Xl5b.L/2.TOxy",
+        "isActive": false,
+        "createdAt": "2017-05-28T15:20:20.944Z",
+        "updatedAt": "2017-06-29T07:37:31.322Z",
+        "id": 5,
+        "nickName": "紅宅",
+        "idNumber": "R100200300"
+      },
+      {
+        "email": "bbsgod@gmail.com",
+        "phone": "0911111111",
+        "firstName": "Pipi",
+        "lastName": "Wong",
+        "team": 15,
+        "password": "$2a$10$KbWa1OY7Y0C4Ks.Xihe1nOruzlur7cFsvz4J/RliBJYB/nZciOH3K",
+        "isActive": false,
+        "createdAt": "2017-05-28T15:20:32.919Z",
+        "updatedAt": "2017-06-28T10:11:57.417Z",
+        "id": 6
+      },
+      {
+        "email": "abcd123@hotmail.com",
+        "phone": "0911123123",
+        "lastName": "王",
+        "firstName": "小華",
+        "password": "$2a$10$ITjcIAlRoKbYSX7FV1Do.edFsdwcyZaSGoG.cS5vFH.irOVKm0iP6",
+        "isActive": false,
+        "street": "",
+        "district": "",
+        "city": "",
+        "county": "",
+        "country": "",
+        "zip": "",
+        "createdAt": "2017-06-19T11:18:54.979Z",
+        "updatedAt": "2017-06-28T13:18:56.565Z",
+        "id": 7,
+        "team": 15
+      },
+      {
+        "email": "123@33321.com",
+        "phone": "0909123123",
+        "lastName": "王",
+        "firstName": "大華",
+        "password": "$2a$10$fnXVMlz.f/rd13Q399ovC.KlzwmT.4OUpyzxvSMvb2sbGkd0QYRhy",
+        "isActive": false,
+        "street": "",
+        "district": "",
+        "city": "",
+        "county": "",
+        "country": "",
+        "zip": "",
+        "createdAt": "2017-06-19T11:57:59.199Z",
+        "updatedAt": "2017-06-29T05:41:23.694Z",
+        "id": 8,
+        "nickName": "大的",
+        "team": 14
+      },
+      {
+        "email": "123@333.com",
+        "lastName": "許",
+        "firstName": "小明",
+        "password": "$2a$10$G0FCI063QNpRbhRfoOmjWOq5UCEgo25h0RA.TYxyiaofwmjoMVyve",
+        "isActive": false,
+        "street": "",
+        "district": "",
+        "city": "",
+        "county": "",
+        "country": "",
+        "zip": "",
+        "createdAt": "2017-06-19T12:00:43.660Z",
+        "updatedAt": "2017-06-28T13:19:05.440Z",
+        "id": 9,
+        "team": 13
+      }
+    ],
+    "registration": [
+      {
+        "event": 6,
+        "group": 2,
+        "racer": 3,
+        "accessCode": "cnOx",
+        "epc": "",
+        "paid": true,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": true,
+        "createdAt": "2017-05-26T09:02:20.322Z",
+        "updatedAt": "2017-06-02T04:56:22.756Z",
+        "id": 1,
+        "raceNotes": [
+          {
+            "race": 1,
+            "note": "Dangerous conduct"
+          }
+        ]
+      },
+      {
+        "event": 6,
+        "group": 2,
+        "racer": 4,
+        "accessCode": "vIyV",
+        "epc": "",
+        "paid": true,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-05-26T09:02:20.326Z",
+        "updatedAt": "2017-05-26T09:02:20.326Z",
+        "id": 2
+      }
+    ],
+    "team": [
+      {
+        "name": "Nabiis",
+        "nameCht": "",
+        "description": "94潮!",
+        "url": "http://nabiishop.bigcartel.com/",
+        "createdAt": "2017-05-26T09:02:19.773Z",
+        "updatedAt": "2017-06-28T13:19:05.436Z",
+        "id": 13,
+        "leader": 3
+      },
+      {
+        "name": "Big Guns",
+        "nameCht": "砲王隊",
+        "description": "全部都很會放炮",
+        "url": "",
+        "createdAt": "2017-05-28T15:20:20.632Z",
+        "updatedAt": "2017-06-29T07:24:20.682Z",
+        "id": 14,
+        "leader": 8
+      },
+      {
+        "name": "Tigers",
+        "nameCht": "虎虎虎",
+        "description": "",
+        "url": null,
+        "createdAt": "2017-06-27T11:20:36.730Z",
+        "updatedAt": "2017-06-29T02:48:26.090Z",
+        "id": 15,
+        "leader": 4
+      }
+    ],
+    "event_managers__manager_events": [
+      {
+        "event_managers": 6,
+        "manager_events": 2,
+        "id": 4
+      }
+    ],
+    "race_registrations__registration_races": []
+  },
+  "schema": {
+    "event": {
+      "name": {
+        "type": "string"
+      },
+      "nameCht": {
+        "type": "string"
+      },
+      "assignedRaceNumber": {
+        "type": "integer",
+        "defaultsTo": 1
+      },
+      "startTime": {
+        "type": "integer"
+      },
+      "endTime": {
+        "type": "integer"
+      },
+      "lapDistance": {
+        "type": "integer"
+      },
+      "location": {
+        "type": "string"
+      },
+      "isPublic": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "isRegistrationOpen": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "isTeamRegistrationOpen": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "testerEpc": {
+        "type": "array",
+        "defaultsTo": []
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "group": {
+      "event": {
+        "type": "integer",
+        "model": "event",
+        "foreignKey": true,
+        "alias": "event"
+      },
+      "name": {
+        "type": "string"
+      },
+      "nameCht": {
+        "type": "string"
+      },
+      "racerNumberAllowed": {
+        "type": "integer"
+      },
+      "rules": {
+        "type": "string"
+      },
+      "result": {
+        "type": "array"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "image": {
+      "name": {
+        "type": "string"
+      },
+      "fileName": {
+        "type": "string"
+      },
+      "size": {
+        "type": "integer"
+      },
+      "fd": {
+        "type": "string"
+      },
+      "dimension": {
+        "type": "json"
+      },
+      "fileStatus": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "manager": {
+      "email": {
+        "type": "string",
+        "unique": true
+      },
+      "phone": {
+        "type": "string",
+        "unique": true
+      },
+      "firstName": {
+        "type": "string"
+      },
+      "lastName": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      },
+      "street": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "district": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "city": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "county": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "country": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "zip": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "isActive": {
+        "type": "boolean"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "race": {
+      "group": {
+        "type": "integer",
+        "model": "group",
+        "foreignKey": true,
+        "alias": "group"
+      },
+      "name": {
+        "type": "string"
+      },
+      "nameCht": {
+        "type": "string"
+      },
+      "laps": {
+        "type": "integer"
+      },
+      "racerNumberAllowed": {
+        "type": "integer"
+      },
+      "advancingRules": {
+        "type": "array",
+        "defaultsTo": []
+      },
+      "isEntryRace": {
+        "type": "boolean",
+        "defaultsTo": true
+      },
+      "requirePacer": {
+        "type": "boolean"
+      },
+      "pacerEpc": {
+        "type": "string"
+      },
+      "testerEpc": {
+        "type": "array",
+        "defaultsTo": []
+      },
+      "startTime": {
+        "type": "integer"
+      },
+      "endTime": {
+        "type": "integer"
+      },
+      "rfidData": {
+        "type": "array"
+      },
+      "recordsHashTable": {
+        "type": "json",
+        "defaultsTo": {}
+      },
+      "result": {
+        "type": "array"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "racer": {
+      "team": {
+        "type": "integer",
+        "model": "team",
+        "foreignKey": true,
+        "alias": "team"
+      },
+      "email": {
+        "type": "string",
+        "unique": true
+      },
+      "phone": {
+        "type": "string"
+      },
+      "firstName": {
+        "type": "string"
+      },
+      "lastName": {
+        "type": "string"
+      },
+      "nickName": {
+        "type": "string"
+      },
+      "birthday": {
+        "type": "string"
+      },
+      "idNumber": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      },
+      "street": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "district": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "city": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "county": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "country": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "zip": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "isActive": {
+        "type": "boolean"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "registration": {
+      "event": {
+        "type": "integer",
+        "model": "event",
+        "foreignKey": true,
+        "alias": "event"
+      },
+      "group": {
+        "type": "integer",
+        "model": "group",
+        "foreignKey": true,
+        "alias": "group"
+      },
+      "racer": {
+        "type": "integer",
+        "model": "racer",
+        "foreignKey": true,
+        "alias": "racer"
+      },
+      "accessCode": {
+        "type": "string"
+      },
+      "raceNumber": {
+        "type": "integer"
+      },
+      "epc": {
+        "type": "string",
+        "defaultsTo": ""
+      },
+      "paid": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "rfidRecycled": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "refundRequested": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "refunded": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "isDisqualified": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "raceNotes": {
+        "type": "json"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "team": {
+      "leader": {
+        "type": "integer",
+        "model": "racer",
+        "foreignKey": true,
+        "alias": "leader"
+      },
+      "name": {
+        "type": "string",
+        "unique": true
+      },
+      "nameCht": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "event_managers__manager_events": {
+      "id": {
+        "primaryKey": true,
+        "unique": true,
+        "autoIncrement": true,
+        "type": "integer"
+      },
+      "event_managers": {
+        "type": "integer",
+        "foreignKey": true,
+        "references": "event",
+        "on": "id",
+        "via": "manager_events"
+      },
+      "manager_events": {
+        "type": "integer",
+        "foreignKey": true,
+        "references": "manager",
+        "on": "id",
+        "via": "event_managers"
+      }
+    },
+    "race_registrations__registration_races": {
+      "id": {
+        "primaryKey": true,
+        "unique": true,
+        "autoIncrement": true,
+        "type": "integer"
+      },
+      "race_registrations": {
+        "type": "integer",
+        "foreignKey": true,
+        "references": "race",
+        "on": "id",
+        "via": "registration_races"
+      },
+      "registration_races": {
+        "type": "integer",
+        "foreignKey": true,
+        "references": "registration",
+        "on": "id",
+        "via": "race_registrations"
+      }
+    }
+  },
+  "counters": {
+    "event": {
+      "id": 6
+    },
+    "group": {
+      "id": 6
+    },
+    "image": {},
+    "manager": {
+      "id": 3
+    },
+    "race": {
+      "id": 3
+    },
+    "racer": {
+      "id": 9
+    },
+    "registration": {
+      "id": 2
+    },
+    "team": {
+      "id": 15
+    },
+    "event_managers__manager_events": {
+      "id": 4
+    },
+    "race_registrations__registration_races": {}
+  }
+}

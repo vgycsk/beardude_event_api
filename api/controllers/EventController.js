@@ -54,7 +54,33 @@ module.exports = {
 //        .populate('managers')
         .populate('groups')
         .then(function (modelData) {
-            return res.ok(modelData);
+            return res.ok({
+              event: modelData
+            });
+        })
+        .catch(function (E) {
+            return res.badRequest(E);
+        });
+    },
+    getManagementInfo: function (req, res) {
+        var eventId = parseInt(req.params.id);
+        var result;
+
+        Event.findOne({
+            id: eventId
+        })
+        .then(function (modelData) {
+            result = modelData.toJSON();
+            return Group.find({
+              event: eventId
+            })
+            .populate('registrations');
+        })
+        .then(function (modelData) {
+            result.groups = modelData;
+            return res.ok({
+              event: result
+            });
         })
         .catch(function (E) {
             return res.badRequest(E);
@@ -129,96 +155,35 @@ module.exports = {
             return res.badRequest(E);
         });
     },
-    // {event: ID}
+    */
+    // {id: ID}
     update: function (req, res) {
         var input = req.body;
         var updateObj;
-        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location'];
+        var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];
         var query = {
-            id: parseInt(input.event)
+            id: parseInt(input.id)
         };
 
         Event.findOne(query)
         .then(function (eventData) {
             updateObj = dataService.returnUpdateObj(fields, input, eventData);
+            if (updateObj.startTime) {
+                updateObj.startTime = moment(updateObj.startTime).valueOf();
+            }
+            if (updateObj.endTime) {
+                updateObj.endTime = moment(updateObj.endTime).valueOf();
+            }
             return Event.update(query, updateObj);
         })
-        .then(function (eventData) {
-            return res.ok({
-                message: 'Event updated',
-                event: eventData[0]
-            });
+        .then(function () {
+            return Event.findOne(query)
+    //        .populate('managers')
+            .populate('groups');
         })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    */
-    // event id
-    getGroupsAndRacersOfEvent: function (req, res) {
-        var eventId = req.params.id;
-        var resultObj = {};
-
-        Group.find({
-            event: eventId
-        })
-        .populate('registrations')
-        .populate('races')
-        .then(function (groupData) {
-            var funcs = [];
-
-            resultObj.groups = groupData;
-            groupData.forEach(function (group) {
-                var temp = [];
-
-                group.registrations.forEach(function (reg) {
-                    temp.push(reg.racer);
-                });
-                funcs.push(Racer.find({
-                    id: temp
-                }));
-            });
-            return Q.all(funcs);
-        })
-        .then(function (racerArraysData) {
-            resultObj.groups.forEach(function (group, index) {
-                var racers = racerArraysData[index];
-
-                group.registrations.forEach(function (reg) {
-                    racers.forEach(function (racer) {
-                        if (reg.racer === racer.id) {
-                            reg.racer = racer;
-                        }
-                    })
-                });
-            });
-            return res.ok(resultObj);
-        })
-        .catch(function (E) {
-            return res.badRequest(E);
-        });
-    },
-    // {event: ID, isRegistrationOpen: BOOL, isTeamRegistrationOpen, BOOL, isPublic: BOOL}
-    updateSwitch: function (req, res) {
-        var fields = ['isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic'];
-        var input = req.body;
-        var query = {
-            id: parseInt(input.event)
-        };
-        var updateObj = {};
-
-        fields.forEach(function (field) {
-            if (input[field] && input[field] !== '') {
-                updateObj[field] = true;
-            } else {
-                updateObj[field] = false;
-            }
-        });
-        Event.update(query, updateObj)
         .then(function (modelData) {
             return res.ok({
-                message: 'Event boolean field(s) updated',
-                event: modelData[0]
+              event: modelData
             });
         })
         .catch(function (E) {
@@ -281,18 +246,9 @@ module.exports = {
             if (now > startTime && now < endTime) {
                 throw new Error('Cannot delete an ongoing event');
             }
-            //
-            modelData.groups.forEach(function (group) {
-                groupIds.push(group.id);
-            });
-            if (groupIds.length === 0) {
-                return false;
-            }
             return Group.find({
-                id: groupIds
-            })
-            .populate('races')
-            .populate('registrations');
+                event: query.id
+            });
         })
         .then(function (groupData) {
             if (groupData) {

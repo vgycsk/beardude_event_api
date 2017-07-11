@@ -100,16 +100,16 @@
   background: #b6def5;
 }
 
-section>ul li {
+.tableBd section>ul li {
   margin: 0 0 12px 0;
 }
-section {
+.tableBd section {
   position: relative;
   padding: 20px;
   color: #777;
   font-size: 15px;
 }
-section:after {
+.tableBd section:after {
   position: absolute;
   display: block;
   content: "";
@@ -119,28 +119,28 @@ section:after {
   height: 1px;
   background: #ccc;
 }
-section:last-child {
+.tableBd section:last-child {
   padding-bottom: 40px;
 }
-section:last-child:after {
+.tableBd section:last-child:after {
   display: none;
 }
-h3 {
+.tableBd h3 {
   font-size: 24px;
   color: #000;
   font-weight: 300;
   margin: 0 0 10px 0;
 }
-label {
+.tableBd label {
   display: inline-block;
   width: 90px;
   margin: 0 10px 0 0;
   text-align: right;
   vertical-align: middle;
 }
-input[type=text],
-input[type=password],
-textarea {
+.tableBd input[type=text],
+.tableBd input[type=password],
+.tableBd textarea {
   display: inline-block;
   width: 360px;
   padding: 10px;
@@ -151,6 +151,7 @@ textarea {
   font-weight: 300;
   vertical-align: middle;
 }
-input:disabled, textarea:disabled {
+.tableBd input:disabled,
+.tableBd textarea:disabled {
     border-color: #fff;
 }

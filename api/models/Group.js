@@ -24,12 +24,19 @@ module.exports = {
             type: 'string',
             required: true
         },
+        racerNumberAllowed: {
+            type: 'integer'
+        },
+
         rules: {
             type: 'string'
         },
         // [{racer: ID, time: mm:ss}, {}, {}...]
         result: {
             type: 'array'
+        },
+        toJSON: function () {
+            return this.toObject();
         }
     }
 };

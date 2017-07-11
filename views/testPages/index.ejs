@@ -35,7 +35,7 @@
                 <% } %>
                 <hr>
                 <h3>Login</h3>
-                <form action="/manager/login" method="POST">
+                <form action="/api/manager/login" method="POST">
                     <ul>
                         <li>
                             <label>email</label>
@@ -50,11 +50,11 @@
                 </form>
                 <hr>
                 <h3>Logout</h3>
-                <a href="/manager/logout">Click to logout</a>
+                <a href="/api/manager/logout">Click to logout</a>
             </li>
             <li>
                 <h3>Activate</h3>
-                <form action="/manager/activate" method="POST">
+                <form action="/api/manager/activate" method="POST">
                     <ul>
                         <li>
                             <label>new password</label>
@@ -81,7 +81,7 @@
             </li>
             <li>
                 <h3>Create</h3>
-                <form action="/manager/create" method="POST">
+                <form action="/api/manager/create" method="POST">
                     <ul>
                         <li>
                             <label>Email</label>
@@ -165,7 +165,7 @@
         <ul>
             <li>
                 <h3>Create</h3>
-                <form action="/racer/create" method="POST">
+                <form action="/api/racer/create" method="POST">
                     <ul>
                         <li>
                             <label>Email</label>
@@ -275,7 +275,7 @@
                     var enddate = returnDate(timestampEnd);
                 %>
                 <p>Current time: <%= now %></p>
-                <form action="/event/create" method="POST">
+                <form action="/api/event/create" method="POST">
                     <ul>
                         <li>
                             <label>Name</label>
@@ -348,7 +348,7 @@
             <li>
                 <h3>Create</h3>
 
-                <form action="/group/create" method="POST">
+                <form action="/api/group/create" method="POST">
                     <ul>
                         <li>
                             <label>Event</label>
@@ -408,7 +408,7 @@
             <li>
                 <h3>Create</h3>
 
-                <form action="/race/create" method="POST">
+                <form action="/api/race/create" method="POST">
                     <ul>
                         <li>
                             <label>Group</label>
@@ -491,7 +491,7 @@
         <ul>
             <li>
                 <h3>signupAndCreateMultiple</h3>
-                <form action="/reg/signupAndCreateMultiple" method="POST">
+                <form action="/api/reg/signupAndCreateMultiple" method="POST">
                     <ul>
                         <li>
                             <label>Event</label>
@@ -553,7 +553,7 @@
             </li>
             <li>
                 <h3>Get info</h3>
-                <form action="/reg/info" method="POST">
+                <form action="/api/reg/info" method="POST">
                     <ul>
                         <li>
                             <label>event: </label><input type="number" name="event" /> (required)
@@ -573,7 +573,7 @@
             </li>
             <li>
                 <h3>Assign RFID</h3>
-                <form action="/reg/assignRfid" method="POST">
+                <form action="/api/reg/assignRfid" method="POST">
                   <ul>
                       <li>
                           <label>event: </label><input type="number" name="event" />
@@ -589,7 +589,7 @@
                 </form>
                 <hr>
                 <h3>Replace RFID</h3>
-                <form action="/reg/replaceRfid" method="POST">
+                <form action="/api/reg/replaceRfid" method="POST">
                   <ul>
                       <li>
                           <label>event: </label><input type="number" name="event" />
@@ -605,7 +605,7 @@
                 </form>
                 <hr>
                 <h3>Recycle RFID</h3>
-                <form action="/reg/recycleRfid" method="POST">
+                <form action="/api/reg/recycleRfid" method="POST">
                   <ul>
                       <li>
                           <label>epc: </label><input type="text" name="epc" />
@@ -616,7 +616,7 @@
             </li>
             <li>
                 <h3>admitRacer</h3>
-                <form action="/reg/admitRacer" method="POST">
+                <form action="/api/reg/admitRacer" method="POST">
                     <ul>
                         <li>
                             <label>Race: </label><input type="number" name="race" />
@@ -630,7 +630,7 @@
             </li>
             <li>
                 <h3>updateRaceNote</h3>
-                <form action="/reg/updateRaceNote" method="POST">
+                <form action="/api/reg/updateRaceNote" method="POST">
                     <ul>
                         <li>
                             <label>Race: </label><input type="number" name="race" />
@@ -646,7 +646,7 @@
                 </form>
                 <hr>
                 <h3>updateDisqualification</h3>
-                <form action="/reg/updateDisqualification" method="POST">
+                <form action="/api/reg/updateDisqualification" method="POST">
                     <ul>
                         <li>
                             <label>Race: </label><input type="number" name="race" />

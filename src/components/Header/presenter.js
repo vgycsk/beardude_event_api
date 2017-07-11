@@ -6,7 +6,7 @@ import css from './style.css'
 
 const navs = {
   base: [
-    { name: '活動', url: '/console' },
+    { name: '活動', url: '/console', exact: true },
     { name: '選手', url: '/console/racer' },
     { name: '隊伍', url: '/console/team' },
     { name: '管理員', url: '/console/manager' }
@@ -27,9 +27,9 @@ const renderAccountInfo = (that) => (<div className={css.account}>
   </ul> }
 </div>)
 
-const renderNav = (navs) => (<ul className={css.navContainer}>
-  { navs.map(nav => <li key={nav.name}><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url} exact>{nav.name}</NavLink></li>) }
-</ul>)
+const renderNav = (navs) => <ul className={css.navContainer}>{navs.map(nav => 
+  <li key={nav.name}><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url} exact={nav.exact}>{nav.name}</NavLink></li>
+)}</ul>
 
 class Header extends BaseComponent {
   constructor (props) {

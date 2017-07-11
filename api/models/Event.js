@@ -21,6 +21,7 @@ module.exports = {
             type: 'string',
             required: true
         },
+        // 選手背號
         assignedRaceNumber: {
             type: 'integer',
             defaultsTo: 1
@@ -60,6 +61,9 @@ module.exports = {
         testerEpc: {
             type: 'array',
             defaultsTo: []
+        },
+        toJSON: function () {
+            return this.toObject();
         }
     }
 };

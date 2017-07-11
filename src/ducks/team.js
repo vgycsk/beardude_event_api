@@ -27,7 +27,7 @@ export const actionCreators = {
   },
   getTeams: () => async (dispatch, getState) => {
     try {
-      const response = await fetch('/team/getTeams', {credentials: 'same-origin'})
+      const response = await fetch('/api/team/getTeams', {credentials: 'same-origin'})
       const res = await response.json()
 
       if (response.status === 200) {
@@ -48,7 +48,7 @@ export const actionCreators = {
       return dispatch({type: SELECT_TEAM, payload: {selectedIndex: index}})
     }
     try {
-      const response = await fetch('/team/getInfo/' + teamStore.teams[index].id, {credentials: 'same-origin'})
+      const response = await fetch('/api/team/getInfo/' + teamStore.teams[index].id, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
         return dispatch({type: SELECT_TEAM, payload: {...res, selectedIndex: index}})
@@ -62,7 +62,7 @@ export const actionCreators = {
     const store = getState().team
     const teamId = store.teams[store.selectedIndex].id
     try {
-      const response = await fetch((teamId) ? '/team/update' : '/team/create', {
+      const response = await fetch((teamId) ? '/api/team/update' : '/api/team/create', {
         method: 'post',
         credentials: 'same-origin',
         headers: {
