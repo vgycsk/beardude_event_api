@@ -12,27 +12,16 @@ const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
 
-const returnSubmitObj = (obj) => {
-  return {
-    method: 'post',
-    credentials: 'same-origin',
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(obj)
-  }
-}
 // actions
 export const actionCreators = {
   delete: (state, successCallback) => async (dispatch) => {
     const types = { event: DELETE_EVENT, group: DELETE_GROUP, race: DELETE_RACE }
     try {
-      const response = await fetch('/api/' + state.model + '/delete/' + state.original.id, {credentials: 'same-origin'})
+      const response = await fetch(`/api/${state.model}/delete/${state.original.id}`, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
         dispatch({type: types[state.model], payload: {...res, state: state}})
-        if (state.model !== 'event') {
-          successCallback()
-        }
-        return
+        if (state.model !== 'event') { successCallback() }
       }
       throw res.message
     } catch (e) {
@@ -57,7 +46,7 @@ export const actionCreators = {
       return successCallback()
     }
     try {
-      const response = await fetch('/api/event/mgmtInfo/' + id, {credentials: 'same-origin'})
+      const response = await fetch(`/api/event/mgmtInfo/${id}`, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
         return dispatch({type: GET_EVENT, payload: {...res}})
@@ -70,7 +59,12 @@ export const actionCreators = {
   submit: (state, successCallback) => async (dispatch) => {
     const types = { event: SUBMIT_EVENT, group: SUBMIT_GROUP, race: SUBMIT_RACE }
     try {
-      const response = await fetch((state.original.id) ? '/api/' + state.model + '/update' : '/api/' + state.model + '/create', returnSubmitObj({...state.modified, id: state.original.id}))
+      const response = await fetch((state.original.id) ? `/api/${state.model}/update` : `api/${state.model}/create`, {
+        method: 'post',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({...state.modified, id: state.original.id})
+      })
       const res = await response.json()
       if (response.status === 200) {
         dispatch({type: types[state.model], payload: {...res, state: state}})
