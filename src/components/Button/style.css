@@ -107,6 +107,10 @@ button {
   composes: listFt;
   color: #ccc;;
 }
+.listFtAlert {
+  composes: listFt;
+  color: #c20000;
+}
 .listFtRight {
   composes: listFt;
   float: right;

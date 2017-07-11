@@ -102,7 +102,7 @@
   display: flex;
   color: #fff;
   margin-right: 8px;
-  height: 39px;
+  min-height: 39px;
   line-height: 39px;
   cursor: pointer;
 }
