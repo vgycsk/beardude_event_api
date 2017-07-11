@@ -33,21 +33,18 @@ const renderList = (inputs, array, selected, inEdit, onChange, onSelect) => <ul>
   }</li>)}
 </ul>
 const renderFt = (inEdit, selected, onSubmit, onCancel, onDelete, onAdd, onEdit) => <span>{inEdit
-              ? <span><Button style='listFt' text='儲存' onClick={onSubmit} /><Button style='listFt' text='取消' onClick={onCancel}/><span className={css.right}><Button style='listFtAlert' text='刪除' onClick={onDelete} /></span></span>
-              : <span><Button style='listFtIcon' text='+' onClick={onAdd} /> {selected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={onEdit} /></span>}</span> }</span>
+  ? <span><Button style='listFt' text='儲存' onClick={onSubmit} /><Button style='listFt' text='取消' onClick={onCancel}/><span className={css.right}><Button style='listFtAlert' text='刪除' onClick={onDelete} /></span></span>
+  : <span><Button style='listFtIcon' text='+' onClick={onAdd} /> {selected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={onEdit} /></span>}</span> }</span>
 
 export class EventManager extends BaseComponent {
   constructor (props) {
     super(props)
-    console.log(this.props)
     this.state = {
       eventinEdit: undefined,
-      groupSelected: -1,
-      raceSelected: -1,
-      racerSelected: -1,
       groupInEdit: undefined,
+      groupSelected: -1,
       raceInEdit: undefined,
-      editPanel: 0,
+      raceSelected: -1,
       showDialogue: 0,
       dialoguePosHandler: null
     }
@@ -170,7 +167,7 @@ export class EventManager extends BaseComponent {
   }
   render () {
     const { location, selectedEvent } = this.props
-    const { eventInEdit, editPanel, groupInEdit, groupSelected, raceInEdit, raceSelected, showDialogue } = this.state
+    const { eventInEdit, groupInEdit, groupSelected, raceInEdit, raceSelected, showDialogue } = this.state
     if (!selectedEvent) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
     return (<div>
       <Header location={location} nav='event' />
@@ -185,7 +182,7 @@ export class EventManager extends BaseComponent {
             {groupSelected !== -1 && selectedEvent.groups[groupSelected].races && renderList(raceInfo, selectedEvent.groups[groupSelected].races, raceSelected, raceInEdit, this.handleInputRace, this.handleSelectRace)}
             {(groupSelected !== -1) && renderFt(raceInEdit, raceSelected, this.handleSubmitRace, this.handleCancelAddRace, this.handleDeleteRace, this.handleAddRace, this.handleEditRace)}
           </div>
-          <div><h3>選手</h3>
+          <div><h3>選手賽籍</h3>
           </div>
         </div>
       </div>
