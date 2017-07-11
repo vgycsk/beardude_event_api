@@ -16,7 +16,6 @@ module.exports.policies = {
     GroupController: {
         create: 'isActiveManager',
 //        getInfo: '',
-        getManagementInfo: 'isActiveManager',
         delete: 'isActiveManager',
         update: 'isActiveManager'
     },

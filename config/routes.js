@@ -26,8 +26,6 @@ module.exports.routes = {
     'post /api/group/create': 'GroupController.create',
     // 3.2, 3.3, 3.4, 5.2.*
     'get  /api/group/info/:id': 'GroupController.getInfo',
-    'get  /api/group/mgmtInfo/:id': 'GroupController.getManagementInfo',
-
     // 1.2.2
     'post /api/group/update': 'GroupController.update',
     // 1.2.3
