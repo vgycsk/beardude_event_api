@@ -35,11 +35,13 @@ module.exports = {
     },
     isEntryRace: {
       type: 'boolean',
-      required: true
+      required: true,
+      defaultsTo: false
     },
     requirePacer: {
       type: 'boolean',
-      required: true
+      required: true,
+      defaultsTo: false
     },
     pacerEpc: {
       type: 'string'
