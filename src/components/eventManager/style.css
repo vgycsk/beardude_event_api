@@ -49,6 +49,7 @@
 .lights {
   display: inline-block;
   margin: 0 0 0 20px;
+  line-height: 17px;
 }
 .lights li {
   font-size: 11px;
@@ -59,6 +60,15 @@
   padding: 1px 5px;
   margin: 0 20px 0 0;
   color: #ddd;
+  text-indent: 0;
+}
+.managerList .lights {
+  position: absolute;
+  right: 50px;
+  top: 10px;
+}
+.managerList .lights li {
+  margin: 0 10px 0 0;
 }
 .lights .on {
   background: #00c000;
@@ -103,7 +113,7 @@
   margin-right: 2px;
   padding: 8px 16px;
 }
-.managerList ul {
+.managerList>div>ul {
   overflow-y: scroll;
   overflow: auto;
 }
@@ -115,6 +125,48 @@
   min-height: 39px;
   line-height: 39px;
   cursor: pointer;
+}
+.list {
+  display: block;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: #fff;
+  margin: 0 0 0 10px;
+  padding: 0 10px 0 0;
+  text-indent: 5px;
+  border: 0;
+  background: 0;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  outline: none;
+  position: relative;
+  font-family: "San Francisco";
+  letter-spacing: 0.5px;
+}
+.count {
+  display: inline-block;
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  padding: 0 8px;
+  border-radius: 8px;
+  text-indent: 0;
+  text-align: center;
+  color: #dedede;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: 'Courier';
+  background: #555;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 30px;
+  height: 30px;
+  line-height: 30px;
 }
 .selected {
   composes: li;

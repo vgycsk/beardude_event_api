@@ -64,10 +64,12 @@ const render = {
   ft: (selected, model, onEdit, editObj) => <span className={css.listFt}>
   <Button style='listFtIcon' text='+' onClick={onEdit(model, {})} /> {selected !== -1 && <Button style='listFt' text='編輯' onClick={onEdit(model, editObj)} />}</span>,
   ftBlank: () => <span className={css.listFt}></span>,
-  list: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><Button style='listDark' text={V.nameCht ? V.nameCht : V.name} counter={(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed} onClick={onSelect(I)} /></li>)}</ul>,
-  overlay: ({model, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
+  list: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name} <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>,
+  listRace: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name}<ul className={css.lights}><li className={V.isEntryRace ? css.on : css.off}>初賽</li><li className={V.requirePacer ? css.on : css.off}>前導</li><li className={V.advancingRules.length > 0 ? css.on : css.off}>晉級</li></ul><span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>,
+  overlay: ({model, form, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
   <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
     <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)) })}</li>)}</ul>
+    {form}
     <div className={css.boxFt}>
       {modified ? <Button text='儲存' onClick={onSubmit(model)} /> : <Button style='disabled' text='儲存'/>}
       {original.id && render.delete(model, original, onDelete)}
@@ -193,10 +195,10 @@ export class EventManager extends BaseComponent {
             {render.ft(groupSelected, 'group', this.handleStartEdit, event.groups[groupSelected])}
           </div>
           <div><h3>組別賽制</h3>
-            {groupSelected !== -1 && render.list({array: event.groups[groupSelected].races, listHeight, selected: raceSelected, onSelect: this.handleSelectRace})}
+            {groupSelected !== -1 && render.listRace({array: event.groups[groupSelected].races, listHeight, selected: raceSelected, onSelect: this.handleSelectRace})}
             {groupSelected !== -1 ? render.ft(raceSelected, 'race', this.handleStartEdit, event.groups[groupSelected].races[raceSelected]) : render.ftBlank()}
           </div>
-          <div><h3>選手賽籍</h3></div>
+          <div><h3>選手賽籍</h3>{render.ftBlank()}</div>
         </div>
       </div>
       <Dialogue content={model && render.overlay({model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete})} />
