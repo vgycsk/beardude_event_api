@@ -36,7 +36,9 @@ const returnInputs = {
     {label: '中文名稱', field: 'nameCht', type: 'text'},
     {label: '英文名稱', field: 'name', type: 'text'},
     {label: '名額', field: 'racerNumberAllowed', type: 'number'},
-    {label: '圈數', field: 'laps', type: 'number'}
+    {label: '圈數', field: 'laps', type: 'number'},
+    {label: '組別初賽', field: 'isEntryRace', type: 'checkbox'},
+    {label: '需前導車', field: 'requirePacer', type: 'checkbox'}
   ]
 }
 const title = { event: '活動', group: '組別', race: '賽事' }
@@ -84,7 +86,6 @@ export class EventManager extends BaseComponent {
       raceSelected: -1,
       listHeight: returnListHeight({})
     }
-    console.log('handleResize? ', returnListHeight({}))
     this.dispatch = this.props.dispatch
     this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
   }
@@ -109,7 +110,7 @@ export class EventManager extends BaseComponent {
     this.dispatch(actionCreators.delete(this.state, onSuccess))
   }}
   handleInput (field) { return (e) => {
-    const val = (e.target.value === 'true' || e.target.value === 'false') ? (e.target.value === 'true' ? false : true) : e.target.value
+    const val = (e.target.value === 'true' || e.target.value === 'false' || e.target.value === 'on') ? (e.target.value === 'true' ? false : true) : e.target.value
     this.setState({modified: (this.state.modified ? {...this.state.modified, [field]: val } : {[field]: val})})
   }}
   handleSubmit (model) { return (e) => {
@@ -180,8 +181,7 @@ export class EventManager extends BaseComponent {
       return <Redirect to={{pathname: '/console'}} />
     } else if (!event) {
       return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div>
-    }
-    if (model === -1) {
+    } else if (model === -1) {
       return <Redirect to={{pathname: '/console/event/' + event.id}} />
     }
     return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' />
