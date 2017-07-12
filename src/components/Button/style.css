@@ -17,12 +17,12 @@ button {
 .disabled {
   composes: regular;
   background: #ddd;
-  color: #aaa;
+  color: #eee;
 }
 .grey {
   composes: regular;
   background: #999;
-  color: #aaa;
+  color: #fff;
 }
 .alert {
   composes: regular;
@@ -81,21 +81,26 @@ button {
   outline: none;
   position: relative;
 }
+.listDark {
+  composes: list;
+  color: #fff;
+}
 .count {
   display: inline-block;
   position: absolute;
   top: 4px;
-  right: 10px;
-  padding: 2px 8px;
-  border-radius: 12px;
+  right: 2px;
+  padding: 0 8px;
+  border-radius: 8px;
   text-indent: 0;
   text-align: center;
   color: #dedede;
   font-weight: 600;
-  letter-spacing: 2px;
-  font-family: cursive, 'Courier';
+  letter-spacing: 0.5px;
+  font-family: 'Courier';
   background: #555;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 500;
   min-width: 30px;
   height: 30px;
   line-height: 30px;
@@ -113,6 +118,7 @@ button {
   color: #2f8bf1;
   font-size: 13px;
   padding: 0 15px;
+  vertical-align: top;
 }
 .listFtDisabled {
   composes: listFt;

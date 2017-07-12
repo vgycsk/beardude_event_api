@@ -1,7 +1,7 @@
 /*
   counter: STR
   onClick: FUNC
-  style: 'regular'(default) / 'disabled', 'grey', 'alert', 'bigIcon', 'bigIconCreate', 'list', 'listFt', 'listFtDisabled', 'listFtIcon'
+  style: 'regular'(default) / 'disabled', 'grey', 'alert', 'bigIcon', 'bigIconCreate', 'list', 'listDark', 'listFt', 'listFtDisabled', 'listFtIcon'
   text: STR
   url: STR
 */

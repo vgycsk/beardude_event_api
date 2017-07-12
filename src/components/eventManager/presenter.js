@@ -7,7 +7,6 @@ import css from './style.css'
 import { Dialogue } from '../Dialogue/presenter'
 import Button from '../Button'
 import Header from '../Header'
-import Footer from '../Footer'
 import { renderInput } from '../Table/presenter'
 
 const valueFunc = (modified, original, field) => (modified && modified[field] !== undefined) ? modified[field] : original[field]
@@ -15,6 +14,7 @@ const returnDateTime = (timestamp, forDisplay) => {
   const t = new Date(timestamp + 28800000) // taipei diff
   return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + (forDisplay ? ' ' : 'T') + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
 }
+const returnListHeight = ({pageHeight = 360, ftHeight = 211}) => Math.max(window.innerHeight - ftHeight, (pageHeight - ftHeight));
 const returnInputs = {
   event: (modified, original) => [
     {label: '中文名稱', field: 'nameCht', type: 'text'},
@@ -59,16 +59,17 @@ const render = {
     </ul>
     <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
   </div>,
-  ft: (selected, model, onEdit, editObj) => <span>
-  <Button style='listFtIcon' text='+' onClick={onEdit(model, {})} /> {selected !== -1 && <span className={css.right}><Button style='listFt' text='編輯' onClick={onEdit(model, editObj)} /></span>}</span>,
-  list: ({array, selected, onSelect}) => <ul>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><Button style='list' text={V.nameCht ? V.nameCht : V.name} counter={(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed} onClick={onSelect(I)} /></li>)}</ul>,
+  ft: (selected, model, onEdit, editObj) => <span className={css.listFt}>
+  <Button style='listFtIcon' text='+' onClick={onEdit(model, {})} /> {selected !== -1 && <Button style='listFt' text='編輯' onClick={onEdit(model, editObj)} />}</span>,
+  ftBlank: () => <span className={css.listFt}></span>,
+  list: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><Button style='listDark' text={V.nameCht ? V.nameCht : V.name} counter={(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed} onClick={onSelect(I)} /></li>)}</ul>,
   overlay: ({model, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
   <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
     <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)) })}</li>)}</ul>
     <div className={css.boxFt}>
       {modified ? <Button text='儲存' onClick={onSubmit(model)} /> : <Button style='disabled' text='儲存'/>}
       {original.id && render.delete(model, original, onDelete)}
-      <Button onClick={onCancel} text='取消'/>
+      <Button style='grey' onClick={onCancel} text='取消'/>
     </div>
   </div>
 }
@@ -80,14 +81,20 @@ export class EventManager extends BaseComponent {
       modified: undefined,
       original: undefined,
       groupSelected: -1,
-      raceSelected: -1
+      raceSelected: -1,
+      listHeight: returnListHeight({})
     }
+    console.log('handleResize? ', returnListHeight({}))
     this.dispatch = this.props.dispatch
-    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleSubmit', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
+    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
   }
   componentDidMount () {
     const onSuccess = () => this.setState({model: 'event', original: {}})
+    window.addEventListener('resize', this.handleResize);
     this.dispatch(actionCreators.getEvent(this.props.match.params.id, onSuccess))
+  }
+  handleResize () {
+    this.setState({ listHeight: returnListHeight({}) })
   }
   handleStartEdit (model, object) { return (e) => {
     this.setState({model: model, original: object})
@@ -168,7 +175,7 @@ export class EventManager extends BaseComponent {
   }
   render () {
     const { location, event } = this.props
-    const { modified, original, model, groupSelected, raceSelected } = this.state
+    const { listHeight, modified, original, model, groupSelected, raceSelected } = this.state
     if (event === -1) {
       return <Redirect to={{pathname: '/console'}} />
     } else if (!event) {
@@ -182,12 +189,12 @@ export class EventManager extends BaseComponent {
         {render.info({event, onEdit: this.handleStartEdit('event', event)})}
         <div className={css.managerList}>
           <div><h3>組別</h3>
-            {event.groups && render.list({array: event.groups, selected: groupSelected, onSelect: this.handleSelectGroup})}
+            {event.groups && render.list({array: event.groups, listHeight, selected: groupSelected, onSelect: this.handleSelectGroup})}
             {render.ft(groupSelected, 'group', this.handleStartEdit, event.groups[groupSelected])}
           </div>
           <div><h3>組別賽制</h3>
-            {groupSelected !== -1 && render.list({array: event.groups[groupSelected].races, selected: raceSelected, onSelect: this.handleSelectRace})}
-            {groupSelected !== -1 && render.ft(raceSelected, 'race', this.handleStartEdit, event.groups[groupSelected].races[raceSelected])}
+            {groupSelected !== -1 && render.list({array: event.groups[groupSelected].races, listHeight, selected: raceSelected, onSelect: this.handleSelectRace})}
+            {groupSelected !== -1 ? render.ft(raceSelected, 'race', this.handleStartEdit, event.groups[groupSelected].races[raceSelected]) : render.ftBlank()}
           </div>
           <div><h3>選手賽籍</h3></div>
         </div>

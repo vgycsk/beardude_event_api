@@ -11,7 +11,7 @@
   width: 100%;
   height: 100%;
   overflow-y: scroll;
-  overflow: auto;
+  overflow: hidden;
 }
 .loading {
   font-size: 24px;
@@ -44,7 +44,7 @@
 .info .btn {
   position: absolute;
   bottom: 10px;
-  right: 25px;
+  right: 30px;
 }
 .lights {
   display: inline-block;
@@ -58,9 +58,11 @@
   background: #aaa;
   padding: 1px 5px;
   margin: 0 20px 0 0;
+  color: #ddd;
 }
 .lights .on {
-  background: #0c0;
+  background: #00c000;
+  color: #fff;
 }
 .time {
   margin: 0 0 0 20px;
@@ -69,36 +71,39 @@
   position: relative;
   display: flex;
   flex-direction: row;
-  margin: 0 16px 32px;
-  border-left: solid 6px RGBA(66, 66, 66, 0.8);
+  margin: 0 6px 32px;
   padding: 0 16px;
   color: #E0E4E9;
   font-size: 14px;
+  height: 100%;
 }
-
+.managerList > div {
+  position: relative;
+}
 .managerList > div:nth-child(1) {
   width: 33%;
   flex-shrink: 0;
 }
-
 .managerList > div:nth-child(2) {
   width: 33%;
   flex-shrink: 0;
 }
-
 .managerList > div:nth-child(3) {
   flex-grow: 1;
 }
-
+.managerList > div:first-child h3 {
+  border-radius: 5px 0 0 0;
+}
+.managerList > div:last-child h3 {
+  border-radius: 0 5px 0 0;
+}
 .managerList h3 {
   background: RGBA(66, 66, 66, 0.8);
   color: #E0E4E9;
-  margin-right: 8px;
+  margin-right: 2px;
   padding: 8px 16px;
 }
-
 .managerList ul {
-  height: 320px;
   overflow-y: scroll;
   overflow: auto;
 }
@@ -124,7 +129,16 @@
 .redTxt {
   color: #fa1229;
 }
-
+.listFt {
+  position: absolute;
+  bottom: 139px;
+  background: rgba(66,66,66,0.2);
+  width: 99.5%;
+  height: 36px;
+}
+.listFt button {
+  color: #fff;
+}
 .managerList li:active {
   background: RGBA(243, 243, 243, 0.4);
 }
@@ -139,7 +153,10 @@
   margin: 20px 0 0 110px;
 }
 .boxFt button {
-  margin: 0 30px 0 0;
+  margin: 0 105px 0 0;
+}
+.boxFt button:last-child {
+  margin: 0;
 }
 .right {
   float: right;
