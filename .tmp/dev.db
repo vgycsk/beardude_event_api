@@ -2,8 +2,8 @@
   "data": {
     "event": [
       {
-        "name": "Night Market Crit: Taipei",
-        "nameCht": "夜市繞圈賽",
+        "name": "Diarrhea Crit",
+        "nameCht": "烙賽繞圈賽",
         "assignedRaceNumber": 300,
         "startTime": 1501113600000,
         "endTime": 1501243200000,
@@ -17,7 +17,7 @@
           "e01923123333123a"
         ],
         "createdAt": "2017-05-25T05:16:12.378Z",
-        "updatedAt": "2017-07-09T05:21:33.567Z",
+        "updatedAt": "2017-07-12T05:10:04.142Z",
         "id": 6
       }
     ],
@@ -43,21 +43,35 @@
         "racerNumberAllowed": 150
       },
       {
-        "event": 6,
-        "name": "Road - Women",
-        "nameCht": "公路車 - 女子",
-        "rules": "",
-        "createdAt": "2017-06-20T07:43:18.062Z",
-        "updatedAt": "2017-06-20T07:43:18.062Z",
-        "id": 4,
-        "racerNumberAllowed": 100
-      },
-      {
         "nameCht": "bmx車",
         "name": "bmx",
         "createdAt": "2017-07-10T09:09:11.231Z",
         "updatedAt": "2017-07-10T09:09:11.231Z",
         "id": 5
+      },
+      {
+        "nameCht": "BMX車",
+        "name": "BMX",
+        "racerNumberAllowed": 50,
+        "createdAt": "2017-07-11T14:02:35.725Z",
+        "updatedAt": "2017-07-11T14:02:35.725Z",
+        "id": 7
+      },
+      {
+        "nameCht": "BMX車",
+        "name": "BMX",
+        "racerNumberAllowed": 30,
+        "createdAt": "2017-07-11T14:12:38.780Z",
+        "updatedAt": "2017-07-11T14:12:38.780Z",
+        "id": 8
+      },
+      {
+        "nameCht": "BMX車",
+        "name": "BMX",
+        "racerNumberAllowed": 30,
+        "createdAt": "2017-07-11T14:15:38.055Z",
+        "updatedAt": "2017-07-11T14:15:38.055Z",
+        "id": 9
       }
     ],
     "image": [],
@@ -105,12 +119,12 @@
         "racerNumberAllowed": 50,
         "isCheckinOpen": false,
         "isEntryRace": true,
-        "requirePacer": false,
+        "requirePacer": true,
         "advancingRules": [],
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-05-26T04:34:03.891Z",
-        "updatedAt": "2017-07-10T15:50:52.079Z",
+        "updatedAt": "2017-07-13T04:18:03.293Z",
         "id": 1,
         "pacerEpc": "e019231233333"
       },
@@ -120,13 +134,19 @@
         "name": "Qualification",
         "racerNumberAllowed": 50,
         "laps": 15,
-        "advancingRules": [],
+        "advancingRules": [
+          {
+            "rankFrom": 0,
+            "rankTo": 15,
+            "toRace": 11
+          }
+        ],
         "isEntryRace": true,
         "requirePacer": true,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-10T14:23:45.765Z",
-        "updatedAt": "2017-07-10T14:23:45.765Z",
+        "updatedAt": "2017-07-13T03:16:57.178Z",
         "id": 4
       },
       {
@@ -135,14 +155,89 @@
         "name": "Qualification2",
         "racerNumberAllowed": 50,
         "laps": 15,
-        "advancingRules": [],
+        "advancingRules": [
+          {
+            "rankFrom": 0,
+            "rankTo": "16",
+            "toRace": 11
+          }
+        ],
         "isEntryRace": true,
         "requirePacer": true,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-10T14:27:48.934Z",
-        "updatedAt": "2017-07-10T14:27:48.934Z",
+        "updatedAt": "2017-07-12T11:50:33.346Z",
         "id": 5
+      },
+      {
+        "nameCht": "資格賽2",
+        "name": "Qualification 2",
+        "racerNumberAllowed": 50,
+        "laps": 15,
+        "group": 2,
+        "advancingRules": [],
+        "isEntryRace": true,
+        "requirePacer": true,
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-07-11T15:40:35.515Z",
+        "updatedAt": "2017-07-13T04:18:09.749Z",
+        "id": 7
+      },
+      {
+        "nameCht": "決賽",
+        "name": "Final",
+        "racerNumberAllowed": 50,
+        "laps": 20,
+        "requirePacer": true,
+        "group": 2,
+        "advancingRules": [],
+        "isEntryRace": false,
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-07-12T04:44:28.182Z",
+        "updatedAt": "2017-07-12T07:54:18.729Z",
+        "id": 9,
+        "isFinalRace": true
+      },
+      {
+        "nameCht": "資格賽3",
+        "name": "Qualification 3",
+        "racerNumberAllowed": 50,
+        "laps": 15,
+        "isFinalRace": false,
+        "requirePacer": true,
+        "group": 3,
+        "advancingRules": [
+          {
+            "rankFrom": 0,
+            "rankTo": 16,
+            "toRace": 11
+          }
+        ],
+        "isEntryRace": true,
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-07-12T11:44:00.904Z",
+        "updatedAt": "2017-07-12T16:08:58.484Z",
+        "id": 10
+      },
+      {
+        "nameCht": "決賽",
+        "name": "Final",
+        "racerNumberAllowed": 50,
+        "laps": 20,
+        "isFinalRace": true,
+        "requirePacer": true,
+        "group": 3,
+        "advancingRules": [],
+        "isEntryRace": false,
+        "testerEpc": [],
+        "recordsHashTable": {},
+        "createdAt": "2017-07-12T11:44:29.328Z",
+        "updatedAt": "2017-07-12T11:44:29.328Z",
+        "id": 11
       }
     ],
     "racer": [
@@ -506,7 +601,8 @@
         "defaultsTo": ""
       },
       "isActive": {
-        "type": "boolean"
+        "type": "boolean",
+        "defaultsTo": false
       },
       "id": {
         "type": "integer",
@@ -546,11 +642,15 @@
       },
       "isEntryRace": {
         "type": "boolean",
-        "defaultsTo": true
+        "defaultsTo": false
+      },
+      "isFinalRace": {
+        "type": "boolean",
+        "defaultsTo": false
       },
       "requirePacer": {
         "type": "boolean",
-        "defaultsTo": true
+        "defaultsTo": false
       },
       "pacerEpc": {
         "type": "string"
@@ -645,7 +745,8 @@
         "defaultsTo": ""
       },
       "isActive": {
-        "type": "boolean"
+        "type": "boolean",
+        "defaultsTo": false
       },
       "id": {
         "type": "integer",
@@ -805,17 +906,17 @@
   },
   "counters": {
     "event": {
-      "id": 6
+      "id": 11
     },
     "group": {
-      "id": 6
+      "id": 12
     },
     "image": {},
     "manager": {
       "id": 3
     },
     "race": {
-      "id": 6
+      "id": 11
     },
     "racer": {
       "id": 9
@@ -827,7 +928,7 @@
       "id": 15
     },
     "event_managers__manager_events": {
-      "id": 4
+      "id": 5
     },
     "race_registrations__registration_races": {}
   }

@@ -10,15 +10,15 @@ module.exports.routes = {
     'get  /api/event/mgmtInfo/:id': 'EventController.getManagementInfo',
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
-    // 1.2.7 -, 1.2.10 -
+    // 1.2.7, 1.2.8
     'post /api/event/update': 'EventController.update',
     // 4.2.3
     'post /api/event/assignTesterRfid': 'EventController.assignTesterRfid',
     // 1.6
     'get  /api/event/delete/:id': 'EventController.delete',
+
     // 1.3
 //    'post /api/event/managers/add': 'EventController.addManagers',
-    // 1.3
 //    'post /api/event/managers/remove': 'EventController.removeManagers',
 
     // Group

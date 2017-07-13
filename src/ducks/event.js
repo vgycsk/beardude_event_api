@@ -12,6 +12,7 @@ const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
 
+const returnPostHeader = (obj) => ({ method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(obj) })
 // actions
 export const actionCreators = {
   delete: (state, successCallback) => async (dispatch) => {
@@ -58,16 +59,25 @@ export const actionCreators = {
   },
   submit: (state, successCallback) => async (dispatch) => {
     const types = { event: SUBMIT_EVENT, group: SUBMIT_GROUP, race: SUBMIT_RACE }
+    const pathname = (state.original.id) ? 'update' : 'create'
     try {
-      const response = await fetch((state.original.id) ? `/api/${state.model}/update` : `/api/${state.model}/create`, {
-        method: 'post',
-        credentials: 'same-origin',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({...state.modified, id: state.original.id})
-      })
+      const response = await fetch(`/api/${state.model}/${pathname}`, returnPostHeader({...state.modified, id: state.original.id}))
       const res = await response.json()
       if (response.status === 200) {
         dispatch({type: types[state.model], payload: {...res, state: state}})
+        return successCallback()
+      }
+      throw res.message
+    } catch (e) {
+      dispatch({type: ACTION_ERR, payload: {error: e}})
+    }
+  },
+  submitAdvancingRules: (state, successCallback) => async (dispatch) => {
+    try {
+      const response = await fetch('/api/race/update', returnPostHeader({id: state.advRuleRaceId, advancingRules: state.advRuleModified}))
+      const res = await response.json()
+      if (response.status === 200) {
+        dispatch({type: SUBMIT_RACE, payload: {...res, state: state}})
         return successCallback()
       }
       throw res.message

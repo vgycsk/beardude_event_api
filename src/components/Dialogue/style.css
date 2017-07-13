@@ -35,11 +35,13 @@
 .box input[type=checkbox] {
   width: 10px;
   height: 10px;
+  vertical-align: middle;
+  margin: 0 5px;
 }
 .box h3 {
   font-size: 24px;
   font-weight: 300;
-  margin: 20px 0 10px 110px;
+  margin: 20px 0 5px 110px;
 }
 .box label {
   font-size: 15px;
@@ -54,5 +56,4 @@
   width: 100%;
   margin: 0 auto;
   position: relative;
-  top: -50px;
 }

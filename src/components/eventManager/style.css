@@ -201,6 +201,58 @@
   height: 39px;
   background: RGBA(255, 255, 255, 0.4);
 }
+.advTable label {
+  vertical-align: top;
+  line-height: 42px;
+}
+.tableInput {
+  display: inline-block;
+}
+.advTable table {
+  line-height: 10px;
+}
+.advTable th {
+  text-align: left;
+}
+.advTable th:nth-child(1) {
+  width: 210px;
+}
+.advTable th:nth-child(2) {
+  width: 140px;
+}
+.advTable th:nth-child(3) {
+  width: 100px;
+  border-right: 1px solid #ddd;
+}
+.advTable td:last-child {
+  border-right: 1px solid #ddd;
+}
+.advTable table input,
+.advTable table select {
+  margin: 0 10px 0 0;
+}
+.advTable table select {
+  font-size: 14px;
+}
+.advTable select:disabled {
+  border: 1px solid #eee;
+ -webkit-appearance: none;
+ height: 23px;
+ line-height: 22px;
+ padding: 0 7px;
+ margin: 3px 5px;
+}
+.advTable table .ft {
+  height: 36px;
+  padding: 0 10px;
+}
+.advTable .right button {
+  margin: 0 0 0 18px;
+}
+.alert {
+  margin: 0 0 0 110px;
+  color: #c20000;
+}
 .boxFt {
   margin: 20px 0 0 110px;
 }
