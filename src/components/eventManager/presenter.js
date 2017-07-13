@@ -30,7 +30,6 @@ const validateAdvRules = {
     const sum = advRules.reduce((sum, V) => {return sum + (V.rankTo - V.rankFrom + 1)}, 0)
     let racerNumberAllowed
     let toRaceName
-    console.log('advRules', advRules)
     races.forEach(race => { if (race.id === toRace) {
       racerNumberAllowed = race.racerNumberAllowed
       toRaceName = race.nameCht ? race.nameCht : race.name
@@ -70,7 +69,7 @@ const returnInputs = {
 const title = { event: '活動', group: '組別', race: '賽事' }
 //  handleEditAdvRule ({raceObj, action, index, field}) { return (e) => {
 const render = {
-  advRuleTable: ({advRuleMsg, races, modifiedId, modifiedRules, onEdit, onSubmit, onToggle}) => {
+  advRuleTable: ({advRuleMsg, races, modifiedId, modifiedRules, onEdit, onSubmit, onToggle, onCancel}) => {
     return <div className={css.advTable}><h3>晉級規則</h3><h4 className={css.alert}>{advRuleMsg}</h4>
       {races.map((V, I) => {
         let options = [];
@@ -79,16 +78,17 @@ const render = {
         }
         return <div key={'race' + I}><label>{V.nameCht}</label>
           {!V.isFinalRace && <div className={css.tableInput}>
-          <table><thead><tr><th>資格</th><th>晉級到</th></tr></thead>
-            <tbody>{render.advRuleItem({races, rules: (modifiedRules && modifiedId === V.id) ? modifiedRules : V.advancingRules, onEdit, raceObj: V, disabled: (modifiedId === V.id) ? false : true, options: options})}
-            <tr><td className={css.ft} colSpan='4'>
-              {(modifiedId === V.id) ? <span><Button style='listFtIcon' text='+' onClick={onEdit({raceObj: V, action: 'add'})}/><span className={css.right}><Button onClick={onSubmit} text='儲存' /><Button text='取消' style='grey' onClick={onToggle(V, I)}/></span></span>
-              : (!modifiedId && <span className={css.right}><Button onClick={onSubmit} text='編輯' onClick={onToggle(V, I)}/></span>)}
-            </td></tr>
-            </tbody>
-          </table>
-            </div>}
+            <table><thead><tr><th>資格</th><th>晉級到</th></tr></thead><tbody>
+            {render.advRuleItem({races, rules: (modifiedRules && modifiedId === V.id) ? modifiedRules : V.advancingRules, onEdit, raceObj: V, disabled: (modifiedId === V.id) ? false : true, options: options})}
+              <tr><td className={css.ft} colSpan='4'>
+                {(modifiedId === V.id)
+                  ? <span><Button style='listFtIcon' text='+' onClick={onEdit({raceObj: V, action: 'add'})}/><span className={css.right}><Button onClick={onSubmit} text='儲存' /><Button text='取消' style='grey' onClick={onToggle(V, I)}/></span></span>
+                  : (!modifiedId && <span className={css.right}><Button onClick={onSubmit} text='編輯' onClick={onToggle(V, I)}/></span>)}
+                </td></tr>
+            </tbody></table>
+          </div>}
         </div>})}
+      <div className={css.boxFt}><Button style='grey' onClick={onCancel} text='關閉' /></div>
     </div>
   },
   advRuleItem: ({races, raceObj, rules, onEdit, disabled, options}) => rules.map((V, index) => <tr key={'adv' + index}>
@@ -110,8 +110,6 @@ const render = {
     <ul className={css.lights}><li className={event.isPublic ? css.on : css.off}>公開活動</li><li className={event.isTeamRegistrationOpen ? css.on : css.off}>隊伍報名</li><li className={event.isRegistrationOpen ? css.on : css.off}>個人報名</li></ul>
     <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
   </div>,
-  ft: (selected, model, onEdit, editObj) => <span className={css.listFt}>
-  <Button style='listFtIcon' text='+' onClick={onEdit(model, {})} /> {selected !== -1 && <Button style='listFt' text='編輯' onClick={onEdit(model, editObj)} />}</span>,
   ftBlank: () => <span className={css.listFt}></span>,
   list: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name} <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>,
   listRace: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name}<ul className={css.lights}><li className={V.requirePacer ? css.on : css.off}>前導</li><li className={V.isEntryRace ? css.on : css.off}>初賽</li>{V.isFinalRace ? <li className={css.on}>決賽</li> : <li className={V.advancingRules.length > 0 ? css.on : css.off}>晉級</li>}</ul><span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>,
@@ -210,12 +208,10 @@ export class EventManager extends BaseComponent {
     } else if (action === 'edit') {
       advRuleModified[index][field] = parseInt(e.target.value)
       const ruleCompleted = validateAdvRules.ruleCompleted(advRuleModified[index])
-      console.log('ruleCompleted? ', ruleCompleted)
       if (ruleCompleted) {
         startFromZero = validateAdvRules.startFromZero(advRuleModified)
         continuity = validateAdvRules.continuity(advRuleModified)
         noOverflow = validateAdvRules.noOverflow(this.state.advRuleRaceId, advRuleModified, advRuleModified[index].toRace, this.props.event.groups[this.state.groupSelected].races)
-        console.log('noOverflow: ', noOverflow)
         advRuleMsg = (startFromZero) ? startFromZero : (continuity ? continuity : (noOverflow ? noOverflow : undefined))
       }
     } else if (action === 'delete') {
@@ -272,29 +268,44 @@ export class EventManager extends BaseComponent {
   render () {
     const { location, event } = this.props
     const { listHeight, modified, original, model, groupSelected, raceSelected } = this.state
-    if (event === -1) {
-      return <Redirect to={{pathname: '/console'}} />
-    } else if (!event) {
-      return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div>
-    } else if (model === -1) {
-      return <Redirect to={{pathname: '/console/event/' + event.id}} />
-    }
+
+    if (event === -1) { return <Redirect to={{pathname: '/console'}} /> }
+    else if (!event) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
+    else if (model === -1) { return <Redirect to={{pathname: '/console/event/' + event.id}} /> }
+
     return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' />
       <div className={css.mainBody}>
         {render.info({event, onEdit: this.handleStartEdit('event', event)})}
         <div className={css.managerList}>
           <div><h3>組別</h3>
             {event.groups && render.list({array: event.groups, listHeight, selected: groupSelected, onSelect: this.handleSelectGroup})}
-            {render.ft(groupSelected, 'group', this.handleStartEdit, event.groups[groupSelected])}
+            <span className={css.listFt}>
+              <Button style='listFtIcon' text='+' onClick={this.handleStartEdit('group', {})} />
+              {groupSelected !== -1 && <span>
+                <Button style='listFt' text='編輯' onClick={this.handleStartEdit('group', event.groups[groupSelected])} />
+                <Button style='listFt' text='編輯晉級規則' onClick={this.handleStartEdit('advRules', event.groups[groupSelected])} />
+              </span>}
+            </span>
           </div>
           <div><h3>組別賽制</h3>
-            {groupSelected !== -1 && render.listRace({array: event.groups[groupSelected].races, listHeight, selected: raceSelected, onSelect: this.handleSelectRace})}
-            {groupSelected !== -1 ? render.ft(raceSelected, 'race', this.handleStartEdit, event.groups[groupSelected].races[raceSelected]) : render.ftBlank()}
+            {groupSelected !== -1 ? <span>
+              {render.listRace({array: event.groups[groupSelected].races, listHeight, selected: raceSelected, onSelect: this.handleSelectRace})}
+              <span className={css.listFt}>
+                <Button style='listFtIcon' text='+' onClick={this.handleStartEdit('race', {})} />
+                {raceSelected !== -1 &&
+                  <Button style='listFt' text='編輯' onClick={this.handleStartEdit('race', event.groups[groupSelected].races[raceSelected])} />
+                }
+              </span>
+            </span> : <span className={css.listFt}></span>
+            }
           </div>
           <div><h3>選手賽籍</h3>{render.ftBlank()}</div>
         </div>
       </div>
-      <Dialogue content={ model && render.overlay({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete, table: (model === 'group') ? render.advRuleTable({advRuleMsg: this.state.advRuleMsg, modifiedId: this.state.advRuleRaceId, modifiedRules: this.state.advRuleModified, races: event.groups[groupSelected].races, onEdit: this.handleEditAdvRule, onSubmit: this.handleSubmitAdvRule, onToggle: this.handleToggleEditAdvRule }) : '' }) } />
+      {model && <Dialogue content={(model === 'advRules')
+        ? render.advRuleTable({advRuleMsg: this.state.advRuleMsg, modifiedId: this.state.advRuleRaceId, modifiedRules: this.state.advRuleModified, races: event.groups[groupSelected].races, onEdit: this.handleEditAdvRule, onSubmit: this.handleSubmitAdvRule, onToggle: this.handleToggleEditAdvRule, onCancel: this.handleCancelEdit })
+        : render.overlay({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete })
+      } />}
     </div>)
   }
 }
