@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global _, dataService, Group, Race, Registration, sails */
+/* global dataService, Group, Race, sails */
 
 'use strict'
 
@@ -15,31 +15,22 @@ var RaceController = {
         return res.badRequest(E)
       })
   },
-    // Get public info
+  // Get public info
   getGeneralInfo: function (req, res) {
-    Race.findOne({ id: parseInt(req.params.id) }).populate('registrations').populate('group')
+    Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
       .then(function (V) {
-        return res.ok({
-          race: {
-            registrations: V.registrations,
-            group: V.group,
-            name: V.name,
-            laps: V.laps,
-            racerNumberAllowed: V.racerNumberAllowed,
-            advancingRules: V.advancingRules,
-            isEntryRace: V.isEntryRace,
-            requirePacer: V.requirePacer,
-            startTime: V.startTime,
-            endTime: V.endTime,
-            recordsHashTable: V.recordsHashTable,
-            result: V.result }
-        })
+        var result = V.toJSON()
+
+        delete result.pacerEpc
+        delete result.testerEpc
+        delete result.rfidData
+        return res.ok({ race: result })
       })
       .catch(function (E) {
         return res.badRequest(E)
       })
   },
-    // Get complete info
+  // Get complete info
   getManagementInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
       .then(function (modelData) {
@@ -49,7 +40,7 @@ var RaceController = {
         return res.badRequest(E)
       })
   },
-    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
+  // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
   update: function (req, res) {
     var input = req.body
     var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'advancingRules']
@@ -86,55 +77,33 @@ var RaceController = {
         return res.badRequest(E)
       })
   },
-  // {race: ID, raceNumber: INT}
-  addRacer: function (req, res) {
-    var raceId = parseInt(req.body.race)
-    var raceNumber = parseInt(req.body.raceNumber)
-    var raceObj
-    var regId
-    var groupId
+  // {id: ID, registrations: [ID, ID...]}
+  addRacers: function (req, res) {
+    var input = req.body
 
-    Race.findOne({ id: raceId }).populate('registrations')
-      .then(function (raceData) {
-        var racerFound
-
-        raceObj = raceData
-        groupId = raceData.group
-        regId = _.find(raceData.registrations, { raceNumber: raceNumber })
-        racerFound = _.find(raceData.registrations, { id: regId })
-        if (racerFound) {
-          throw new Error('Racer already in race')
-        }
-        return Registration.findOne({ id: regId })
-      })
-      .then(function (regData) {
-        if (regData.group !== groupId) {
-          throw new Error('Racer not in group')
-        }
-        raceObj.registrations.add(regId)
-        return raceObj.save()
+    Race.findOne({ id: input.id }).populate('registrations')
+      .then(function (V) {
+        input.registrations.forEach(function (regId) { V.registrations.add(regId) })
+        return V.save()
       })
       .then(function () {
-        return res.ok({ messange: 'Racer added to race', race: raceId, raceNumber: raceNumber })
+        return res.ok({ message: 'racers assigned successfully', id: input.id, registrations: input.registrations })
       })
       .catch(function (E) {
         return res.badRequest(E)
       })
   },
-  // {race: ID, raceNumber: INT}
-  removeRacer: function (req, res) {
-    Race.findOne({ id: req.body.race }).populate('registrations')
-      .then(function (raceData) {
-        var regId = _.find(raceData.registrations, { raceNumber: req.body.raceNumber })
+  // {id: ID, registrations: [ID, ID...]}
+  removeRacers: function (req, res) {
+    var input = req.body
 
-        if (!regId) {
-          throw new Error('Racer not in race')
-        }
-        raceData.registrations.remove(regId)
-        return raceData.save()
+    Race.findOne({ id: input.id }).populate('registrations')
+      .then(function (V) {
+        input.registrations.forEach(function (regId) { V.registrations.remove(regId) })
+        return V.save()
       })
       .then(function () {
-        return res.ok({ messange: 'Racer removed from race', race: req.body.race, raceNumber: req.body.raceNumber })
+        return res.ok({ messange: 'Racer removed from race', id: input.id, registration: input.registration })
       })
       .catch(function (E) {
         return res.badRequest(E)
@@ -146,7 +115,7 @@ var RaceController = {
 
     Race.update({ id: input.id }, { pacerEpc: input.epc })
       .then(function () {
-        return res.ok({ message: 'Pacer registered', race: input.id, epc: input.epc })
+        return res.ok({ message: 'Pacer registered', id: input.id, epc: input.epc })
       })
       .catch(function (E) {
         return res.badRequest(E)
@@ -232,51 +201,6 @@ var RaceController = {
           result.group = groupData[0].id
         }
         return res.ok(result)
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-    // {id: ID, registrations: [ID, ID]]}
-    // 順序跟排位有關的樣子
-  assignRacersToRace: function (req, res) {
-    var input = req.body
-
-    Race.findOne({ id: input.id }).populate('registrations')
-      .then(function (raceData) {
-        input.registrations.forEach(function (regId) {
-          raceData.registrations.add(regId)
-        })
-        return raceData.save()
-      })
-      .then(function () {
-        return res.ok({ message: 'racers assigned successfully', race: input.id, registrations: input.registrations })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // {registratration: ID, fromRace: ID, toRace: ID}
-  reassignRacer: function (req, res) {
-    var input = req.body
-
-    input.registratration = parseInt(input.registratration)
-    input.fromRace = parseInt(input.fromRace)
-    input.toRace = parseInt(input.toRace)
-    Race.finOne({ id: input.fromRace }).populate('registrations')
-      .then(function (raceData) {
-        raceData.registrations.remove(input.registratration)
-        return raceData.save()
-      })
-      .then(function () {
-        return Race.finOne({ id: input.toRace }).populate('registrations')
-      })
-      .then(function (raceData) {
-        raceData.registrations.add(input.registratration)
-        return raceData.save()
-      })
-      .then(function () {
-        return res.ok({ message: 'Racer moved successfully', registration: input.registratration, fromRace: input.fromRace, toRace: input.toRace })
       })
       .catch(function (E) {
         return res.badRequest(E)
