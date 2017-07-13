@@ -1,4 +1,4 @@
-/* global dataService, Group, Registration, Team */
+/* global dataService, Group, Registration */
 
 'use strict'
 

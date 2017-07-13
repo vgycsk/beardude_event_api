@@ -8,37 +8,27 @@ var RaceController = {
   // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}
   create: function (req, res) {
     Race.create(req.body)
-      .then(function (modelData) {
-        return res.ok({ race: modelData })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (modelData) { return res.ok({ race: modelData }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   // Get public info
   getGeneralInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-      .then(function (V) {
-        var result = V.toJSON()
+    .then(function (V) {
+      var result = V.toJSON()
 
-        delete result.pacerEpc
-        delete result.testerEpc
-        delete result.rfidData
-        return res.ok({ race: result })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+      delete result.pacerEpc
+      delete result.testerEpc
+      delete result.rfidData
+      return res.ok({ race: result })
+    })
+    .catch(function (E) { return res.badRequest(E) })
   },
   // Get complete info
   getManagementInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-      .then(function (modelData) {
-        return res.ok({ race: modelData })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (modelData) { return res.ok({ race: modelData }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
   update: function (req, res) {
@@ -48,78 +38,34 @@ var RaceController = {
     var query = { id: parseInt(input.id) }
 
     Race.update(query, updateObj)
-      .then(function () {
-        return Race.findOne(query).populate('registrations')
-      })
-      .then(function (modelData) {
-        return res.ok({ race: modelData })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function () { return Race.findOne(query).populate('registrations') })
+    .then(function (modelData) { return res.ok({ race: modelData }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
-    // /:id
+  // /:id
   delete: function (req, res) {
     var query = { id: parseInt(req.params.id) }
 
     Race.findOne(query)
-      .then(function (modelData) {
-        // Race started
-        if (modelData.startTime && modelData.startTime !== '') {
-          throw new Error('Cannot delete a started race')
-        }
-        return Race.destroy(query)
-      })
-      .then(function () {
-        return res.ok({ race: query.id })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (modelData) {
+      if (modelData.startTime && modelData.startTime !== '') { throw new Error('Cannot delete a started race') }
+      return Race.destroy(query)
+    })
+    .then(function () { return res.ok(query) })
+    .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID, registrations: [ID, ID...]}
-  addRacers: function (req, res) {
+  // /:action (add||remove) {id: ID, registrations: [ID, ID...]}
+  assignRacers: function (req, res) {
     var input = req.body
+    var action = req.params.action
 
     Race.findOne({ id: input.id }).populate('registrations')
-      .then(function (V) {
-        input.registrations.forEach(function (regId) { V.registrations.add(regId) })
-        return V.save()
-      })
-      .then(function () {
-        return res.ok({ message: 'racers assigned successfully', id: input.id, registrations: input.registrations })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // {id: ID, registrations: [ID, ID...]}
-  removeRacers: function (req, res) {
-    var input = req.body
-
-    Race.findOne({ id: input.id }).populate('registrations')
-      .then(function (V) {
-        input.registrations.forEach(function (regId) { V.registrations.remove(regId) })
-        return V.save()
-      })
-      .then(function () {
-        return res.ok({ messange: 'Racer removed from race', id: input.id, registration: input.registration })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // {id: ID, epc: STR}
-  assignPacerRfid: function (req, res) {
-    var input = req.body
-
-    Race.update({ id: input.id }, { pacerEpc: input.epc })
-      .then(function () {
-        return res.ok({ message: 'Pacer registered', id: input.id, epc: input.epc })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) {
+      input.registrations.forEach(function (regId) { V.registrations[action](regId) })
+      return V.save()
+    })
+    .then(function () { return res.ok({ message: 'racers assigned successfully', id: input.id, registrations: input.registrations }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   // /:id
   getParsedRaceResult: function (req, res) {
