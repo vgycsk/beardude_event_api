@@ -49,10 +49,10 @@ var RaceController = {
         return res.badRequest(E)
       })
   },
-    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL}
+    // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
   update: function (req, res) {
     var input = req.body
-    var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'requirePacer']
+    var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'advancingRules']
     var updateObj = dataService.returnUpdateObj(fields, input)
     var query = { id: parseInt(input.id) }
 
@@ -140,38 +140,55 @@ var RaceController = {
         return res.badRequest(E)
       })
   },
-  // {race: ID, epc: STR}
+  // {id: ID, epc: STR}
   assignPacerRfid: function (req, res) {
     var input = req.body
 
-    Race.update({ id: input.race }, { pacerEpc: input.epc })
+    Race.update({ id: input.id }, { pacerEpc: input.epc })
       .then(function () {
-        return res.ok({ message: 'Pacer registered', race: input.race, epc: input.epc })
+        return res.ok({ message: 'Pacer registered', race: input.id, epc: input.epc })
       })
       .catch(function (E) {
         return res.badRequest(E)
       })
   },
-  //  {race: ID, advancingRules: [{rule1}, {rule2} ]}
+  //  {id: ID, advancingRules: [{rule1}, {rule2} ]}
   /*  advancingRules: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
       { rankFrom: 0, rankTo: 9, toRace: 2, insertAt: 0 },
       { rankFrom: 10, rankTo: 19, toRace: 3, insertAt: 0 }
   */
   updateAdvancingRules: function (req, res) {
     var input = req.body
-    var toRace = []
-    var notices = []
+//    var toRace = []
+//    var notices = []
 
-        // 1. validate rules within this race
+/*
+  dataService.validateAdvRules: {
+    .continuity
+    .startFromZero
+    .maxRanking
+    .noOverlap
+    .racerNumberMatched
+    .noOverflow
+  }
+*/
+    Race.update({ id: input.id }, { advancingRules: input.advancingRules })
+      .then(function (V) {
+        return res.ok({ race: V[0] })
+      })
+      .catch(function (E) {
+        return res.badRequest(E)
+      })
+    // 1. validate rules within this race
+/*
     if (!dataService.validateAdvRules.continuity(input.advancingRules)) {
       return res.badRequest('Must set rules for continuous rankings')
     }
     if (!dataService.validateAdvRules.startFromZero(input.advancingRules)) {
       return res.badRequest('Must set rankFrom from 0')
     }
-    input.race = parseInt(input.race)
     input.advancingRules = _.sortBy(input.advancingRules, 'rankFrom')
-    return Race.findOne({ id: input.race })
+    return Race.findOne({ id: input.id })
       .then(function (modelData) {
           // 2. validate more rules within this race
         if (!dataService.validateAdvRules.maxRanking(input.advancingRules, modelData.racerNumberAllowed)) {
@@ -184,17 +201,18 @@ var RaceController = {
         return Group.findOne({ id: modelData.group }).populate('races')
       })
       .then(function (modelData) {
-          // 3. validate all toRace dont exceed max racer allowed
-          // TO DO: validate all advanced race's all position are filled (show warning if not)
+        // 3. validate all toRace dont exceed max racer allowed
         toRace.forEach(function (toRaceId) {
           var advRulesForSameRace = _.filter(input.advancingRules, { toRace: toRaceId })
-          var raceObj = _.filter(modelData.races, { id: toRaceId })
+          var raceObj = _.filter(modelData.races, { id: toRaceId })[0]
 
           modelData.races.forEach(function (otherRace) {
             var matches = _.filter(otherRace.advancingRules, { toRace: toRaceId })
 
             advRulesForSameRace = advRulesForSameRace.concat(matches)
           })
+          console.log('advRulesForSameRace: ', advRulesForSameRace)
+          console.log('raceObj: ', raceObj)
           if (!dataService.validateAdvRules.noOverlap(advRulesForSameRace)) {
             notices.push('There may be overlapped racers in advanced race: ' + toRaceId)
           }
@@ -205,14 +223,15 @@ var RaceController = {
             throw new Error('Racer count exceed max number of advanced race')
           }
         })
-        return Race.update({ id: input.race }, { advancingRules: input.advancingRules })
+        return Race.update({ id: input.id }, { advancingRules: input.advancingRules })
       })
       .then(function (modelData) {
-        return res.ok({ message: 'Advancing rules updated', race: input.race, advancingRules: modelData[0].advancingRules, notices: notices })
+        return res.ok({ race: modelData[0], notices: notices })
       })
       .catch(function (E) {
         return res.badRequest(E)
       })
+*/
   },
     // /:id
   getParsedRaceResult: function (req, res) {
@@ -255,7 +274,7 @@ var RaceController = {
     return q.promise
   },
     /* {
-        race: ID,
+        id: ID,
         rankings: [{registration: ID, time: INT/'dnf'}],
         disqualified: [{registration: ID, time: INT/dnf}]
     } */
@@ -265,8 +284,7 @@ var RaceController = {
     var completeRanking
     var groupId
 
-    input.race = parseInt(input.race)
-    Race.findOne({ id: input.race })
+    Race.findOne({ id: input.id })
       .then(function (V) {
         var funcs = []
 
@@ -280,7 +298,7 @@ var RaceController = {
       })
       .then(function () {
         completeRanking = input.rankings.concat(input.disqualified)
-        return Race.update({ id: input.race }, { result: completeRanking })
+        return Race.update({ id: input.id }, { result: completeRanking })
       })
       .then(function () {
         if (advancingRules.length === 0) {
@@ -289,7 +307,7 @@ var RaceController = {
         return false
       })
       .then(function (groupData) {
-        var result = { message: 'Result submitted', race: input.race }
+        var result = { message: 'Result submitted', race: input.id }
 
         if (groupData) {
           result.group = groupData[0].id
@@ -300,13 +318,12 @@ var RaceController = {
         return res.badRequest(E)
       })
   },
-    // {race: ID, registrations: [ID, ID]]}
+    // {id: ID, registrations: [ID, ID]]}
     // 順序跟排位有關的樣子
   assignRacersToRace: function (req, res) {
     var input = req.body
 
-    input.race = parseInt(input.race)
-    Race.findOne({ id: input.race }).populate('registrations')
+    Race.findOne({ id: input.id }).populate('registrations')
       .then(function (raceData) {
         input.registrations.forEach(function (regId) {
           raceData.registrations.add(regId)
@@ -314,7 +331,7 @@ var RaceController = {
         return raceData.save()
       })
       .then(function () {
-        return res.ok({ message: 'racers assigned successfully', race: input.race, registrations: input.registrations })
+        return res.ok({ message: 'racers assigned successfully', race: input.id, registrations: input.registrations })
       })
       .catch(function (E) {
         return res.badRequest(E)
