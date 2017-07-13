@@ -112,6 +112,7 @@ module.exports = {
   // {event: ID, epc: STR, accessCode: STR}
   rfidReg: function (req, res) {
     var input = req.body
+    //TO DO: also assign raceNumber
 
     Event.findOne({id: input.event}).populate('registrations')
     .then(function (modelData) {

@@ -17,8 +17,6 @@ var RaceController = {
     .then(function (V) {
       var result = V.toJSON()
 
-      delete result.pacerEpc
-      delete result.testerEpc
       delete result.rfidData
       return res.ok({ race: result })
     })

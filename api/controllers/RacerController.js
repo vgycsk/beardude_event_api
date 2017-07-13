@@ -3,12 +3,6 @@
 'use strict'
 
 module.exports = {
-  // {email: STR}
-  racerExist: function (req, res) {
-    Racer.findOne(req.body)
-    .then(function (result) { return res.ok({racer: result}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
   activate: function (req, res) {
     return accountService.activate(req, res, 'Racer')
   },

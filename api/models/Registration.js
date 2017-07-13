@@ -24,6 +24,9 @@ module.exports = {
       type: 'string',
       required: true
     },
+    name: {
+      type: 'string'
+    },
     raceNumber: {
       type: 'integer'
     },

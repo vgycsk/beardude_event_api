@@ -66,7 +66,7 @@ module.exports = {
     isIndieEvent: {
       type: 'boolean',
       required: true,
-      defaultsTo: false
+      defaultsTo: true
     },
     requiresPaymentOnReg: {
       type: 'boolean',
