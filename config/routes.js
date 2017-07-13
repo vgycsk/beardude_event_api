@@ -52,7 +52,7 @@ module.exports.routes = {
     'get  /api/race/info/:id': 'RaceController.getGeneralInfo',
     // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3, 6.3.4
     'get  /api/race/mgmtInfo/:id': 'RaceController.getManagementInfo',
-    // 1.2.8
+    // 1.2.8, 1.2.9
     'post /api/race/update': 'RaceController.update',
     // 1.2.6
     'get /api/race/delete/:id': 'RaceController.delete',
@@ -62,8 +62,6 @@ module.exports.routes = {
     'post /api/race/racer/remove': 'RaceController.removeRacer',
     //6.2.6
     'post /api/race/assignPacerRfid': 'RaceController.assignPacerRfid',
-    // 1.2.9
-    'post /api/race/updateAdvancingRules': 'RaceController.updateAdvancingRules',
     // 6.3.7
     'get  /api/race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
     // 6.3.10
