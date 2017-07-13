@@ -18,7 +18,8 @@ module.exports = {
     racer: {
       model: 'Racer'
     },
-        // 每個Event裡的所有accessCode為unique
+
+    // Event的accessCode為unique
     accessCode: {
       type: 'string',
       required: true
@@ -52,7 +53,7 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
-        // {race: ID, note: STR}
+    // [{race: ID, note: STR}]
     raceNotes: {
       type: 'json'
     },

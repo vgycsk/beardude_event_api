@@ -12,6 +12,10 @@ module.exports = {
       collection: 'Group',
       via: 'event'
     },
+    registrations: {
+      collection: 'Registration',
+      via: 'event'
+    },
 
     name: {
       type: 'string',
@@ -58,9 +62,23 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
+    // Doesnt require racer info
+    isIndieEvent: {
+      type: 'boolean',
+      required: true,
+      defaultsTo: false
+    },
+    requiresPaymentOnReg: {
+      type: 'boolean',
+      required: true,
+      defaultsTo: false
+    },
     testerEpc: {
       type: 'array',
       defaultsTo: []
+    },
+    pacerEpc: {
+      type: 'string'
     },
     toJSON: function () {
       return this.toObject()
