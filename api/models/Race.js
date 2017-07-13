@@ -38,6 +38,11 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
+    isFinalRace: {
+      type: 'boolean',
+      required: true,
+      defaultsTo: false
+    },
     requirePacer: {
       type: 'boolean',
       required: true,
