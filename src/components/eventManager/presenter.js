@@ -16,7 +16,7 @@ const returnDateTime = (timestamp, forDisplay) => {
 }
 
 const validateAdvRules = {
-  ruleCompleted: (modified) => (modified.rankFrom && modified.rankTo && modified.toRace) ? true : false,
+  ruleCompleted: (modified) => (modified.rankFrom !== undefined && modified.rankTo !== undefined && modified.toRace !== undefined) ? true : false,
   continuity: (rules) => { let hasError
     if (rules.length > 1) {
       rules.forEach((rule, i) => { if (rules[i + 1] && (rules[i + 1].rankFrom - rule.rankTo !== 1)) { hasError = true } })
@@ -79,11 +79,11 @@ const render = {
         }
         return <div key={'race' + I}><label>{V.nameCht}</label>
           {!V.isFinalRace && <div className={css.tableInput}>
-          <table><thead><tr><th>資格</th><th>晉級到</th><th></th></tr></thead>
+          <table><thead><tr><th>資格</th><th>晉級到</th></tr></thead>
             <tbody>{render.advRuleItem({races, rules: (modifiedRules && modifiedId === V.id) ? modifiedRules : V.advancingRules, onEdit, raceObj: V, disabled: (modifiedId === V.id) ? false : true, options: options})}
             <tr><td className={css.ft} colSpan='4'>
-              {(modifiedId === V.id) ? <span><Button text='新增' onClick={onEdit({raceObj: V, action: 'add'})}/><span className={css.right}><Button onClick={onSubmit} text='儲存' /><Button text='取消' style='grey' onClick={onToggle(V, I)}/></span></span>
-              : <span className={css.right}><Button onClick={onSubmit} text='編輯' onClick={onToggle(V, I)}/></span>}
+              {(modifiedId === V.id) ? <span><Button style='listFtIcon' text='+' onClick={onEdit({raceObj: V, action: 'add'})}/><span className={css.right}><Button onClick={onSubmit} text='儲存' /><Button text='取消' style='grey' onClick={onToggle(V, I)}/></span></span>
+              : (!modifiedId && <span className={css.right}><Button onClick={onSubmit} text='編輯' onClick={onToggle(V, I)}/></span>)}
             </td></tr>
             </tbody>
           </table>
@@ -94,8 +94,7 @@ const render = {
   advRuleItem: ({races, raceObj, rules, onEdit, disabled, options}) => rules.map((V, index) => <tr key={'adv' + index}>
     <td>從 <select value={V.rankFrom} disabled={disabled} onChange={onEdit({action: 'edit', index, field: 'rankFrom'})}><option key='opt0'>名次...</option>{options.map(V => <option key={'opt' + V.label}value={V.value}>{V.label}</option>)}</select>
       到 <select disabled={disabled} value={V.rankTo} onChange={onEdit({action: 'edit', index, field: 'rankTo'})}><option key='opt0'>名次...</option>{options.map(V => <option key={'opt' + V.label}value={V.value}>{V.label}</option>)}</select></td>
-    <td><select disabled={disabled} onChange={onEdit({action: 'edit', index, field: 'toRace'})} value={V.toRace}><option key='toRace0'>賽事...</option>{races.map((V) => { if ((V.id !== raceObj.id) && !V.isEntryRace) { return <option key={'toRace' + V.id} value={V.id}>{V.nameCht}</option>}})}</select></td>
-    <td>{!disabled && <Button onClick={onEdit({action: 'delete', index})} style='grey' text='刪除' />}</td>
+    <td><select disabled={disabled} onChange={onEdit({action: 'edit', index, field: 'toRace'})} value={V.toRace}><option key='toRace0'>賽事...</option>{races.map((V) => { if ((V.id !== raceObj.id) && !V.isEntryRace) { return <option key={'toRace' + V.id} value={V.id}>{V.nameCht}</option>}})}</select> {!disabled && <span className={css.right}><Button onClick={onEdit({action: 'delete', index})} style='del' text='x' /></span>}</td>
   </tr>),
   delete: (model, original, onDelete) => {
     if ( (model === 'event' && original.groups.length === 0) ||
@@ -211,10 +210,12 @@ export class EventManager extends BaseComponent {
     } else if (action === 'edit') {
       advRuleModified[index][field] = parseInt(e.target.value)
       const ruleCompleted = validateAdvRules.ruleCompleted(advRuleModified[index])
+      console.log('ruleCompleted? ', ruleCompleted)
       if (ruleCompleted) {
         startFromZero = validateAdvRules.startFromZero(advRuleModified)
         continuity = validateAdvRules.continuity(advRuleModified)
         noOverflow = validateAdvRules.noOverflow(this.state.advRuleRaceId, advRuleModified, advRuleModified[index].toRace, this.props.event.groups[this.state.groupSelected].races)
+        console.log('noOverflow: ', noOverflow)
         advRuleMsg = (startFromZero) ? startFromZero : (continuity ? continuity : (noOverflow ? noOverflow : undefined))
       }
     } else if (action === 'delete') {
@@ -223,7 +224,7 @@ export class EventManager extends BaseComponent {
         // to do: check overflow
           startFromZero = validateAdvRules.startFromZero(advRuleModified)
           continuity = validateAdvRules.continuity(advRuleModified)
-          advRuleMsg = (startFromZero) ? startFromZero : (continuity ? continuity : (noOverflow ? noOverflow : undefined))
+          advRuleMsg = (startFromZero) ? startFromZero : (continuity ? continuity : undefined)
       }
     }
     this.setState({advRuleModified: advRuleModified, advRuleMsg: advRuleMsg})
@@ -293,7 +294,7 @@ export class EventManager extends BaseComponent {
           <div><h3>選手賽籍</h3>{render.ftBlank()}</div>
         </div>
       </div>
-            <Dialogue content={ model && render.overlay({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete, table: (model === 'group') ? render.advRuleTable({advRuleMsg: this.state.advRuleMsg, modifiedId: this.state.advRuleRaceId, modifiedRules: this.state.advRuleModified, races: event.groups[groupSelected].races, onEdit: this.handleEditAdvRule, onSubmit: this.handleSubmitAdvRule, onToggle: this.handleToggleEditAdvRule }) : '' }) } />
+      <Dialogue content={ model && render.overlay({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete, table: (model === 'group') ? render.advRuleTable({advRuleMsg: this.state.advRuleMsg, modifiedId: this.state.advRuleRaceId, modifiedRules: this.state.advRuleModified, races: event.groups[groupSelected].races, onEdit: this.handleEditAdvRule, onSubmit: this.handleSubmitAdvRule, onToggle: this.handleToggleEditAdvRule }) : '' }) } />
     </div>)
   }
 }

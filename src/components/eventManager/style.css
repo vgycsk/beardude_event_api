@@ -215,13 +215,10 @@
   text-align: left;
 }
 .advTable th:nth-child(1) {
-  width: 210px;
+  width: 260px;
 }
 .advTable th:nth-child(2) {
-  width: 140px;
-}
-.advTable th:nth-child(3) {
-  width: 100px;
+  width: 190px;
   border-right: 1px solid #ddd;
 }
 .advTable td:last-child {
@@ -244,7 +241,11 @@
 }
 .advTable table .ft {
   height: 36px;
-  padding: 0 10px;
+  padding: 0;
+  border-top: 1px solid #ddd;
+}
+.advTable .right {
+  padding: 3px 10px 0 0;
 }
 .advTable .right button {
   margin: 0 0 0 18px;
