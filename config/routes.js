@@ -62,15 +62,15 @@ module.exports.routes = {
     // 1.2.8, 1.2.9
     'post /api/race/update': 'RaceController.update',
     // 1.2.6
-    'get /api/race/delete/:id': 'RaceController.delete',
+    'get  /api/race/delete/:id': 'RaceController.delete',
     // 1.4.5, 1.7.1, 6.2.4, 1.7.2, 1.4.6, 1.7.2
-    'post /api/race/racers/:action': 'RaceController.assignRacers',
+    'post /api/race/reg/:action': 'RaceController.assignRacers',
     // 6.3.7
     'get  /api/race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
     // 6.3.10
     'post /api/race/submitRaceResult': 'RaceController.submitRaceResult',
     // 4.2.4, 4.2.5, 4.2.6
-    'get /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
+    'get  /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
     'post /api/race/readerRoom': 'RaceController.readerReceiver',
 
 
@@ -89,12 +89,16 @@ module.exports.routes = {
     // Reset password
 
     // Registration - prerace
+    // 2.2.1
+    'post /api/reg/create': 'RegistrationController.create',
+    // 5.1.1, 5.1.2
+    'post /api/reg/info': 'RegistrationController.getInfo',
+    'post /api/reg/update': 'RegistrationController.update',
+    'post /api/reg/delete': 'RegistrationController.delete',
     // 2.2.5 正式版再說
 //    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
     // 2.2.2 正式版再說
 //    'post /api/reg/signupAndCreateTeam': 'RegistrationController.signupAndCreateTeam',
-    // 2.2.1
-    'post /api/reg/create': 'RegistrationController.create',
     // 1.4.3
     //'post /api/reg/updatePayment': 'RegistrationController.updatePayment',
     // 2.2.3
@@ -103,8 +107,7 @@ module.exports.routes = {
     //'post /api/reg/refunded': 'RegistrationController.refunded',
     // 2.2.4 正式版再說
 //    'post /api/reg/confirm': 'RegistrationController.confirmRegistration',
-    // 5.1.1, 5.1.2
-    'post /api/reg/info': 'RegistrationController.getInfo',
+
 
     // Registration - race logic
     // 6.2.3, 6.2.4 正式版再說
@@ -114,7 +117,7 @@ module.exports.routes = {
     // 6.3.6
     'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
 
-s    // Team
+    // Team
     // 2.2.2
     'post /api/team/nameAvailable': 'TeamController.nameAvailable',
     // 2.3.3
