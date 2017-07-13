@@ -113,7 +113,7 @@
   margin-right: 2px;
   padding: 8px 16px;
 }
-.managerList>div>ul {
+.managerList .ul {
   overflow-y: scroll;
   overflow: auto;
 }

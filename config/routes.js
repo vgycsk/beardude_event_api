@@ -88,13 +88,19 @@ module.exports.routes = {
     'post /api/racer/updatePassword': 'RacerController.updatePassword',
     // Reset password
 
-    // Registration - prerace
+    // Registration
     // 2.2.1
     'post /api/reg/create': 'RegistrationController.create',
     // 5.1.1, 5.1.2
     'post /api/reg/info': 'RegistrationController.getInfo',
     'post /api/reg/update': 'RegistrationController.update',
+    // 6.3.6
+    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
+    // 6.3.9
+    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
+
     'post /api/reg/delete': 'RegistrationController.delete',
+
     // 2.2.5 正式版再說
 //    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
     // 2.2.2 正式版再說
@@ -108,14 +114,9 @@ module.exports.routes = {
     // 2.2.4 正式版再說
 //    'post /api/reg/confirm': 'RegistrationController.confirmRegistration',
 
-
-    // Registration - race logic
     // 6.2.3, 6.2.4 正式版再說
 //    'post /api/reg/admitRacer': 'RegistrationController.admitRacer',
-    // 6.3.9
-    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
-    // 6.3.6
-    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
+
 
     // Team
     // 2.2.2
