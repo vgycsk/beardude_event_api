@@ -46,8 +46,8 @@ const returnInputs = {
     {label: '公開活動', field: 'isPublic', type: 'checkbox'},
     {label: '隊伍報名', field: 'isTeamRegistrationOpen', type: 'checkbox'},
     {label: '個人報名', field: 'isRegistrationOpen', type: 'checkbox'},
-    {label: '地下活動', field: 'isIndieEvent', type: 'checkbox'},
-    {label: '報名時需付費', field: 'requiresPaymentOnReg', type: 'checkbox'}
+    {label: '地下活動', field: 'isIndieEvent', type: 'checkbox', value: true},
+    {label: '報名時需付費', field: 'requiresPaymentOnReg', type: 'checkbox', value: false}
   ],
   group: () => [
     {label: '中文名稱', field: 'nameCht', type: 'text'},
@@ -62,12 +62,16 @@ const returnInputs = {
     {label: '組別初賽', field: 'isEntryRace', type: 'checkbox'},
     {label: '組別決賽', field: 'isFinalRace', type: 'checkbox'},
     {label: '需前導車', field: 'requirePacer', type: 'checkbox'}
+  ],
+  reg: () => [
+    {label: '選手 ID', field: 'racer', type: 'number', disabled: true},
+    {label: '稱呼方式', field: 'name', type: 'text'}
   ]
 }
 const title = { event: '活動', group: '組別', race: '賽事' }
 //  handleEditAdvRule ({raceObj, action, index, field}) { return (e) => {
 const render = {
-  advRuleTable: ({advRuleMsg, group, modifiedId, modifiedRules, onEdit, onSubmit, onToggle, onCancel}) => {
+  advRuleTable: ({advRuleMsg, group, advRuleRaceId, advModifiedRules, onEdit, onSubmit, onToggle, onCancel}) => {
     return <div className={css.advTable}><h3>晉級規則 - {(group.nameCht) ? group.nameCht : group.name}組</h3><h4 className={css.alert}>{advRuleMsg}</h4>
       {group.races.map((V, I) => {
         let options = [];
@@ -77,11 +81,11 @@ const render = {
         return <div key={'race' + I}><label>{V.nameCht}</label>
           {!V.isFinalRace && <div className={css.tableInput}>
             <table><thead><tr><th>資格</th><th>晉級到</th></tr></thead><tbody>
-            {render.advRuleItem({races: group.races, rules: (modifiedRules && modifiedId === V.id) ? modifiedRules : V.advancingRules, onEdit, raceObj: V, disabled: (modifiedId === V.id) ? false : true, options: options})}
+            {render.advRuleItem({races: group.races, rules: (advModifiedRules && advRuleRaceId === V.id) ? advModifiedRules : V.advancingRules, onEdit, raceObj: V, disabled: (advRuleRaceId === V.id) ? false : true, options: options})}
               <tr><td className={css.ft} colSpan='4'>
-                {(modifiedId === V.id)
+                {(advRuleRaceId === V.id)
                   ? <span><Button style='listFtIcon' text='+' onClick={onEdit({raceObj: V, action: 'add'})}/><span className={css.right}><Button onClick={onSubmit} text='儲存' /><Button text='取消' style='grey' onClick={onToggle(V, I)}/></span></span>
-                  : (!modifiedId && <span className={css.right}><Button onClick={onSubmit} text='編輯' onClick={onToggle(V, I)}/></span>)}
+                  : (!advRuleRaceId && <span className={css.right}><Button onClick={onSubmit} text='編輯' onClick={onToggle(V, I)}/></span>)}
                 </td></tr>
             </tbody></table>
           </div>}
@@ -94,7 +98,7 @@ const render = {
       到 <select disabled={disabled} value={V.rankTo} onChange={onEdit({action: 'edit', index, field: 'rankTo'})}><option key='opt0'>名次...</option>{options.map(V => <option key={'opt' + V.label}value={V.value}>{V.label}</option>)}</select></td>
     <td><select disabled={disabled} onChange={onEdit({action: 'edit', index, field: 'toRace'})} value={V.toRace}><option key='toRace0'>賽事...</option>{races.map((V) => { if ((V.id !== raceObj.id) && !V.isEntryRace) { return <option key={'toRace' + V.id} value={V.id}>{V.nameCht}</option>}})}</select> {!disabled && <span className={css.right}><Button onClick={onEdit({action: 'delete', index})} style='del' text='x' /></span>}</td>
   </tr>),
-  delete: (model, original, onDelete) => ((model === 'event' && original.groups.length === 0) || (model === 'group' && original.races.length === 0 && original.registrations.length === 0) || (model === 'race' && original.registrations.length === 0))
+  delete: (model, original, onDelete) => ((model === 'event' && original.groups.length === 0) || (model === 'group' && original.races.length === 0 && original.registrations.length === 0) || (model === 'race' && original.registrations.length === 0) || model === 'reg')
     ? <Button style='alert' onClick={onDelete(model)} text='刪除' />
     : <Button style='disabled' text='刪除' />,
   info: ({event, onEdit}) => <div className={css.info}>
@@ -105,7 +109,7 @@ const render = {
   </div>,
   infoForm: ({model, table, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
   <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
-    <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)) })}</li>)}</ul>
+    <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)), disabled: V.disabled })}</li>)}</ul>
     {table}
     <div className={css.boxFt}>
       {modified ? <Button text='儲存' onClick={onSubmit(model)} /> : <Button style='disabled' text='儲存'/>}
@@ -115,7 +119,8 @@ const render = {
   </div>,
   ftBlank: () => <span className={css.listFt}></span>,
   list: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name} <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>,
-  listRace: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name}<ul className={css.lights}><li className={V.requirePacer ? css.on : css.off}>前導</li><li className={V.isEntryRace ? css.on : css.off}>初賽</li>{V.isFinalRace ? <li className={css.on}>決賽</li> : <li className={V.advancingRules.length > 0 ? css.on : css.off}>晉級</li>}</ul><span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>
+  listRace: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{V.nameCht ? V.nameCht : V.name}<ul className={css.lights}><li className={V.requirePacer ? css.on : css.off}>前導</li><li className={V.isEntryRace ? css.on : css.off}>初賽</li>{V.isFinalRace ? <li className={css.on}>決賽</li> : <li className={V.advancingRules.length > 0 ? css.on : css.off}>晉級</li>}</ul><span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span></button></li>)}</ul>,
+  listReg: ({array, selected, onSelect, listHeight}) => <ul style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{(V.name) ? V.name : V.id}</button></li>)}</ul>
 }
 export class EventManager extends BaseComponent {
   constructor (props) {
@@ -129,10 +134,11 @@ export class EventManager extends BaseComponent {
       original: undefined,
       groupSelected: -1,
       raceSelected: -1,
+      regSelected: -1,
       listHeight: returnListHeight({})
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleStartEdit', 'handleCancelEdit', 'handleEditAdvRule', 'handleDelete', 'handleResize', 'handleSubmit', 'handleSubmitAdvRule', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'handleToggleEditAdvRule', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
+    this._bind('handleStartEdit', 'handleCancelEdit', 'handleEditAdvRule', 'handleDelete', 'handleResize', 'handleSubmit', 'handleSubmitAdvRule', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'handleSelectReg', 'handleToggleEditAdvRule', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
   }
   componentDidMount () {
     const onSuccess = () => this.setState({model: 'event', original: {}})
@@ -175,6 +181,10 @@ export class EventManager extends BaseComponent {
       case 'race':
         state.modified.group = this.props.event.groups[this.state.groupSelected].id
         state.raceSelected = stateObj.raceSelected = this.props.event.groups[this.state.groupSelected].races.length
+        break;
+      case 'reg':
+        state.modified.group = this.props.event.groups[this.state.groupSelected].id
+        state.regSelected = stateObj.regSelected = this.props.event.groups[this.state.groupSelected].registrations.length
         break;
       }
     }
@@ -221,6 +231,9 @@ export class EventManager extends BaseComponent {
   handleSelectRace (index) { return (e) => {
     this.setState({raceSelected: (this.state.raceSelected === index) ? -1 : index})
   }}
+  handleSelectReg (index) { return (e) => {
+    this.setState({regSelected: (this.state.raceSelected === index) ? -1 : index})
+  }}
   handleSelectGroup (index) { return (e) => {
     this.setState({groupSelected: (this.state.groupSelected === index) ? -1 : index, raceSelected: -1})
   }}
@@ -260,7 +273,7 @@ export class EventManager extends BaseComponent {
   }
   render () {
     const { location, event } = this.props
-    const { listHeight, modified, original, model, groupSelected, raceSelected } = this.state
+    const { advRuleModified, advRuleRaceId, advRuleMsg, listHeight, modified, original, model, groupSelected, raceSelected, regSelected } = this.state
     let overlay
 
     if (event === -1) { return <Redirect to={{pathname: '/console'}} /> }
@@ -269,7 +282,7 @@ export class EventManager extends BaseComponent {
 
     if (model) {
       if (model === 'advRules') {
-        overlay = render.advRuleTable({group: event.groups[groupSelected], advRuleMsg: this.state.advRuleMsg, modifiedId: this.state.advRuleRaceId, modifiedRules: this.state.advRuleModified, onEdit: this.handleEditAdvRule, onSubmit: this.handleSubmitAdvRule, onToggle: this.handleToggleEditAdvRule, onCancel: this.handleCancelEdit })
+        overlay = render.advRuleTable({group: event.groups[groupSelected], advRuleMsg, advRuleRaceId, advModifiedRules, onEdit: this.handleEditAdvRule, onSubmit: this.handleSubmitAdvRule, onToggle: this.handleToggleEditAdvRule, onCancel: this.handleCancelEdit })
       } else {
         overlay = render.infoForm({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete })
       }
@@ -301,7 +314,12 @@ export class EventManager extends BaseComponent {
             }
           </div>
           <div><h3>選手賽籍</h3>
+            {groupSelected !== -1 && render.listReg({array: ((raceSelected === -1) ? event.groups[groupSelected].registrations : event.groups[groupSelected].races[raceSelected].registrations), listHeight, selected: regSelected, onSelect: this.handleSelectReg})}
             <span className={css.listFt}>
+              {groupSelected !== -1 && <Button style='listFtIcon' text='+' onClick={this.handleStartEdit('reg', {})} />}
+              {regSelected !== -1 &&
+                <Button style='listFt' text='編輯' onClick={this.handleStartEdit('reg', event.groups[groupSelected].registrations[regSelected])} />
+              }
             </span>
           </div>
         </div>

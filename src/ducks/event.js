@@ -11,6 +11,7 @@ const GET_EVENTS = 'event/GET_EVENTS'
 const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
+const SUBMIT_REG = 'event/SUBMIT_REG'
 
 const returnPostHeader = (obj) => ({ method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(obj) })
 // actions
@@ -58,7 +59,7 @@ export const actionCreators = {
     }
   },
   submit: (state, successCallback) => async (dispatch) => {
-    const types = { event: SUBMIT_EVENT, group: SUBMIT_GROUP, race: SUBMIT_RACE }
+    const types = { event: SUBMIT_EVENT, group: SUBMIT_GROUP, race: SUBMIT_RACE, reg: SUBMIT_REG }
     const pathname = (state.original.id) ? 'update' : 'create'
     try {
       const response = await fetch(`/api/${state.model}/${pathname}`, returnPostHeader({...state.modified, id: state.original.id}))
@@ -137,6 +138,17 @@ export const reducer = (state = initialState, action) => {
         nextState.event.groups[payload.state.groupSelected].races.push({...payload.race, registrations: []})
       } else {
         nextState.event.groups[payload.state.groupSelected].races[payload.state.raceSelected] = payload.race
+      }
+      return nextState
+    }
+    case SUBMIT_REG: {
+      let nextState = {...state}
+
+      // group's reg
+      if (state.event.groups[payload.state.groupSelected].registrations.length === payload.state.regSelected) {
+        nextState.event.groups[payload.state.groupSelected].registrations.push({...payload.registration})
+      } else {
+        nextState.event.groups[payload.state.groupSelected].registrations[payload.state.regSelected] = payload.registration
       }
       return nextState
     }
