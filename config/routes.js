@@ -93,6 +93,7 @@ module.exports.routes = {
     'post /api/reg/create': 'RegistrationController.create',
     // 5.1.1, 5.1.2
     'post /api/reg/info': 'RegistrationController.getInfo',
+    'get /api/reg/:model/:id': 'RegistrationController.getRegistrations',
     'post /api/reg/update': 'RegistrationController.update',
     // 6.3.6
     'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',

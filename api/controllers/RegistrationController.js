@@ -1,4 +1,4 @@
-/* global dataService, Registration */
+/* global dataService, Group, Registration */
 
 'use strict'
 
@@ -46,6 +46,17 @@ var RegistrationController = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // /group/:id, /event/:id, /race/:id
+  getRegistrations: function (req, res) {
+    var query = {}
+    query[req.params.model] = req.params.id
+
+    Registration.find(query).populate('races')
+    .then(function (V) {
+      return res.ok({ registrations: V })
+    })
+    .catch(function (E) { return res.badRequest(E) })
+  },
   // {id: ID, name: STR}
   update: function (req, res) {
     var input = req.body
@@ -59,8 +70,6 @@ var RegistrationController = {
   // {id: ID}
   delete: function (req, res) {
     var input = req.body
-    var fields = ['name']
-    var updateObj = dataService.returnUpdateObj(fields, input)
     Registration.findOne(input)
     .then(function (V) {
       if (V.raceNumber || V.epc || V.raceNotes) { throw new Error('Cannot delete admitted racer') }
@@ -312,4 +321,3 @@ module.exports = RegistrationController
       })
   },
 */
-

@@ -8,6 +8,8 @@ const DELETE_RACE = 'event/DELETE_RACE'
 const EVENT_ERR = 'event/EVENT_ERR'
 const GET_EVENT = 'event/GET_EVENT'
 const GET_EVENTS = 'event/GET_EVENTS'
+const GET_REGS_OF_GROUP = 'event/GET_REGS_OF_GROUP'
+const GET_REGS_OF_RACE = 'event/GET_REGS_OF_RACE'
 const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
@@ -39,7 +41,7 @@ export const actionCreators = {
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
+      dispatch({type: EVENT_ERR, payload: {error: '取得活動失敗'}})
     }
   },
   getEvent: (id, successCallback) => async (dispatch, getState) => {
@@ -56,6 +58,23 @@ export const actionCreators = {
       throw res.message
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
+    }
+  },
+  getRegs: (model, id, index, state, successCallback) => async (dispatch) => {
+    try {
+      const response = await fetch(`/api/reg/${model}/${id}`, {credentials: 'same-origin'})
+      const res = await response.json()
+      if (response.status === 200) {
+        if (model === 'group') {
+          dispatch({type: GET_REGS_OF_GROUP, payload: {...res, id: id, state: state, index: index}})
+        } else {
+          dispatch({type: GET_REGS_OF_RACE, payload: {...res, id: id, state: state, index: index}})
+        }
+        return successCallback()
+      }
+      throw res.message
+    } catch (e) {
+      dispatch({type: EVENT_ERR, payload: {error: '取得選手賽籍失敗'}})
     }
   },
   submit: (state, successCallback) => async (dispatch) => {
@@ -118,6 +137,16 @@ export const reducer = (state = initialState, action) => {
     }
     case GET_EVENT: {
       return {...state, event: payload.event}
+    }
+    case GET_REGS_OF_GROUP: {
+      let nextState = {...state}
+      nextState.event.groups[payload.index].registrations = payload.registrations
+      return nextState
+    }
+    case GET_REGS_OF_RACE: {
+      let nextState = {...state}
+      nextState.event.groups[payload.state.groupSelected].races[payload.index].registrations = payload.registrations
+      return nextState
     }
     case SUBMIT_EVENT: {
       return {...state, event: {...payload.event, groups: [...state.event.groups]}}

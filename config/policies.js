@@ -62,6 +62,7 @@ module.exports.policies = {
 //        signupAndCreateMultiple: '',
 //        create: '',
         getInfo: 'isRacerSelfOrTeamLeaderOrManager',
+        getRegistrations: 'isActiveManager',
         confirmRegistration: 'isActiveManager',
         update: 'isActiveManager',
         updateDisqualification: 'isActiveManager',
