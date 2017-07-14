@@ -18,6 +18,11 @@ const returnDateTime = (timestamp, forDisplay) => {
 }
 
 const returnListHeight = ({pageHeight = 360, ftHeight = 211}) => Math.max(window.innerHeight - ftHeight, (pageHeight - ftHeight))
+const returnListArray = {
+  group: (groups, state) => groups,
+  race: (groups, state) => (state.groupSelected === -1) ? undefined : groups[state.groupSelected].races,
+  reg: (groups, state) => (state.groupSelected === -1) ? undefined : ( (state.raceSelected === -1) ? groups[state.groupSelected].registrations : groups[state.groupSelected].races[state.raceSelected].registrations)
+}
 const returnInputs = {
   event: (modified, original) => [
     {label: '中文名稱', field: 'nameCht', type: 'text'},
@@ -46,11 +51,12 @@ const returnInputs = {
     {label: '需前導車', field: 'requirePacer', type: 'checkbox'}
   ],
   reg: () => [
-    {label: '選手 ID', field: 'racer', type: 'number', disabled: true},
+//    {label: '選手 ID', field: 'racer', type: 'number', disabled: true},
     {label: '稱呼方式', field: 'name', type: 'text'}
   ]
 }
-const title = { event: '活動', group: '組別', race: '賽事' }
+const title = { event: '活動', group: '組別', race: '賽事', reg: '賽籍' }
+const lists = ['group', 'race', 'reg']
 const render = {
   delete: (model, original, onDelete) => (
     (model === 'event' && original.groups.length === 0) ||
@@ -59,51 +65,51 @@ const render = {
     (model === 'reg'))
     ? <Button style='alert' onClick={onDelete(model)} text='刪除' />
     : <Button style='disabled' text='刪除' />,
-  group: {
-    list: ({array, selected, onSelect, listHeight, onStartEdit}) => <ul className={css.ul} style={{height: listHeight}}>{array.map((V, I) =>
-      <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
-        <button className={css.list} onClick={onSelect(I)}>
-          {V.nameCht ? V.nameCht : V.name}
-          <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span>
-        </button>
-      </li>)}
-    </ul>,
-    ft: ({handleStartEdit, group, groupSelected}) => <span>
+  li: {
+    group: (V, I, selected, onSelect) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
+      <button className={css.list} onClick={onSelect(I)}>
+        {V.nameCht ? V.nameCht : V.name}
+        <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span>
+      </button>
+    </li>,
+    race: (V, I, selected, onSelect) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
+      <button className={css.list} onClick={onSelect(I)}>
+        {V.nameCht ? V.nameCht : V.name}
+        <ul className={css.lights}>
+          <li className={V.requirePacer ? css.on : css.off}>前導</li>
+          <li className={V.isEntryRace ? css.on : css.off}>初賽</li>
+          {V.isFinalRace ? <li className={css.on}>決賽</li> : <li className={V.advancingRules.length > 0 ? css.on : css.off}>晉級</li>}
+        </ul>
+        <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span>
+      </button>
+    </li>,
+    reg: (V, I, selected, onSelect) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
+      <button className={css.list} onClick={onSelect(I)}>{(V.name) ? V.name : V.id}</button>
+    </li>
+  },
+  ft: {
+    group: (selected, array, handleStartEdit) => <span>
       <Button style='listFtIcon' text='+' onClick={handleStartEdit('group', {})} />
-      {groupSelected !== -1 && <span>
-        <Button style='listFt' text='編輯' onClick={handleStartEdit('group', group)} />
-        <Button style='listFt' text='編輯晉級規則' onClick={handleStartEdit('advRules', group)} />
+      {selected !== -1 && <span>
+        <Button style='listFt' text='編輯' onClick={handleStartEdit('group', array[selected])} />
+        <Button style='listFt' text='編輯晉級規則' onClick={handleStartEdit('advRules', array)} />
       </span>}
-    </span>
-  },
-  reg: {
-    list: ({array, selected, onSelect, listHeight}) => <ul className={css.ul} style={{height: listHeight}}>{array.map((V, I) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}><button className={css.list} onClick={onSelect(I)}>{(V.name) ? V.name : V.id}</button></li>)}</ul>,
-    ft: ({handleStartEdit, group, groupSelected, regSelected}) => <span>
-      {groupSelected !== -1 && <Button style='listFtIcon' text='+' onClick={handleStartEdit('reg', {})} />}
-      {regSelected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('reg', group.registrations[regSelected])} />}
-    </span>
-  },
-  race: {
-    list: ({array, selected, onSelect, listHeight}) => <ul className={css.ul} style={{height: listHeight}}>{array.map((V, I) =>
-      <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
-        <button className={css.list} onClick={onSelect(I)}>
-          {V.nameCht ? V.nameCht : V.name}
-          <ul className={css.lights}>
-            <li className={V.requirePacer ? css.on : css.off}>前導</li>
-            <li className={V.isEntryRace ? css.on : css.off}>初賽</li>
-            {V.isFinalRace ? <li className={css.on}>決賽</li> : <li className={V.advancingRules.length > 0 ? css.on : css.off}>晉級</li>}
-          </ul>
-          <span className={css.count}>{(V.registrations ? V.registrations.length : 0) + '/' + V.racerNumberAllowed}</span>
-        </button>
-      </li>)}
-    </ul>,
-    ft: ({handleStartEdit, group, groupSelected, raceSelected}) => <span>
-      {groupSelected !== -1 && <span>
+    </span>,
+    race: (selected, array, handleStartEdit) => <span>
+      {array && <span>
         <Button style='listFtIcon' text='+' onClick={handleStartEdit('race', {})} />
-        {raceSelected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('race', group.races[raceSelected])} /> }
+        {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('race', array[selected])} /> }
       </span>}
+    </span>,
+    reg: (selected, array, handleStartEdit) => <span>
+      {array && <Button style='listFtIcon' text='+' onClick={handleStartEdit('reg', {})} />}
+      {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('reg', array[selected])} />}
     </span>
   },
+  list: ({model, array, selected, onSelect, listHeight, handleStartEdit}) => <div key={'list' + model}><h3>{title[model]}</h3>
+    <ul className={css.ul} style={{height: listHeight}}>{array && array.map((V, I) => (render.li[model](V, I, selected, onSelect)))}</ul>
+    <span className={css.listFt}>{render.ft[model](selected, array, handleStartEdit)}</span>
+  </div>,
   event: ({event, onEdit}) => <div className={css.info}>
     <h2>{event.nameCht}</h2>
     <h3>{event.name} <span className={css.time}>{returnDateTime(event.startTime, true)} - {returnDateTime(event.endTime, true)}</span></h3>
@@ -139,7 +145,7 @@ export class EventManager extends BaseComponent {
       listHeight: returnListHeight({})
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleStartEdit', 'handleCancelEdit', 'handleEditAdvRule', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'handleSelectReg', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
+    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelectGroup', 'handleSelectRace', 'handleSelectReg', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
   }
   componentDidMount () {
     const onSuccess = () => this.setState({model: 'event', original: {}})
@@ -236,7 +242,7 @@ export class EventManager extends BaseComponent {
   }
   render () {
     const { location, event } = this.props
-    const { advRuleModified, advRuleRaceId, advRuleMsg, listHeight, modified, original, model, groupSelected, raceSelected, regSelected } = this.state
+    const { listHeight, modified, original, model, groupSelected, raceSelected, regSelected } = this.state
     if (event === -1) { return <Redirect to={{pathname: '/console'}} /> }
     else if (!event) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
     else if (model === -1) { return <Redirect to={{pathname: '/console/event/' + event.id}} /> }
@@ -245,24 +251,7 @@ export class EventManager extends BaseComponent {
       <div className={css.mainBody}>
         {render.event({event, onEdit: this.handleStartEdit('event', event)})}
         <div className={css.managerList}>
-          <div><h3>組別</h3>
-            {render.group.list({array: event.groups, listHeight, selected: groupSelected, onSelect: this.handleSelectGroup, onStartEdit: this.handleStartEdit})}
-            <span className={css.listFt}>
-              {render.group.ft({handleStartEdit: this.handleStartEdit, group: event.groups[groupSelected], groupSelected})}
-            </span>
-          </div>
-          <div><h3>組別賽制</h3>
-            {groupSelected !== -1 && render.race.list({array: event.groups[groupSelected].races, listHeight, selected: raceSelected, onSelect: this.handleSelectRace})}
-            <span className={css.listFt}>{groupSelected !== -1 &&
-              render.race.ft({handleStartEdit: this.handleStartEdit, group: event.groups[groupSelected], groupSelected, raceSelected})
-            }</span>
-          </div>
-          <div><h3>選手賽籍</h3>
-            {groupSelected !== -1 && render.reg.list({array: ((raceSelected === -1) ? event.groups[groupSelected].registrations : event.groups[groupSelected].races[raceSelected].registrations), listHeight, selected: regSelected, onSelect: this.handleSelectReg})}
-            <span className={css.listFt}>{groupSelected !== -1 &&
-              render.reg.ft({handleStartEdit: this.handleStartEdit, group: event.groups[groupSelected], groupSelected, regSelected})
-            }</span>
-          </div>
+          {lists.map(V => ( render.list({model: V, array: returnListArray[V](event.groups, this.state), listHeight, selected: groupSelected, onSelect: this.handleSelectGroup, handleStartEdit: this.handleStartEdit}) ))}
         </div>
       </div>
       {model && <Dialogue content={(model === 'advRules')
