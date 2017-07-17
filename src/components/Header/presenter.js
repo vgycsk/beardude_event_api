@@ -13,8 +13,8 @@ const navs = {
   ],
   event: [
     { name: '賽制', url: '/console/event' },
-    { name: 'RFID 操作', url: '/console/RFID' },
-    { name: '賽制操作', url: '/console/eventMatch' },
+    { name: 'RFID 管理', url: '/console/RFID' },
+    { name: '賽程管理', url: '/console/eventMatch' },
     { name: 'Stream', url: '/console/stream' }
   ]
 }
