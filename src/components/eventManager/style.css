@@ -201,6 +201,10 @@
   height: 39px;
   background: RGBA(255, 255, 255, 0.4);
 }
+.form {
+  max-width: 600px;
+  margin: 0 auto;
+}
 .boxFt {
   margin: 20px 0 0 110px;
 }

@@ -8,8 +8,7 @@ const DELETE_RACE = 'event/DELETE_RACE'
 const EVENT_ERR = 'event/EVENT_ERR'
 const GET_EVENT = 'event/GET_EVENT'
 const GET_EVENTS = 'event/GET_EVENTS'
-const GET_REGS_OF_GROUP = 'event/GET_REGS_OF_GROUP'
-const GET_REGS_OF_RACE = 'event/GET_REGS_OF_RACE'
+const GET_GROUP = 'event/GET_GROUP'
 const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
@@ -32,7 +31,7 @@ export const actionCreators = {
       dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   },
-  getEvents: () => async (dispatch, getState) => {
+  getEvents: () => async (dispatch) => {
     try {
       const response = await fetch('/api/event/getEvents', {credentials: 'same-origin'})
       const res = await response.json()
@@ -44,7 +43,7 @@ export const actionCreators = {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動失敗'}})
     }
   },
-  getEvent: (id, successCallback) => async (dispatch, getState) => {
+  getEvent: (id, successCallback) => async (dispatch) => {
     if (id === 'new') {
       dispatch({type: GET_EVENT, payload: { event: { groups: [] } }})
       return successCallback()
@@ -58,23 +57,6 @@ export const actionCreators = {
       throw res.message
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
-    }
-  },
-  getRegs: (model, id, index, state, successCallback) => async (dispatch) => {
-    try {
-      const response = await fetch(`/api/reg/${model}/${id}`, {credentials: 'same-origin'})
-      const res = await response.json()
-      if (response.status === 200) {
-        if (model === 'group') {
-          dispatch({type: GET_REGS_OF_GROUP, payload: {...res, id: id, state: state, index: index}})
-        } else {
-          dispatch({type: GET_REGS_OF_RACE, payload: {...res, id: id, state: state, index: index}})
-        }
-        return successCallback()
-      }
-      throw res.message
-    } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: '取得選手賽籍失敗'}})
     }
   },
   submit: (state, successCallback) => async (dispatch) => {
@@ -99,6 +81,22 @@ export const actionCreators = {
       if (response.status === 200) {
         dispatch({type: SUBMIT_RACE, payload: {...res, state: state}})
         return successCallback()
+      }
+      throw res.message
+    } catch (e) {
+      dispatch({type: ACTION_ERR, payload: {error: e}})
+    }
+  },
+  submitRegsToRaces: (groupId, groupIndex, obj, successCallback) => async (dispatch, getState) => {
+    try {
+      let response = await fetch('/api/race/assignRegsToRaces', returnPostHeader({races: obj}))
+      if (response.status === 200) {
+        response = await fetch(`/api/group/mgmtInfo/${groupId}`, {credentials: 'same-origin'})
+        const res = await response.json()
+        if (response.status === 200) {
+          dispatch({type: GET_GROUP, payload: {...res, index: groupIndex}})
+          return successCallback(res.group)
+        }
       }
       throw res.message
     } catch (e) {
@@ -138,14 +136,9 @@ export const reducer = (state = initialState, action) => {
     case GET_EVENT: {
       return {...state, event: payload.event}
     }
-    case GET_REGS_OF_GROUP: {
+    case GET_GROUP: {
       let nextState = {...state}
-      nextState.event.groups[payload.index].registrations = payload.registrations
-      return nextState
-    }
-    case GET_REGS_OF_RACE: {
-      let nextState = {...state}
-      nextState.event.groups[payload.state.groupSelected].races[payload.index].registrations = payload.registrations
+      nextState.event.groups[payload.index] = payload.group
       return nextState
     }
     case SUBMIT_EVENT: {

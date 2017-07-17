@@ -9,16 +9,17 @@
         "endTime": 1501243200000,
         "lapDistance": 1100,
         "location": "Taipei",
-        "isPublic": true,
-        "isRegistrationOpen": false,
-        "isTeamRegistrationOpen": true,
+        "isPublic": false,
+        "isRegistrationOpen": true,
+        "isTeamRegistrationOpen": false,
         "testerEpc": [
           "e01923123333123",
           "e01923123333123a"
         ],
         "createdAt": "2017-05-25T05:16:12.378Z",
-        "updatedAt": "2017-07-12T05:10:04.142Z",
-        "id": 6
+        "updatedAt": "2017-07-13T10:44:57.788Z",
+        "id": 6,
+        "isIndieEvent": true
       }
     ],
     "group": [
@@ -130,7 +131,7 @@
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-05-26T04:34:03.891Z",
-        "updatedAt": "2017-07-13T07:51:28.500Z",
+        "updatedAt": "2017-07-17T10:05:29.818Z",
         "id": 1,
         "pacerEpc": "e019231233333"
       },
@@ -194,7 +195,7 @@
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-11T15:40:35.515Z",
-        "updatedAt": "2017-07-13T07:51:47.377Z",
+        "updatedAt": "2017-07-17T10:05:29.819Z",
         "id": 7
       },
       {
@@ -373,40 +374,272 @@
     ],
     "registration": [
       {
-        "event": 6,
+        "name": "火砲王",
         "group": 2,
-        "racer": 3,
-        "accessCode": "cnOx",
+        "accessCode": "rsnM",
         "epc": "",
-        "paid": true,
-        "rfidRecycled": false,
-        "refundRequested": false,
-        "refunded": false,
-        "isDisqualified": true,
-        "createdAt": "2017-05-26T09:02:20.322Z",
-        "updatedAt": "2017-06-02T04:56:22.756Z",
-        "id": 1,
-        "raceNotes": [
-          {
-            "race": 1,
-            "note": "Dangerous conduct"
-          }
-        ]
-      },
-      {
-        "event": 6,
-        "group": 2,
-        "racer": 4,
-        "accessCode": "vIyV",
-        "epc": "",
-        "paid": true,
+        "paid": false,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
         "isDisqualified": false,
-        "createdAt": "2017-05-26T09:02:20.326Z",
-        "updatedAt": "2017-05-26T09:02:20.326Z",
-        "id": 2
+        "createdAt": "2017-07-13T16:27:29.193Z",
+        "updatedAt": "2017-07-17T06:39:52.589Z",
+        "id": 3
+      },
+      {
+        "name": "水槍",
+        "group": 2,
+        "accessCode": "ziQv",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-13T16:36:47.546Z",
+        "updatedAt": "2017-07-13T16:36:47.546Z",
+        "id": 4
+      },
+      {
+        "name": "小蔡",
+        "group": 2,
+        "event": 6,
+        "accessCode": "dcqZ",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T06:40:13.967Z",
+        "updatedAt": "2017-07-17T06:40:13.967Z",
+        "id": 5
+      },
+      {
+        "name": "小李",
+        "group": 2,
+        "event": 6,
+        "accessCode": "o1Lb",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T06:41:42.164Z",
+        "updatedAt": "2017-07-17T06:41:42.164Z",
+        "id": 6
+      },
+      {
+        "name": "小陳",
+        "group": 2,
+        "event": 6,
+        "accessCode": "oagP",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:04:49.249Z",
+        "updatedAt": "2017-07-17T08:04:49.249Z",
+        "id": 7
+      },
+      {
+        "name": "大王",
+        "group": 2,
+        "event": 6,
+        "accessCode": "UL9B",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:04:56.646Z",
+        "updatedAt": "2017-07-17T08:04:56.646Z",
+        "id": 8
+      },
+      {
+        "name": "大屌",
+        "group": 2,
+        "event": 6,
+        "accessCode": "V5dq",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:04.185Z",
+        "updatedAt": "2017-07-17T08:05:04.185Z",
+        "id": 9
+      },
+      {
+        "name": "皮皮",
+        "group": 2,
+        "event": 6,
+        "accessCode": "1MUF",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:09.912Z",
+        "updatedAt": "2017-07-17T08:05:09.912Z",
+        "id": 10
+      },
+      {
+        "name": "嘻嘻",
+        "group": 2,
+        "event": 6,
+        "accessCode": "xIiq",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:14.163Z",
+        "updatedAt": "2017-07-17T08:05:14.163Z",
+        "id": 11
+      },
+      {
+        "name": "卡卡",
+        "group": 2,
+        "event": 6,
+        "accessCode": "Gdve",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:19.966Z",
+        "updatedAt": "2017-07-17T08:05:19.966Z",
+        "id": 12
+      },
+      {
+        "name": "屁王",
+        "group": 2,
+        "event": 6,
+        "accessCode": "FoqL",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:26.620Z",
+        "updatedAt": "2017-07-17T08:05:26.620Z",
+        "id": 13
+      },
+      {
+        "name": "蒙哥",
+        "group": 2,
+        "event": 6,
+        "accessCode": "NSsg",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:37.961Z",
+        "updatedAt": "2017-07-17T08:05:37.961Z",
+        "id": 14
+      },
+      {
+        "name": "湯姆",
+        "group": 2,
+        "event": 6,
+        "accessCode": "ADdV",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T08:05:43.665Z",
+        "updatedAt": "2017-07-17T08:05:43.665Z",
+        "id": 15
+      },
+      {
+        "name": "笑笑生",
+        "group": 2,
+        "event": 6,
+        "accessCode": "3hnp",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T09:55:34.980Z",
+        "updatedAt": "2017-07-17T09:55:34.980Z",
+        "id": 16
+      },
+      {
+        "name": "小李子",
+        "group": 2,
+        "event": 6,
+        "accessCode": "95Fw",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T10:03:43.609Z",
+        "updatedAt": "2017-07-17T10:03:43.609Z",
+        "id": 17
+      },
+      {
+        "name": "卡丁卡丁",
+        "group": 2,
+        "event": 6,
+        "accessCode": "OGPo",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T10:04:41.556Z",
+        "updatedAt": "2017-07-17T10:04:41.556Z",
+        "id": 18
+      },
+      {
+        "name": "壞哥",
+        "group": 2,
+        "event": 6,
+        "accessCode": "BXDS",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T10:05:04.793Z",
+        "updatedAt": "2017-07-17T10:05:04.793Z",
+        "id": 19
+      },
+      {
+        "name": "王哥",
+        "group": 2,
+        "event": 6,
+        "accessCode": "Mc1i",
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-17T10:05:10.060Z",
+        "updatedAt": "2017-07-17T10:05:10.060Z",
+        "id": 20
       }
     ],
     "team": [
@@ -448,7 +681,98 @@
         "id": 4
       }
     ],
-    "race_registrations__registration_races": []
+    "race_registrations__registration_races": [
+      {
+        "registration_races": 3,
+        "race_registrations": 7,
+        "id": 15
+      },
+      {
+        "registration_races": 5,
+        "race_registrations": 7,
+        "id": 17
+      },
+      {
+        "registration_races": 4,
+        "race_registrations": 1,
+        "id": 18
+      },
+      {
+        "registration_races": 6,
+        "race_registrations": 1,
+        "id": 19
+      },
+      {
+        "registration_races": 7,
+        "race_registrations": 1,
+        "id": 20
+      },
+      {
+        "registration_races": 8,
+        "race_registrations": 1,
+        "id": 21
+      },
+      {
+        "registration_races": 9,
+        "race_registrations": 1,
+        "id": 22
+      },
+      {
+        "registration_races": 10,
+        "race_registrations": 1,
+        "id": 23
+      },
+      {
+        "registration_races": 15,
+        "race_registrations": 1,
+        "id": 24
+      },
+      {
+        "registration_races": 11,
+        "race_registrations": 7,
+        "id": 25
+      },
+      {
+        "registration_races": 12,
+        "race_registrations": 7,
+        "id": 26
+      },
+      {
+        "registration_races": 13,
+        "race_registrations": 7,
+        "id": 27
+      },
+      {
+        "registration_races": 14,
+        "race_registrations": 7,
+        "id": 28
+      },
+      {
+        "registration_races": 17,
+        "race_registrations": 1,
+        "id": 29
+      },
+      {
+        "registration_races": 16,
+        "race_registrations": 7,
+        "id": 30
+      },
+      {
+        "registration_races": 18,
+        "race_registrations": 7,
+        "id": 31
+      },
+      {
+        "registration_races": 19,
+        "race_registrations": 1,
+        "id": 32
+      },
+      {
+        "registration_races": 20,
+        "race_registrations": 7,
+        "id": 33
+      }
+    ]
   },
   "schema": {
     "event": {
@@ -486,9 +810,20 @@
         "type": "boolean",
         "defaultsTo": false
       },
+      "isIndieEvent": {
+        "type": "boolean",
+        "defaultsTo": true
+      },
+      "requiresPaymentOnReg": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
       "testerEpc": {
         "type": "array",
         "defaultsTo": []
+      },
+      "pacerEpc": {
+        "type": "string"
       },
       "id": {
         "type": "integer",
@@ -667,10 +1002,6 @@
       "pacerEpc": {
         "type": "string"
       },
-      "testerEpc": {
-        "type": "array",
-        "defaultsTo": []
-      },
       "startTime": {
         "type": "integer"
       },
@@ -793,6 +1124,9 @@
         "alias": "racer"
       },
       "accessCode": {
+        "type": "string"
+      },
+      "name": {
         "type": "string"
       },
       "raceNumber": {
@@ -934,7 +1268,7 @@
       "id": 9
     },
     "registration": {
-      "id": 2
+      "id": 20
     },
     "team": {
       "id": 15
@@ -942,6 +1276,8 @@
     "event_managers__manager_events": {
       "id": 5
     },
-    "race_registrations__registration_races": {}
+    "race_registrations__registration_races": {
+      "id": 33
+    }
   }
 }

@@ -1,5 +1,9 @@
 @import '../../style/includes.css';
 
+.advTable {
+  max-width: 600px;
+  margin: 0 auto;
+}
 .advTable label {
   vertical-align: top;
   line-height: 42px;

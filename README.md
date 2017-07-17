@@ -29,7 +29,7 @@ Scenarios:
 1.4.6  |       |         |              | 將選手移出比賽  |  /race/racers/remove    |
 *1.5    |       |         | 帳號管理      |               |  /manager/*       |
 *1.6    |       |         | 刪除活動      |               | /event/delete          |
-1.7.1  |       |         | 分配選手    |               |  | /race/racers/add, /race/racers/remove
+1.7.1  |       |         | 分配選手    |               |  | /race/regs/assignRegsToRaces
 1.7.2  |       |         | 移動選手    |               |  同上|
 2.1    |       | 參賽者   | 註冊帳號      |               | (刪掉, 應該是報名比賽同時註冊) |
 2.2.1  |       |         | 報名比賽      | 個人報名(已登入)| /reg/create    |
@@ -68,7 +68,7 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 6.1.2  |        |         |              | 查詢選手名單     | /race/mgmtInfo/:id    |
 6.2.1  |        |         | 準備比賽      | 開啟比賽            |           |
 6.2.3  |        |         |             | 開始選手登錄         |  /reg/admitRacer   | 
--6.2.4  |        |         |             | (登錄失敗)判讀選手狀態 | /race/racers/add,<br> /reg/admitRacer |
+-6.2.4  |        |         |             | (登錄失敗)判讀選手狀態 | /race/assignRegsToRaces,<br> /reg/admitRacer |
 -6.2.5  |        |         |             | (登錄失敗)更換選手RFID | /reg/replaceRfid<br>  /reg/admitRacer |
 *6.2.6  |        |         |             | 登錄Pacer ID        | /event/rfid/pacer    |
 6.2.7  |        |         |             | 確認選手登錄狀態       | /race/mgmtInfo/:id    |

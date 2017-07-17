@@ -9,6 +9,7 @@ import { Dialogue } from '../Dialogue/presenter'
 import Button from '../Button'
 import Header from '../Header'
 import AdvRule from '../AdvRule'
+import AssignReg from '../AssignReg'
 import { renderInput } from '../Table/presenter'
 
 const valueFunc = (modified, original, field) => (modified && modified[field] !== undefined) ? modified[field] : original[field]
@@ -92,18 +93,21 @@ const render = {
       <Button style='listFtIcon' text='+' onClick={handleStartEdit('group', {})} />
       {selected !== -1 && <span>
         <Button style='listFt' text='編輯' onClick={handleStartEdit('group', array[selected])} />
-        <Button style='listFt' text='編輯晉級規則' onClick={handleStartEdit('advRules', array)} />
       </span>}
     </span>,
     race: (selected, array, handleStartEdit) => <span>
       {array && <span>
         <Button style='listFtIcon' text='+' onClick={handleStartEdit('race', {})} />
+        <Button style='listFt' text='編輯晉級規則' onClick={handleStartEdit('advRules', array)} />
         {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('race', array[selected])} /> }
       </span>}
     </span>,
     reg: (selected, array, handleStartEdit) => <span>
-      {array && <Button style='listFtIcon' text='+' onClick={handleStartEdit('reg', {})} />}
-      {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('reg', array[selected])} />}
+      {array && <span>
+        <Button style='listFtIcon' text='+' onClick={handleStartEdit('reg', {})} />
+        <Button style='listFt' text='選手分組' onClick={handleStartEdit('assignReg', array)} />
+        {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('reg', array[selected])} />}
+      </span>}
     </span>
   },
   list: ({model, array, state, onSelect, handleStartEdit}) => <div key={'list' + model}><h3>{title[model]}</h3>
@@ -121,11 +125,9 @@ const render = {
     </ul>
     <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
   </div>,
-  raceTable: () => <div>test test</div>,
-  infoForm: ({model, table, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div>
+  infoForm: ({model, table, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div className={css.form}>
     <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
     <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)), disabled: V.disabled })}</li>)}</ul>
-    {model === 'reg' && render.raceTable()}
     <div className={css.boxFt}>
       {modified ? <Button text='儲存' onClick={onSubmit(model)} /> : <Button style='disabled' text='儲存'/>}
       {original.id && render.delete(model, original, onDelete)}
@@ -146,7 +148,7 @@ export class EventManager extends BaseComponent {
       listHeight: returnListHeight({})
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelect', 'deleteEventHandler', 'dragStartHandler', 'dragOverHandler', 'dragEndHandler')
+    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelect')
   }
   componentDidMount () {
     const onSuccess = () => this.setState({model: 'event', original: {}})
@@ -193,6 +195,7 @@ export class EventManager extends BaseComponent {
       case 'reg':
         state.modified.group = this.props.event.groups[this.state.groupSelected].id
         state.regSelected = stateObj.regSelected = this.props.event.groups[this.state.groupSelected].registrations.length
+        stateObj.raceSelected = -1
         break;
       }
     }
@@ -206,72 +209,37 @@ export class EventManager extends BaseComponent {
     switch (model) {
     case 'group':
       obj = this.props.event.groups[index]
-      stateObj = {groupSelected: (this.state.groupSelected === index) ? -1 : index, raceSelected: -1}
+      stateObj = {groupSelected: (this.state.groupSelected === index) ? -1 : index, raceSelected: -1, regSelected: -1}
       break
     case 'race':
       obj = this.props.event.groups[this.state.groupSelected].races[index]
-      stateObj = {raceSelected: (this.state.raceSelected === index) ? -1 : index}
+      stateObj = {raceSelected: (this.state.raceSelected === index) ? -1 : index, regSelected: -1}
       break
     case 'reg':
       stateObj = {regSelected: (this.state.raceSelected === index) ? -1 : index}
       break
     }
-    if (obj && obj.registrations && obj.registrations[0] && !obj.registrations[0].races) {
-      return this.dispatch(eventActions.getRegs(model, obj.id, index, this.state, onSuccess))
-    }
     return onSuccess()
   }}
-  dragStartHandler (E) {
-    console.log(`drag start - ${E.currentTarget.dataset.id}`)
-    this.dragItem = {
-      name: E.currentTarget.dataset.group,
-      id: E.currentTarget.dataset.id
-    }
-    E.dataTransfer.effectAllowed = 'move'
-    E.dataTransfer.setData('text/html', null)
-  }
-  dragOverHandler (E) {
-    E.preventDefault()
-    const over = E.currentTarget
-    if ((over.dataset.group !== this.dragItem.name) &&
-      (E.clientY - over.offsetTop) > (over.offsetHeight / 2) &&
-      ((E.clientX - over.offsetLeft) > (over.offsetWidth / 2))) {
-      this.overItem = {
-        name: over.dataset.group,
-        id: over.dataset.id}
-    }
-    console.log(`drag over event`)
-  }
-  dragEndHandler (E) {
-    console.log(`drag end -> ${this.dragItem} over ${this.overItem}`)
-    if (this.overItem && (this.dragItem.name + this.dragItem.id !== this.overItem.name + this.overItem.id)) {
-      this.alertMsg = `${this.dragItem.name}-${this.dragItem.id} to ${this.overItem.name}-${this.overItem.id} ?`
-      this.setState({
-        showDialogue: 1
-      })
-    }
-  }
-  deleteEventHandler (E) {
-    E.preventDefault()
-    console.log(`delete ${E.currentTarget.dataset.name} - ${E.currentTarget.parentNode.dataset.id}`)
-  }
   render () {
     const { location, event } = this.props
     const { modified, original, model, groupSelected } = this.state
     if (event === -1) { return <Redirect to={{pathname: '/console'}} /> }
     else if (!event) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
     else if (model === -1) { return <Redirect to={{pathname: '/console/event/' + event.id}} /> }
-
     return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' />
       <div className={css.mainBody}>
         {render.event({event, onEdit: this.handleStartEdit('event', event)})}
         <div className={css.managerList}>
-          {lists.map(V => ( render.list({model: V, array: returnListArray[V](event.groups, this.state), state: this.state, onSelect: this.handleSelect, handleStartEdit: this.handleStartEdit}) ))}
+          {lists.map(V => ( render.list({model: V, array: returnListArray[V](this.props.event.groups, this.state), state: this.state, onSelect: this.handleSelect, handleStartEdit: this.handleStartEdit}) ))}
         </div>
       </div>
       {model && <Dialogue content={(model === 'advRules')
         ? <AdvRule races={event.groups[groupSelected].races} handleCancelEdit={this.handleCancelEdit} />
-        : render.infoForm({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete })} /> }
+        : ((model === 'assignReg')
+          ? <AssignReg groupIndex={groupSelected} group={event.groups[groupSelected]} handleCancelEdit={this.handleCancelEdit} />
+          : render.infoForm({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete }))
+        } /> }
     </div>)
   }
 }
