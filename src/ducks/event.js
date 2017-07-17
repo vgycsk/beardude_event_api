@@ -90,9 +90,10 @@ export const actionCreators = {
   submitRegsToRaces: (groupId, groupIndex, obj, successCallback) => async (dispatch, getState) => {
     try {
       let response = await fetch('/api/race/assignRegsToRaces', returnPostHeader({races: obj}))
+      let res = await response.json()
       if (response.status === 200) {
         response = await fetch(`/api/group/mgmtInfo/${groupId}`, {credentials: 'same-origin'})
-        const res = await response.json()
+        res = await response.json()
         if (response.status === 200) {
           dispatch({type: GET_GROUP, payload: {...res, index: groupIndex}})
           return successCallback(res.group)
