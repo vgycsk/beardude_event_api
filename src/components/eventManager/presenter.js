@@ -216,7 +216,7 @@ export class EventManager extends BaseComponent {
       stateObj = {raceSelected: (this.state.raceSelected === index) ? -1 : index, regSelected: -1}
       break
     case 'reg':
-      stateObj = {regSelected: (this.state.raceSelected === index) ? -1 : index}
+      stateObj = {regSelected: (this.state.regSelected === index) ? -1 : index}
       break
     }
     return onSuccess()
