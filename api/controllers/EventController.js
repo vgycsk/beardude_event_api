@@ -54,8 +54,18 @@ module.exports = {
       return Q.all(funcs)
     })
     .then(function (V) {
+      var funcs = []
+
       result.groups = result.groups.map(function (group, I) {
         group.races = V[I]
+        funcs.push(Registration.find({group: group.id}).populate('races'))
+        return group
+      })
+      return Q.all(funcs)
+    })
+    .then(function (V) {
+      result.groups = result.groups = result.groups.map(function (group, I) {
+        group.registrations = V[I]
         return group
       })
       return res.ok({ event: result })

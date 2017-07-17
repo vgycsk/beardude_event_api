@@ -52,17 +52,29 @@ var RaceController = {
     .then(function () { return res.ok(query) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // /:action (add||remove) {id: ID, registrations: [ID, ID...]}
-  assignRacers: function (req, res) {
-    var input = req.body
-    var action = req.params.action
+  // {raceId: ID, toAdd: [ID, ID...], toRemove: [ID, ID...]}
+  addRemoveRegs: function (raceObj) {
+    var q = Q.defer()
 
-    Race.findOne({ id: input.id }).populate('registrations')
-    .then(function (V) {
-      input.registrations.forEach(function (regId) { V.registrations[action](regId) })
-      return V.save()
+    Race.findOne({id: raceObj.id}).populate('registrations')
+    .then(function (raceData) {
+      raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
+      raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
+      return raceData.save()
     })
-    .then(function () { return res.ok({ message: 'racers assigned successfully', id: input.id, registrations: input.registrations }) })
+    .then(function () { q.resolve() })
+    .catch(function (E) { q.reject(E) })
+    return q.promise
+  },
+  // {races: [{id: ID, toAdd: [ID, ID, ID], toRemove: ID, ID, ID}, {}, {}]}
+  assignRegsToRaces: function (req, res) {
+    var input = req.body
+    var funcs = []
+
+    input.races.map(function (race) { funcs.push(RaceController.addRemoveRegs(race)) })
+
+    Q.all(funcs)
+    .then(function () { return res.ok(input) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // /:id

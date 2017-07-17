@@ -19,6 +19,7 @@ module.exports.policies = {
     GroupController: {
         create: 'isActiveManager',
 //        getInfo: '',
+        getManagementInfo: 'isActiveManager',
         update: 'isActiveManager',
         delete: 'isActiveManager'
     },
@@ -40,7 +41,7 @@ module.exports.policies = {
         getManagementInfo: 'isActiveManager',
         update: 'isActiveManager',
         delete: 'isActiveManager',
-        assignRacers: 'isActiveManager',
+        assignRegsToRaces: 'isActiveManager',
         getParsedRaceResult: 'isActiveManager',
         submitRaceResult: 'isActiveManager'
     },
@@ -62,7 +63,6 @@ module.exports.policies = {
 //        signupAndCreateMultiple: '',
 //        create: '',
         getInfo: 'isRacerSelfOrTeamLeaderOrManager',
-        getRegistrations: 'isActiveManager',
         confirmRegistration: 'isActiveManager',
         update: 'isActiveManager',
         updateDisqualification: 'isActiveManager',

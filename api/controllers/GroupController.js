@@ -20,8 +20,35 @@ module.exports = {
     })
     .then(function (V) {
       result.registrations = V.map(function (reg) {
-        return { raceNumber: reg.raceNumber, racer: {id: reg.racer.id, firstName: reg.racer.firstName, lastName: reg.racer.lastName, nickName: reg.racer.nickName, team: reg.racer.team} }
+        var obj = { id: reg.id, raceNumber: reg.raceNumber }
+
+        if (reg.racer) {
+          obj.racer = { id: reg.racer.id, firstName: reg.racer.firstName, lastName: reg.racer.lastName, nickName: reg.racer.nickName, team: reg.racer.team }
+        }
+        return obj
       })
+      return res.ok({group: result})
+    })
+    .catch(function (E) {
+      return res.badRequest(E)
+    })
+  },
+  // /:id
+  getManagementInfo: function (req, res) {
+    var result = {}
+    var groupId = parseInt(req.params.id)
+
+    Group.findOne({id: groupId})
+    .then(function (modelData) {
+      result = modelData.toJSON()
+      return Registration.find({group: groupId}).populate('racer').populate('races')
+    })
+    .then(function (V) {
+      result.registrations = V
+      return Race.find({group: groupId}).populate('registrations')
+    })
+    .then(function (V) {
+      result.races = V
       return res.ok({group: result})
     })
     .catch(function (E) {

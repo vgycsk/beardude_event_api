@@ -15,7 +15,11 @@ var RegistrationController = {
       obj.accessCode = accessCode
       return Registration.create(obj)
     })
-    .then(function (V) { return q.resolve(V) })
+    .then(function (V) {
+      var result = V.toJSON()
+      result.races = []
+      return q.resolve(result)
+    })
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
@@ -43,17 +47,6 @@ var RegistrationController = {
     Registration.findOne(input).populate('races')
     .then(function (modelData) {
       return res.ok({ races: modelData.races, group: modelData.group, accessCode: modelData.accessCode, raceNumber: modelData.raceNumber, paid: modelData.paid, rfidRecycled: modelData.rfidRecycled, refundRequested: modelData.refundRequested, refunded: modelData.refunded })
-    })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // /group/:id, /event/:id, /race/:id
-  getRegistrations: function (req, res) {
-    var query = {}
-    query[req.params.model] = req.params.id
-
-    Registration.find(query).populate('races')
-    .then(function (V) {
-      return res.ok({ registrations: V })
     })
     .catch(function (E) { return res.badRequest(E) })
   },

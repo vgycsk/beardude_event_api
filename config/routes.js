@@ -33,6 +33,7 @@ module.exports.routes = {
     'post /api/group/create': 'GroupController.create',
     // 3.2, 3.3, 3.4, 5.2.*
     'get  /api/group/info/:id': 'GroupController.getInfo',
+    'get  /api/group/mgmtInfo/:id': 'GroupController.getManagementInfo',
     // 1.2.2
     'post /api/group/update': 'GroupController.update',
     // 1.2.3
@@ -64,7 +65,7 @@ module.exports.routes = {
     // 1.2.6
     'get  /api/race/delete/:id': 'RaceController.delete',
     // 1.4.5, 1.7.1, 6.2.4, 1.7.2, 1.4.6, 1.7.2
-    'post /api/race/reg/:action': 'RaceController.assignRacers',
+    'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
     // 6.3.7
     'get  /api/race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
     // 6.3.10
@@ -93,7 +94,6 @@ module.exports.routes = {
     'post /api/reg/create': 'RegistrationController.create',
     // 5.1.1, 5.1.2
     'post /api/reg/info': 'RegistrationController.getInfo',
-    'get /api/reg/:model/:id': 'RegistrationController.getRegistrations',
     'post /api/reg/update': 'RegistrationController.update',
     // 6.3.6
     'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
