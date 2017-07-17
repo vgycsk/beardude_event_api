@@ -71,7 +71,7 @@
     "lint:react": "standard ./src/*.js webpack.config.js",
     "lint-report": "./scripts/lint-report.sh",
     "start": "./scripts/copyView.sh; sails lift",
-    "dev": "nodemon -e css,js --config nodemon.json",
+    "dev": "nodemon -e xyz --config nodemon.json",
     "build": "NODE_ENV=production webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.js",
     "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
   },
