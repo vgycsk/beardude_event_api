@@ -226,6 +226,10 @@
 .rfidBtn {
   margin: 0 0 0 110px;
 }
+h4.forbidden {
+  margin: 0 0 0 110px;
+  color: #c20000;
+}
 @media only screen and (max-width : 780px) {
   .lights {
     display: none;
