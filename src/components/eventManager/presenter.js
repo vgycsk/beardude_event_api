@@ -17,7 +17,6 @@ const returnDateTime = (timestamp, forDisplay) => {
   const t = new Date(timestamp + 28800000) // taipei diff
   return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + (forDisplay ? ' ' : 'T') + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
 }
-
 const returnListHeight = ({pageHeight = 360, ftHeight = 211}) => Math.max(window.innerHeight - ftHeight, (pageHeight - ftHeight))
 const returnListArray = {
   group: (groups, state) => groups,
@@ -168,6 +167,7 @@ const render = {
     }
   }
 }
+let isRfidReader = false
 export class EventManager extends BaseComponent {
   constructor (props) {
     super(props)
@@ -179,7 +179,6 @@ export class EventManager extends BaseComponent {
       raceSelected: -1,
       regSelected: -1,
       listHeight: returnListHeight({}),
-      isRfidReader: false,
       isMobile: (window.navigator.userAgent.indexOf('Android') !== -1) ? true : false
     }
     this.dispatch = this.props.dispatch
@@ -197,10 +196,10 @@ export class EventManager extends BaseComponent {
     this.dispatch(racerActions.getRacers())
   }
   handleKeypress () {
-    this.setState({isRfidReader: true})
+    isRfidReader = true
   }
   handleKeyup () {
-    this.setState({isRfidReader: false})
+    isRfidReader = false
   }
   handleResize () {
     this.setState({ listHeight: returnListHeight({}) })
@@ -218,7 +217,7 @@ export class EventManager extends BaseComponent {
     this.dispatch(eventActions.delete(this.state, onSuccess))
   }}
   handleInput (field) { return (e) => {
-    if (!this.state.isRfidReader) {
+    if (!isRfidReader) {
       const val = (e.target.value === 'true' || e.target.value === 'false' || e.target.value === 'on') ? (e.target.value === 'true' ? false : true) : e.target.value
       this.setState({modified: (this.state.modified ? {...this.state.modified, [field]: val } : {[field]: val})})
     }
