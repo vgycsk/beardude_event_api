@@ -3,60 +3,31 @@
 'use strict'
 
 module.exports = {
-  // {email: STR}
-  racerExist: function (req, res) {
-    Racer.findOne(req.body)
-      .then(function (result) {
-        return res.ok({racer: result})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
   activate: function (req, res) {
     return accountService.activate(req, res, 'Racer')
   },
   getRacers: function (req, res) {
     Racer.find({})
-      .then(function (modelData) {
-        return res.ok({ racers: modelData.map(function (racer) { return racer.toJSON() }) })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (modelData) { return res.ok({ racers: modelData.map(function (racer) { return racer.toJSON() }) }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   create: function (req, res) {
-    if (req.body.password !== req.body.confirmPassword) {
-      throw new Error('Password and confirm-password mismatch')
-    }
+    if (req.body.password !== req.body.confirmPassword) { throw new Error('Password and confirm-password mismatch') }
     accountService.create(req.body, 'Racer')
-      .then(function (result) {
-        return res.ok({ racer: result.toJSON() })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+      .then(function (result) { return res.ok({ racer: result.toJSON() }) })
+      .catch(function (E) { return res.badRequest(E) })
   },
-
-    // Get insensitive account info
+  // Get insensitive account info
   getGeneralInfo: function (req, res) {
     Racer.findOne({ id: parseInt(req.params.id) }).populate('team')
-      .then(function (V) {
-        return res.ok({ racer: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive, team: V.team} })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) { return res.ok({ racer: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive, team: V.team} }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
     // Get complete account info
   getManagementInfo: function (req, res) {
     Racer.findOne({id: req.params.id}).populate('registrations').populate('team')
-      .then(function (modelData) {
-        return res.ok({ racer: modelData.toJSON() })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (modelData) { return res.ok({ racer: modelData.toJSON() }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   login: function (req, res) {
     var input = req.body
@@ -66,21 +37,19 @@ module.exports = {
       return res.badRequest('Already logged in')
     }
     return Racer.findOne({ email: input.email }).populate('team')
-      .then(function (V) {
-        result = V
-        return dataService.authenticate(input.password, result.password)
-      })
-      .then(function (authenticated) {
-        if (!authenticated) {
-          throw new Error('Credentials incorrect')
-        }
-        delete result.password
-        req.session.racerInfo = result
-        return res.ok({ racer: result })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) {
+      result = V
+      return dataService.authenticate(input.password, result.password)
+    })
+    .then(function (authenticated) {
+      if (!authenticated) {
+        throw new Error('Credentials incorrect')
+      }
+      delete result.password
+      req.session.racerInfo = result
+      return res.ok({ racer: result })
+    })
+    .catch(function (E) { return res.badRequest(E) })
   },
   logout: function (req, res) {
     delete req.session.racerInfo
@@ -95,19 +64,13 @@ module.exports = {
     var fields = ['email', 'phone', 'firstName', 'lastName', 'nickName', 'birthday', 'idNumber', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive']
     var updateObj = dataService.returnUpdateObj(fields, input)
 
-    if (input.password && input.password !== input.confirmPassword) {
-      return res.badRequest('Password and confirm-password mismatch')
-    }
+    if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
     Racer.update({id: input.id}, updateObj)
-      .then(function () {
-        return Racer.findOne({id: input.id}).populate('registrations').populate('team')
-      })
-      .then(function (V) {
-        return res.ok({racer: V.toJSON()})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function () {
+      return Racer.findOne({id: input.id}).populate('registrations').populate('team')
+    })
+    .then(function (V) { return res.ok({racer: V.toJSON()}) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   updatePassword: function (req, res) {
     return accountService.updatePassword(req, res, 'Racer')

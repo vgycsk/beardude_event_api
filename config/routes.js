@@ -10,15 +10,22 @@ module.exports.routes = {
     'get  /api/event/mgmtInfo/:id': 'EventController.getManagementInfo',
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
-    // 1.2.7 -, 1.2.10 -
+    // 1.2.7, 1.2.8
     'post /api/event/update': 'EventController.update',
-    // 4.2.3
-    'post /api/event/assignTesterRfid': 'EventController.assignTesterRfid',
     // 1.6
     'get  /api/event/delete/:id': 'EventController.delete',
+
+    // 4.1.1, 4.1.2
+    'post /api/event/rfid/reg': 'EventController.rfidReg',
+    // 4.2.3
+    'post /api/event/rfid/tester': 'EventController.rfidTester',
+    // 6.2.6
+    'post /api/event/rfid/pacer': 'EventController.rfidPacer',
+    // 8.2
+    'post /api/event/rfid/recycle': 'EventController.rfidRecycle',
+
     // 1.3
 //    'post /api/event/managers/add': 'EventController.addManagers',
-    // 1.3
 //    'post /api/event/managers/remove': 'EventController.removeManagers',
 
     // Group
@@ -27,7 +34,6 @@ module.exports.routes = {
     // 3.2, 3.3, 3.4, 5.2.*
     'get  /api/group/info/:id': 'GroupController.getInfo',
     'get  /api/group/mgmtInfo/:id': 'GroupController.getManagementInfo',
-
     // 1.2.2
     'post /api/group/update': 'GroupController.update',
     // 1.2.3
@@ -54,30 +60,19 @@ module.exports.routes = {
     'get  /api/race/info/:id': 'RaceController.getGeneralInfo',
     // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3, 6.3.4
     'get  /api/race/mgmtInfo/:id': 'RaceController.getManagementInfo',
-    // 1.2.8
+    // 1.2.8, 1.2.9
     'post /api/race/update': 'RaceController.update',
     // 1.2.6
-    'get /api/race/delete/:id': 'RaceController.delete',
-    // 1.4.5, 6.2.4
-    'post /api/race/racer/add': 'RaceController.addRacer',
-    // 1.4.6
-    'post /api/race/racer/remove': 'RaceController.removeRacer',
-    //6.2.6
-    'post /api/race/assignPacerRfid': 'RaceController.assignPacerRfid',
-    // 1.2.9
-    'post /api/race/updateAdvancingRules': 'RaceController.updateAdvancingRules',
+    'get  /api/race/delete/:id': 'RaceController.delete',
+    // 1.4.5, 1.7.1, 6.2.4, 1.7.2, 1.4.6, 1.7.2
+    'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
     // 6.3.7
     'get  /api/race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
     // 6.3.10
     'post /api/race/submitRaceResult': 'RaceController.submitRaceResult',
-    // 1.7.1
-    'post //apirace/assignRacersToRace': 'RaceController.assignRacersToRace',
-    // 1.7.2
-    'post /api/race/reassignRacerToRace': 'RaceController.reassignRacer',
     // 4.2.4, 4.2.5, 4.2.6
-    'get /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
+    'get  /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
     'post /api/race/readerRoom': 'RaceController.readerReceiver',
-//   (More race logics)
 
 
     // Racer 2.4
@@ -92,41 +87,37 @@ module.exports.routes = {
     'get  /api/racer/reissuePassword/:id': 'RacerController.reissuePassword',
     'post /api/racer/update': 'RacerController.update',
     'post /api/racer/updatePassword': 'RacerController.updatePassword',
-    // 2.2.2
-    'post /api/racer/exist': 'RacerController.racerExist',
     // Reset password
 
-    // Registration - prerace
-    // 2.2.5
-    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
-    // 2.2.2
-    'post /api/reg/signupAndCreateMultiple': 'RegistrationController.signupAndCreateMultiple',
+    // Registration
     // 2.2.1
     'post /api/reg/create': 'RegistrationController.create',
+    // 5.1.1, 5.1.2
+    'post /api/reg/info': 'RegistrationController.getInfo',
+    'post /api/reg/update': 'RegistrationController.update',
+    // 6.3.6
+    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
+    // 6.3.9
+    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
+
+    'post /api/reg/delete': 'RegistrationController.delete',
+
+    // 2.2.5 正式版再說
+//    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
+    // 2.2.2 正式版再說
+//    'post /api/reg/signupAndCreateTeam': 'RegistrationController.signupAndCreateTeam',
     // 1.4.3
     //'post /api/reg/updatePayment': 'RegistrationController.updatePayment',
     // 2.2.3
     //'post /api/reg/requestRefund': 'RegistrationController.requestRefund',
     // 1.4.4
     //'post /api/reg/refunded': 'RegistrationController.refunded',
-    // 2.2.4
-    'post /api/reg/confirm': 'RegistrationController.confirmRegistration',
-    // 5.1.1, 5.1.2
-    'post /api/reg/info': 'RegistrationController.getInfo',
+    // 2.2.4 正式版再說
+//    'post /api/reg/confirm': 'RegistrationController.confirmRegistration',
 
-    // Registration - race logic
-    // 4.1.1
-    'post /api/reg/assignRfid': 'RegistrationController.assignRfid',
-    // 4.1.2
-    'post /api/reg/replaceRfid': 'RegistrationController.replaceRfid',
-    // 8.2
-    'post /api/reg/recycleRfid': 'RegistrationController.recycleRfid',
-    // 6.2.3, 6.2.4
-    'post /api/reg/admitRacer': 'RegistrationController.admitRacer',
-    // 6.3.9
-    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
-    // 6.3.6
-    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
+    // 6.2.3, 6.2.4 正式版再說
+//    'post /api/reg/admitRacer': 'RegistrationController.admitRacer',
+
 
     // Team
     // 2.2.2

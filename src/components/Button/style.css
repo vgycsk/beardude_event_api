@@ -1,115 +1,138 @@
 button {
-    font-family: "San Francisco";
-    letter-spacing: 0.5px;
+  font-family: "San Francisco";
+  letter-spacing: 0.5px;
 }
 .regular {
-    border: 0;
-    border-radius: 5px;
-    padding: 4px 24px;
-    font-size: 15px;
-    color: #fff;
-    text-decoration: none;
-    letter-spacing: 1px;
-    background: #158fe2;
+  border: 0;
+  border-radius: 5px;
+  padding: 4px 24px;
+  font-size: 15px;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 1px;
+  background: #158fe2;
+  height: 30px;
+  line-height: 22px;
+}
+.short {
+  composes: regular;
+  height: 24px;
+  line-height: 18px;
 }
 .disabled {
-    composes: regular;
-    background: #ddd;
-    color: #aaa;
+  composes: regular;
+  background: #ddd;
+  color: #eee;
+}
+.grey {
+  composes: regular;
+  background: #999;
+  color: #fff;
+}
+.shortGrey {
+  composes: grey;
+  height: 24px;
+  line-height: 18px;
+}
+.alert {
+  composes: regular;
+  background: #c20000;
 }
 .bigIcon {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    border-radius: 30px;
-    border: 0;
-    background: linear-gradient(180deg,
-        rgba(255, 255, 255, 0.75) 0%,
-        rgba(255, 255, 255, 0.6) 10%,
-        rgba(255, 255, 255, 0.5) 90%,
-        rgba(221, 221, 221, 0.65) 100%
-    );
-    box-shadow: 0 0 10px #768a8f;
-    color: #ebf5fc;
-    font-size: 15px;
-    display: block;
-    text-decoration: none;
-    text-align: center;
-    line-height: 120px;
-    outline: none;
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 30px;
+  border: 0;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.6) 10%,
+    rgba(255, 255, 255, 0.5) 90%,
+    rgba(221, 221, 221, 0.65) 100%
+  );
+  box-shadow: 0 0 10px #768a8f;
+  color: #ebf5fc;
+  font-size: 15px;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  line-height: 120px;
+  outline: none;
 }
 .bigIcon:link,
 .bigIcon:visited {
-    color: #ebf5fc;
+  color: #ebf5fc;
 }
 .bigIcon:hover {
-    color: #158fe2;
-    text-decoration: none;
+  color: #158fe2;
+  text-decoration: none;
 }
 .bigIconCreate {
-    composes: bigIcon;
-    font-size: 36px;
+  composes: bigIcon;
+  font-size: 36px;
 }
 .list {
-    display: block;
-    height: 100%;
-    width: 100%;
-    text-align: left;
-    text-decoration: none;
-    color: #555;
-    margin: 0 0 0 10px;
-    padding: 0 10px 0 0;
-    text-indent: 5px;
-    border: 0;
-    background: 0;
-    font-size: 14px;
-    border-bottom: 1px solid #ddd;
-    overflow-x: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    outline: none;
-    position: relative;
+  display: block;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: #555;
+  margin: 0 0 0 10px;
+  padding: 0 10px 0 0;
+  text-indent: 5px;
+  border: 0;
+  background: 0;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  outline: none;
+  position: relative;
+}
+.listDark {
+  composes: list;
+  color: #fff;
 }
 .count {
-    display: inline-block;
-    position: absolute;
-    top: 4px;
-    right: 10px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    text-indent: 0;
-    text-align: center;
-    color: #dedede;
-    font-weight: 600;
-    letter-spacing: 2px;
-    font-family: cursive, 'Courier';
-    background: #555;
-    font-size: 13px;
-    min-width: 30px;
-    height: 30px;
-    line-height: 30px;
+  display: inline-block;
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  padding: 0 8px;
+  border-radius: 8px;
+  text-indent: 0;
+  text-align: center;
+  color: #dedede;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: 'Courier';
+  background: #555;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 30px;
+  height: 30px;
+  line-height: 30px;
 }
 .listFt {
-    display: inline-block;
-    min-width: 36px;
-    height: 36px;
-    line-height: 30px;
-    position: relative;
-    border: 0;
-    background: 0;
-    border: 0;
-    border-right: 1px solid #ccc;;
-    color: #2f8bf1;
-    font-size: 13px;
-    padding: 0 15px;
+  display: inline-block;
+  min-width: 36px;
+  height: 36px;
+  line-height: 30px;
+  position: relative;
+  border: 0;
+  background: 0;
+  border: 0;
+  border-right: 1px solid #ccc;;
+  color: #2f8bf1;
+  font-size: 13px;
+  padding: 0 15px;
+  vertical-align: top;
 }
 .listFtDisabled {
   composes: listFt;
   color: #ccc;;
-}
-.listFtAlert {
-  composes: listFt;
-  color: #c20000;
 }
 .listFtRight {
   composes: listFt;
@@ -118,7 +141,19 @@ button {
   border-right: 0;
 }
 .listFtIcon {
-    composes: listFt;
-    font-size: 21px;
-    padding: 0;
+  composes: listFt;
+  font-size: 21px;
+  padding: 0;
+}
+.del {
+  width: 20px;
+  height: 20px;
+  line-height: 0;
+  border-radius: 20px;
+  padding: 0;
+  letter-spacing: 0;
+  font-size: 12px;
+  background: #c20000;
+  border: 0;
+  color: #fff;
 }

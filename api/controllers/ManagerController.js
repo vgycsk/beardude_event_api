@@ -9,48 +9,28 @@ module.exports = {
   create: function (req, res) {
     var input = req.body
 
-    if (input.password !== input.confirmPassword) {
-      return res.badRequest('Password and confirm-password mismatch')
-    }
+    if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
     return accountService.create(input, 'Manager')
-      .then(function (result) {
-        return res.ok({manager: result})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (result) { return res.ok({manager: result}) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   getAccountInfo: function (req, res) {
     return res.ok({manager: req.session.managerInfo})
   },
   getGeneralInfo: function (req, res) {
     Manager.findOne({id: req.params.id})
-      .then(function (V) {
-        return res.ok({manager: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive}})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) { return res.ok({manager: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive}}) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   getManagers: function (req, res) {
     Manager.find({})
-      .then(function (V) {
-        var result = V.map(function (obj) { return obj.toJSON() })
-
-        return res.ok({managers: result})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) { return res.ok({managers: V.map(function (obj) { return obj.toJSON() })}) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   getManagementInfo: function (req, res) {
     Manager.findOne({id: req.params.id})
-      .then(function (V) {
-        return res.ok({manager: V.toJSON()})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) { return res.ok({manager: V.toJSON()}) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   login: function (req, res) {
     var input = req.body
@@ -60,21 +40,17 @@ module.exports = {
       return res.badRequest('Please enter valid credentials')
     }
     return Manager.findOne({email: input.email})
-      .then(function (V) {
-        result = V
-        return dataService.authenticate(input.password, V.password)
-      })
-      .then(function (authenticated) {
-        if (!authenticated) {
-          throw new Error('Credentials incorrect')
-        }
-        delete result.password
-        req.session.managerInfo = result
-        return res.ok({manager: result})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) {
+      result = V
+      return dataService.authenticate(input.password, V.password)
+    })
+    .then(function (authenticated) {
+      if (!authenticated) { throw new Error('Credentials incorrect') }
+      delete result.password
+      req.session.managerInfo = result
+      return res.ok({manager: result})
+    })
+    .catch(function (E) { return res.badRequest(E) })
   },
   logout: function (req, res) {
     delete req.session.managerInfo
@@ -89,16 +65,10 @@ module.exports = {
     var query = {id: parseInt(input.id)}
     var updateObj = dataService.returnUpdateObj(fields, input)
 
-    if (input.password && input.password !== input.confirmPassword) {
-      return res.badRequest('Password and confirm-password mismatch')
-    }
+    if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
     return Manager.update(query, updateObj)
-      .then(function (V) {
-        return res.ok({manager: V[0].toJSON()})
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    .then(function (V) { return res.ok({manager: V[0].toJSON()}) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   updatePassword: function (req, res) {
     return accountService.updatePassword(req, res, 'Manager')

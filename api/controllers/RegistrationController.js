@@ -1,29 +1,111 @@
-/* global accountService, dataService, Event, Race, Registration, Team */
+/* global dataService, Group, Registration */
 
 'use strict'
 
 var Q = require('q')
 var RegistrationController = {
-  // {event, ID, group: ID, racer: ID}
+  // {event: ID, group: ID, racer: ID, name: STR}
+  // indieEvent 直接讀 name, 不用racer model
   createReg: function (input) {
     var q = Q.defer()
+    var obj = input
 
-    dataService.returnAccessCode()
-      .then(function (accessCode) {
-        input.accessCode = accessCode
-        return Registration.create(input.body)
-      })
-      .then(function (regData) {
-        return q.resolve(regData)
-      })
-      .catch(function (E) {
-        return q.reject(E)
-      })
+    dataService.returnAccessCode(obj.event)
+    .then(function (accessCode) {
+      obj.accessCode = accessCode
+      return Registration.create(obj)
+    })
+    .then(function (V) {
+      var result = V.toJSON()
+      result.races = []
+      return q.resolve(result)
+    })
+    .catch(function (E) { return q.reject(E) })
     return q.promise
   },
+  // {group: ID, name: STR, racer: ID}
+  create: function (req, res) {
+    var input = req.body
+    var query = (input.racer) ? {group: input.group, racer: input.racer} : {group: input.group, name: input.name}
+
+    Group.findOne({ id: input.group })
+    .then(function (V) {
+      input.event = V.event
+      return Registration.findOne(query)
+    })
+    .then(function (modelData) {
+      if (modelData) { throw new Error('Already registered') }
+      return RegistrationController.createReg(input)
+    })
+    .then(function (modelData) { return res.ok({ registration: modelData }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // {(racer: ID || accessCode: STR || raceNumber: INT)}
+  getInfo: function (req, res) {
+    var input = req.body
+
+    Registration.findOne(input).populate('races')
+    .then(function (modelData) {
+      return res.ok({ races: modelData.races, group: modelData.group, accessCode: modelData.accessCode, raceNumber: modelData.raceNumber, paid: modelData.paid, rfidRecycled: modelData.rfidRecycled, refundRequested: modelData.refundRequested, refunded: modelData.refunded })
+    })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // {id: ID, name: STR}
+  update: function (req, res) {
+    var input = req.body
+    var fields = ['name']
+    var updateObj = dataService.returnUpdateObj(fields, input)
+
+    Registration.update({ id: input.id }, updateObj)
+    .then(function (V) { return res.ok({ registration: V[0] }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // {id: ID}
+  delete: function (req, res) {
+    var input = req.body
+    Registration.findOne(input)
+    .then(function (V) {
+      if (V.raceNumber || V.epc || V.raceNotes) { throw new Error('Cannot delete admitted racer') }
+      return Registration.destroy(input)
+    })
+    .then(function (V) { return res.ok({ registration: V[0] }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+
+  // {id: ID, race: ID, note: STR, isDisqualified: BOOL}
+  updateDisqualification: function (req, res) {
+    var input = req.body
+
+    Registration.findOne({ id: input.id })
+    .then(function (regData) {
+      var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes)
+
+      return Registration.update({ id: input.id }, { isDisqualified: input.isDisqualified, raceNotes: raceNotes })
+    })
+    .then(function (V) { return res.ok({ registration: V[0] }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // {id: ID, race: ID, note: STR}
+  updateRaceNote: function (req, res) {
+    var input = req.body
+
+    Registration.findOne({ id: input.id })
+    .then(function (regData) {
+      var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes)
+
+      return Registration.update({ id: input.id }, { raceNotes: raceNotes })
+    })
+    .then(function (V) { return res.ok({ registration: V[0] }) })
+    .catch(function (E) { return res.badRequest(E) })
+  }
+}
+
+module.exports = RegistrationController
+
+/*
   // {event: ID, group: ID, racer: {email: STR, password: STR, confirmPassword: STR, ...} }
   signupAndCreate: function (req, res) {
-    var input = { event: parseInt(req.body.event), group: parseInt(req.body.group) }
+    var input = req.body
     var racerObj
 
     accountService.create(req.body.racer)
@@ -43,15 +125,13 @@ var RegistrationController = {
   // 情境2: 已註冊帳號想團報-> 1) 登入 2) 註冊車隊 3) 註冊或選擇選手 4) 報名
   // 這個是情境1用的
   // {event: ID, group: ID, team: {name: STR, desc: STR, url: STR}, racers: [{email: STR, ...}]}
-  signupAndCreateMultiple: function (req, res) {
+  signupAndCreateTeam: function (req, res) {
     var input = req.body
     var teamObj
     var racersObj
     var regsObj
 
-    input.event = parseInt(input.event)
-    input.group = parseInt(input.group)
-        // 1. create team
+    // 1. create team
     Team.create(input.team)
       .then(function (teamData) {
         var funcs = input.racers.map(function (racer) {
@@ -85,115 +165,7 @@ var RegistrationController = {
         return res.badRequest(E)
       })
   },
-    // {event: ID, group: ID, racer: ID}
-  create: function (req, res) {
-    var input = req.body
-
-    Registration.findOne(input)
-      .then(function (modelData) {
-        if (modelData) {
-          throw new Error('Already registered')
-        }
-        return RegistrationController.createReg(input)
-      })
-      .then(function (modelData) {
-        return res.ok({ message: 'Registered successfully', group: input.group, racer: input.racer, accessCode: modelData.accessCode })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // {event: ID, (racer: ID || accessCode: STR || raceNumber: INT)}
-  getInfo: function (req, res) {
-    var input = req.body
-    var query = { event: input.event }
-
-    if (input.racer && input.racer !== '') {
-      query.racer = input.racer
-    } else if (input.accessCode && input.accessCode !== '') {
-      query.accessCode = input.accessCode
-    } else if (input.raceNumber && input.raceNumber !== '') {
-      query.raceNumber = input.raceNumber
-    } else {
-      throw new Error('Query incomplete')
-    }
-    Registration.findOne(query)
-      .populate('races')
-      .then(function (modelData) {
-        return res.ok({ races: modelData.races, event: modelData.event, group: modelData.group, accessCode: modelData.accessCode, raceNumber: modelData.raceNumber, paid: modelData.paid, rfidRecycled: modelData.rfidRecycled, refundRequested: modelData.refundRequested, refunded: modelData.refunded })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // {event: ID, accessCode: STR, epc: STR}
-  assignRfid: function (req, res) {
-    var input = req.body
-    var regId
-
-    input.event = parseInt(input.event)
-    Registration.findOne({ event: input.event, accessCode: input.accessCode })
-      .then(function (V) {
-        if (V.epc && V.epc !== '') {
-          throw new Error('Racer already has RFID')
-        }
-        regId = V.id
-        // Validate if rfid already assigned in this event
-        return Registration.findOne({ event: input.event, epc: input.epc })
-      })
-      .then(function (modelData) {
-        if (modelData) {
-          throw new Error('RFID already assigned to another racer')
-        }
-        return Registration.update({ id: regId }, { epc: input.epc })
-      })
-      .then(function (modelData) {
-        return res.ok({ message: 'Rfid assigned', raceNumber: modelData[0].raceNumber })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-    // {event: ID, raceNumber: INT, epc: STR}
-  replaceRfid: function (req, res) {
-    var input = req.body
-    var regId
-
-    input.event = parseInt(input.event)
-    input.raceNumber = parseInt(input.raceNumber)
-    Registration.findOne(input)
-      .then(function (modelData) {
-        if (!modelData.epc || modelData.epc === '') {
-          throw new Error('Racer not assigned RFID yet')
-        }
-        regId = modelData.id
-        return Registration.findOne({ event: input.event, epc: input.epc })
-      })
-      .then(function (modelData) {
-        if (modelData) {
-          throw new Error('RFID already assigned to another racer')
-        }
-        return Registration.update({ id: regId }, { epc: input.epc })
-      })
-      .then(function (modelData) {
-        return res.ok({ message: 'Rfid replaced', raceNumber: modelData[0].raceNumber })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-    // {epc: STR}
-  recycleRfid: function (req, res) {
-    Registration.update(req.body, { rfidRecycled: true })
-      .then(function () {
-        return res.ok({ message: 'Rfid recycled', epc: req.body.epc })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
     // {registration: ID, paid: BOOL}
-    /*
     updatePayment: function (req, res) {
         var input = req.body;
         var query = {
@@ -282,6 +254,7 @@ var RegistrationController = {
     },
     */
     // {registration: ID}
+/*
   confirmRegistration: function (req, res) {
     var regId = parseInt(req.body.registration)
     var raceNumber
@@ -310,7 +283,8 @@ var RegistrationController = {
         return res.badRequest(E)
       })
   },
-    // {race: ID, epc: STR}
+
+  // {race: ID, epc: STR}
   admitRacer: function (req, res) {
     var input = req.body
 
@@ -339,40 +313,4 @@ var RegistrationController = {
         return res.badRequest(E)
       })
   },
-  // {race: ID, registration: ID, note: STR, isDisqualified: BOOL}
-  updateDisqualification: function (req, res) {
-    var input = req.body
-
-    Registration.findOne({ id: input.registration })
-      .then(function (regData) {
-        var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes)
-
-        return Registration.update({ id: input.registration }, { isDisqualified: input.isDisqualified, raceNotes: raceNotes })
-      })
-      .then(function () {
-        return res.ok({ message: 'Racer disqualification updated', race: input.race, isDisqualified: input.isDisqualified, registration: input.registration, note: input.note })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // {race: ID, registration: ID, note: STR}
-  updateRaceNote: function (req, res) {
-    var input = req.body
-
-    Registration.findOne({ id: input.registration })
-      .then(function (regData) {
-        var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes)
-
-        return Registration.update({ id: input.registration }, { raceNotes: raceNotes })
-      })
-      .then(function () {
-        return res.ok({ message: 'Race note added', race: input.race, registration: input.registration, note: input.note })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  }
-}
-
-module.exports = RegistrationController
+*/

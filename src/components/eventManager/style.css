@@ -1,3 +1,9 @@
+.wrap {
+  
+}
+.fixed>div {
+  position: fixed;
+}
 .mainBody {
   position: absolute;
   top: 0;
@@ -5,7 +11,7 @@
   width: 100%;
   height: 100%;
   overflow-y: scroll;
-  overflow: auto;
+  overflow: hidden;
 }
 .loading {
   font-size: 24px;
@@ -15,85 +21,99 @@
   margin: 200px auto;
   text-align: center;
 }
-
-.mainBody section {
-  margin: 48px 16px;
-  border-left: solid 6px RGBA(66, 66, 66, 0.8);
-  padding: 0 16px;
-  color: #E0E4E9;
-}
-.mainBody section input {
-  border: 0px;
-  border-bottom: solid 1px #E0E4E9;
-  background: RGBA(66, 66, 66, 0.2);
+.info {
+  position: relative;
+  margin: 50px 0 15px 0;
+  padding: 10px 25px;
+  width: 100%;
   color: #fff;
-  font-size: 18px;
-  margin-left: 8px;
-  outline: none;
-  margin-right: 8px;
-  padding: 4px 8px;
 }
-
-.mainBody section input::placeholder {
+.info h2 {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.4px;
+  margin: 0 0 3px 0;
+}
+.info h3 {
+  font-size: 15px;
+  font-weight: 300;
   color: #ddd;
+  letter-spacing: 0.3px;
+  display: inline-block;
 }
-.mainBody section>ul li {
-  padding: 8px 16px;
-  font-size: 18px;
+.info .btn {
+  position: absolute;
+  bottom: 10px;
+  right: 30px;
 }
-
-.mainBody section label {
-  font-size: 14px;
-  opacity: .8;
-  color: #E0E4E9;
+.lights {
+  display: inline-block;
+  margin: 0 0 0 20px;
+  line-height: 17px;
+}
+.lights li {
+  font-size: 11px;
+  display: inline-block;
+  border: 0;
+  border-radius: 20px;
+  background: #aaa;
+  padding: 1px 5px;
+  margin: 0 20px 0 0;
+  color: #ddd;
+  text-indent: 0;
+}
+.managerList .lights {
+  position: absolute;
+  right: 50px;
+  top: 10px;
+}
+.managerList .lights li {
+  margin: 0 10px 0 0;
+}
+.lights .on {
+  background: #00c000;
+  color: #fff;
+}
+.time {
   margin: 0 0 0 20px;
 }
-.mainBody section label::first-child {
-  margin: 0;
-}
-.mainBody section .name::before {
-  content: "\00a0 \00a0";
-}
-
-.mainBody section .name {
-  font-size: 18px;
-  color: #fff;
-}
-
 .managerList {
   position: relative;
   display: flex;
   flex-direction: row;
-  margin: 0 16px 32px;
-  border-left: solid 6px RGBA(66, 66, 66, 0.8);
+  margin: 0 6px 32px;
   padding: 0 16px;
   color: #E0E4E9;
   font-size: 14px;
+  height: 100%;
 }
-
+.managerList > div {
+  position: relative;
+}
 .managerList > div:nth-child(1) {
   width: 33%;
   flex-shrink: 0;
 }
-
 .managerList > div:nth-child(2) {
   width: 33%;
   flex-shrink: 0;
 }
-
 .managerList > div:nth-child(3) {
   flex-grow: 1;
 }
-
+.managerList > div:first-child h3 {
+  border-radius: 5px 0 0 0;
+}
+.managerList > div:last-child h3 {
+  border-radius: 0 5px 0 0;
+}
 .managerList h3 {
   background: RGBA(66, 66, 66, 0.8);
   color: #E0E4E9;
-  margin-right: 8px;
+  margin-right: 2px;
   padding: 8px 16px;
 }
-
-.managerList ul {
-  height: 320px;
+.managerList .ul {
   overflow-y: scroll;
   overflow: auto;
 }
@@ -105,6 +125,48 @@
   min-height: 39px;
   line-height: 39px;
   cursor: pointer;
+}
+.list {
+  display: block;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: #fff;
+  margin: 0 0 0 10px;
+  padding: 0 10px 0 0;
+  text-indent: 5px;
+  border: 0;
+  background: 0;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  outline: none;
+  position: relative;
+  font-family: "San Francisco";
+  letter-spacing: 0.5px;
+}
+.count {
+  display: inline-block;
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  padding: 0 8px;
+  border-radius: 8px;
+  text-indent: 0;
+  text-align: center;
+  color: #dedede;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: 'Courier';
+  background: #555;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 30px;
+  height: 30px;
+  line-height: 30px;
 }
 .selected {
   composes: li;
@@ -119,7 +181,16 @@
 .redTxt {
   color: #fa1229;
 }
-
+.listFt {
+  position: absolute;
+  bottom: 139px;
+  background: rgba(66,66,66,0.2);
+  width: 99.5%;
+  height: 36px;
+}
+.listFt button {
+  color: #fff;
+}
 .managerList li:active {
   background: RGBA(243, 243, 243, 0.4);
 }
@@ -130,57 +201,18 @@
   height: 39px;
   background: RGBA(255, 255, 255, 0.4);
 }
-
-.editPanel {
-  position: absolute;
-  bottom: 0;
-  background: RGBA(255, 255, 255, 0.6);
-  border: 0;
-  border-radius: 2px;
-  align-items: flex-start;
-  justify-content: flex-start;
-  flex-direction: column;
-  z-index: 999;
+.form {
+  max-width: 600px;
+  margin: 0 auto;
 }
-
-.editPanel input {
-  max-width: 360px;
+.boxFt {
+  margin: 20px 0 0 110px;
 }
-
-.editPanel > div {
-  margin: 12px 6px;
+.boxFt button {
+  margin: 0 105px 0 0;
 }
-
-.editPanel > div > div {
-  margin: 6px 0;
-}
-
-.editPanel > div > div > span {
-  display: inline-block;
-  padding: 6px 12px;
-  text-align: center;
-  background: RGBA(255, 255, 255, 0.6);
-  color: #333;
-  border: solid 1px #fff;
-  border-radius: 4px;
-  margin-right: 6px;
-}
-
-.editPanel > span {
-  display: inline-block;
-  width: 26px;
-  height: 26px;
-  text-align: center;
-  line-height: 26px;
-  background: RGBA(255, 255, 255, 0.6);
-  color: #333;
-  border: solid 1px #fff;
-  border-radius: 4px;
-}
-
-.hidden,
-[hidden] {
-    display: none !important;
+.boxFt button:last-child {
+  margin: 0;
 }
 .right {
   float: right;

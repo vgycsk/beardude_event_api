@@ -2,23 +2,26 @@
 
 module.exports.policies = {
     EventController: {
-        create: 'isActiveManager',
+      create: 'isActiveManager',
 //        getGeneralInfo: '',
-        getManagementInfo: 'isActiveManager',
-        getEvents: 'isActiveManager',
+      getManagementInfo: 'isActiveManager',
+      getEvents: 'isActiveManager',
 //        addManagers: 'isActiveManager',
 //        removeManagers: 'isActiveManager',
-        getGroupsAndRacersOfEvent: 'isActiveManager',
-        update: 'isActiveManager',
-        assignTesterRfid: 'isActiveManager',
-        delete: 'isActiveManager'
+      getGroupsAndRacersOfEvent: 'isActiveManager',
+      update: 'isActiveManager',
+      delete: 'isActiveManager',
+      rfidReg: 'isActiveManager',
+      rfidTester: 'isActiveManager',
+      rfidPacer: 'isActiveManager',
+      rfidRecycle: 'isActiveManager'
     },
     GroupController: {
         create: 'isActiveManager',
 //        getInfo: '',
         getManagementInfo: 'isActiveManager',
-        delete: 'isActiveManager',
-        update: 'isActiveManager'
+        update: 'isActiveManager',
+        delete: 'isActiveManager'
     },
     ManagerController: {
         activate: 'isInactive',
@@ -38,15 +41,11 @@ module.exports.policies = {
         getManagementInfo: 'isActiveManager',
         update: 'isActiveManager',
         delete: 'isActiveManager',
-        addRacer: 'isActiveManager',
-        removeRacer: 'isActiveManager',
-        assignPacerRfid: 'isActiveManager',
-        updateAdvancingRules: 'isActiveManager',
+        assignRegsToRaces: 'isActiveManager',
         getParsedRaceResult: 'isActiveManager',
         submitRaceResult: 'isActiveManager'
     },
     RacerController: {
-//        racerExist: '',
         activate: 'isInactive',
 //        create: '',
 //        getGeneralInfo: '',
@@ -59,18 +58,16 @@ module.exports.policies = {
         updatePassword: 'isRacerSelfOrTeamLeaderOrManager'
     },
     RegistrationController: {
-        createReg: 'isActiveManager',
+//        createReg: 'isActiveManager',
 //        signupAndCreate: '',
 //        signupAndCreateMultiple: '',
 //        create: '',
         getInfo: 'isRacerSelfOrTeamLeaderOrManager',
-        assignRfid: 'isActiveManager',
-        replaceRfid: 'isActiveManager',
-        recycleRfid: 'isActiveManager',
         confirmRegistration: 'isActiveManager',
-        admitRacer: 'isActiveManager',
+        update: 'isActiveManager',
         updateDisqualification: 'isActiveManager',
-        updateRaceNote: 'isActiveManager'
+        updateRaceNote: 'isActiveManager',
+        delete: 'isActiveManager'
     },
     TeamController: {
 //        teamExist: '',

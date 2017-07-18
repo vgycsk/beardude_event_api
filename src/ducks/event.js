@@ -1,75 +1,37 @@
 /* global fetch */
 
 // types
-const ADD_GROUP = 'event/ADD_GROUP'
-const GET_GROUP = 'event/GET_GROUP'
-const CANCEL_ADD_GROUP = 'event/CANCEL_ADD_GROUP'
+const ACTION_ERR = 'event/ACTION_ERR'
+const DELETE_EVENT = 'event/DELETE_EVENT'
 const DELETE_GROUP = 'event/DELETE_GROUP'
-
-const ADD_RACE = 'event/ADD_RACE'
-const CANCEL_ADD_RACE = 'event/CANCEL_ADD_RACE'
 const DELETE_RACE = 'event/DELETE_RACE'
-
+const EVENT_ERR = 'event/EVENT_ERR'
+const GET_EVENT = 'event/GET_EVENT'
 const GET_EVENTS = 'event/GET_EVENTS'
-const GET_SELECTED_EVENT = 'event/GET_SELECTED_EVENT'
+const GET_GROUP = 'event/GET_GROUP'
 const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
-const EVENT_ERR = 'event/EVENT_ERR'
+const SUBMIT_REG = 'event/SUBMIT_REG'
 
-const returnSubmitObj = (obj) => {
-  return {
-    method: 'post',
-    credentials: 'same-origin',
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(obj)
-  }
-}
+const returnPostHeader = (obj) => ({ method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(obj) })
 // actions
 export const actionCreators = {
-  addGroup: (successCallback) => (dispatch) => {
-    dispatch({type: ADD_GROUP})
-    return successCallback()
-  },
-  addRace: (groupIndex, successCallback) => (dispatch) => {
-    dispatch({type: ADD_RACE, payload: {groupIndex: groupIndex}})
-    return successCallback()
-  },
-  cancelAddGroup: (successCallback) => (dispatch) => {
-    dispatch({type: CANCEL_ADD_GROUP})
-    return successCallback()
-  },
-  cancelAddRace: (groupIndex, successCallback) => (dispatch) => {
-    dispatch({type: CANCEL_ADD_RACE, payload: {groupIndex: groupIndex}})
-    return successCallback()
-  },
-  deleteGroup: (groupIndex, id, successCallback) => async (dispatch) => {
+  delete: (state, successCallback) => async (dispatch) => {
+    const types = { event: DELETE_EVENT, group: DELETE_GROUP, race: DELETE_RACE }
     try {
-      const response = await fetch('/api/group/delete/' + id, {credentials: 'same-origin'})
+      const response = await fetch(`/api/${state.model}/delete/${state.original.id}`, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
-        dispatch({type: DELETE_GROUP, payload: {groupIndex: groupIndex}})
-        return successCallback()
+        dispatch({type: types[state.model], payload: {...res, state: state}})
+        if (state.model !== 'event') { successCallback() }
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: e}})
+      dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   },
-  deleteRace: (groupIndex, raceIndex, id, successCallback) => async (dispatch) => {
-    try {
-      const response = await fetch('/api/race/delete/' + id, {credentials: 'same-origin'})
-      const res = await response.json()
-      if (response.status === 200) {
-        dispatch({type: DELETE_RACE, payload: {groupIndex: groupIndex, raceIndex: raceIndex}})
-        return successCallback()
-      }
-      throw res.message
-    } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: e}})
-    }
-  },
-  getEvents: () => async (dispatch, getState) => {
+  getEvents: () => async (dispatch) => {
     try {
       const response = await fetch('/api/event/getEvents', {credentials: 'same-origin'})
       const res = await response.json()
@@ -78,150 +40,143 @@ export const actionCreators = {
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
+      dispatch({type: EVENT_ERR, payload: {error: '取得活動失敗'}})
     }
   },
-  getGroup: (id, index, successCallback) => async (dispatch) => {
-    try {
-      const response = await fetch('/api/group/mgmtInfo/' + id, {credentials: 'same-origin'})
-      const res = await response.json()
-      if (response.status === 200) {
-        dispatch({type: GET_GROUP, payload: {...res, index: index}})
-        return successCallback()
-      }
-      throw res.message
-    } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: e}})
-    }
-  },
-  getSelectedEvent: (id) => async (dispatch, getState) => {
+  getEvent: (id, successCallback) => async (dispatch) => {
     if (id === 'new') {
-      return dispatch({type: GET_SELECTED_EVENT, payload: { event: { groups: [] } }})
+      dispatch({type: GET_EVENT, payload: { event: { groups: [] } }})
+      return successCallback()
     }
     try {
-      const response = await fetch('/api/event/mgmtInfo/' + id, {credentials: 'same-origin'})
+      const response = await fetch(`/api/event/mgmtInfo/${id}`, {credentials: 'same-origin'})
       const res = await response.json()
       if (response.status === 200) {
-        return dispatch({type: GET_SELECTED_EVENT, payload: {...res}})
+        return dispatch({type: GET_EVENT, payload: {...res}})
       }
       throw res.message
     } catch (e) {
       dispatch({type: EVENT_ERR, payload: {error: '取得活動內容失敗'}})
     }
   },
-  submitEvent: (obj, successCallback) => async (dispatch) => {
+  submit: (state, successCallback) => async (dispatch) => {
+    const types = { event: SUBMIT_EVENT, group: SUBMIT_GROUP, race: SUBMIT_RACE, reg: SUBMIT_REG }
+    const pathname = (state.original.id) ? 'update' : 'create'
     try {
-      const response = await fetch((obj.id) ? '/api/event/update' : '/api/event/create', returnSubmitObj(obj))
+      const response = await fetch(`/api/${state.model}/${pathname}`, returnPostHeader({...state.modified, id: state.original.id}))
       const res = await response.json()
       if (response.status === 200) {
-        dispatch({type: SUBMIT_EVENT, payload: {...res}})
+        dispatch({type: types[state.model], payload: {...res, state: state}})
         return successCallback()
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: e}})
+      dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   },
-  submitGroup: (obj, index, successCallback) => async (dispatch) => {
+  submitAdvancingRules: (state, successCallback) => async (dispatch) => {
     try {
-      const response = await fetch((obj.id) ? '/api/group/update' : '/api/group/create', returnSubmitObj(obj))
+      const response = await fetch('/api/race/update', returnPostHeader({id: state.advRuleRaceId, advancingRules: state.advRuleModified}))
       const res = await response.json()
       if (response.status === 200) {
-        dispatch({type: SUBMIT_GROUP, payload: {...res, index: index}})
+        dispatch({type: SUBMIT_RACE, payload: {...res, state: state}})
         return successCallback()
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: e}})
+      dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   },
-  submitRace: (obj, groupIndex, raceIndex, successCallback) => async (dispatch) => {
+  submitRegsToRaces: (groupId, groupIndex, obj, successCallback) => async (dispatch, getState) => {
     try {
-      const response = await fetch((obj.id) ? '/api/race/update' : '/api/race/create', returnSubmitObj(obj))
-      const res = await response.json()
+      let response = await fetch('/api/race/assignRegsToRaces', returnPostHeader({races: obj}))
+      let res = await response.json()
       if (response.status === 200) {
-        dispatch({type: SUBMIT_RACE, payload: {...res, groupIndex: groupIndex, raceIndex: raceIndex}})
-        return successCallback()
+        response = await fetch(`/api/group/mgmtInfo/${groupId}`, {credentials: 'same-origin'})
+        res = await response.json()
+        if (response.status === 200) {
+          dispatch({type: GET_GROUP, payload: {...res, index: groupIndex}})
+          return successCallback(res.group)
+        }
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: e}})
+      dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   }
 }
 
 // reducers
 const initialState = {
-  selectedEvent: undefined,
+  event: undefined,
   events: []
 }
 export const reducer = (state = initialState, action) => {
   const {type, payload} = action
 
   switch (type) {
-    case ADD_GROUP: {
-      let nextState = {...state}
-      nextState.selectedEvent.groups.push({})
-      return nextState
+    case ACTION_ERR: {
+      return {...state, error: payload.error}
     }
-    case ADD_RACE: {
-      let nextState = {...state}
-      nextState.selectedEvent.groups[payload.groupIndex].races.push({})
-      return nextState
-    }
-    case CANCEL_ADD_GROUP: {
-      let nextState = {...state}
-      if (!nextState.selectedEvent.groups[nextState.selectedEvent.groups.length - 1].id) {
-        nextState.selectedEvent.groups.pop()
-      }
-      return nextState
-    }
-    case CANCEL_ADD_RACE: {
-      let nextState = {...state}
-      const group = nextState.selectedEvent.groups[payload.groupIndex]
-      if (!group.races[group.races.length - 1].id) {
-        group.races.pop()
-      }
-      return nextState
+    case DELETE_EVENT: {
+      return {...state, event: -1}
     }
     case DELETE_GROUP: {
       let nextState = {...state}
-      nextState.selectedEvent.groups.splice(payload.groupIndex, 1)
+      nextState.event.groups.splice(payload.state.groupSelected, 1)
       return nextState
     }
     case DELETE_RACE: {
       let nextState = {...state}
-      nextState.selectedEvent.groups[payload.groupIndex].races.splice(payload.raceIndex, 1)
+      nextState.event.groups[payload.state.groupSelected].races.splice(payload.state.raceSelected, 1)
       return nextState
     }
     case GET_EVENTS: {
       return {...state, events: payload.events}
     }
+    case GET_EVENT: {
+      return {...state, event: payload.event}
+    }
     case GET_GROUP: {
       let nextState = {...state}
-      nextState.selectedEvent.groups[payload.index] = payload.group
+      nextState.event.groups[payload.index] = payload.group
       return nextState
     }
-    case GET_SELECTED_EVENT: {
-      return {...state, selectedEvent: payload.event}
-    }
     case SUBMIT_EVENT: {
-      return {...state, selectedEvent: {...payload.event, upToDate: true}}
+      return {...state, event: {...payload.event, groups: [...state.event.groups]}}
     }
     case SUBMIT_GROUP: {
       let nextState = {...state}
-      nextState.selectedEvent.groups[payload.index] = payload.group
+      const group = state.event.groups[payload.state.groupSelected] || {...payload.group, races: [], registrations: []}
+      if (state.event.groups.length === payload.state.groupSelected) {
+        nextState.event.groups.push(group)
+      } else {
+        nextState.event.groups[payload.state.groupSelected] = {...payload.group, races: group.races, registrations: group.registrations}
+      }
       return nextState
     }
     case SUBMIT_RACE: {
       let nextState = {...state}
-      console.log('nextState.selectedEvent.groups[payload.groupIndex]: ', nextState.selectedEvent.groups[payload.groupIndex])
-      nextState.selectedEvent.groups[payload.groupIndex].races[payload.raceIndex] = payload.race
-      console.log('nextState.selectedEvent.groups[payload.groupIndex]: after', nextState.selectedEvent.groups[payload.groupIndex])
+      if (state.event.groups[payload.state.groupSelected].races.length === payload.state.raceSelected) {
+        nextState.event.groups[payload.state.groupSelected].races.push({...payload.race, registrations: []})
+      } else {
+        nextState.event.groups[payload.state.groupSelected].races[payload.state.raceSelected] = payload.race
+      }
+      return nextState
+    }
+    case SUBMIT_REG: {
+      let nextState = {...state}
+
+      // group's reg
+      if (state.event.groups[payload.state.groupSelected].registrations.length === payload.state.regSelected) {
+        nextState.event.groups[payload.state.groupSelected].registrations.push({...payload.registration})
+      } else {
+        nextState.event.groups[payload.state.groupSelected].registrations[payload.state.regSelected] = payload.registration
+      }
       return nextState
     }
     case EVENT_ERR: {
-      return {...state, error: payload.error}
+      return {...state, event: -1}
     }
   }
   return state

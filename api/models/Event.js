@@ -12,6 +12,10 @@ module.exports = {
       collection: 'Group',
       via: 'event'
     },
+    registrations: {
+      collection: 'Registration',
+      via: 'event'
+    },
 
     name: {
       type: 'string',
@@ -35,7 +39,7 @@ module.exports = {
       type: 'integer',
       required: true
     },
-        // meter
+    // meter
     lapDistance: {
       type: 'integer'
     },
@@ -58,9 +62,23 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
+    // Doesnt require racer info
+    isIndieEvent: {
+      type: 'boolean',
+      required: true,
+      defaultsTo: true
+    },
+    requiresPaymentOnReg: {
+      type: 'boolean',
+      required: true,
+      defaultsTo: false
+    },
     testerEpc: {
       type: 'array',
       defaultsTo: []
+    },
+    pacerEpc: {
+      type: 'string'
     },
     toJSON: function () {
       return this.toObject()

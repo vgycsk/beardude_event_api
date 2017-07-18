@@ -59,7 +59,8 @@ module.exports = {
     },
     isActive: {
       type: 'boolean',
-      required: true
+      required: true,
+      defaultsTo: false
     },
     toJSON: function () {
       var obj = this.toObject()

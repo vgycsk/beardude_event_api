@@ -18,10 +18,14 @@ module.exports = {
     racer: {
       model: 'Racer'
     },
-        // 每個Event裡的所有accessCode為unique
+
+    // Event的accessCode為unique
     accessCode: {
       type: 'string',
       required: true
+    },
+    name: {
+      type: 'string'
     },
     raceNumber: {
       type: 'integer'
@@ -52,19 +56,12 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false
     },
-        // {race: ID, note: STR}
+    // [{race: ID, note: STR}]
     raceNotes: {
       type: 'json'
     },
-    toPublic: function () {
-      var obj = this.toObject()
-
-      delete obj.refunded
-      delete obj.accessCode
-      delete obj.epc
-      delete obj.rfidRecycled
-      delete obj.refundRequested
-      delete obj.refunded
+    toJSON: function () {
+      return this.toObject()
     }
   }
 }

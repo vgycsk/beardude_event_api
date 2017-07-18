@@ -1,7 +1,7 @@
 import React from 'react'
 import css from './style.css'
 
-const Button = ({ counter, onClick, style = 'regular', text, url }) => {
+const Button = ({ counter, onClick, style = 'regular', text, url, body }) => {
   const counterHtml = (counter !== undefined
     ? <span className={css.count}>{counter}</span>
     : ''
