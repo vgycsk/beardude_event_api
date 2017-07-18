@@ -38,6 +38,7 @@ body, body>div, body>div>div {
         #64b0b1 55%,
         #afc978 100%
     );
+    min-width: 485px;
     background-attachment: fixed;
     background-size: contain;
 }

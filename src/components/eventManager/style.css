@@ -67,6 +67,9 @@
   right: 50px;
   top: 10px;
 }
+.toRight .lights {
+  right: 0;
+}
 .managerList .lights li {
   margin: 0 10px 0 0;
 }
@@ -216,4 +219,24 @@
 }
 .right {
   float: right;
+}
+.rfid>ul {
+  display: inline-block;
+}
+.rfidBtn {
+  margin: 0 0 0 110px;
+}
+@media only screen and (max-width : 780px) {
+  .lights {
+    display: none;
+  }
+  .info {
+    padding: 10px;
+  }
+  .info .btn {
+    right: 15px;
+  }
+  .managerList {
+    padding: 0;
+  }
 }

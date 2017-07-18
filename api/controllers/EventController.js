@@ -76,7 +76,7 @@ module.exports = {
   update: function (req, res) {
     var input = req.body
     var updateObj
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'testerEpc', 'pacerEpc']
     var query = {id: parseInt(input.id)}
 
     Event.findOne(query)

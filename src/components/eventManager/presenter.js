@@ -85,7 +85,14 @@ const render = {
       </button>
     </li>,
     reg: (V, I, selected, onSelect) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
-      <button className={css.list} onClick={onSelect('reg', I)}>{(V.name) ? V.name : V.id}</button>
+      <button className={css.list} onClick={onSelect('reg', I)}>
+        {(V.name) ? V.name : V.id}
+        <span className={css.toRight}>
+        <ul className={css.lights}>
+          <li className={V.epc ? css.on : css.off}>RFID</li>
+        </ul>
+        </span>
+      </button>
     </li>
   },
   ft: {
@@ -122,18 +129,44 @@ const render = {
       <li className={event.isTeamRegistrationOpen ? css.on : css.off}>隊伍報名</li>
       <li className={event.isRegistrationOpen ? css.on : css.off}>個人報名</li>
       <li className={event.isIndieEvent ? css.on : css.off}>地下活動</li>
+      <li className={event.pacerEpc ? css.on : css.off}>前導車RFID</li>
+      <li className={event.testerEpc.length > 0 ? css.on : css.off}>測試RFID</li>
     </ul>
     <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
   </div>,
-  infoForm: ({model, table, modified, original, onChange, onSubmit, onCancel, onDelete}) => <div className={css.form}>
+  infoForm: ({model, table, modified, original, onChange, onSubmit, onCancel, onDelete, rfidForm}) => <div className={css.form}>
     <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
     <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)), disabled: V.disabled })}</li>)}</ul>
+    {rfidForm}
     <div className={css.boxFt}>
       {modified ? <Button text='儲存' onClick={onSubmit(model)} /> : <Button style='disabled' text='儲存'/>}
       {original.id && render.delete(model, original, onDelete)}
       <Button style='grey' onClick={onCancel} text='取消'/>
     </div>
-  </div>
+  </div>,
+  rfidForm: {
+    event: ({original, modified, handleInputRfid, handleAddTesterRfid}) => {
+      const testerEpc = (modified && modified.testerEpc !== undefined) ? modified.testerEpc : original.testerEpc
+      const pacerEpc = (modified && modified.pacerEpc !== undefined) ? modified.pacerEpc : original.pacerEpc
+      return <ul>
+        <li>
+          <label>前導車ID</label>
+          <input type='text' value={pacerEpc} onChange={handleInputRfid('pacerEpc')} />
+        </li>
+        <li className={css.rfid}>
+          <label>系統測試ID</label>
+          <ul>{(testerEpc.length > 0) && testerEpc.map((V, I) => <li key={'testerId' + I}><input type='text' value={V} onChange={handleInputRfid('testerEpc', I)} /></li>)}</ul>
+      {(testerEpc.length === 0 || testerEpc[testerEpc.length - 1] !== '') && <span className={css.rfidBtn}><Button style='short' text='新增測試RFID' onClick={handleAddTesterRfid}/></span>}
+        </li>
+    </ul>},
+    reg: ({original, modified, handleInputRfid}) => {
+      const epc = (modified && modified.epc !== undefined) ? modified.epc : original.epc
+      return <div>
+        <label>RFID</label>
+        <input type='text' value={epc} onChange={handleInputRfid('epc')} />
+      </div>
+    }
+  }
 }
 export class EventManager extends BaseComponent {
   constructor (props) {
@@ -145,16 +178,29 @@ export class EventManager extends BaseComponent {
       groupSelected: -1,
       raceSelected: -1,
       regSelected: -1,
-      listHeight: returnListHeight({})
+      listHeight: returnListHeight({}),
+      isRfidReader: false,
+      isMobile: (window.navigator.userAgent.indexOf('Android') !== -1) ? true : false
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleStartEdit', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleSelect')
+    this._bind('handleStartEdit', 'handleKeypress', 'handleKeyup', 'handleAddTesterRfid', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleInputRfid', 'handleSelect')
   }
   componentDidMount () {
     const onSuccess = () => this.setState({model: 'event', original: {}})
+
     window.addEventListener('resize', this.handleResize);
+    if (this.state.isMobile) {
+      window.addEventListener('keypress', this.handleKeypress)
+      window.addEventListener('keyup', this.handleKeyup)
+    }
     this.dispatch(eventActions.getEvent(this.props.match.params.id, onSuccess))
     this.dispatch(racerActions.getRacers())
+  }
+  handleKeypress () {
+    this.setState({isRfidReader: true})
+  }
+  handleKeyup () {
+    this.setState({isRfidReader: false})
   }
   handleResize () {
     this.setState({ listHeight: returnListHeight({}) })
@@ -172,9 +218,29 @@ export class EventManager extends BaseComponent {
     this.dispatch(eventActions.delete(this.state, onSuccess))
   }}
   handleInput (field) { return (e) => {
-    const val = (e.target.value === 'true' || e.target.value === 'false' || e.target.value === 'on') ? (e.target.value === 'true' ? false : true) : e.target.value
-    this.setState({modified: (this.state.modified ? {...this.state.modified, [field]: val } : {[field]: val})})
+    if (!this.state.isRfidReader) {
+      const val = (e.target.value === 'true' || e.target.value === 'false' || e.target.value === 'on') ? (e.target.value === 'true' ? false : true) : e.target.value
+      this.setState({modified: (this.state.modified ? {...this.state.modified, [field]: val } : {[field]: val})})
+    }
   }}
+  handleInputRfid (field, index) { return (e) => {
+    const value = e.target.value
+    if (index !== undefined) {
+      let stateObj = {modified: {...this.state.modified}}
+      stateObj.modified[field][index] = value
+      this.setState(stateObj)
+    } else {
+      this.setState({modified: (this.state.modified ? {...this.state.modified, [field]: value } : {[field]: value})})
+    }
+  }}
+  handleAddTesterRfid () {
+    let stateObj = { modified: (this.state.modified) ? {...this.state.modified} : {}}
+    if (!stateObj.modified.testerEpc) {
+      stateObj.modified.testerEpc = (this.state.original.testerEpc) ? this.state.original.testerEpc : []
+    }
+    stateObj.modified.testerEpc.push('')
+    this.setState(stateObj)
+  }
   handleSubmit (model) { return (e) => {
     let stateObj = {model: undefined, modified: undefined, original: undefined}
     let state = {... this.state}
@@ -222,12 +288,14 @@ export class EventManager extends BaseComponent {
     return onSuccess()
   }}
   render () {
-    const { location, event } = this.props
+    const { location, event, match } = this.props
     const { modified, original, model, groupSelected } = this.state
-    if (event === -1) { return <Redirect to={{pathname: '/console'}} /> }
-    else if (!event) { return <div><Header location={location} nav='event' /><div className={css.loading}>Loading...</div></div> }
+    let rfidForm = ''
+    if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/console'}} /> }
+    else if (!event) { return <div><Header location={location} nav='event' match={match} /><div className={css.loading}>Loading...</div></div> }
     else if (model === -1) { return <Redirect to={{pathname: '/console/event/' + event.id}} /> }
-    return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' />
+
+    return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' match={match} />
       <div className={css.mainBody}>
         {render.event({event, onEdit: this.handleStartEdit('event', event)})}
         <div className={css.managerList}>
@@ -238,7 +306,7 @@ export class EventManager extends BaseComponent {
         ? <AdvRule races={event.groups[groupSelected].races} handleCancelEdit={this.handleCancelEdit} />
         : ((model === 'assignReg')
           ? <AssignReg groupIndex={groupSelected} group={event.groups[groupSelected]} handleCancelEdit={this.handleCancelEdit} />
-          : render.infoForm({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete }))
+          : render.infoForm({ model, modified, original, onChange: this.handleInput, onSubmit: this.handleSubmit, onCancel: this.handleCancelEdit, onDelete: this.handleDelete, rfidForm: (render.rfidForm[model]) ? render.rfidForm[model]({modified, original, handleInputRfid: this.handleInputRfid, handleAddTesterRfid: this.handleAddTesterRfid}) : ''}))
         } /> }
     </div>)
   }
