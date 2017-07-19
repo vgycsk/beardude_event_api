@@ -15,6 +15,7 @@ import Team from './components/Team'
 import NotFound from './components/NotFound'
 import Manager from  './components/Manager'
 
+
 import css from './style/index.css'
 
 const store = configureStore()
@@ -29,13 +30,12 @@ ReactDOM.render(
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
           <Route path='/console/event/:id' component={EventManager} />
-          <Route path='/console/RFID' component={Admin} />
-          <Route path='/console/eventMatch' component={NotFound} />
+          <Route path='/console/eventMatch/:id' component={NotFound} />
+          <Route path='/console/stream/:id' component={Stream} />
           <Route path='/console/racer' component={Racer} />
           <Route path='/console/team' component={Team} />
           <Route path='/console/admin' component={Admin} />
           <Route path='/console/manager' component={Manager} />
-          <Route path='/console/stream' component={Stream} />
           <Route component={NotFound} />
         </Switch>
       </div>

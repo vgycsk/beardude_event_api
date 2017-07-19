@@ -133,3 +133,20 @@
     margin: 0;
     background: rgba(0, 0, 0, 0.3);
 }
+@media only screen and (max-width : 780px) {
+  .accountLink {
+    font-size: 0;
+  }
+  .navContainer {
+    margin: 0;
+  }
+  .navContainer li {
+    margin: 0 2px;
+  }
+  .nav {
+    padding: 4px;
+  }
+  .navContainer:after {
+    padding: 0;
+  }
+}

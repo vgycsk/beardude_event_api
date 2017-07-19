@@ -76,7 +76,7 @@ module.exports = {
   update: function (req, res) {
     var input = req.body
     var updateObj
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'testerEpc', 'pacerEpc']
     var query = {id: parseInt(input.id)}
 
     Event.findOne(query)
@@ -87,51 +87,6 @@ module.exports = {
       return Event.update(query, updateObj)
     })
     .then(function (V) { return res.ok({event: V[0]}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // {event: ID, epc: STR}
-  rfidTester: function (req, res) {
-    var input = req.body
-
-    Event.findOne({id: input.event}).populate('registrations')
-    .then(function (modelData) {
-      var testerEpc = modelData.testerEpc
-
-      if (modelData.testerEpc.indexOf(input.epc) !== -1) { throw new Error('Duplicate RFID in testers') }
-      if (modelData.pacerEpc === input.epc) { throw new Error('Duplicate RFID in pacer') }
-      modelData.registrations.forEach(function (reg) { if (reg.epc === input.epc) { throw new Error('Duplicate RFID in racer') } })
-      testerEpc.push(input.epc)
-      return Event.update({id: input.event}, {testerEpc: testerEpc})
-    })
-    .then(function () { return res.ok({event: input.event, epc: input.epc}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // {event: ID, epc: STR}
-  rfidPacer: function (req, res) {
-    var input = req.body
-
-    Event.findOne({id: input.event}).populate('registrations')
-    .then(function (modelData) {
-      if (modelData.testerEpc.indexOf(input.epc) !== -1) { throw new Error('Duplicate RFID in testers') }
-      modelData.registrations.forEach(function (reg) { if (reg.epc === input.epc) { throw new Error('Duplicate RFID in racer') } })
-      return Event.update({id: input.event}, {pacerEpc: input.epc})
-    })
-    .then(function () { return res.ok({event: input.event, epc: input.epc}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // {event: ID, epc: STR, accessCode: STR}
-  rfidReg: function (req, res) {
-    // TO DO: also assign raceNumber
-    var input = req.body
-
-    Event.findOne({id: input.event}).populate('registrations')
-    .then(function (modelData) {
-      if (modelData.testerEpc.indexOf(input.epc) !== -1) { throw new Error('Duplicate RFID in testers') }
-      if (modelData.pacerEpc === input.epc) { throw new Error('Duplicate RFID in pacer') }
-      modelData.registrations.forEach(function (reg) { if (reg.epc === input.epc) { throw new Error('Duplicate RFID in racer') } })
-      return Registration.update({event: input.event, accessCode: input.accessCode}, {epc: input.epc})
-    })
-    .then(function () { return res.ok({event: input.event, epc: input.epc}) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {epc: STR}

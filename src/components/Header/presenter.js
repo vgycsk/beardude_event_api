@@ -4,18 +4,17 @@ import { NavLink, Redirect } from 'react-router-dom'
 import { actionCreators } from '../../ducks/account'
 import css from './style.css'
 
-const navs = {
-  base: [
+const returnNavs = {
+  base: () => [
     { name: '活動', url: '/console', exact: true },
     { name: '選手', url: '/console/racer' },
     { name: '隊伍', url: '/console/team' },
     { name: '管理員', url: '/console/manager' }
   ],
-  event: [
-    { name: '賽制', url: '/console/event' },
-    { name: 'RFID 操作', url: '/console/RFID' },
-    { name: '賽制操作', url: '/console/eventMatch' },
-    { name: 'Stream', url: '/console/stream' }
+  event: (match) => [
+    { name: '賽制', url: '/console/event/' + match.params.id },
+    { name: '賽程管理', url: '/console/eventMatch/' + match.params.id },
+    { name: 'Stream', url: '/console/stream/' + match.params.id }
   ]
 }
 
@@ -27,7 +26,7 @@ const renderAccountInfo = (that) => (<div className={css.account}>
   </ul> }
 </div>)
 
-const renderNav = (navs) => <ul className={css.navContainer}>{navs.map(nav => 
+const renderNav = (navs, matchParams) => <ul className={css.navContainer}>{navs.map(nav =>
   <li key={nav.name}><NavLink activeClassName={css.navActive} className={css.nav} to={nav.url} exact={nav.exact}>{nav.name}</NavLink></li>
 )}</ul>
 
@@ -47,11 +46,9 @@ class Header extends BaseComponent {
     this.setState({showAccountMenu: !this.state.showAccountMenu})
   }
   render () {
-    if (this.props.account.isAuthenticated !== undefined && !this.props.account.isAuthenticated) {
-      return <Redirect to={{
-        pathname: '/console/login',
-        state: { from: this.props.location }
-      }} />
+    const {account, location, match} = this.props
+    if (account.isAuthenticated !== undefined && !account.isAuthenticated) {
+      return <Redirect to={{ pathname: '/console/login', state: { from: location } }} />
     }
     return (<div className={css.mainHeader}>
         <div className={css.heading}>
@@ -63,7 +60,7 @@ class Header extends BaseComponent {
             </h1>
         </div>
       { this.props.account.manager && renderAccountInfo(this) }
-      { this.props.nav && renderNav(navs[this.props.nav]) }
+      { this.props.nav && renderNav(returnNavs[this.props.nav](match)) }
     </div>)
   }
 }

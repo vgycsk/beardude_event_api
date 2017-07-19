@@ -53,7 +53,7 @@ var RegistrationController = {
   // {id: ID, name: STR}
   update: function (req, res) {
     var input = req.body
-    var fields = ['name']
+    var fields = ['name', 'epc']
     var updateObj = dataService.returnUpdateObj(fields, input)
 
     Registration.update({ id: input.id }, updateObj)
