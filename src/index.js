@@ -13,8 +13,7 @@ import Account from './components/Account'
 import Racer from './components/Racer'
 import Team from './components/Team'
 import NotFound from './components/NotFound'
-import Manager from  './components/Manager'
-
+import Manager from './components/Manager'
 
 import css from './style/index.css'
 
@@ -27,11 +26,12 @@ ReactDOM.render(
     <Router>
       <div className={css.container}>
         <Switch>
+          <Route exact path='/' component={EventList} />
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
           <Route path='/console/event/:id' component={EventManager} />
           <Route path='/console/eventMatch/:id' component={NotFound} />
-          <Route path='/console/stream/:id' component={Stream} />
+          <Route path='/console/stream' component={Stream} />
           <Route path='/console/racer' component={Racer} />
           <Route path='/console/team' component={Team} />
           <Route path='/console/admin' component={Admin} />
@@ -43,3 +43,7 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('main-container')
 )
+
+if (module.hot) {
+  module.hot.accept()
+}

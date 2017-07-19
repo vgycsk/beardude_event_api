@@ -8,7 +8,7 @@ Model:
 
 Scenarios:
 
-編號(*done)| 時程   | 使用者   | Task         | Task-item   | API  | 說明 
+編號(*done)| 時程   | 使用者   | Task         | Task-item   | API  | 說明
 ------ | ----- | ------- | ------------ | ------------ | ---- | ----
 1.1    | 賽前   | 管理者   | 新增活動      |              | /event/create |
 *1.2.1  |       |         | 修改活動內容   | 新增競賽組別   | /group/create |
@@ -67,7 +67,7 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 6.1.1  | 比賽期間 | 管理者  | 觀看賽程       | 查詢目前比賽流程 | /group/info:id    |
 6.1.2  |        |         |              | 查詢選手名單     | /race/mgmtInfo/:id    |
 6.2.1  |        |         | 準備比賽      | 開啟比賽            |           |
-6.2.3  |        |         |             | 開始選手登錄         |  /reg/admitRacer   | 
+6.2.3  |        |         |             | 開始選手登錄         |  /reg/admitRacer   |
 -6.2.4  |        |         |             | (登錄失敗)判讀選手狀態 | /race/assignRegsToRaces,<br> /reg/admitRacer |
 -6.2.5  |        |         |             | (登錄失敗)更換選手RFID | /reg/replaceRfid<br>  /reg/admitRacer |
 *6.2.6  |        |         |             | 登錄Pacer ID        | /event/rfid/pacer    |
@@ -105,11 +105,11 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 
 DEV (need two screen):
 
-one screen
+one screen (API)
 > npm run start
 
-the other
-> npm run dev (enter rs if reload fail)
+the other (frontend)
+> npm run dev (enter rs if reload fail or seems strange)
 
 ===
 Wireframe
