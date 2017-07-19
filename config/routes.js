@@ -10,23 +10,12 @@ module.exports.routes = {
     'get  /api/event/mgmtInfo/:id': 'EventController.getManagementInfo',
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
-    // 1.2.7, 1.2.8
+    // 1.2.7, 1.2.8, 6.2.6, 4.2.3
     'post /api/event/update': 'EventController.update',
     // 1.6
     'get  /api/event/delete/:id': 'EventController.delete',
-
-    // 4.1.1, 4.1.2
-    'post /api/event/rfid/reg': 'EventController.rfidReg',
-    // 4.2.3
-    'post /api/event/rfid/tester': 'EventController.rfidTester',
-    // 6.2.6
-    'post /api/event/rfid/pacer': 'EventController.rfidPacer',
     // 8.2
     'post /api/event/rfid/recycle': 'EventController.rfidRecycle',
-
-    // 1.3
-//    'post /api/event/managers/add': 'EventController.addManagers',
-//    'post /api/event/managers/remove': 'EventController.removeManagers',
 
     // Group
     // 1.2.1
@@ -94,6 +83,7 @@ module.exports.routes = {
     'post /api/reg/create': 'RegistrationController.create',
     // 5.1.1, 5.1.2
     'post /api/reg/info': 'RegistrationController.getInfo',
+    //4.1.1, 4.1.2
     'post /api/reg/update': 'RegistrationController.update',
     // 6.3.6
     'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
