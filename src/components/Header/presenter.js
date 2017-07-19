@@ -1,6 +1,6 @@
 import React from 'react'
 import BaseComponent from '../BaseComponent'
-import { NavLink, Redirect } from 'react-router-dom'
+import { NavLink, Redirect, Link } from 'react-router-dom'
 import { actionCreators } from '../../ducks/account'
 import css from './style.css'
 
@@ -21,7 +21,7 @@ const returnNavs = {
 const renderAccountInfo = (that) => (<div className={css.account}>
   <a className={css.accountLink} onClick={that.handleToggleAccountMenu}>{that.props.account.manager.email}</a>
   { that.state.showAccountMenu && <ul className={css.accountMenu}>
-    <li><a className={css.aMenuItem} href='/console/account'>帳號設定</a></li>
+    <li><Link className={css.aMenuItem} to='/console/account'>帳號設定</Link></li>
     <li><a className={css.aMenuItem} href='#' onClick={that.handleLogout}>登出</a></li>
   </ul> }
 </div>)
@@ -53,10 +53,10 @@ class Header extends BaseComponent {
     return (<div className={css.mainHeader}>
         <div className={css.heading}>
             <h1 className={css.bdlogo}>
-              <a href="/console">
+              <Link to="/console">
                 <span className={css.logoB}>Beardude</span>
                 <span className={css.logoE}>Event</span>
-              </a>
+              </Link>
             </h1>
         </div>
       { this.props.account.manager && renderAccountInfo(this) }
