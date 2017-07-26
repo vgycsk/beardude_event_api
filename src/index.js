@@ -9,6 +9,7 @@ import Stream from './components/Stream/'
 import Admin from './components/Admin/presenter'
 import EventList from './components/EventList'
 import EventManager from './components/EventManager'
+import MatchManager from './components/MatchManager'
 import Account from './components/Account'
 import Racer from './components/Racer'
 import Team from './components/Team'
@@ -30,7 +31,7 @@ ReactDOM.render(
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
           <Route path='/console/event/:id' component={EventManager} />
-          <Route path='/console/eventMatch/:id' component={NotFound} />
+          <Route path='/console/eventMatch/:id' component={MatchManager} />
           <Route path='/console/stream' component={Stream} />
           <Route path='/console/racer' component={Racer} />
           <Route path='/console/team' component={Team} />
