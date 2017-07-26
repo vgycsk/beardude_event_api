@@ -23,13 +23,13 @@
 }
 .info {
   position: relative;
-  margin: 50px 0 15px 0;
-  padding: 10px 25px;
+  margin: 40px 0 10px 0;
+  padding: 5px 15px;
   width: 100%;
   color: #fff;
 }
 .info h2 {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 300;
   letter-spacing: 0.4px;
   margin: 0 0 3px 0;
@@ -85,7 +85,7 @@
   display: flex;
   flex-direction: row;
   margin: 0 6px 32px;
-  padding: 0 16px;
+  padding: 0 6px;
   color: #E0E4E9;
   font-size: 14px;
   height: 100%;
@@ -171,6 +171,9 @@
   height: 30px;
   line-height: 30px;
 }
+.raceNumber {
+  margin: 0 10px 0 0;
+}
 .selected {
   composes: li;
   background: rgba(255,255,255, 0.4);
@@ -186,7 +189,7 @@
 }
 .listFt {
   position: absolute;
-  bottom: 139px;
+  bottom: 109px;
   background: rgba(66,66,66,0.2);
   width: 99.5%;
   height: 36px;

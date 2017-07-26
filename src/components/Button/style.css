@@ -22,7 +22,16 @@ button {
 .disabled {
   composes: regular;
   background: #ddd;
-  color: #eee;
+  color: #fff;
+}
+.shortDisabled {
+  composes: disabled;
+  height: 24px;
+  line-height: 18px;
+}
+.shortRed {
+  composes: short;
+  background: #c20000;
 }
 .grey {
   composes: regular;
