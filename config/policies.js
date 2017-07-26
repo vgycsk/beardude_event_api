@@ -42,8 +42,10 @@ module.exports.policies = {
         update: 'isActiveManager',
         delete: 'isActiveManager',
         assignRegsToRaces: 'isActiveManager',
-        getParsedRaceResult: 'isActiveManager',
-        submitRaceResult: 'isActiveManager'
+        startRace: 'isActiveManager',
+        resetRace: 'isActiveManager',
+        endRace: 'isActiveManager',
+        submitResult: 'isActiveManager'
     },
     RacerController: {
         activate: 'isInactive',
@@ -65,7 +67,7 @@ module.exports.policies = {
         getInfo: 'isRacerSelfOrTeamLeaderOrManager',
         confirmRegistration: 'isActiveManager',
         update: 'isActiveManager',
-        updateDisqualification: 'isActiveManager',
+//        updateDisqualification: 'isActiveManager',
         updateRaceNote: 'isActiveManager',
         delete: 'isActiveManager'
     },

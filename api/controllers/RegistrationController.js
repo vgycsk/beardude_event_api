@@ -13,6 +13,15 @@ var RegistrationController = {
     dataService.returnAccessCode(obj.event)
     .then(function (accessCode) {
       obj.accessCode = accessCode
+      if (!input.raceNumber) {
+        return Registration.count({group: input.group})
+      }
+      return false
+    })
+    .then(function (V) {
+      if (V) {
+        obj.raceNumber = V + 1
+      }
       return Registration.create(obj)
     })
     .then(function (V) {
@@ -53,25 +62,26 @@ var RegistrationController = {
   // {id: ID, name: STR}
   update: function (req, res) {
     var input = req.body
-    var fields = ['name', 'epc']
+    var fields = ['name', 'epc', 'raceNumber']
     var updateObj = dataService.returnUpdateObj(fields, input)
 
     Registration.update({ id: input.id }, updateObj)
     .then(function (V) { return res.ok({ registration: V[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID}
+  // /:id
   delete: function (req, res) {
-    var input = req.body
-    Registration.findOne(input)
+    var query = {id: parseInt(req.params.id)}
+
+    Registration.findOne(query).populate('races')
     .then(function (V) {
-      if (V.raceNumber || V.epc || V.raceNotes) { throw new Error('Cannot delete admitted racer') }
-      return Registration.destroy(input)
+      if (V.raceNotes || V.races.length > 0) { throw new Error('Cannot delete admitted racer') }
+      return Registration.destroy(query)
     })
-    .then(function (V) { return res.ok({ registration: V[0] }) })
+    .then(function (V) { return res.ok({ registration: query }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-
+/*
   // {id: ID, race: ID, note: STR, isDisqualified: BOOL}
   updateDisqualification: function (req, res) {
     var input = req.body
@@ -85,6 +95,7 @@ var RegistrationController = {
     .then(function (V) { return res.ok({ registration: V[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
+*/
   // {id: ID, race: ID, note: STR}
   updateRaceNote: function (req, res) {
     var input = req.body

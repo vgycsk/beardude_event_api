@@ -41,7 +41,7 @@ module.exports = {
     Group.findOne({id: groupId})
     .then(function (modelData) {
       result = modelData.toJSON()
-      return Registration.find({group: groupId}).populate('racer').populate('races')
+      return Registration.find({group: groupId}).sort('raceNumber ASC').populate('racer').populate('races')
     })
     .then(function (V) {
       result.registrations = V

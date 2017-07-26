@@ -55,10 +55,13 @@ module.exports.routes = {
     'get  /api/race/delete/:id': 'RaceController.delete',
     // 1.4.5, 1.7.1, 6.2.4, 1.7.2, 1.4.6, 1.7.2
     'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
-    // 6.3.7
-    'get  /api/race/getParsedRaceResult/:id': 'RaceController.getParsedRaceResult',
-    // 6.3.10
-    'post /api/race/submitRaceResult': 'RaceController.submitRaceResult',
+    // 6.2.11
+    'post /api/race/start': 'RaceController.startRace',
+    'post /api/race/reset': 'RaceController.resetRace',
+    // 6.3.5
+    'post /api/race/end': 'RaceController.endRace',
+    // 6.3.7, 6.3.10
+    'post /api/race/submitResult': 'RaceController.submitResult',
     // 4.2.4, 4.2.5, 4.2.6
     'get  /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
     'post /api/race/readerRoom': 'RaceController.readerReceiver',
@@ -86,11 +89,11 @@ module.exports.routes = {
     //4.1.1, 4.1.2
     'post /api/reg/update': 'RegistrationController.update',
     // 6.3.6
-    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
+//    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
     // 6.3.9
     'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
 
-    'post /api/reg/delete': 'RegistrationController.delete',
+    'get  /api/reg/delete/:id': 'RegistrationController.delete',
 
     // 2.2.5 正式版再說
 //    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',

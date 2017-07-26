@@ -58,7 +58,7 @@ module.exports = {
 
       result.groups = result.groups.map(function (group, I) {
         group.races = V[I]
-        funcs.push(Registration.find({group: group.id}).populate('races'))
+        funcs.push(Registration.find({group: group.id}).sort('raceNumber ASC').populate('races'))
         return group
       })
       return Q.all(funcs)
@@ -76,7 +76,7 @@ module.exports = {
   update: function (req, res) {
     var input = req.body
     var updateObj
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'testerEpc', 'pacerEpc']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'testerEpc', 'pacerEpc', 'raceOrder', 'ongoingRace']
     var query = {id: parseInt(input.id)}
 
     Event.findOne(query)
