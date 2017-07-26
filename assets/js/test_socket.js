@@ -9,7 +9,7 @@ var sConnection = io.sails.connect();
 sConnection.on('connect', function onConnect () {
   console.log(io.sails.url);
   console.log("Socket connected!");
-  sConnection.get('/race/joinReaderRoom', function gotResponse(data, jwRes) {
+  sConnection.get('/api/race/joinReaderRoom', function gotResponse(data, jwRes) {
         console.log('Server responded with status code ' + jwRes.statusCode + ' data: ', data);
         document.querySelector('.info .room').innerHTML = 'register to server';
   });
@@ -28,10 +28,13 @@ sConnection.on('terminatereader', function gotTerminateMessage (data) {
 		console.log('terminatereader', data);
 });
 
+sConnection.on('status', function gotStatusMessage (data) {
+		console.log('status', data);
+});
 document.querySelector('.start').addEventListener('click', function(e) {
 	e.preventDefault();
 
-	sConnection.post(io.sails.url + '/race/readerRoom',
+	sConnection.post(io.sails.url + '/api/race/readerRoom',
                   {
                       type: 'startreader',
                       payload: {}
@@ -45,7 +48,7 @@ document.querySelector('.start').addEventListener('click', function(e) {
 document.querySelector('.txdata').addEventListener('click', function(e) {
 	e.preventDefault();
 
-	sConnection.post('/race/readerRoom',
+	sConnection.post('/api/race/readerRoom',
                   {
                       type: 'rxdata',
                       payload: txData
@@ -55,10 +58,24 @@ document.querySelector('.txdata').addEventListener('click', function(e) {
 		                   });
 });
 
+document.querySelector('.getreaderstatus').addEventListener('click', function(e) {
+	e.preventDefault();
+
+	sConnection.post(io.sails.url + '/api/race/readerRoom',
+                  {
+                      type: 'getreaderstatus',
+                      payload: {}
+                  },
+                  function gotResponse(data, jwRes) {
+			                  console.log('Server responded with status code ' + jwRes.statusCode + ' data: ', data);
+                        document.querySelector('.info .reader').innerHTML = 'reader status:' + data;
+                  });
+});
+
 document.querySelector('.terminate').addEventListener('click', function(e) {
 	e.preventDefault();
 
-	sConnection.post('/race/readerRoom',
+	sConnection.post('/api/race/readerRoom',
                   {
                       type: 'terminatereader',
                       payload: {}
