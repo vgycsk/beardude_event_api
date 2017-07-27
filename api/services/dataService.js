@@ -59,23 +59,51 @@ var dataService = {
     if (!dataExist) { raceNotes.push({ race: raceId, note: raceNote }) }
     return raceNotes
   },
-  returnSortedResultFromHashTable: function (hashTable, regs) {
+  isValidRaceRecord: function (epc, raceData) {
+    var validateRaceStarted = function (raceData) {
+      if (raceData.raceStatus === 'started' && Date.now() >= raceData.startTime) { return true }
+      return false
+    }
+    var validateRegInRace = function (epc, regs) {
+      for (var i = 0; i < regs.length; i += 1) { if (regs[i].epc === epc) { return true } }
+      return false
+    }
+    if (raceData.requirePacer && epc === raceData.pacerEpc) { return true }
+    if (validateRaceStarted(raceData) && validateRegInRace(epc, raceData.registrations)) { return true }
+    return false
+  },
+  returnSortedResultFromHashTable: function (hashTable, regs, laps) {
     var sortTable = []
     var result = []
+    var inCompleteBucket = []
+    var lastRecordIndex = laps + 1
 
     for (var i in hashTable) {
       if (hashTable.hasOwnProperty(i)) {
-        sortTable.push([i], hashTable[i][hashTable[i].length - 1])
+        if (hashTable[i][lastRecordIndex]) {
+          // completed:  [epc, timestamp]
+          sortTable.push([i, hashTable[i][lastRecordIndex]])
+        } else {
+          // incomplete: [epc, timestamp, laps]
+          inCompleteBucket.push([i, hashTable[i][hashTable[i].length - 1], hashTable[i].length])
+        }
       }
     }
+    // sort completed by record
     sortTable.sort(function (a, b) { return a[1] - b[1] })
-    result = sortTable.map(function (val) {
-      var reg
 
-      regs.map(function (V) {
-        if (val[0] === V.epc) { reg = V.id }
-      })
-      return { registration: reg, epc: val[0], record: hashTable[val[0]] }
+    // sort incomplete by laps completed
+    inCompleteBucket.sort(function (a, b) { return b[2] - a[2] })
+
+    // sort incomplete of same laps by time
+    inCompleteBucket.sort(function (a, b) { return (a[2] === b[2]) ? a[1] - b[1] : 0 })
+    sortTable = sortTable.concat(inCompleteBucket)
+    result = sortTable.map(function (record) {
+      for (var i = 0; i < regs.length; i += 1) {
+        if (regs[i].epc === record[0]) {
+          return { registration: regs[i].id, epc: regs[i].epc, record: hashTable[regs[i].epc] }
+        }
+      }
     })
     return result
   },
@@ -84,7 +112,7 @@ var dataService = {
 
     if (result.length > 0) {
       for (var i = rule.rankFrom; i <= rule.rankTo; i += 1) {
-        advanceObj.toAdd.push(result[i].registration)
+        if (result[i] && result[i].registration) { advanceObj.toAdd.push(result[i].registration) }
       }
     }
     return advanceObj

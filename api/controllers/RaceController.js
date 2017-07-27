@@ -151,7 +151,7 @@ var RaceController = {
     .then(function (raceData) {
       var hashTable = (input.raceResult) ? input.raceResult : raceData.recordsHashTable
 
-      raceResult = dataService.returnSortedResultFromHashTable(hashTable, raceData.registrations)
+      raceResult = dataService.returnSortedResultFromHashTable(hashTable, raceData.registrations, raceData.laps)
       return Race.update({ id: input.id }, { result: raceResult, raceStatus: 'submitted' })
     })
     .then(function (racedata) {
@@ -161,18 +161,16 @@ var RaceController = {
       raceObj = racedata[0]
       if (advancingRules.length > 0) {
         advancingRules.map(function (rule) {
-          funcs.push(RaceController.addRemoveRegs(dataService.returnMatchedRegsFromRule(rule, raceResult)))
+          var advanceObj = dataService.returnMatchedRegsFromRule(rule, raceResult)
+
+          funcs.push(RaceController.addRemoveRegs(advanceObj))
         })
         return Q.all(funcs)
       }
       return false
     })
-    .then(function () {
-      return Event.update({ id: raceObj.group.event }, { ongoingRace: -1 })
-    })
-    .then(function () {
-      return res.ok({ race: raceObj })
-    })
+    .then(function () { return Event.update({ id: raceObj.group.event }, { ongoingRace: -1 }) })
+    .then(function () { return res.ok({ race: raceObj }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   /**
@@ -207,7 +205,53 @@ var RaceController = {
 
     if (!isSocket) { return res.badRequest() }
     sails.sockets.broadcast('readerSockets', input.type, { result: input.payload }, socketReq)
+    if (input.type === 'rxdata') {
+      return RaceController.insertRfid(input.event, input.payload)
+      .then(function (result) {
+        console.log('result: ', result)
+        sails.sockets.broadcast('raceupdate', 'raceupdate', { result: result }, socketReq)
+        return res.json({ result: 'type-' + input.type + '_receive_OK', input: input, output: result })
+      })
+      .catch(function (E) { return res.badRequest(E) })
+    }
     return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+  },
+  insertRfid: function (eventId, entriesRaw) {
+    var q = Q.defer()
+    var entries = entriesRaw.map(function (entry) { return { epc: entry.epc, timestamp: parseInt(entry.timestamp) } })
+
+    Event.findOne({id: eventId})
+    .then(function (eventData) {
+      return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
+    })
+    .then(function (eventData) {
+      if (eventData[0].ongoingRace !== -1) { return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations') }
+      return false
+    })
+    .then(function (raceData) {
+      if (!raceData) { return false }
+
+      var recordsHashTable = raceData.recordsHashTable
+      var hasEntry
+
+      entries.map(function (entry) {
+        if (dataService.isValidRaceRecord(entry.epc, raceData)) {
+          if (!recordsHashTable[entry.epc]) { recordsHashTable[entry.epc] = [] }
+          recordsHashTable[entry.epc].push(entry.timestamp)
+          hasEntry = true
+        }
+      })
+      if (hasEntry) { return Race.update({id: raceData.id}, {recordsHashTable: recordsHashTable}) }
+    })
+    .then(function (raceData) {
+      if (!raceData) { return q.resolve(false) }
+      return q.resolve({ race: raceData[0] })
+    })
+    .catch(function (E) {
+      console.log('insert RFID error: ', E)
+      return q.reject(E)
+    })
+    return q.promise
   }
 }
 

@@ -75,7 +75,7 @@ var RegistrationController = {
 
     Registration.findOne(query).populate('races')
     .then(function (V) {
-      if (V.raceNotes || V.races.length > 0) { throw new Error('Cannot delete admitted racer') }
+      if (V.raceNotes) { throw new Error('Cannot delete racer that has raceNotes') }
       return Registration.destroy(query)
     })
     .then(function (V) { return res.ok({ registration: query }) })
