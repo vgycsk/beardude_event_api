@@ -48,7 +48,7 @@ const returnInputs = {
     {label: '隊伍報名', field: 'isTeamRegistrationOpen', type: 'checkbox'},
     {label: '個人報名', field: 'isRegistrationOpen', type: 'checkbox'},
     {label: '地下活動', field: 'isIndieEvent', type: 'checkbox', value: true},
-    {label: '進行中 (debug)', field: 'ongoingRace', type: 'number'}
+    {label: '接收RFID資料', field: 'isRfidTerminal', type: 'checkbox'}
   ],
   group: () => [
     {label: '中文名稱', field: 'nameCht', type: 'text'},
