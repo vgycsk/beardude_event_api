@@ -36,9 +36,7 @@ const validate = {
     for (let i in recordsHashTable) {
       if (recordsHashTable.hasOwnProperty(i)) {
         result = true
-        if (recordsHashTable[i].length < laps) {
-          return false
-        }
+        if (recordsHashTable[i].length < laps) { return false }
       }
     }
     return result
@@ -47,15 +45,6 @@ const validate = {
     if (race.requirePacer && (!racer.pacerEpc || racer.pacerEpc === '')) { return false }
     return true
   }
-}
-
-let mockReaderStatus = 'started'
-const returnMockReaderStatus = (callback) => { return callback({status: mockReaderStatus}) }
-const mockReaderResponse = (action, callback) => {
-  if (action === 'start') { mockReaderStatus = 'started' }
-  else if (action === 'debug') { mockReaderStatus = 'debug' }
-  else { mockReaderStatus = 'idle' }
-  return callback({status: mockReaderStatus})
 }
 
 const render = {
@@ -104,20 +93,20 @@ const render = {
     switch (readerStatus) {
     case 'idle':
       return <span>
-        <Button style='short' text='啟動RFID' onClick={handleControlReader('start')}/>
+        <Button style='short' text='啟動RFID' onClick={handleControlReader('startreader')}/>
         <Button style='shortGrey' text='測試RFID' onClick={handleControlReader('debug')}/>
       </span>
     case 'started':
       return <span>
         {(ongoingRace === undefined)
-          ? <Button style='shortRed' text='關閉RFID' onClick={handleControlReader('stop')} />
+          ? <Button style='shortRed' text='關閉RFID' onClick={handleControlReader('terminatereader')} />
           : <Button style='shortDisabled' text='關閉RFID' />
         }
       </span>
     case 'debug':
       return <span>
         <Button style='shortDisabled' text='啟動RFID' />
-        <Button style='shortGrey' text='結束測試' onClick={handleControlReader('stop')} />
+        <Button style='shortGrey' text='結束測試' onClick={handleControlReader('terminatereader')} />
       </span>
     }
   },
@@ -166,6 +155,9 @@ const render = {
     </div>
   }
 }
+io.sails.autoConnect = false
+io.sails.url = 'http://localhost:1337'
+let sConnection = io.sails.connect()
 
 export class MatchManager extends BaseComponent {
   constructor (props) {
@@ -183,7 +175,7 @@ export class MatchManager extends BaseComponent {
       counter: undefined
     }
     this.dispatch = this.props.dispatch
-    this._bind('countdown', 'handleChangeCountdown', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleControlReader', 'handleSubmitResult', 'handleStartRace', 'handleEndRace', 'handleUpdateDialog', 'handleResetRace', 'updateState')
+    this._bind('socketIoEvents', 'countdown', 'handleChangeCountdown', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleControlReader', 'handleSubmitResult', 'handleStartRace', 'handleEndRace', 'handleUpdateDialog', 'handleResetRace', 'updateState')
   }
   updateState () {
     const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
@@ -212,10 +204,7 @@ export class MatchManager extends BaseComponent {
       return this.updateState()
     }
     window.addEventListener('resize', this.handleResize);
-    returnMockReaderStatus(function (res) {
-      this.setState({readerStatus: res.status})
-    }.bind(this))
-
+    this.socketIoEvents(this.getReaderStatus)
     if (!this.props.event) {
       return this.dispatch(eventActions.getEvent(this.props.match.params.id, onSuccess))
     }
@@ -223,6 +212,8 @@ export class MatchManager extends BaseComponent {
   }
   componentWillUnmount () {
     window.removeEventListener('resize', this.handleResize)
+    sConnection.off('connect')
+    sConnection.off('readerstatus')
   }
   countdown () {
     const reset = () => {
@@ -236,6 +227,16 @@ export class MatchManager extends BaseComponent {
     const result = parseFloat(Math.floor(timeLeft / 100) / 10).toFixed(1)
     this.setState({ counter:  result})
   }
+  socketIoEvents (callback) {
+    sConnection.on('connect', function onConnect () {
+      console.log('Socket connected')
+      sConnection.get('/api/race/joinReaderRoom', function res () { if (callback !== undefined) { callback () } })
+    })
+    sConnection.on('readerstatus', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
+  }
+  getReaderStatus () {
+    sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
+  }
   handleUpdateDialog (value) { return (e) => {
     this.setState({ dialog: value })
   }}
@@ -248,9 +249,8 @@ export class MatchManager extends BaseComponent {
   handleChangeCountdown () { return (e) => {
     this.setState({ countdown: e.target.value })
   }}
-  handleControlReader (action) { return (e) => {
-    const onSuccess = (res) => this.setState({readerStatus: res.status})
-    mockReaderResponse(action, onSuccess)
+  handleControlReader (type) { return (e) => {
+    sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} }, function res (data, jwRes) { this.getReaderStatus() }.bind(this))
   }}
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
