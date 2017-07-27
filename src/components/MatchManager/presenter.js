@@ -50,12 +50,12 @@ const validate = {
 }
 
 let mockReaderStatus = 'started'
-const returnMockReaderStatus = (callback) => { return callback({message: mockReaderStatus}) }
+const returnMockReaderStatus = (callback) => { return callback({status: mockReaderStatus}) }
 const mockReaderResponse = (action, callback) => {
   if (action === 'start') { mockReaderStatus = 'started' }
   else if (action === 'debug') { mockReaderStatus = 'debug' }
   else { mockReaderStatus = 'idle' }
-  return callback({message: mockReaderStatus})
+  return callback({status: mockReaderStatus})
 }
 
 const render = {
@@ -170,6 +170,7 @@ const render = {
 export class MatchManager extends BaseComponent {
   constructor (props) {
     super(props)
+    this.timer = 0
     this.state = {
       listHeight: returnListHeight({}),
       races: [],
@@ -179,8 +180,7 @@ export class MatchManager extends BaseComponent {
       ongoingRace: undefined,
       dialog: undefined,
       countdown: 60,
-      counter: undefined,
-      intervalId: {}
+      counter: undefined
     }
     this.dispatch = this.props.dispatch
     this._bind('countdown', 'handleChangeCountdown', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleControlReader', 'handleSubmitResult', 'handleStartRace', 'handleEndRace', 'handleUpdateDialog', 'handleResetRace', 'updateState')
@@ -191,14 +191,12 @@ export class MatchManager extends BaseComponent {
     let stateObj = { races: orderedRaces, raceSelected: 0, ongoingRace: ongoingRace, dialog: undefined }
 
     if (ongoingRace === undefined) {
-      clearInterval(this.state.intervalId)
-      stateObj.intervalId = {}
+      clearInterval(this.timer)
     } else {
       stateObj.raceSelected = ongoingRace
       if (orderedRaces[ongoingRace].startTime && orderedRaces[ongoingRace].startTime > Date.now()) {
         stateObj.dialog = 'countdown'
-        let intervalId = setInterval(this.countdown, 100)
-        stateObj.intervalId = intervalId
+        this.timer = setInterval(this.countdown, 100)
       }
     }
     this.setState(stateObj)
@@ -215,7 +213,7 @@ export class MatchManager extends BaseComponent {
     }
     window.addEventListener('resize', this.handleResize);
     returnMockReaderStatus(function (res) {
-      this.setState({readerStatus: res.message})
+      this.setState({readerStatus: res.status})
     }.bind(this))
 
     if (!this.props.event) {
@@ -228,8 +226,8 @@ export class MatchManager extends BaseComponent {
   }
   countdown () {
     const reset = () => {
-      clearInterval(this.state.intervalId)
-      return this.setState({ counter: undefined, dialog: undefined, intervalId: {} })
+      clearInterval(this.timer)
+      return this.setState({ counter: undefined, dialog: undefined })
     }
     if (this.state.ongoingRace === undefined) { return reset() }
     const startTime = this.state.races[this.state.ongoingRace].startTime
@@ -251,7 +249,7 @@ export class MatchManager extends BaseComponent {
     this.setState({ countdown: e.target.value })
   }}
   handleControlReader (action) { return (e) => {
-    const onSuccess = (res) => this.setState({readerStatus: res.message})
+    const onSuccess = (res) => this.setState({readerStatus: res.status})
     mockReaderResponse(action, onSuccess)
   }}
   handleStartRace () {
