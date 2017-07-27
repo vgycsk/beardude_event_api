@@ -60,7 +60,7 @@ const render = {
     const race = races[raceSelected]
     switch (race.raceStatus) {
       case 'init': {
-        return (races[raceSelected].raceStatus === 'init' && ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : ''
+        return (races[raceSelected].raceStatus === 'init' && ongoingRace === undefined && readerStatus === 'started') ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : <Button text='開賽倒數' style='shortDisabled' />
       }
       case 'started': {
         return <span>
@@ -89,7 +89,7 @@ const render = {
       }
     }
   },
-  readerStatusBtn: ({ongoingRace, readerStatus, handleControlReader}) => {
+  readerStatusBtn: ({ongoingRace, readerStatus, handleControlReader, getReaderStatus}) => {
     switch (readerStatus) {
     case 'idle':
       return <span>
@@ -108,6 +108,8 @@ const render = {
         <Button style='shortDisabled' text='啟動RFID' />
         <Button style='shortGrey' text='結束測試' onClick={handleControlReader('terminatereader')} />
       </span>
+    default:
+      return <Button style='shortGrey' text='檢查RFID狀態' onClick={getReaderStatus}/>
     }
   },
   dialog: {
@@ -155,13 +157,13 @@ const render = {
     </div>
   }
 }
-io.sails.autoConnect = false
-io.sails.url = 'http://localhost:1337'
-let sConnection = io.sails.connect()
 
 export class MatchManager extends BaseComponent {
   constructor (props) {
     super(props)
+    io.sails.autoConnect = false
+    io.sails.url = 'http://localhost:1337'
+    this.sConnection = io.sails.connect()
     this.timer = 0
     this.state = {
       listHeight: returnListHeight({}),
@@ -175,7 +177,7 @@ export class MatchManager extends BaseComponent {
       counter: undefined
     }
     this.dispatch = this.props.dispatch
-    this._bind('socketIoEvents', 'countdown', 'handleChangeCountdown', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleControlReader', 'handleSubmitResult', 'handleStartRace', 'handleEndRace', 'handleUpdateDialog', 'handleResetRace', 'updateState')
+    this._bind('socketIoEvents', 'getReaderStatus', 'countdown', 'handleChangeCountdown', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleControlReader', 'handleSubmitResult', 'handleStartRace', 'handleEndRace', 'handleUpdateDialog', 'handleResetRace', 'updateState')
   }
   updateState () {
     const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
@@ -212,8 +214,8 @@ export class MatchManager extends BaseComponent {
   }
   componentWillUnmount () {
     window.removeEventListener('resize', this.handleResize)
-    sConnection.off('connect')
-    sConnection.off('readerstatus')
+    this.sConnection.off('connect')
+    this.sConnection.off('readerstatus')
   }
   countdown () {
     const reset = () => {
@@ -228,14 +230,16 @@ export class MatchManager extends BaseComponent {
     this.setState({ counter:  result})
   }
   socketIoEvents (callback) {
-    sConnection.on('connect', function onConnect () {
-      console.log('Socket connected')
-      sConnection.get('/api/race/joinReaderRoom', function res () { if (callback !== undefined) { callback () } })
-    })
-    sConnection.on('readerstatus', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
+    this.sConnection.on('connect', function onConnect () {
+      this.sConnection.get('/api/race/joinReaderRoom', function res () { if (callback !== undefined) { callback () } })
+    }.bind(this))
+    this.sConnection.on('readerstatus', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
+    this.sConnection.on('raceupdate', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
+
   }
   getReaderStatus () {
-    sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
+    console.log('get reader status')
+    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
   }
   handleUpdateDialog (value) { return (e) => {
     this.setState({ dialog: value })
@@ -250,7 +254,7 @@ export class MatchManager extends BaseComponent {
     this.setState({ countdown: e.target.value })
   }}
   handleControlReader (type) { return (e) => {
-    sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} }, function res (data, jwRes) { this.getReaderStatus() }.bind(this))
+    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} }, function res (data, jwRes) { this.getReaderStatus() }.bind(this))
   }}
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
@@ -265,9 +269,10 @@ export class MatchManager extends BaseComponent {
     this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, this.updateState))
   }
   handleSubmitResult () {
-    this.dispatch(eventActions.submitRaceResult(this.state.races[this.state.raceSelected].id))
+    this.dispatch(eventActions.submitRaceResult(this.state.races[this.state.raceSelected].id, this.updateState))
   }
   handleSelect (index) { return (e) => {
+    if (this.state.races[index].raceStatus === 'init') { this.getReaderStatus() }
     this.setState({ raceSelected: index})
   }}
   render () {
@@ -281,7 +286,7 @@ export class MatchManager extends BaseComponent {
         <div className={css.info}>
           <h2>{event.nameCht}（ID: {event.id}）</h2>
           <span className={css.btn}>
-            {render.readerStatusBtn({ongoingRace, readerStatus, handleControlReader: this.handleControlReader})}
+            {render.readerStatusBtn({ongoingRace, readerStatus, handleControlReader: this.handleControlReader, getReaderStatus: this.getReaderStatus})}
           </span>
         </div>
         <div className={css.managerList}>
@@ -290,10 +295,10 @@ export class MatchManager extends BaseComponent {
             <ul className={css.ul} style={{height: this.state.listHeight}}>{races.map((race, index) => render.raceList({race, index, raceSelected, groupNames, handleSelect: this.handleSelect}))}
             </ul>
           </div>
-            <div>{(raceSelected !== -1) && <span>
-              <div className={css.hd}>{render.raceCtrl({ races, raceSelected, readerStatus, ongoingRace, handleUpdateDialog: this.handleUpdateDialog, handleEndRace: this.handleEndRace })}</div>
-              <ul className={css.ul} style={{height: this.state.listHeight}}></ul>
-            </span>}</div>
+          <div>{(raceSelected !== -1) && <span>
+            <div className={css.hd}>{render.raceCtrl({ races, raceSelected, readerStatus, ongoingRace, handleUpdateDialog: this.handleUpdateDialog, handleEndRace: this.handleEndRace })}</div>
+            <ul className={css.ul} style={{height: this.state.listHeight}}></ul>
+          </span>}</div>
         </div>
       </div>
       {dialog && <Dialogue content={render.dialog[dialog]({ countdown, counter, handleStartRace: this.handleStartRace, handleUpdateDialog: this.handleUpdateDialog, handleChangeCountdown: this.handleChangeCountdown, handleResetRace: this.handleResetRace, handleEndRace: this.handleEndRace, handleSubmitResult: this.handleSubmitResult })} />}
