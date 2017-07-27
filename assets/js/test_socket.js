@@ -23,7 +23,9 @@ sConnection.on('rxdata', function gotRxMessage (data) {
   console.log('rxdata', data);
   document.querySelector('.rxdata').innerHTML = JSON.stringify(data);
 });
-
+sConnection.on('readerstatus', function gotRxMessage (data) {
+  console.log('readerstatus', data);
+});
 sConnection.on('terminatereader', function gotTerminateMessage (data) {
   console.log('terminatereader', data);
 });
