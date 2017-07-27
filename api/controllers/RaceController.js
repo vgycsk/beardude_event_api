@@ -185,6 +185,7 @@ var RaceController = {
     var socketReq = (req.query.sid) ? req.query.sid : req
 
     if (!isSocket) { return res.badRequest() }
+    /* Send eventId when joining reader room. Azai: Not sure how Java's socket.io get the value?
     Event.findOne({ isRfidTerminal: true })
     .then(function (eventData) {
       var eventId = eventData
@@ -192,6 +193,9 @@ var RaceController = {
       sails.sockets.broadcast('readerSockets', 'join', { eventId: eventId }, socketReq)
       return res.json({ result: 'join socket_channel_OK' })
     })
+    */
+    sails.sockets.join(socketReq, 'readerSockets')
+    return res.json({ result: 'join socket_channel_OK' })
   },
   /**
   * reader accessing, including starting, receiving race data, terminating
