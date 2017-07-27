@@ -109,12 +109,13 @@ export const actionCreators = {
       dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   },
-  submitRaceResult: (raceId) => async (dispatch) => {
+  submitRaceResult: (raceId, successCallback) => async (dispatch) => {
     try {
       const response = await fetch('/api/race/submitResult', returnPostHeader({ id: raceId }))
       const res = await response.json()
       if (response.status === 200) {
-        return dispatch({type: UPDATE_RACE, payload: {...res, raceId: raceId, action: 'cancel'}})
+        dispatch({type: UPDATE_RACE, payload: {...res, raceId: raceId, action: 'cancel'}})
+        return successCallback()
       }
       throw res.message
     } catch (e) {
