@@ -29,6 +29,13 @@
 .unassign {
   display: block;
   margin: 0 0 10px 0;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+  padding: 5px 10px;
+}
+.unassign ul {
+  
 }
 .auto {
   font-size: 15px;
