@@ -76,7 +76,7 @@ module.exports = {
   update: function (req, res) {
     var input = req.body
     var updateObj
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'testerEpc', 'pacerEpc', 'raceOrder', 'ongoingRace']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'testerEpc', 'pacerEpc', 'raceOrder', 'ongoingRace', 'isRfidTerminal']
     var query = {id: parseInt(input.id)}
 
     Event.findOne(query)
@@ -84,6 +84,12 @@ module.exports = {
       updateObj = dataService.returnUpdateObj(fields, input, eventData)
       if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
       if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
+      if (updateObj.isRfidTerminal) {
+        return Event.update({ isRfidTerminal: true }, { isRfidTerminal: false })
+      }
+      return false
+    })
+    .then(function () {
       return Event.update(query, updateObj)
     })
     .then(function (V) { return res.ok({event: V[0]}) })
