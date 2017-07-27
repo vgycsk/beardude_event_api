@@ -55,8 +55,12 @@ var RaceController = {
 
     Race.findOne({id: raceObj.id}).populate('registrations')
     .then(function (raceData) {
-      raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
-      raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
+      if (raceObj.toRemove && raceObj.toRemove.length > 0) {
+        raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
+      }
+      if (raceObj.toAdd && raceObj.toAdd.length > 0) {
+        raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
+      }
       return raceData.save()
     })
     .then(function () { q.resolve() })
@@ -177,60 +181,29 @@ var RaceController = {
   * but just use sails.socket.io.get when js call
   **/
   joinReaderRoom: function (req, res) {
-    var query = req.query
-    var joinSocket = query.sid
-    var isSocket = query.isSocket
+    var isSocket = (req.query.isSocket) ? req.query.isSocket : req.isSocket
+    var socketReq = (req.query.sid) ? req.query.sid : req
 
-    if (!joinSocket) {
-      joinSocket = req
-    }
-    if (!isSocket) {
-      if (!req.isSocket) {
-        return res.badRequest()
-      }
-      isSocket = req.isSocket
-    }
-        // let the connection join the socket channel
-    sails.sockets.join(joinSocket, 'readerSockets')
-    return res.json({ result: 'join socket_channel_OK' })
+    if (!isSocket) { return res.badRequest() }
+    Event.findOne({ isRfidTerminal: true })
+    .then(function (eventData) {
+      var eventId = eventData
+      sails.sockets.join(socketReq, 'readerSockets')
+      sails.sockets.broadcast('readerSockets', 'join', { eventId: eventId }, socketReq)
+      return res.json({ result: 'join socket_channel_OK' })
+    })
   },
-
   /**
   * reader accessing, including starting, receiving race data, terminating
   **/
   readerReceiver: function (req, res) {
-    var isSocket = req.isSocket
-    var socketReq = req.query.sid
+    var isSocket = (req.isSocket) ? req.isSocket : req.query.isSocket
+    var socketReq = (req.query.sid) ? req.query.sid : req
     var input = req.body
-    var type = input.type
-    var payload = input.payload
 
-    if (!isSocket) {
-      if (!req.query.isSocket) {
-        return res.badRequest()
-      }
-      isSocket = req.query.isSocket
-    }
-    if (!socketReq) {
-      socketReq = req
-    }
-    switch (type) {
-      case 'startreader':
-        sails.sockets.broadcast('readerSockets', 'startreader', { result: 'success' }, socketReq)
-        break
-      case 'rxdata':
-            // change the 'rxdata' for mapping a unique event name to a reader, if there are other readers.
-        console.log('broadcast rxdata')
-        sails.sockets.broadcast('readerSockets', 'rxdata', { result: payload }, socketReq)
-            // to-do: write to DB
-        break
-      case 'terminatereader':
-        sails.sockets.broadcast('readerSockets', 'terminatereader', { result: 'success' }, socketReq)
-        break
-      default:
-        break
-    }
-    return res.json({ result: 'type-' + type + '_receive_OK' })
+    if (!isSocket) { return res.badRequest() }
+    sails.sockets.broadcast('readerSockets', input.type, { result: input.payload }, socketReq)
+    return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
   }
 }
 
