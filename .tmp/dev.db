@@ -9,18 +9,29 @@
         "endTime": 1501243200000,
         "lapDistance": 1100,
         "location": "Taipei",
-        "isPublic": false,
+        "isPublic": true,
         "isRegistrationOpen": true,
         "isTeamRegistrationOpen": false,
         "testerEpc": [
           "epc12331231231233",
           "epc030303039333"
         ],
+        "ongoingRace": -1,
         "createdAt": "2017-05-25T05:16:12.378Z",
-        "updatedAt": "2017-07-18T10:51:24.820Z",
+        "updatedAt": "2017-07-26T15:45:56.119Z",
         "id": 6,
         "isIndieEvent": true,
-        "pacerEpc": ""
+        "pacerEpc": "",
+        "raceOrder": [
+          1,
+          7,
+          9,
+          4,
+          5,
+          10,
+          11
+        ],
+        "isRfidTerminal": true
       }
     ],
     "group": [
@@ -121,7 +132,7 @@
         "racerNumberAllowed": 50,
         "isCheckinOpen": false,
         "isEntryRace": true,
-        "requirePacer": true,
+        "requirePacer": false,
         "advancingRules": [
           {
             "rankFrom": 0,
@@ -129,12 +140,15 @@
             "toRace": 9
           }
         ],
-        "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-05-26T04:34:03.891Z",
-        "updatedAt": "2017-07-17T10:05:29.818Z",
+        "updatedAt": "2017-07-26T12:24:36.005Z",
         "id": 1,
-        "pacerEpc": "e019231233333"
+        "pacerEpc": "e019231233333",
+        "result": [],
+        "raceStatus": "init",
+        "startTime": null,
+        "endTime": null
       },
       {
         "group": 3,
@@ -150,12 +164,14 @@
           }
         ],
         "isEntryRace": true,
-        "requirePacer": true,
+        "requirePacer": false,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-10T14:23:45.765Z",
-        "updatedAt": "2017-07-13T08:22:23.327Z",
-        "id": 4
+        "updatedAt": "2017-07-26T07:13:37.950Z",
+        "id": 4,
+        "result": [],
+        "raceStatus": "init"
       },
       {
         "group": 3,
@@ -166,17 +182,19 @@
         "advancingRules": [
           {
             "rankFrom": 0,
-            "rankTo": "16",
+            "rankTo": 16,
             "toRace": 11
           }
         ],
         "isEntryRace": true,
-        "requirePacer": true,
+        "requirePacer": false,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-10T14:27:48.934Z",
-        "updatedAt": "2017-07-12T11:50:33.346Z",
-        "id": 5
+        "updatedAt": "2017-07-26T07:13:41.032Z",
+        "id": 5,
+        "result": [],
+        "raceStatus": "init"
       },
       {
         "nameCht": "資格賽2",
@@ -192,28 +210,32 @@
           }
         ],
         "isEntryRace": true,
-        "requirePacer": true,
+        "requirePacer": false,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-11T15:40:35.515Z",
-        "updatedAt": "2017-07-17T10:05:29.819Z",
-        "id": 7
+        "updatedAt": "2017-07-26T07:13:29.724Z",
+        "id": 7,
+        "result": [],
+        "raceStatus": "init"
       },
       {
         "nameCht": "決賽",
         "name": "Final",
         "racerNumberAllowed": 50,
         "laps": 20,
-        "requirePacer": true,
+        "requirePacer": false,
         "group": 2,
         "advancingRules": [],
         "isEntryRace": false,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-12T04:44:28.182Z",
-        "updatedAt": "2017-07-12T07:54:18.729Z",
+        "updatedAt": "2017-07-26T07:13:32.640Z",
         "id": 9,
-        "isFinalRace": true
+        "isFinalRace": true,
+        "result": [],
+        "raceStatus": "init"
       },
       {
         "nameCht": "資格賽3",
@@ -221,7 +243,7 @@
         "racerNumberAllowed": 50,
         "laps": 15,
         "isFinalRace": false,
-        "requirePacer": true,
+        "requirePacer": false,
         "group": 3,
         "advancingRules": [
           {
@@ -234,8 +256,10 @@
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-12T11:44:00.904Z",
-        "updatedAt": "2017-07-13T08:23:35.161Z",
-        "id": 10
+        "updatedAt": "2017-07-26T07:13:44.722Z",
+        "id": 10,
+        "result": [],
+        "raceStatus": "init"
       },
       {
         "nameCht": "決賽",
@@ -243,15 +267,17 @@
         "racerNumberAllowed": 50,
         "laps": 20,
         "isFinalRace": true,
-        "requirePacer": true,
+        "requirePacer": false,
         "group": 3,
         "advancingRules": [],
         "isEntryRace": false,
         "testerEpc": [],
         "recordsHashTable": {},
         "createdAt": "2017-07-12T11:44:29.328Z",
-        "updatedAt": "2017-07-12T11:44:29.328Z",
-        "id": 11
+        "updatedAt": "2017-07-26T07:13:48.299Z",
+        "id": 11,
+        "result": [],
+        "raceStatus": "init"
       }
     ],
     "racer": [
@@ -380,6 +406,7 @@
         "accessCode": "rsnM",
         "epc": "epc01239312333",
         "paid": false,
+        "raceNumber": 1,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -394,6 +421,7 @@
         "accessCode": "ziQv",
         "epc": "",
         "paid": false,
+        "raceNumber": 2,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -409,6 +437,7 @@
         "accessCode": "dcqZ",
         "epc": "",
         "paid": false,
+        "raceNumber": 3,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -424,6 +453,7 @@
         "accessCode": "o1Lb",
         "epc": "",
         "paid": false,
+        "raceNumber": 4,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -439,6 +469,7 @@
         "accessCode": "oagP",
         "epc": "",
         "paid": false,
+        "raceNumber": 5,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -454,6 +485,7 @@
         "accessCode": "UL9B",
         "epc": "",
         "paid": false,
+        "raceNumber": 6,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -469,6 +501,7 @@
         "accessCode": "V5dq",
         "epc": "",
         "paid": false,
+        "raceNumber": 7,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -484,6 +517,7 @@
         "accessCode": "1MUF",
         "epc": "",
         "paid": false,
+        "raceNumber": 8,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -499,6 +533,7 @@
         "accessCode": "xIiq",
         "epc": "",
         "paid": false,
+        "raceNumber": 9,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -514,6 +549,7 @@
         "accessCode": "Gdve",
         "epc": "",
         "paid": false,
+        "raceNumber": 10,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -529,6 +565,7 @@
         "accessCode": "FoqL",
         "epc": "",
         "paid": false,
+        "raceNumber": 11,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -544,6 +581,7 @@
         "accessCode": "NSsg",
         "epc": "",
         "paid": false,
+        "raceNumber": 12,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -559,6 +597,7 @@
         "accessCode": "ADdV",
         "epc": "",
         "paid": false,
+        "raceNumber": 13,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -574,6 +613,7 @@
         "accessCode": "3hnp",
         "epc": "",
         "paid": false,
+        "raceNumber": 14,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -589,6 +629,7 @@
         "accessCode": "95Fw",
         "epc": "",
         "paid": false,
+        "raceNumber": 15,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -604,6 +645,7 @@
         "accessCode": "OGPo",
         "epc": "",
         "paid": false,
+        "raceNumber": 16,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -619,6 +661,7 @@
         "accessCode": "BXDS",
         "epc": "",
         "paid": false,
+        "raceNumber": 17,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
@@ -634,13 +677,46 @@
         "accessCode": "Mc1i",
         "epc": "",
         "paid": false,
+        "raceNumber": 21,
         "rfidRecycled": false,
         "refundRequested": false,
         "refunded": false,
         "isDisqualified": false,
         "createdAt": "2017-07-17T10:05:10.060Z",
-        "updatedAt": "2017-07-17T10:05:10.060Z",
+        "updatedAt": "2017-07-20T10:19:16.299Z",
         "id": 20
+      },
+      {
+        "name": "小黃",
+        "group": 2,
+        "event": 6,
+        "accessCode": "y8vW",
+        "raceNumber": 19,
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-20T09:54:52.348Z",
+        "updatedAt": "2017-07-20T09:54:52.348Z",
+        "id": 21
+      },
+      {
+        "name": "小軟",
+        "group": 2,
+        "event": 6,
+        "accessCode": "OG7o",
+        "raceNumber": 20,
+        "epc": "",
+        "paid": false,
+        "rfidRecycled": false,
+        "refundRequested": false,
+        "refunded": false,
+        "isDisqualified": false,
+        "createdAt": "2017-07-20T10:00:40.137Z",
+        "updatedAt": "2017-07-20T10:00:40.137Z",
+        "id": 22
       }
     ],
     "team": [
@@ -772,6 +848,16 @@
         "registration_races": 20,
         "race_registrations": 7,
         "id": 33
+      },
+      {
+        "registration_races": 21,
+        "race_registrations": 1,
+        "id": 34
+      },
+      {
+        "registration_races": 22,
+        "race_registrations": 7,
+        "id": 35
       }
     ]
   },
@@ -782,10 +868,6 @@
       },
       "nameCht": {
         "type": "string"
-      },
-      "assignedRaceNumber": {
-        "type": "integer",
-        "defaultsTo": 1
       },
       "startTime": {
         "type": "integer"
@@ -798,6 +880,10 @@
       },
       "location": {
         "type": "string"
+      },
+      "raceOrder": {
+        "type": "array",
+        "defaultsTo": []
       },
       "isPublic": {
         "type": "boolean",
@@ -815,6 +901,10 @@
         "type": "boolean",
         "defaultsTo": true
       },
+      "isRfidTerminal": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
       "requiresPaymentOnReg": {
         "type": "boolean",
         "defaultsTo": false
@@ -825,6 +915,14 @@
       },
       "pacerEpc": {
         "type": "string"
+      },
+      "rawRfidData": {
+        "type": "array",
+        "defaultsTo": []
+      },
+      "ongoingRace": {
+        "type": "integer",
+        "defaultsTo": -1
       },
       "id": {
         "type": "integer",
@@ -1009,15 +1107,17 @@
       "endTime": {
         "type": "integer"
       },
-      "rfidData": {
-        "type": "array"
+      "raceStatus": {
+        "type": "string",
+        "defaultsTo": "init"
       },
       "recordsHashTable": {
         "type": "json",
         "defaultsTo": {}
       },
       "result": {
-        "type": "array"
+        "type": "array",
+        "defaultsTo": []
       },
       "id": {
         "type": "integer",
@@ -1269,7 +1369,7 @@
       "id": 9
     },
     "registration": {
-      "id": 20
+      "id": 22
     },
     "team": {
       "id": 15
@@ -1278,7 +1378,7 @@
       "id": 5
     },
     "race_registrations__registration_races": {
-      "id": 33
+      "id": 35
     }
   }
 }
