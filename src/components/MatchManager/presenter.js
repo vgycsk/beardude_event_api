@@ -37,14 +37,14 @@ const returnLapLabels = (laps) => {
   return result
 }
 const returnMovedArray = (arr, old_index, new_index) => {
-    while (old_index < 0) { old_index += arr.length; }
-    while (new_index < 0) { new_index += arr.length; }
-    if (new_index >= arr.length) {
-        var k = new_index - arr.length
-        while ((k--) + 1) { arr.push(undefined) }
-    }
-     arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
-   return arr
+  while (old_index < 0) { old_index += arr.length; }
+  while (new_index < 0) { new_index += arr.length; }
+  if (new_index >= arr.length) {
+      var k = new_index - arr.length
+      while ((k--) + 1) { arr.push(undefined) }
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
+ return arr
 }
 const returnFormattedTime = (milS) => {
   const sec = ((milS % 60000) / 1000).toFixed(2);
@@ -129,7 +129,7 @@ const render = {
   raceListDraggable: ({race, raceSelected, index, handleSelect, groupNames, handleDragStart, handleDragOver, handleDragEnd}) => {
     const className = css[((index === raceSelected) ? 'selected' : '') + race.raceStatus]
     return <li className={className} key={'race' + race.id} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}>
-      <button className={css.list}>{groupNames[race.group.toString()]} - {(race.nameCht) ? race.nameCht : race.name}
+      <button className={css.list} onClick={handleSelect(index)}>{groupNames[race.group.toString()]} - {(race.nameCht) ? race.nameCht : race.name}
       </button>
       <div className={css.dragHandle}></div>
     </li>
@@ -287,7 +287,9 @@ export class MatchManager extends BaseComponent {
     this._bind('socketIoEvents', 'getReaderStatus', 'countdown', 'handleChangeCountdown', 'handleControlReader', 'handleDragStart', 'handleDragOver', 'handleDragEnd', 'handleEndRace', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleStartRace', 'handleSubmitRaceOrder', 'handleSubmitResult', 'handleToggleDrag', 'handleUpdateDialog', 'handleResetRace', 'updateState')
   }
   updateState () {
-    const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), (this.state.dragField === 'raceOrder' && this.state.dragValue) ? this.state.dragValue : this.props.event.raceOrder)
+    console.log('this.state.dragValue: ', this.state.dragValue)
+    console.log('this.props.event.raceOrder: ', this.props.event.raceOrder)
+    const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), (this.state.dragField === 'raceOrder' && this.state.dragValue !== undefined) ? this.state.dragValue : this.props.event.raceOrder)
     const ongoingRace = (this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)
     let stateObj = { races: orderedRaces, raceSelected: (this.state.raceSelected === -1) ? 0 : this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined }
 
@@ -347,24 +349,23 @@ export class MatchManager extends BaseComponent {
     })
   }
   handleToggleDrag (field) { return (e) => {
-    this.setState({ dragField: (this.state.dragField === field) ? undefined : field})
+    if (this.state.dragField === field) {
+      return this.setState({ dragField: undefined, dragValue: undefined, raceSelected: 0}, function () { this.updateState() })
+    }
+    return this.setState({ dragField: field})
   }}
   handleDragStart (fromIndex) { return (e) => {
-    console.log('start index: ', fromIndex)
     this.dragFromIndex = fromIndex
     this.dragOverIndex = fromIndex
   }}
   handleDragOver (overIndex) { return (e) => {
-    console.log('over index: ', overIndex)
     this.dragOverIndex = overIndex
   }}
   handleDragEnd () {
     if (this.dragFromIndex !== this.dragOverIndex) {
       if (this.state.dragField === 'raceOrder') {
-        const newVal = returnMovedArray(this.props.event.raceOrder, this.dragFromIndex, this.dragOverIndex)
+        const newVal = returnMovedArray([...this.props.event.raceOrder], this.dragFromIndex, this.dragOverIndex)
         this.setState({dragValue: newVal, raceSelected: this.dragOverIndex}, function () {
-          console.log('this.state.dragValue: ', this.state.dragValue)
-          console.log('raceSelected: ', this.state.raceSelected)
           this.updateState()
         })
 
