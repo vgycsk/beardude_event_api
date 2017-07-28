@@ -124,10 +124,10 @@ export const actionCreators = {
   },
   submitAdvancingRules: (state, successCallback) => async (dispatch) => {
     try {
-      const response = await fetch('/api/race/update', returnPostHeader({id: state.advRuleRaceId, advancingRules: state.advRuleModified}))
+      const response = await fetch('/api/race/update', returnPostHeader({id: state.raceId, advancingRules: state.modified}))
       const res = await response.json()
       if (response.status === 200) {
-        dispatch({type: SUBMIT_RACE, payload: {...res, state: state}})
+        dispatch({type: GET_RACE, payload: {...res, state: state}})
         return successCallback()
       }
       throw res.message

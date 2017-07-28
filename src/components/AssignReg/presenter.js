@@ -197,8 +197,7 @@ class AssignReg extends BaseComponent {
         </li>)}</ul>
       </div>
       <div className={css.boxFt}>
-          {modified ? <Button onClick={this.handleSubmit} text='儲存' /> : <Button style='disabled' text='儲存' />}
-          
+        {modified ? <Button onClick={this.handleSubmit} text='儲存' /> : <Button style='disabled' text='儲存' />}
         <Button style='grey' onClick={this.props.handleCancelEdit} text='關閉' />
       </div>
     </div>)
