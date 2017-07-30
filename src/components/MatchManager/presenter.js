@@ -112,7 +112,7 @@ const render = {
       <div className={css.dragHandle}></div>
     </li>
   },
-  raceCtrl: ({race, readerStatus, editField, ongoingRace, handleEndRace, handleUpdateDialog, handleToggleEdit}) => {
+  raceCtrl: ({race, readerStatus, editField, ongoingRace, handleEndRace, handleUpdateDialog, handleToggleEdit, modified}) => {
     switch (race.raceStatus) {
       case 'init': {
         return <span className={css.raceCtrl}>{(ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : <Button text='開賽倒數' style='shortDisabled' />}</span>
@@ -128,7 +128,10 @@ const render = {
       }
       case 'ended': {
         return <span className={css.raceCtrl}>
-          <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
+          {modified
+            ? <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
+            : <Button style='shortDisabled' text='送出結果' />
+          }
           {(editField === 'raceResult')
             ? <span>
               <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
@@ -145,7 +148,10 @@ const render = {
         return <span className={css.raceCtrl}>
           {(editField === 'raceResult')
             ? <span>
-              <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
+              {modified
+                ? <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
+                : <Button style='shortDisabled' text='送出結果' />
+              }
               <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
               <Button style='shortDisabled' text='重設比賽' />
             </span>
@@ -263,7 +269,6 @@ const render = {
       <thead><tr><th><span>{race.isFinalRace ? '總排名' : '晉級資格'}</span></th></tr></thead>
       <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{race.isFinalRace ? index + 1 : raceNames[record.advanceTo]}</td></tr>)}</tbody>
     </table>,
-    //  advanceMenu: ({advancingRules, raceNames, value}) => <select value={value}>{advancingRules.map(rule => <option value={rule.toRace}>{raceNames[rule.toRace]}</option>)}</select>
     edit: ({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace}) => <table className={css.dashTable}>
       <thead><tr><th><span>校正成績</span></th></tr></thead>
       <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
@@ -302,6 +307,7 @@ export class MatchManager extends BaseComponent {
     let race
 
     this.originalData = orderedRaces
+    this.modified = false
     if (ongoingRace === undefined) {
       clearInterval(this.timer)
     } else {
@@ -367,7 +373,10 @@ export class MatchManager extends BaseComponent {
     this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
   }
   handleToggleEdit (field) { return (e) => {
-    if (this.state.editField === field) { return this.setState({ editField: undefined, races: this.originalData }) }
+    if (this.state.editField === field) {
+      this.modified = false
+      return this.setState({ editField: undefined, races: this.originalData })
+    }
     this.setState({ editField: field })
   }}
   handleDragStart (fromIndex) { return (e) => {
@@ -393,6 +402,7 @@ export class MatchManager extends BaseComponent {
   handleEditAdvnace (index) { return (e) => {
     let stateObj = { races: this.state.races }
     let race = stateObj.races[this.state.raceSelected]
+    this.modified = true
     race.result[index].advanceTo = (e.target.value === '-1') ? undefined : parseInt(e.target.value)
     this.setState(stateObj)
   }}
@@ -446,7 +456,7 @@ export class MatchManager extends BaseComponent {
   render () {
     const { location, event, match } = this.props
     const { counter, races, raceSelected, readerStatus, dialog, ongoingRace, countdown, editField } = this.state
-    const { getReaderStatus, groupNames, handleControlReader, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, raceNames } = this
+    const { getReaderStatus, groupNames, handleControlReader, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
     let dbLabels = ''
     let dbResults = ''
     let dbSummary = ''
@@ -467,7 +477,7 @@ export class MatchManager extends BaseComponent {
       } else {
         dbAdvance = <div className={css.advTable}>{render.dashboard.advance({race, raceNames})}</div>
       }
-      raceCtrl = render.raceCtrl({ race, readerStatus, editField, ongoingRace, handleUpdateDialog, handleEndRace, handleToggleEdit })
+      raceCtrl = render.raceCtrl({ race, readerStatus, editField, ongoingRace, modified, handleUpdateDialog, handleEndRace, handleToggleEdit })
     }
     return (<div className={css.wrap}><Header location={location} nav='event' match={match} />
       <div className={css.mainBody}>
@@ -483,7 +493,7 @@ export class MatchManager extends BaseComponent {
             <div className={css.hd}>
             {editField === 'raceOrder'
               ? <span>
-                  {this.modified === undefined ? <Button style='shortDisabled' text='儲存'/> : <Button style='short' onClick={this.handleSubmitRaceOrder} text='儲存'/>}
+                  {modified === false ? <Button style='shortDisabled' text='儲存'/> : <Button style='short' onClick={this.handleSubmitRaceOrder} text='儲存'/>}
                   <Button style='shortGrey' onClick={this.handleToggleEdit('raceOrder')} text='取消'/>
                 </span>
               : <Button style='short' text='編輯賽程' onClick={this.handleToggleEdit('raceOrder')}/>
