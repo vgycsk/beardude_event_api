@@ -14,15 +14,13 @@ var RaceController = {
   // Get public info
   getGeneralInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-    .then(function (V) {
-      return res.ok({ race: V })
-    })
+    .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // /:id
   getManagementInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-    .then(function (modelData) { return res.ok({ race: modelData }) })
+    .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
@@ -49,22 +47,27 @@ var RaceController = {
     .then(function () { return res.ok(query) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {raceId: ID, toAdd: [ID, ID...], toRemove: [ID, ID...]}
+  // {id: ID, toAdd: [ID, ID...], toRemove: [ID, ID...]}
   addRemoveRegs: function (raceObj) {
     var q = Q.defer()
 
     Race.findOne({id: raceObj.id}).populate('registrations')
     .then(function (raceData) {
+      var modified
+
       if (raceObj.toRemove && raceObj.toRemove.length > 0) {
+        modified = true
         raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
       }
       if (raceObj.toAdd && raceObj.toAdd.length > 0) {
+        modified = true
         raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
       }
+      if (!modified) { return false }
       return raceData.save()
     })
-    .then(function () { q.resolve() })
-    .catch(function (E) { q.reject(E) })
+    .then(function () { return q.resolve() })
+    .catch(function (E) { return q.reject(E) })
     return q.promise
   },
   // {races: [{id: ID, toAdd: [ID, ID, ID], toRemove: ID, ID, ID}, {}, {}]}
@@ -83,10 +86,9 @@ var RaceController = {
     var input = req.body
     var eventId
 
-    Race.findOne({ id: input.id }).populate('registrations').populate('group')
+    Race.findOne({ id: input.id }).populate('group')
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
-      if (raceData.registrations.length === 0) { throw new Error('Cannot start a race without racers') }
       eventId = raceData.group.event
       return Event.findOne({ id: eventId })
     })
@@ -94,10 +96,9 @@ var RaceController = {
       if (eventData.ongoingRace && eventData.ongoingRace !== -1) { throw new Error('Another race ongoing') }
       return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started' })
     })
-    .then(function (raceData) {
+    .then(function () {
       return Event.update({ id: eventId }, { ongoingRace: input.id })
     })
-    .then(function () { return Race.findOne({ id: input.id }).populate('registrations') })
     .then(function (raceData) { return res.ok({ race: raceData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -106,20 +107,17 @@ var RaceController = {
     var input = req.body
     var eventId
 
-    Race.findOne({ id: input.id }).populate('registrations').populate('group')
+    Race.findOne({ id: input.id }).populate('group')
     .then(function (raceData) {
-      if (raceData.result.length > 0) { throw new Error('Cannot cancel a submitted race') }
-      eventId = raceData.group.event
-      return Event.findOne({ id: eventId })
+      return Event.findOne({ id: raceData.group.event })
     })
     .then(function (eventData) {
-      if (eventData.ongoingRace !== input.id && eventData.ongoingRace !== -1) { throw new Error('Can only cancel an ongoing race') }
+      if (eventData.ongoingRace !== input.id) { return false }
       return Event.update({ id: eventId }, { ongoingRace: -1 })
     })
     .then(function () {
       return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {} })
     })
-    .then(function () { return Race.findOne({ id: input.id }).populate('registrations') })
     .then(function (raceData) { return res.ok({ race: raceData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -137,40 +135,20 @@ var RaceController = {
     .then(function (raceData) {
       return Event.update({ id: eventId }, { ongoingRace: -1 })
     })
-    .then(function () { return Race.findOne({ id: input.id }).populate('registrations') })
     .then(function (raceData) { return res.ok({ race: raceData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID, raceResult: {}}. raceResult optional
+  // { id: ID, result: [], advance: []}
   submitResult: function (req, res) {
     var input = req.body
-    var raceResult
-    var raceObj
 
-    Race.findOne({id: input.id}).populate('registrations').populate('group')
+    Race.update({id: input.id}, { result: input.result, raceStatus: 'submitted' })
     .then(function (raceData) {
-      var hashTable = (input.raceResult) ? input.raceResult : raceData.recordsHashTable
-
-      raceResult = dataService.returnSortedResultFromHashTable(hashTable, raceData.registrations, raceData.laps)
-      return Race.update({ id: input.id }, { result: raceResult, raceStatus: 'submitted' })
-    })
-    .then(function (racedata) {
-      var advancingRules = racedata[0].advancingRules
       var funcs = []
-
-      raceObj = racedata[0]
-      if (advancingRules.length > 0) {
-        advancingRules.map(function (rule) {
-          var advanceObj = dataService.returnMatchedRegsFromRule(rule, raceResult)
-
-          funcs.push(RaceController.addRemoveRegs(advanceObj))
-        })
-        return Q.all(funcs)
-      }
-      return false
+      input.advance.map(function (obj) { funcs.push(RaceController.addRemoveRegs(obj)) })
+      return Q.all(funcs)
     })
-    .then(function () { return Event.update({ id: raceObj.group.event }, { ongoingRace: -1 }) })
-    .then(function () { return res.ok({ race: raceObj }) })
+    .then(function () { return res.ok({ race: { id: input.id } }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   /**
