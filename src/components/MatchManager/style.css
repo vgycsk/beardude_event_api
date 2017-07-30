@@ -236,9 +236,12 @@
   border-left: 0;
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   min-width: 50px;
+  font-size: 13px;
+  position: relative;
 }
 .dashTable th {
   height: 31px;
+  white-space: nowrap;
 }
 .dashTable tbody tr:first-child {
   height: 33px;
@@ -256,7 +259,7 @@
 }
 .dashTable .lap {
   font-size: 13px;
-  text-align: right;
+  text-align: center;
   color: #fff;
   font-family: Garamond, Times;
   padding: 0 6px;
@@ -265,17 +268,14 @@
   position: absolute;
   right: 10px;
   bottom: 0px;
-  padding: 5px 10px;
+  padding: 5px 0;
   border-radius: 3px 3px 0 0;
   border: 1px solid #fff;
   border-bottom: 0;
   background: rgba(255, 255, 255, 0.4);
 }
 .raceCtrl button {
-  margin: 0 0 0 20px;
-}
-.raceCtrl button:first-child {
-  margin: 0;
+  margin: 0 10px;
 }
 .raceNumber {
   margin: 0 5px 0 0;
@@ -285,6 +285,10 @@
   overflow: auto;
   border-left: 1px solid #fff;
   border-bottom: 1px solid #fff;
+  flex-grow: 1;
+}
+.scrollBox table {
+  width: 100%;
 }
 .summary {
   border-left: 1px solid #fff;
@@ -294,14 +298,21 @@
   padding: 0 10px;
   text-align: center;
 }
-.draggable .dragHandle {
-  display: block;
+.advTable,
+.editRank {
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+.editRank .dashTable td{
+  padding: 0 20px 0 10px;
+}
+.editRank select {
+  color: #000;
 }
 .dragHandle {
   position: absolute;
   right: 0;
   top: 0;
-  display: none;
   height: 100%;
   width: 30px;
   cursor: ns-resize;
@@ -328,4 +339,7 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #fff;
+}
+.center {
+  text-align: center;
 }

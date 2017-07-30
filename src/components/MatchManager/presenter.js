@@ -18,9 +18,9 @@ const returnRacesByOrder = (races, order) => {
   order.map(raceId => { races.map(race => { if (race.id === raceId) { result.push(race) } }) })
   return result
 }
-const returnGroupNameMap = (groups) => {
+const returnIdNameMap = (objs) => {
   let result = {}
-  groups.map(group => { result[group.id.toString()] = group.nameCht })
+  objs.map(obj => { result[obj.id.toString()] = obj.nameCht })
   return result
 }
 const returnOngoingRace = (ongoingRaceId, orderedRaces) => {
@@ -31,9 +31,7 @@ const returnOngoingRace = (ongoingRaceId, orderedRaces) => {
 }
 const returnLapLabels = (laps) => {
   let result = []
-  for (var i = 0; i < laps; i += 1) {
-    result.push(i + 1)
-  }
+  for (var i = 0; i < laps; i += 1) { result.push(i + 1) }
   return result
 }
 const returnMovedArray = (arr, old_index, new_index) => {
@@ -46,83 +44,63 @@ const returnMovedArray = (arr, old_index, new_index) => {
   arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
  return arr
 }
+
 const returnFormattedTime = (milS) => {
   const sec = ((milS % 60000) / 1000).toFixed(2);
   const min = Math.floor(milS / 60000);
   return min + ':' + (sec < 10 ? '0' : '') + sec
 }
-const returnLapRecord = (records, laps, startTime) => {
-  let result = []
+const returnLapRecord = (result, laps, startTime) => {
+  let output = []
   let lastRecord = startTime;
   for (var i = 1; i <= laps; i += 1) {
-    if (records[i]) {
-      result.push(returnFormattedTime(records[i] - lastRecord))
-      lastRecord = records[i]
+    if (result[i]) {
+      output.push(returnFormattedTime(result[i] - lastRecord))
+      lastRecord = result[i]
     } else {
-      result.push('')
+      output.push('-')
     }
   }
-  return result
+  return output
 }
-const returnSummary = (lastRecord, startTime) => {
-  if (lastRecord !== 0) {
-    return returnFormattedTime(lastRecord - startTime)
+const returnAdvanceToId = (index, advancingRules) => {
+  for (var i = 0; i < advancingRules.length; i += 1) {
+    if ( index >= advancingRules[i].rankFrom && index <= advancingRules[i].rankTo) { return advancingRules[i].toRace }
   }
-  return 'N/A'
+  return undefined
 }
-const validate = {
-  racerCompletedLaps: ({recordsHashTable, laps}) => {
-    let result = false
-    for (let i in recordsHashTable) {
-      if (recordsHashTable.hasOwnProperty(i)) {
-        result = true
-        if (recordsHashTable[i].length < laps) { return false }
-      }
-    }
-    return result
-  },
-  requirePacer: (race) => {
-    if (race.requirePacer && (!racer.pacerEpc || racer.pacerEpc === '')) { return false }
-    return true
-  }
-}
-const returnSortedRecord = (regs, hashTable, laps) => {
+const returnRaceResult = (race) => {
   let sortTable = []
   let incomplete = []
   let notStarted = []
-  const lastRecordIndex = laps + 1
+  const lastRecordIndex = race.laps + 1
 
-  regs.map(reg => {
-    const record = hashTable[reg.epc]
+  race.registrations.map(reg => {
+    const record = race.recordsHashTable[reg.epc]
     if (record) {
       if (record[lastRecordIndex]) {
-        sortTable.push([reg.epc, reg.name, reg.raceNumber, record[lastRecordIndex], record.length - 1, record])
+        sortTable.push([reg.epc, reg.id, reg.raceNumber, record[lastRecordIndex], record.length - 1, record])
       } else {
-        incomplete.push([reg.epc, reg.name, reg.raceNumber, record[record.length - 1], record.length - 1, record])
+        incomplete.push([reg.epc, reg.id, reg.raceNumber, record[record.length - 1], record.length - 1, record])
       }
     } else {
-      notStarted.push([reg.epc, reg.name, reg.raceNumber, 0, 0, []])
+      notStarted.push([reg.epc, reg.id, reg.raceNumber, 0, 0, [], reg.id])
     }
   })
-  // sort completed racer by last lap record
-  sortTable.sort((a, b) => a[3] - b[3])
-  // sort incompleted by laps
-  incomplete.sort((a, b) => b[4] - a[4])
-  // sort incompleted same-lap by time
-  incomplete.sort((a, b) => (a[4] === b[4]) ? a[3] - b[3] : 0 )
-  // sort notStart by raceNumber
-  notStarted.sort((a, b) => a[2] - b[2])
-
-  sortTable = sortTable.concat(incomplete)
-  sortTable = sortTable.concat(notStarted)
-  // [epc, name, raceNumber, timestamp, laps, record]
-  return sortTable
+  sortTable.sort((a, b) => a[3] - b[3]) // sort completed racer by last lap record
+  incomplete.sort((a, b) => b[4] - a[4]) // sort incompleted by laps
+  incomplete.sort((a, b) => (a[4] === b[4]) ? a[3] - b[3] : 0 ) // sort incompleted same-lap by time
+  notStarted.sort((a, b) => a[2] - b[2]) // sort notStart by raceNumber
+  sortTable = sortTable.concat(incomplete).concat(notStarted)
+  // sortTable: [epc, name, raceNumber, timestamp, laps, record]
+  return sortTable.map((item, index) => ({ epc: item[0], registration: item[1], sum: (item[3]) ? returnFormattedTime(item[3] - race.startTime) : '-', laps: item[4], lapRecords: returnLapRecord(item[5], race.laps, race.startTime), advanceTo: returnAdvanceToId(index, race.advancingRules) }))
 }
 const render = {
+  advanceMenu: ({advancingRules, raceNames, value, handleEditAdvnace, index}) => <select defaultValue={value} onChange={handleEditAdvnace(index)}><option value='-1'>無</option>{advancingRules.map(rule => <option key={'rule' + rule.toRace} value={rule.toRace}>{raceNames[rule.toRace]}</option>)}</select>,
   raceList: ({race, raceSelected, index, handleSelect, groupNames}) => {
     const className = css[((index === raceSelected) ? 'selected' : '') + race.raceStatus]
     return <li className={className} key={'race' + race.id}>
-      <button className={css.list} onClick={handleSelect(index)}>{groupNames[race.group.toString()]} - {(race.nameCht) ? race.nameCht : race.name}
+      <button className={css.list} onClick={handleSelect(index)}><span>{groupNames[race.group.toString()]}</span><span>:</span> <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
     </li>
   },
@@ -134,14 +112,14 @@ const render = {
       <div className={css.dragHandle}></div>
     </li>
   },
-  raceCtrl: ({race, readerStatus, ongoingRace, handleEndRace, handleUpdateDialog}) => {
+  raceCtrl: ({race, readerStatus, editField, ongoingRace, handleEndRace, handleUpdateDialog, handleToggleEdit}) => {
     switch (race.raceStatus) {
       case 'init': {
         return <span className={css.raceCtrl}>{(ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : <Button text='開賽倒數' style='shortDisabled' />}</span>
       }
       case 'started': {
         return <span className={css.raceCtrl}>
-          {validate.racerCompletedLaps(race.recordsHashTable, race.laps)
+          {(race.result.laps === race.laps)
             ? <Button style='short' text='結束比賽' onClick={handleEndRace}/>
             : <Button style='shortRed' text='結束比賽' onClick={handleUpdateDialog('endRace')}/>
           }
@@ -151,13 +129,31 @@ const render = {
       case 'ended': {
         return <span className={css.raceCtrl}>
           <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
-          <Button style='shortDisabled' text='編輯' />
-          <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
+          {(editField === 'raceResult')
+            ? <span>
+              <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='shortDisabled' text='重設比賽' />
+            </span>
+            : <span>
+              <Button style='short' text='編輯' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
+            </span>
+          }
         </span>
       }
       case 'submitted': {
         return <span className={css.raceCtrl}>
-          <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
+          {(editField === 'raceResult')
+            ? <span>
+              <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
+              <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='shortDisabled' text='重設比賽' />
+            </span>
+            : <span>
+              <Button style='short' text='編輯' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
+            </span>
+          }
         </span>
       }
     }
@@ -236,31 +232,42 @@ const render = {
       </div>
     </div>,
   },
-  dashboardIds: ({sortTable}) => <div className={css.dashId}><table className={css.dashTable}>
-    <thead><tr>
-      <th className={css.no}>名次</th>
-      <th className={css.name}>選手</th>
-    </tr></thead>
-    <tbody>{sortTable.map((record, index) => <tr className={css.dashItem} key={'rec' + index}>
-      <td className={css.no}>{index + 1}</td>
-      <td className={css.name}><span className={css.raceNumber}>{record[2]}</span> <span>{record[1]}</span></td>
-    </tr>)}</tbody>
-  </table></div>,
-  // [epc, name, raceNumber, timestamp, laps, record]
-  dashboard: ({laps, sortTable, startTime}) => <table className={css.dashTable}>
-    <thead><tr>
-      {returnLapLabels(laps).map((V, I) => <th key={'th-' + I}>{V}</th>)}
-    </tr></thead>
-    <tbody>{sortTable.map((record, index) => <tr key={'tr' + record[2]} className={css.dashItem}>
-      {returnLapRecord(record[5], laps, startTime).map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
-    </tr>)}</tbody>
-  </table>,
-  dashboardSummary: ({sortTable, startTime}) => {
-    return <table className={css.dashTable}>
-        <thead><tr><th>成績</th></tr></thead>
-        <tbody>{sortTable.map((record, index) => <tr className={css.dashItem} key={'lap' + index}><td className={css.lap}>{returnSummary(record[3], startTime)}</td></tr>)}
-        </tbody>
-      </table>
+  dashboard: {
+    labels: (race) => <div className={css.dashId}><table className={css.dashTable}>
+      <thead><tr>
+        <th className={css.no}>名次</th>
+        <th className={css.name}>選手</th>
+      </tr></thead>
+      <tbody>{race.result.map((record, index) => {
+        const reg = race.registrations.filter(V => (V.id === record.registration))[0]
+        return reg ? <tr className={css.dashItem} key={'rec' + index}>
+          <td className={css.no}>{index + 1}</td>
+          <td className={css.name}><span className={css.raceNumber}>{reg.raceNumber}</span> <span>{reg.name}</span></td>
+        </tr> : <tr></tr>})
+      }</tbody>
+    </table></div>,
+    results: (race) => <table className={css.dashTable}>
+      <thead><tr>
+        {returnLapLabels(race.laps).map((V, I) => <th key={'th-' + I}>{V}</th>)}
+      </tr></thead>
+        <tbody>{race.result.map((record, index) => <tr key={'tr' + record.registration} className={css.dashItem}>
+          {record.lapRecords.map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
+      </tr>)}</tbody>
+    </table>,
+    summary: (race) => <table className={css.dashTable}>
+      <thead><tr><th>加總</th></tr></thead>
+      <tbody>{race.result.map((record, index) => <tr className={css.dashItem} key={'lap' + index}><td className={css.lap}>{record.sum}</td></tr>)}
+      </tbody>
+    </table>,
+    advance: ({race, raceNames}) => <table className={css.dashTable}>
+      <thead><tr><th><span>{race.isFinalRace ? '總排名' : '晉級資格'}</span></th></tr></thead>
+      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{race.isFinalRace ? index + 1 : raceNames[record.advanceTo]}</td></tr>)}</tbody>
+    </table>,
+    //  advanceMenu: ({advancingRules, raceNames, value}) => <select value={value}>{advancingRules.map(rule => <option value={rule.toRace}>{raceNames[rule.toRace]}</option>)}</select>
+    edit: ({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace}) => <table className={css.dashTable}>
+      <thead><tr><th><span>校正成績</span></th></tr></thead>
+      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
+    </table>
   }
 }
 
@@ -271,28 +278,30 @@ export class MatchManager extends BaseComponent {
     io.sails.url = 'http://localhost:1337'
     this.sConnection = io.sails.connect()
     this.timer = 0
+    this.groupNames = {}
+    this.raceNames = {}
+    this.originalData = {}
+    this.modified = false
     this.state = {
       races: [],
       raceSelected: -1,
-      groupNames: {},
       readerStatus: undefined, // didmount的時候打一次api先init狀態
       ongoingRace: undefined,
       dialog: undefined,
       countdown: 60,
       counter: undefined,
-      dragField: undefined,
-      dragValue: undefined
+      editField: undefined
     }
     this.dispatch = this.props.dispatch
-    this._bind('socketIoEvents', 'getReaderStatus', 'countdown', 'handleChangeCountdown', 'handleControlReader', 'handleDragStart', 'handleDragOver', 'handleDragEnd', 'handleEndRace', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleStartRace', 'handleSubmitRaceOrder', 'handleSubmitResult', 'handleToggleDrag', 'handleUpdateDialog', 'handleResetRace', 'updateState')
+    this._bind('socketIoEvents', 'getReaderStatus', 'countdown', 'handleChangeCountdown', 'handleControlReader', 'handleDragStart', 'handleDragOver', 'handleDragEnd', 'handleEditAdvnace', 'handleEndRace', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleStartRace', 'handleSubmitRaceOrder', 'handleSubmitResult', 'handleToggleEdit', 'handleUpdateDialog', 'handleResetRace', 'updateRecords', 'updateRaces')
   }
-  updateState () {
-    console.log('this.state.dragValue: ', this.state.dragValue)
-    console.log('this.props.event.raceOrder: ', this.props.event.raceOrder)
-    const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), (this.state.dragField === 'raceOrder' && this.state.dragValue !== undefined) ? this.state.dragValue : this.props.event.raceOrder)
+  updateRaces () {
+    const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
     const ongoingRace = (this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)
-    let stateObj = { races: orderedRaces, raceSelected: (this.state.raceSelected === -1) ? 0 : this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined }
+    let stateObj = { races: orderedRaces, raceSelected: (this.state.raceSelected === -1) ? 0 : this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
+    let race
 
+    this.originalData = orderedRaces
     if (ongoingRace === undefined) {
       clearInterval(this.timer)
     } else {
@@ -302,17 +311,28 @@ export class MatchManager extends BaseComponent {
         this.timer = setInterval(this.countdown, 100)
       }
     }
-    this.setState(stateObj)
+    this.setState(stateObj, function () {
+      if (this.state.races[this.state.raceSelected].result.length === 0) {
+        this.updateResult(this.state.raceSelected)
+      }
+    })
+  }
+  updateResult (index) {
+    let races = this.state.races
+    let race = races[index]
+    race.result = returnRaceResult(race)
+    this.setState({races: races})
   }
   componentDidMount () {
     const onSuccess = () => {
       const races = returnRaces(this.props.event.groups)
-      this.setState({ groupNames: returnGroupNameMap(this.props.event.groups) })
+      this.groupNames = returnIdNameMap(this.props.event.groups)
+      this.raceNames = returnIdNameMap(races)
       if (this.props.event.raceOrder.length === 0 || this.props.event.raceOrder.length < races.length) {
         const eventStateObj = { model: 'event', original: { id: this.props.event.id }, modified: { raceOrder: races.map(race => race.id) } }
         return this.dispatch(eventActions.submit(eventStateObj))
       }
-      return this.updateState()
+      return this.updateRaces()
     }
     this.socketIoEvents(this.getReaderStatus)
     if (!this.props.event) {
@@ -343,16 +363,12 @@ export class MatchManager extends BaseComponent {
     this.sConnection.on('readerstatus', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
     this.sConnection.on('raceupdate', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
   }
-  getReaderStatus (callback) {
-    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' }, function () {
-      if (callback !== undefined) { callback() }
-    })
+  getReaderStatus () {
+    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
   }
-  handleToggleDrag (field) { return (e) => {
-    if (this.state.dragField === field) {
-      return this.setState({ dragField: undefined, dragValue: undefined, raceSelected: 0}, function () { this.updateState() })
-    }
-    return this.setState({ dragField: field})
+  handleToggleEdit (field) { return (e) => {
+    if (this.state.editField === field) { return this.setState({ editField: undefined, races: this.originalData }) }
+    this.setState({ editField: field })
   }}
   handleDragStart (fromIndex) { return (e) => {
     this.dragFromIndex = fromIndex
@@ -363,18 +379,26 @@ export class MatchManager extends BaseComponent {
   }}
   handleDragEnd () {
     if (this.dragFromIndex !== this.dragOverIndex) {
-      if (this.state.dragField === 'raceOrder') {
-        const newVal = returnMovedArray([...this.props.event.raceOrder], this.dragFromIndex, this.dragOverIndex)
-        this.setState({dragValue: newVal, raceSelected: this.dragOverIndex}, function () {
-          this.updateState()
-        })
-
+      this.modified = true
+      if (this.state.editField === 'raceOrder') {
+        this.setState({races: returnMovedArray([...this.state.races], this.dragFromIndex, this.dragOverIndex), raceSelected: this.dragOverIndex})
+      } else if (this.state.editField === 'raceResult') {
+        let races = this.state.races
+        let race = races[this.state.raceSelected]
+        race.result = returnMovedArray([...race.result], this.dragFromIndex, this.dragOverIndex)
+        this.setState({races: races})
       }
     }
   }
+  handleEditAdvnace (index) { return (e) => {
+    let stateObj = { races: this.state.races }
+    let race = stateObj.races[this.state.raceSelected]
+    race.result[index].advanceTo = (e.target.value === '-1') ? undefined : parseInt(e.target.value)
+    this.setState(stateObj)
+  }}
   handleSubmitRaceOrder () {
-    const onSuccess = () => this.setState({ dragField: undefined, dragValue: undefined })
-    const eventStateObj = { model: 'event', original: { id: this.props.event.id }, modified: { raceOrder: this.state.dragValue } }
+    const onSuccess = () => this.setState({ editField: undefined })
+    const eventStateObj = { model: 'event', original: { id: this.props.event.id }, modified: { raceOrder: this.state.races.map(V => V.id) } }
     return this.dispatch(eventActions.submit(eventStateObj, onSuccess))
   }
   handleUpdateDialog (value) { return (e) => {
@@ -393,62 +417,86 @@ export class MatchManager extends BaseComponent {
   }}
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
-    const callback = () => this.dispatch(eventActions.controlRace('start', obj, this.updateState))
+    const callback = () => this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
     if (this.state.races[this.state.raceSelected].raceStatus === 'init' && this.state.ongoingRace === undefined) {
 //      this.handleControlReader('startreader')
       callback()
     }
   }
   handleResetRace () {
-    this.dispatch(eventActions.controlRace('reset', {id: this.state.races[this.state.raceSelected].id}, this.updateState))
+    this.dispatch(eventActions.controlRace('reset', {id: this.state.races[this.state.raceSelected].id}, this.updateRaces))
   }
   handleEndRace () {
-    this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, this.updateState))
+    this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, this.updateRaces))
+  }
+  handleEditResult () {
+    
   }
   handleSubmitResult () {
-    this.dispatch(eventActions.submitRaceResult(this.state.races[this.state.raceSelected].id, this.updateState))
+    this.dispatch(eventActions.submitRaceResult(this.state.races[this.state.raceSelected], this.updateRaces))
   }
   handleSelect (index) { return (e) => {
     if (this.state.races[index].raceStatus === 'init') { this.getReaderStatus() }
-    this.setState({ raceSelected: index})
+    this.setState({ raceSelected: index}, function () {
+      if (this.state.races[index].result.length === 0) {
+        this.updateResult(index)
+      }
+    })
   }}
   render () {
     const { location, event, match } = this.props
-    const { counter, races, raceSelected, groupNames, readerStatus, dialog, ongoingRace, countdown, dragField, dragValue } = this.state
+    const { counter, races, raceSelected, readerStatus, dialog, ongoingRace, countdown, editField } = this.state
+    const { getReaderStatus, groupNames, handleControlReader, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, raceNames } = this
+    let dbLabels = ''
+    let dbResults = ''
+    let dbSummary = ''
+    let dbAdvance = ''
+    let raceCtrl = ''
+    let race
+
     if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/console'}} /> }
     else if (!event) { return <div><Header location={location} nav='event' match={match} /><div className={css.loading}>Loading...</div></div> }
-    const sortTable = (raceSelected === -1) ? undefined : returnSortedRecord(races[raceSelected].registrations, races[raceSelected].recordsHashTable, races[raceSelected].laps)
+
+    if (raceSelected !== -1) {
+      race = races[raceSelected]
+      dbLabels = render.dashboard.labels(race)
+      dbResults = <div className={css.scrollBox}>{render.dashboard.results(race)}</div>
+      dbSummary = <div className={css.summary}>{render.dashboard.summary(race)}</div>
+      if (editField === 'raceResult') {
+        dbAdvance = <div className={css.editRank}>{render.dashboard.edit({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace })}</div>
+      } else {
+        dbAdvance = <div className={css.advTable}>{render.dashboard.advance({race, raceNames})}</div>
+      }
+      raceCtrl = render.raceCtrl({ race, readerStatus, editField, ongoingRace, handleUpdateDialog, handleEndRace, handleToggleEdit })
+    }
     return (<div className={css.wrap}><Header location={location} nav='event' match={match} />
       <div className={css.mainBody}>
         <div className={css.info}>
           <h2>{event.nameCht}（ID: {event.id}）</h2>
           <span className={css.btn}>
-            {render.readerStatusBtn({ongoingRace, readerStatus, handleControlReader: this.handleControlReader, getReaderStatus: this.getReaderStatus})}
+            {render.readerStatusBtn({ongoingRace, readerStatus, handleControlReader, getReaderStatus})}
           </span>
-          {raceSelected !== -1 && render.raceCtrl({ race: races[raceSelected], readerStatus, ongoingRace, handleUpdateDialog: this.handleUpdateDialog, handleEndRace: this.handleEndRace })}
+          {raceCtrl}
         </div>
         <div className={css.managerList}>
-          <div className={(dragField === 'raceOrder') ? css.draggable : {}}>
+          <div className={(editField === 'raceOrder') ? css.draggable : ''}>
             <div className={css.hd}>
-            {dragField === 'raceOrder'
+            {editField === 'raceOrder'
               ? <span>
-                  {dragValue === undefined ? <Button style='shortDisabled' text='儲存'/> : <Button style='short' onClick={this.handleSubmitRaceOrder} text='儲存'/>}
-                  <Button style='shortGrey' onClick={this.handleToggleDrag('raceOrder')} text='取消'/>
+                  {this.modified === undefined ? <Button style='shortDisabled' text='儲存'/> : <Button style='short' onClick={this.handleSubmitRaceOrder} text='儲存'/>}
+                  <Button style='shortGrey' onClick={this.handleToggleEdit('raceOrder')} text='取消'/>
                 </span>
-              : <Button style='short' text='編輯賽程' onClick={this.handleToggleDrag('raceOrder')}/>
+              : <Button style='short' text='編輯賽程' onClick={this.handleToggleEdit('raceOrder')}/>
             }
             </div>
             <ul className={css.ul}>
-            
-            {races.map((race, index) => (dragField === 'raceOrder') ? render.raceListDraggable({race, index, raceSelected, groupNames, handleSelect: this.handleSelect, handleDragStart: this.handleDragStart, handleDragOver: this.handleDragOver, handleDragEnd: this.handleDragEnd }) : render.raceList({race, index, raceSelected, groupNames, handleSelect: this.handleSelect }))}
+              {races.map((race, index) => (editField === 'raceOrder') ? render.raceListDraggable({race, index, raceSelected, groupNames, handleSelect, handleDragStart, handleDragOver, handleDragEnd }) : render.raceList({race, index, raceSelected, groupNames, handleSelect }))}
             </ul>
           </div>
-          {sortTable && render.dashboardIds({sortTable})}
-          {sortTable && <div className={css.scrollBox}>{render.dashboard({laps: races[raceSelected].laps, startTime: races[raceSelected].startTime, sortTable})}</div>}
-          {sortTable && <div className={css.summary}>{render.dashboardSummary({sortTable, startTime: races[raceSelected].startTime})}</div>}
+          {dbLabels}{dbResults}{dbSummary}{dbAdvance}
         </div>
       </div>
-      {dialog && <Dialogue content={render.dialog[dialog]({ countdown, counter, handleStartRace: this.handleStartRace, handleUpdateDialog: this.handleUpdateDialog, handleChangeCountdown: this.handleChangeCountdown, handleResetRace: this.handleResetRace, handleEndRace: this.handleEndRace, handleSubmitResult: this.handleSubmitResult })} />}
+      {dialog && <Dialogue content={render.dialog[dialog]({ countdown, counter, handleStartRace, handleUpdateDialog, handleChangeCountdown, handleResetRace, handleEndRace, handleSubmitResult })} />}
     </div>)
   }
 }

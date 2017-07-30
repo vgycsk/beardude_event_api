@@ -11,7 +11,7 @@ const GET_EVENT = 'event/GET_EVENT'
 const GET_EVENTS = 'event/GET_EVENTS'
 const GET_GROUP = 'event/GET_GROUP'
 const GET_RACE = 'event/GET_RACE'
-const UPDATE_RACE = 'event/UPDATE_RACE'
+const CONTROL_RACE = 'event/CONTROL_RACE'
 const SUBMIT_EVENT = 'event/SUBMIT_EVENT'
 const SUBMIT_GROUP = 'event/SUBMIT_GROUP'
 const SUBMIT_RACE = 'event/SUBMIT_RACE'
@@ -80,10 +80,12 @@ export const actionCreators = {
   },
   controlRace: (action, object, successCallback) => async (dispatch) => {
     try {
-      const response = await fetch(`/api/race/${action}`, returnPostHeader(object))
-      const res = await response.json()
+      let response = await fetch(`/api/race/${action}`, returnPostHeader(object))
+      let res = await response.json()
       if (response.status === 200) {
-        dispatch({type: UPDATE_RACE, payload: {...res, raceId: object.id, action: action}})
+        response = await fetch(`/api/race/mgmtInfo/${object.id}`, {credentials: 'same-origin'})
+        res = await response.json()
+        dispatch({type: CONTROL_RACE, payload: {...res, raceId: object.id, action: action}})
         if (successCallback !== undefined) {
           successCallback()
         }
@@ -109,17 +111,25 @@ export const actionCreators = {
       dispatch({type: ACTION_ERR, payload: {error: e}})
     }
   },
-  submitRaceResult: (raceId, successCallback) => async (dispatch) => {
+  submitRaceResult: (raceObj, successCallback) => async (dispatch) => {
+    // {races: [{id: ID, toAdd: [ID, ID, ID], toRemove: ID, ID, ID}, {}, {}]}
+    const returnRegsToRaces = (race) => race.advancingRules.map(rule => {
+      let obj = { id: rule.toRace, toAdd: [], toRemove: [] }
+      race.result.map(V => obj[(V.advanceTo === rule.toRace) ? 'toAdd' : 'toRemove'].push(V.registration))
+      return obj
+    })
     try {
-      const response = await fetch('/api/race/submitResult', returnPostHeader({ id: raceId }))
-      const res = await response.json()
+      let response = await fetch('/api/race/submitResult', returnPostHeader({ id: raceObj.id, result: raceObj.result, advance: returnRegsToRaces(raceObj) }))
+      let res = await response.json()
       if (response.status === 200) {
-        dispatch({type: UPDATE_RACE, payload: {...res, raceId: raceId, action: 'cancel'}})
+        response = await fetch('/api/group/mgmtInfo/' + raceObj.group, {credentials: 'same-origin'})
+        res = await response.json()
+        dispatch({type: GET_GROUP, payload: {...res, id: raceObj.group}})
         return successCallback()
       }
       throw res.message
     } catch (e) {
-      dispatch({type: EVENT_ERR, payload: {error: '送出比賽結果失敗'}})
+      dispatch({type: EVENT_ERR, payload: {error: '送出比賽結果失敗: ' + e}})
     }
   },
   submitAdvancingRules: (state, successCallback) => async (dispatch) => {
@@ -202,11 +212,19 @@ export const reducer = (state = initialState, action) => {
       return nextState
     }
     case GET_GROUP: {
+      console.log('payload: ', payload)
       let nextState = {...state}
-      nextState.event.groups[payload.index] = payload.group
+      if (payload.index) {
+        nextState.event.groups[payload.index] = payload.group
+      } else if (payload.id) {
+        nextState.event.groups.map((V, I) => {
+          if (V.id === payload.id) { nextState.event.groups[I] = payload.group }
+        })
+      }
+      console.log('nextState: ', nextState)
       return nextState
     }
-    case UPDATE_RACE: {
+    case CONTROL_RACE: {
       let nextState = {...state}
       nextState.event.groups.map((group, gIndex) => {
         group.races.map((race, rIndex) => {
