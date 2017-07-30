@@ -2,7 +2,7 @@ import React from 'react'
 import BaseComponent from '../BaseComponent'
 import { Redirect } from 'react-router-dom'
 import { actionCreators as eventActions} from '../../ducks/event'
-import { actionCreators as racerActions } from '../../ducks/racer'
+//import { actionCreators as racerActions } from '../../ducks/racer'
 
 import css from './style.css'
 import { Dialogue } from '../Dialogue/presenter'
@@ -17,7 +17,7 @@ const returnDateTime = (timestamp, forDisplay) => {
   const t = new Date(timestamp + 28800000) // taipei diff
   return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + (forDisplay ? ' ' : 'T') + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
 }
-const returnListHeight = ({pageHeight = 360, ftHeight = 211}) => Math.max(window.innerHeight - ftHeight, (pageHeight - ftHeight))
+const returnListHeight = ({pageHeight = 360, ftHeight = 179}) => Math.max(window.innerHeight - ftHeight, (pageHeight - ftHeight))
 const returnListArray = {
   group: (groups, state) => groups,
   race: (groups, state) => (state.groupSelected === -1) ? undefined : groups[state.groupSelected].races,
@@ -47,7 +47,8 @@ const returnInputs = {
     {label: '公開活動', field: 'isPublic', type: 'checkbox'},
     {label: '隊伍報名', field: 'isTeamRegistrationOpen', type: 'checkbox'},
     {label: '個人報名', field: 'isRegistrationOpen', type: 'checkbox'},
-    {label: '地下活動', field: 'isIndieEvent', type: 'checkbox', value: true}
+    {label: '地下活動', field: 'isIndieEvent', type: 'checkbox', value: true},
+    {label: '接收RFID資料', field: 'isRfidTerminal', type: 'checkbox'}
   ],
   group: () => [
     {label: '中文名稱', field: 'nameCht', type: 'text'},
@@ -65,7 +66,8 @@ const returnInputs = {
   ],
   reg: () => [
 //    {label: '選手 ID', field: 'racer', type: 'number', disabled: true},
-    {label: '稱呼方式', field: 'name', type: 'text'}
+    {label: '稱呼方式', field: 'name', type: 'text'},
+    {label: '選手號碼', field: 'raceNumber', type: 'number'},
   ]
 }
 const title = { event: '活動', group: '組別', race: '賽事', reg: '選手賽籍' }
@@ -98,6 +100,7 @@ const render = {
     </li>,
     reg: (V, I, selected, onSelect) => <li className={selected === I ? css.selected : css.li } key={'li_' + V.id}>
       <button className={css.list} onClick={onSelect('reg', I)}>
+        <span className={css.raceNumber}>{V.raceNumber}</span>
         {(V.name) ? V.name : V.id}
         <span className={css.toRight}>
         <ul className={css.lights}>
@@ -134,7 +137,7 @@ const render = {
     <span className={css.listFt}>{render.ft[model](state[model + 'Selected'], array, handleStartEdit)}</span>
   </div>,
   event: ({event, onEdit}) => <div className={css.info}>
-    <h2>{event.nameCht}</h2>
+    <h2>{event.nameCht}（ID: {event.id}）</h2>
     <h3>{event.name} <span className={css.time}>{returnDateTime(event.startTime, true)} - {returnDateTime(event.endTime, true)}</span></h3>
     <ul className={css.lights}>
       <li className={event.isPublic ? css.on : css.off}>公開活動</li>
@@ -142,11 +145,11 @@ const render = {
       <li className={event.isRegistrationOpen ? css.on : css.off}>個人報名</li>
       <li className={event.isIndieEvent ? css.on : css.off}>地下活動</li>
       <li className={event.pacerEpc ? css.on : css.off}>前導車RFID</li>
-      <li className={event.testerEpc.length > 0 ? css.on : css.off}>測試RFID</li>
+      <li className={event.testerEpc && event.testerEpc.length > 0 ? css.on : css.off}>測試RFID</li>
     </ul>
     <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
   </div>,
-  infoForm: ({model, table, modified, original, onChange, onSubmit, onCancel, onDelete, rfidForm}) => <div className={css.form}>
+  infoForm: ({model, modified, original, onChange, onSubmit, onCancel, onDelete, rfidForm}) => <div className={css.form}>
     <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
     <ul>{returnInputs[model](modified, original).map((V, I) => <li key={'in_' + I}><label>{V.label}</label>{renderInput[V.type]({onChange: onChange(V.field), value: ((V.value) ? V.value : valueFunc(modified, original, V.field)), disabled: V.disabled })}</li>)}</ul>
     {rfidForm}
@@ -205,8 +208,17 @@ export class EventManager extends BaseComponent {
       window.addEventListener('keypress', this.handleKeypress)
       window.addEventListener('keyup', this.handleKeyup)
     }
-    this.dispatch(eventActions.getEvent(this.props.match.params.id, onSuccess))
-    this.dispatch(racerActions.getRacers())
+    if (this.props.match.params.id === 'new') {
+      this.dispatch(eventActions.getEvent(this.props.match.params.id, onSuccess))
+    } else {
+      this.dispatch(eventActions.getEvent(this.props.match.params.id))
+    }
+//    this.dispatch(racerActions.getRacers())
+  }
+  componentWillUnmount () {
+    window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener('keypress', this.handleKeypress)
+    window.removeEventListener('keyup', this.handleKeyup)
   }
   handleKeypress () {
     isRfidReader = true
@@ -317,7 +329,7 @@ export class EventManager extends BaseComponent {
     const { location, event, match } = this.props
     const { modified, original, model, groupSelected, rfidMessage } = this.state
     let rfidForm = ''
-    if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/console'}} /> }
+    if (!match.params.id) { return <Redirect to={{pathname: '/console'}} /> }
     else if (!event) { return <div><Header location={location} nav='event' match={match} /><div className={css.loading}>Loading...</div></div> }
     else if (model === -1) { return <Redirect to={{pathname: '/console/event/' + event.id}} /> }
 

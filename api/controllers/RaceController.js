@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global dataService, Group, Race, sails */
+/* global dataService, Event, Race, sails */
 
 'use strict'
 
@@ -14,18 +14,13 @@ var RaceController = {
   // Get public info
   getGeneralInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-    .then(function (V) {
-      var result = V.toJSON()
-
-      delete result.rfidData
-      return res.ok({ race: result })
-    })
+    .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // Get complete info
+  // /:id
   getManagementInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-    .then(function (modelData) { return res.ok({ race: modelData }) })
+    .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
@@ -52,18 +47,27 @@ var RaceController = {
     .then(function () { return res.ok(query) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {raceId: ID, toAdd: [ID, ID...], toRemove: [ID, ID...]}
+  // {id: ID, toAdd: [ID, ID...], toRemove: [ID, ID...]}
   addRemoveRegs: function (raceObj) {
     var q = Q.defer()
 
     Race.findOne({id: raceObj.id}).populate('registrations')
     .then(function (raceData) {
-      raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
-      raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
+      var modified
+
+      if (raceObj.toRemove && raceObj.toRemove.length > 0) {
+        modified = true
+        raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
+      }
+      if (raceObj.toAdd && raceObj.toAdd.length > 0) {
+        modified = true
+        raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
+      }
+      if (!modified) { return false }
       return raceData.save()
     })
-    .then(function () { q.resolve() })
-    .catch(function (E) { q.reject(E) })
+    .then(function () { return q.resolve() })
+    .catch(function (E) { return q.reject(E) })
     return q.promise
   },
   // {races: [{id: ID, toAdd: [ID, ID, ID], toRemove: ID, ID, ID}, {}, {}]}
@@ -77,152 +81,155 @@ var RaceController = {
     .then(function () { return res.ok(input) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // /:id
-  getParsedRaceResult: function (req, res) {
-    Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-      .then(function (raceData) {
-        if (!raceData.startTime || raceData.startTime === '') {
-          throw new Error('Race not started')
-        }
-        if (!raceData.endTime || raceData.endTime === '') {
-          throw new Error('Race not finished')
-        }
-        return res.ok(dataService.returnParsedRaceResult(raceData.recordsHashTable, raceData.laps, raceData.registrations))
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
-  // 晉級規則 advancingRule: { rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }
-  // 該場比賽排名 rankings: [{registration: ID, time: INT/'dnf'}, {...}]
-  advancingRacerToRace: function (advancingRule, rankings) {
-    var q = Q.defer()
-
-    Race.findOne({ id: advancingRule.toRace }).populate('registrations')
-      .then(function (raceData) {
-        var i
-        var regId
-
-        for (i = advancingRule.rankFrom; i <= advancingRule.rankTo; i += 1) {
-          regId = rankings[i].registration
-          raceData.registrations.add(regId)
-        }
-        return raceData.save()
-      })
-      .then(function () {
-        return q.resolve({ message: 'Racers allocated to coming races', race: advancingRule.toRace, rankFrom: advancingRule.rankFrom, rankTo: advancingRule.rankTo })
-      })
-      .catch(function (E) {
-        return q.reject(E)
-      })
-    return q.promise
-  },
-    /* {
-        id: ID,
-        rankings: [{registration: ID, time: INT/'dnf'}],
-        disqualified: [{registration: ID, time: INT/dnf}]
-    } */
-  submitRaceResult: function (req, res) {
+  // {id: ID, startTime: TIMESTAMP}
+  startRace: function (req, res) {
     var input = req.body
-    var advancingRules
-    var completeRanking
-    var groupId
+    var eventId
 
-    Race.findOne({ id: input.id })
-      .then(function (V) {
-        var funcs = []
-
-        advancingRules = V.advancingRules
-        groupId = V.group
-        if (advancingRules.length === 0) { return false }
-        funcs = advancingRules.map(function (rule) {
-          return RaceController.advancingRacerToRace(rule, input.rankings)
-        })
-        return Q.all(funcs)
-      })
-      .then(function () {
-        completeRanking = input.rankings.concat(input.disqualified)
-        return Race.update({ id: input.id }, { result: completeRanking })
-      })
-      .then(function () {
-        if (advancingRules.length === 0) {
-          return Group.update({ id: groupId }, { result: completeRanking })
-        }
-        return false
-      })
-      .then(function (groupData) {
-        var result = { message: 'Result submitted', race: input.id }
-
-        if (groupData) {
-          result.group = groupData[0].id
-        }
-        return res.ok(result)
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
+    Race.findOne({ id: input.id }).populate('group')
+    .then(function (raceData) {
+      if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
+      eventId = raceData.group.event
+      return Event.findOne({ id: eventId })
+    })
+    .then(function (eventData) {
+      if (eventData.ongoingRace && eventData.ongoingRace !== -1) { throw new Error('Another race ongoing') }
+      return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started' })
+    })
+    .then(function () {
+      return Event.update({ id: eventId }, { ongoingRace: input.id })
+    })
+    .then(function (raceData) { return res.ok({ race: raceData }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
+  // {id: ID}
+  resetRace: function (req, res) {
+    var input = req.body
+    var eventId
 
+    Race.findOne({ id: input.id }).populate('group')
+    .then(function (raceData) {
+      return Event.findOne({ id: raceData.group.event })
+    })
+    .then(function (eventData) {
+      if (eventData.ongoingRace !== input.id) { return false }
+      return Event.update({ id: eventId }, { ongoingRace: -1 })
+    })
+    .then(function () {
+      return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {} })
+    })
+    .then(function (raceData) { return res.ok({ race: raceData }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // {id: ID, endTime: TIMESTAMP}
+  endRace: function (req, res) {
+    var input = req.body
+    var eventId
+
+    Race.findOne({ id: input.id }).populate('group')
+    .then(function (raceData) {
+      if (raceData.raceStatus !== 'started') { throw new Error('Can only stop a started race') }
+      eventId = raceData.group.event
+      return Race.update({ id: input.id }, { endTime: (input.endTime) ? input.endTime : Date.now(), raceStatus: 'ended' })
+    })
+    .then(function (raceData) {
+      return Event.update({ id: eventId }, { ongoingRace: -1 })
+    })
+    .then(function (raceData) { return res.ok({ race: raceData }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // { id: ID, result: [], advance: []}
+  submitResult: function (req, res) {
+    var input = req.body
+
+    Race.update({id: input.id}, { result: input.result, raceStatus: 'submitted' })
+    .then(function (raceData) {
+      var funcs = []
+      input.advance.map(function (obj) { funcs.push(RaceController.addRemoveRegs(obj)) })
+      return Q.all(funcs)
+    })
+    .then(function () { return res.ok({ race: { id: input.id } }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
   /**
   * join | register to reader room
   * java (reader) side doesnt sent by sails.socket.io.get, so making a query string as flag to make sure its socket connection
   * but just use sails.socket.io.get when js call
   **/
   joinReaderRoom: function (req, res) {
-    var query = req.query
-    var joinSocket = query.sid
-    var isSocket = query.isSocket
+    var isSocket = (req.query.isSocket) ? req.query.isSocket : req.isSocket
+    var socketReq = (req.query.sid) ? req.query.sid : req
 
-    if (!joinSocket) {
-      joinSocket = req
-    }
-    if (!isSocket) {
-      if (!req.isSocket) {
-        return res.badRequest()
-      }
-      isSocket = req.isSocket
-    }
-        // let the connection join the socket channel
-    sails.sockets.join(joinSocket, 'readerSockets')
+    if (!isSocket) { return res.badRequest() }
+    /* Send eventId when joining reader room. Azai: Not sure how Java's socket.io get the value?
+    Event.findOne({ isRfidTerminal: true })
+    .then(function (eventData) {
+      var eventId = eventData
+      sails.sockets.join(socketReq, 'readerSockets')
+      sails.sockets.broadcast('readerSockets', 'join', { eventId: eventId }, socketReq)
+      return res.json({ result: 'join socket_channel_OK' })
+    })
+    */
+    sails.sockets.join(socketReq, 'readerSockets')
     return res.json({ result: 'join socket_channel_OK' })
   },
-
   /**
   * reader accessing, including starting, receiving race data, terminating
   **/
   readerReceiver: function (req, res) {
-    var isSocket = req.isSocket
-    var socketReq = req.query.sid
+    var isSocket = (req.isSocket) ? req.isSocket : req.query.isSocket
+    var socketReq = (req.query.sid) ? req.query.sid : req
     var input = req.body
-    var type = input.type
-    var payload = input.payload
 
-    if (!isSocket) {
-      if (!req.query.isSocket) {
-        return res.badRequest()
-      }
-      isSocket = req.query.isSocket
+    if (!isSocket) { return res.badRequest() }
+    sails.sockets.broadcast('readerSockets', input.type, { result: input.payload }, socketReq)
+    if (input.type === 'rxdata') {
+      return RaceController.insertRfid(input.event, input.payload)
+      .then(function (result) {
+        console.log('result: ', result)
+        sails.sockets.broadcast('raceupdate', 'raceupdate', { result: result }, socketReq)
+        return res.json({ result: 'type-' + input.type + '_receive_OK', input: input, output: result })
+      })
+      .catch(function (E) { return res.badRequest(E) })
     }
-    if (!socketReq) {
-      socketReq = req
-    }
-    switch (type) {
-      case 'startreader':
-        sails.sockets.broadcast('readerSockets', 'startreader', { result: 'success' }, socketReq)
-        break
-      case 'rxdata':
-            // change the 'rxdata' for mapping a unique event name to a reader, if there are other readers.
-        console.log('broadcast rxdata')
-        sails.sockets.broadcast('readerSockets', 'rxdata', { result: payload }, socketReq)
-            // to-do: write to DB
-        break
-      case 'terminatereader':
-        sails.sockets.broadcast('readerSockets', 'terminatereader', { result: 'success' }, socketReq)
-        break
-      default:
-        break
-    }
-    return res.json({ result: 'type-' + type + '_receive_OK' })
+    return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+  },
+  insertRfid: function (eventId, entriesRaw) {
+    var q = Q.defer()
+    var entries = entriesRaw.map(function (entry) { return { epc: entry.epc, timestamp: parseInt(entry.timestamp) } })
+
+    Event.findOne({id: eventId})
+    .then(function (eventData) {
+      return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
+    })
+    .then(function (eventData) {
+      if (eventData[0].ongoingRace !== -1) { return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations') }
+      return false
+    })
+    .then(function (raceData) {
+      if (!raceData) { return false }
+
+      var recordsHashTable = raceData.recordsHashTable
+      var hasEntry
+
+      entries.map(function (entry) {
+        if (dataService.isValidRaceRecord(entry.epc, raceData)) {
+          if (!recordsHashTable[entry.epc]) { recordsHashTable[entry.epc] = [] }
+          recordsHashTable[entry.epc].push(entry.timestamp)
+          hasEntry = true
+        }
+      })
+      if (hasEntry) { return Race.update({id: raceData.id}, {recordsHashTable: recordsHashTable}) }
+    })
+    .then(function (raceData) {
+      if (!raceData) { return q.resolve(false) }
+      return q.resolve({ race: raceData[0] })
+    })
+    .catch(function (E) {
+      console.log('insert RFID error: ', E)
+      return q.reject(E)
+    })
+    return q.promise
   }
 }
 

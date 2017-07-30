@@ -25,11 +25,6 @@ module.exports = {
       type: 'string',
       required: true
     },
-        // 選手背號
-    assignedRaceNumber: {
-      type: 'integer',
-      defaultsTo: 1
-    },
         // 時間統一用 timestamp
     startTime: {
       type: 'integer',
@@ -46,6 +41,10 @@ module.exports = {
     location: {
       type: 'string',
       required: true
+    },
+    raceOrder: {
+      type: 'array',
+      defaultsTo: []
     },
     isPublic: {
       type: 'boolean',
@@ -68,6 +67,11 @@ module.exports = {
       required: true,
       defaultsTo: true
     },
+    // RFID 至尊機傳資料時會帶這個欄位為true的event ID
+    isRfidTerminal: {
+      type: 'boolean',
+      defaultsTo: false
+    },
     requiresPaymentOnReg: {
       type: 'boolean',
       required: true,
@@ -79,6 +83,15 @@ module.exports = {
     },
     pacerEpc: {
       type: 'string'
+    },
+    // [{epc:1 time: ms}, {}, {}]
+    rawRfidData: {
+      type: 'array',
+      defaultsTo: []
+    },
+    ongoingRace: {
+      type: 'integer',
+      defaultsTo: -1
     },
     toJSON: function () {
       return this.toObject()

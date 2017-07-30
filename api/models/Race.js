@@ -57,20 +57,20 @@ module.exports = {
     endTime: {
       type: 'integer'
     },
-    // [{epc:1 time: ms}, {}, {}]
-    rfidData: {
-      type: 'array'
+    // init, started, ended, submitted. (TO DO: paused)
+    raceStatus: {
+      type: 'string',
+      defaultsTo: 'init'
     },
     // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
-    // 輸入的資料必須validate過, 可以直接用來計算結果 (1. 時間間隔合理 2. 沒有被套圈)
-    // 被套圈的寫: 'dnf'
     recordsHashTable: {
       type: 'json',
       defaultsTo: {}
     },
-    // [{registration: 1, time: hh:mm:ss}, {}, {}]
+    // [ { epc: STR, registration: ID, sum: timeMs, laps: INT, lapRecords: [Ms, Ms], advanceTo: ID } ]
     result: {
-      type: 'array'
+      type: 'array',
+      defaultsTo: []
     },
     toJSON: function () {
       var obj = this.toObject()

@@ -11,7 +11,7 @@ const returnInitStateObj = (group) => {
 
   group.races.map(V => { races[V.id] = { regs: [], name: V.name, nameCht: V.nameCht, isEntryRace: V.isEntryRace, isFinalRace: V.isFinalRace, racerNumberAllowed: V.racerNumberAllowed } })
   group.registrations.map(reg => {
-    const regObj = {id: reg.id, name: reg.name}
+    const regObj = {id: reg.id, name: reg.name, raceNumber: reg.raceNumber}
     if (reg.races.length === 0) { stateObj.unassignedRegs.push(regObj) }
     else { reg.races.map(race => { races[race.id].regs.push(regObj) }) }
   })
@@ -129,23 +129,33 @@ class AssignReg extends BaseComponent {
         if (stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex].toAdd) {
           let existsInTarget = false
           reg = stateObj.entrysRegs[this.dragFromIndex].regs.splice([this.dragItemIndex], 1)[0]
-          stateObj.entrysRegs[this.dragOverIndex].regs.forEach((regNew, i) => {
-            if (regNew.id === reg.id) {
-              stateObj.entrysRegs[this.dragOverIndex].regs[i].toRemove = false
-              stateObj.entrysRegs[this.dragOverIndex].regs[i].toAdd = false
-              existsInTarget = true
-            }
-          })
+          if (this.dragOverIndex !== -1) {
+            stateObj.entrysRegs[this.dragOverIndex].regs.forEach((regNew, i) => {
+              if (regNew.id === reg.id) {
+                stateObj.entrysRegs[this.dragOverIndex].regs[i].toRemove = false
+                stateObj.entrysRegs[this.dragOverIndex].regs[i].toAdd = false
+                existsInTarget = true
+              }
+            })
+          }
           if (!existsInTarget) {
             reg.toAdd = true
-            stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
+            if (this.dragOverIndex === -1) {
+              stateObj.unassignedRegs.push(reg)
+            } else {
+              stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
+            }
           }
         } else {
           let existsInTarget = false
           reg = {...stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex]}
           stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex].toRemove = true
           reg.toAdd = true
-          stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
+          if (this.dragOverIndex === -1) {
+            stateObj.unassignedRegs.push(reg)
+          } else {
+            stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
+          }
         }
         return this.setState(stateObj)
       }
@@ -154,18 +164,21 @@ class AssignReg extends BaseComponent {
   render () {
     const { autoAssign, modified, unassignedRegs, entrysRegs, rematchsRegs, finalRegs } = this.state
 
-    const renderMoveBit = ({stateName, reg, regIndex, raceIndex}) => <li className={(reg.toAdd || reg.toRemove) ? css.modifiedMoveBit : css.moveBit} draggable='true' key={'move' + reg.id} onDragStart={this.handleDragStart(stateName, regIndex, raceIndex)} onDragEnd={this.handleDragEnd}>{(reg.nameCht) ? reg.nameCht : reg.name}</li>
+    const renderMoveBit = ({stateName, reg, regIndex, raceIndex}) => <li className={(reg.toAdd || reg.toRemove) ? css.modifiedMoveBit : css.moveBit} draggable='true' key={'move' + reg.id} onDragStart={this.handleDragStart(stateName, regIndex, raceIndex)} onDragEnd={this.handleDragEnd}>{reg.raceNumber} {(reg.nameCht) ? reg.nameCht : reg.name}</li>
 
     return (<div className={css.assignReg}>
       <h3>選手分組</h3>
       <div>
+        <div className={css.unassign} onDragOver={this.handleDragOver(-1)}>
+          {(unassignedRegs.length > 0) &&
+            <div className={css.auto}><Button style='shortGrey' text='自動分配選手' onClick={this.handleAutoAssign} /></div>
+          }
+          <h5 className={css.inlineB}>尚未分組</h5>
+          <ul>{unassignedRegs.map((reg, regIndex) => (renderMoveBit({ stateName: 'unassignedRegs', reg, regIndex })))}</ul>
+        </div>
         <label className={css.inlineB}>初賽</label>
-        {(unassignedRegs.length) > 0 && <span>
-          <div className={css.auto}><Button style='shortGrey' text='自動分配選手' onClick={this.handleAutoAssign} /></div>
-          <ul className={css.unassign}>{unassignedRegs.map((reg, regIndex) => (renderMoveBit({ stateName: 'unassignedRegs', reg, regIndex })))}</ul>
-        </span>}
-        <ul className={css.races}>{entrysRegs.map((race, raceIndex) => <li key={`race${race.id}`} onDragOver={this.handleDragOver(raceIndex)} data-index={raceIndex}>
-          <h5>{(race.nameCht) ? race.nameCht : race.name} <span className={css.count}>{race.regs.length} / {race.racerNumberAllowed}</span></h5>
+        <ul className={css.races}>{entrysRegs.map((race, raceIndex) => <li key={`race${race.id}`} onDragOver={this.handleDragOver(raceIndex)}>
+          <h5>{(race.nameCht) ? race.nameCht : race.name} <span className={css.count}>{race.regs.filter(reg => !reg.toRemove).length} / {race.racerNumberAllowed}</span></h5>
           <ul>{race.regs.map((reg, regIndex) => (!reg.toRemove) && (renderMoveBit({stateName: 'entrysRegs', reg, regIndex, raceIndex})))}</ul>
         </li>)}</ul>
       </div>
@@ -184,8 +197,7 @@ class AssignReg extends BaseComponent {
         </li>)}</ul>
       </div>
       <div className={css.boxFt}>
-          {modified ? <Button onClick={this.handleSubmit} text='儲存' /> : <Button style='disabled' text='儲存' />}
-          
+        {modified ? <Button onClick={this.handleSubmit} text='儲存' /> : <Button style='disabled' text='儲存' />}
         <Button style='grey' onClick={this.props.handleCancelEdit} text='關閉' />
       </div>
     </div>)
