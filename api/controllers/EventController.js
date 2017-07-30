@@ -81,7 +81,7 @@ module.exports = {
 
     Event.findOne(query)
     .then(function (eventData) {
-      updateObj = dataService.returnUpdateObj(fields, input, eventData)
+      updateObj = dataService.returnUpdateObj(fields, input)
       if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
       if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
       if (updateObj.isRfidTerminal) {
