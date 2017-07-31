@@ -212,7 +212,6 @@ export const reducer = (state = initialState, action) => {
       return nextState
     }
     case GET_GROUP: {
-      console.log('payload: ', payload)
       let nextState = {...state}
       if (payload.index) {
         nextState.event.groups[payload.index] = payload.group
@@ -221,7 +220,6 @@ export const reducer = (state = initialState, action) => {
           if (V.id === payload.id) { nextState.event.groups[I] = payload.group }
         })
       }
-      console.log('nextState: ', nextState)
       return nextState
     }
     case CONTROL_RACE: {

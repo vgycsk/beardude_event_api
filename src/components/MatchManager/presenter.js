@@ -56,17 +56,28 @@ const returnFormattedTime = (milS) => {
   const min = Math.floor(milS / 60000);
   return min + ':' + (sec < 10 ? '0' : '') + sec
 }
-const returnLapRecord = (result, laps, startTime) => {
+const returnLapRecord = (result, laps, startTime, raceStatus) => {
   let output = []
   let lastRecord = startTime;
-  for (var i = 1; i <= laps; i += 1) {
-    if (result[i]) {
-      output.push(returnFormattedTime(result[i] - lastRecord))
-      lastRecord = result[i]
-    } else {
-      output.push('-')
+  let lapsLeft = laps
+
+  // started
+  if (result.length > 0) {
+    for (var i = 1; i <= result.length; i += 1) {
+      if (result[i]) {
+        output.push(returnFormattedTime(result[i] - lastRecord))
+        lastRecord = result[i]
+        lapsLeft -= 1
+      } else if (raceStatus === 'started') {
+        output.push('🕒')
+        lapsLeft -= 1
+      }
     }
   }
+  for (var i = 0; i < lapsLeft; i += 1) {
+    output.push('-')
+  }
+
   return output
 }
 const returnAdvanceToId = (index, advancingRules) => {
@@ -99,21 +110,27 @@ const returnRaceResult = (race) => {
   notStarted.sort((a, b) => a[2] - b[2]) // sort notStart by raceNumber
   sortTable = sortTable.concat(incomplete).concat(notStarted)
   // sortTable: [epc, name, raceNumber, timestamp, laps, record]
-  return sortTable.map((item, index) => ({ epc: item[0], registration: item[1], sum: (item[3]) ? returnFormattedTime(item[3] - race.startTime) : '-', laps: item[4], lapRecords: returnLapRecord(item[5], race.laps, race.startTime), advanceTo: returnAdvanceToId(index, race.advancingRules) }))
+  return sortTable.map((item, index) => ({ epc: item[0], registration: item[1], sum: (item[3]) ? returnFormattedTime(item[3] - race.startTime) : '-', laps: item[4], lapRecords: returnLapRecord(item[5], race.laps, race.startTime, race.raceStatus), advanceTo: returnAdvanceToId(index, race.advancingRules) }))
 }
 const render = {
   advanceMenu: ({advancingRules, raceNames, value, handleEditAdvnace, index}) => <select defaultValue={value} onChange={handleEditAdvnace(index)}><option value='-1'>無</option>{advancingRules.map(rule => <option key={'rule' + rule.toRace} value={rule.toRace}>{raceNames[rule.toRace]}</option>)}</select>,
+
   raceList: ({race, raceSelected, index, handleSelect, groupNames}) => {
-    const className = css[((index === raceSelected) ? 'selected' : '') + race.raceStatus]
-    return <li className={className} key={'race' + race.id}>
-      <button className={css.list} onClick={handleSelect(index)}><span>{groupNames[race.group.toString()]}</span><span>:</span> <span>{(race.nameCht) ? race.nameCht : race.name}</span>
+    return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id}>
+      <button className={css.list} onClick={handleSelect(index)}>
+        <span>{groupNames[race.group.toString()]}</span>
+        <span>:</span> 
+        <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
+      <div className={css[race.raceStatus]}></div>
     </li>
   },
   raceListDraggable: ({race, raceSelected, index, handleSelect, groupNames, handleDragStart, handleDragOver, handleDragEnd}) => {
-    const className = css[((index === raceSelected) ? 'selected' : '') + race.raceStatus]
-    return <li className={className} key={'race' + race.id} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}>
-      <button className={css.list} onClick={handleSelect(index)}>{groupNames[race.group.toString()]} - {(race.nameCht) ? race.nameCht : race.name}
+    return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}>
+      <button className={css.list} onClick={handleSelect(index)}>
+        <span>{groupNames[race.group.toString()]}</span>
+        <span>:</span> 
+        <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
       <div className={css.dragHandle}></div>
     </li>
@@ -165,29 +182,6 @@ const render = {
           }
         </span>
       }
-    }
-  },
-  readerStatusBtn: ({ongoingRace, readerStatus, handleControlReader, getReaderStatus}) => {
-    switch (readerStatus) {
-    case 'idle':
-      return <span>
-        <Button style='short' text='啟動RFID' onClick={handleControlReader('startreader')}/>
-        <Button style='shortGrey' text='測試RFID' onClick={handleControlReader('debug')}/>
-      </span>
-    case 'started':
-      return <span>
-        {(ongoingRace === undefined)
-          ? <Button style='shortRed' text='關閉RFID' onClick={handleControlReader('terminatereader')} />
-          : <Button style='shortDisabled' text='關閉RFID' />
-        }
-      </span>
-    case 'debug':
-      return <span>
-        <Button style='shortDisabled' text='啟動RFID' />
-        <Button style='shortGrey' text='結束測試' onClick={handleControlReader('terminatereader')} />
-      </span>
-    default:
-      return <Button style='shortGrey' text='檢查RFID狀態' onClick={getReaderStatus}/>
     }
   },
   dialog: {
@@ -274,7 +268,7 @@ const render = {
     </table>,
     edit: ({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace}) => <table className={css.dashTable}>
       <thead><tr><th><span>校正成績</span></th></tr></thead>
-      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
+      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{!race.isFinalRace && render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
     </table>
   }
 }
@@ -295,7 +289,7 @@ export class MatchManager extends BaseComponent {
       races: [],
       raceSelected: -1,
       readerStatus: undefined, // didmount的時候打一次api先init狀態
-      ongoingRace: undefined,
+      ongoingRace: -1,
       dialog: undefined,
       countdown: 60,
       counter: undefined,
@@ -306,7 +300,7 @@ export class MatchManager extends BaseComponent {
   }
   updateRaces () {
     const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
-    const ongoingRace = (this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)
+    const ongoingRace = (this.state.ongoingRace === -1) ? ((this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)) : this.state.ongoingRace
     let stateObj = { races: orderedRaces, raceSelected: this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
     let race
     this.originalData = orderedRaces
@@ -376,13 +370,10 @@ export class MatchManager extends BaseComponent {
     this.sConnection.on('raceupdate', function (data) {
       let races = this.state.races
       let race = races[this.state.ongoingRace]
-      try {
-        race.recordsHashTable = data.result.recordsHashTable
-        race.result = returnRaceResult(race)
-        this.setState({races: races})
-      } catch (e) {
-        console.log('raceupdate error: ', e)
-      }
+
+      race.recordsHashTable = data.result.recordsHashTable
+      race.result = returnRaceResult(race)
+      this.setState({races: races})
     }.bind(this))
   }
   getReaderStatus () {
@@ -436,20 +427,20 @@ export class MatchManager extends BaseComponent {
   handleChangeCountdown () { return (e) => {
     this.setState({ countdown: e.target.value })
   }}
-  handleControlReader (type) { return (e) => {
-    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} })
-  }}
+  handleControlReader (type) {
+    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: { eventId: this.props.event.id } })
+  }
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
-    const callback = () => this.setState({ ongoingRace: this.state.raceSelected })
     if (this.state.races[this.state.raceSelected].raceStatus === 'init' && this.state.ongoingRace === undefined) {
       if (this.state.readerStatus !== 'started') {
-        this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'startreader', payload: { eventId: this.props.event.id } })
+        this.handleControlReader('startreader')
         this.rfidTimeout = setInterval(function () {
           if (this.state.readerStatus === 'started') {
             clearInterval(this.rfidTimeout)
-            this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
-            callback()
+            this.setState({ ongoingRace: this.state.raceSelected }, function () {
+              this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
+            }.bind(this))
           }
         }.bind(this), 300)
         setTimeout(function () {
@@ -463,15 +454,15 @@ export class MatchManager extends BaseComponent {
   }
   handleResetRace () {
     const onSuccess = () => {
-      this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
-      this.updateRaces()
+      this.handleControlReader('terminatereader')
+      this.setState({ ongoingRace: undefined }, function () { this.updateRaces() }.bind(this))
     }
     this.dispatch(eventActions.controlRace('reset', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
   }
   handleEndRace () {
     const onSuccess = () => {
-      this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
-      this.updateRaces()
+      this.handleControlReader('terminatereader')
+      this.setState({ ongoingRace: undefined }, function () { this.updateRaces() }.bind(this))
     }
     this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
   }
@@ -490,7 +481,7 @@ export class MatchManager extends BaseComponent {
   render () {
     const { location, event, match } = this.props
     const { counter, races, raceSelected, readerStatus, dialog, ongoingRace, countdown, editField } = this.state
-    const { getReaderStatus, groupNames, handleControlReader, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
+    const { getReaderStatus, groupNames, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
     let dbLabels = ''
     let dbResults = ''
     let dbSummary = ''
@@ -516,14 +507,11 @@ export class MatchManager extends BaseComponent {
     return (<div className={css.wrap}><Header location={location} nav='event' match={match} />
       <div className={css.mainBody}>
         <div className={css.info}>
-          <h2>{event.nameCht}（ID: {event.id}）</h2>
-          <span className={css.btn}>
-            {render.readerStatusBtn({ongoingRace, readerStatus, handleControlReader, getReaderStatus})}
-          </span>
+          <h2>{event.nameCht}</h2>
           {raceCtrl}
         </div>
         <div className={css.managerList}>
-          <div className={(editField === 'raceOrder') ? css.draggable : ''}>
+          <div>
             <div className={css.hd}>
             {editField === 'raceOrder'
               ? <span>
