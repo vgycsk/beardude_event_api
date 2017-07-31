@@ -29,6 +29,12 @@ const returnOngoingRace = (ongoingRaceId, orderedRaces) => {
   }
   return undefined
 }
+const returnSelectedRace = (orderedRaces) => {
+  for (var i = 0; i < orderedRaces.length; i += 1) {
+    if (orderedRaces[i].raceStatus !== 'submitted') { return i}
+  }
+  return 0
+}
 const returnLapLabels = (laps) => {
   let result = []
   for (var i = 0; i < laps; i += 1) { result.push(i + 1) }
@@ -301,13 +307,13 @@ export class MatchManager extends BaseComponent {
   updateRaces () {
     const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
     const ongoingRace = (this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)
-    let stateObj = { races: orderedRaces, raceSelected: (this.state.raceSelected === -1) ? 0 : this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
+    let stateObj = { races: orderedRaces, raceSelected: this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
     let race
-
     this.originalData = orderedRaces
     this.modified = false
     if (ongoingRace === undefined) {
       clearInterval(this.timer)
+      if (stateObj.raceSelected === -1) { stateObj.raceSelected = returnSelectedRace(orderedRaces) }
     } else {
       stateObj.raceSelected = ongoingRace
       if (orderedRaces[ongoingRace].startTime && orderedRaces[ongoingRace].startTime > Date.now()) {
