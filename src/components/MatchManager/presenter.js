@@ -115,7 +115,7 @@ const render = {
   raceCtrl: ({race, readerStatus, editField, ongoingRace, handleEndRace, handleUpdateDialog, handleToggleEdit, modified}) => {
     switch (race.raceStatus) {
       case 'init': {
-        return <span className={css.raceCtrl}>{(ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : <Button text='開賽倒數' style='shortDisabled' />}</span>
+        return <span className={css.raceCtrl}>{(ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : <Button text='開賽倒數' style='shortDisabled' />}<Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} /></span>
       }
       case 'started': {
         return <span className={css.raceCtrl}>
@@ -128,10 +128,7 @@ const render = {
       }
       case 'ended': {
         return <span className={css.raceCtrl}>
-          {modified
-            ? <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
-            : <Button style='shortDisabled' text='送出結果' />
-          }
+          <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
           {(editField === 'raceResult')
             ? <span>
               <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
@@ -230,7 +227,7 @@ const render = {
         <Button style='grey' onClick={handleUpdateDialog()} text='取消' />
       </div>
     </div>,
-    readerNotStarted: () => <div className={css.form}>
+    readerNotStarted: ({handleUpdateDialog}) => <div className={css.form}>
       <h3>連線異常</h3>
       <h4>無法連接到RFID閘門系統，請確定閘門系統已正確啟動，並具備網路連線</h4>
       <div className={css.boxFt}>
@@ -283,6 +280,7 @@ export class MatchManager extends BaseComponent {
     io.sails.url = 'http://localhost:1337'
     this.sConnection = io.sails.connect()
     this.timer = 0
+    this.rfidTimeout = 0
     this.groupNames = {}
     this.raceNames = {}
     this.originalData = {}
@@ -366,8 +364,16 @@ export class MatchManager extends BaseComponent {
     this.sConnection.on('connect', function onConnect () {
       this.sConnection.get('/api/race/joinReaderRoom', function res () { if (callback !== undefined) { callback () } })
     }.bind(this))
-    this.sConnection.on('readerstatus', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
-    this.sConnection.on('raceupdate', function (data) { this.setState({readerStatus: data.result}) }.bind(this))
+    this.sConnection.on('readerstatus', function (data) {
+      this.setState({readerStatus: (data.result && data.result.isSingulating) ? 'started' : 'idle'})
+    }.bind(this))
+    this.sConnection.on('raceupdate', function (data) {
+      let races = this.state.races
+      let race = races[this.state.ongoingRace]
+      race.recordsHashTable = data.result.recordsHashTable
+      race.result = returnRaceResult(race)
+      this.setState({races: races})
+    }.bind(this))
   }
   getReaderStatus () {
     this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
@@ -421,37 +427,51 @@ export class MatchManager extends BaseComponent {
     this.setState({ countdown: e.target.value })
   }}
   handleControlReader (type) { return (e) => {
-    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} }, function res (data, jwRes) {
-      this.getReaderStatus()
-    }.bind(this))
+    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} })
   }}
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
-    const callback = () => this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
+    const callback = () => this.setState({ ongoingRace: this.state.raceSelected })
     if (this.state.races[this.state.raceSelected].raceStatus === 'init' && this.state.ongoingRace === undefined) {
-//      this.handleControlReader('startreader')
-      callback()
+      if (this.state.readerStatus !== 'started') {
+        this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'startreader', payload: {} })
+        this.rfidTimeout = setInterval(function () {
+          if (this.state.readerStatus === 'started') {
+            clearInterval(this.rfidTimeout)
+            this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
+            callback()
+          }
+        }.bind(this), 300)
+        setTimeout(function () {
+          if (this.state.readerStatus !== 'started') {
+            clearInterval(this.rfidTimeout)
+            this.setState({dialog: 'readerNotStarted'})
+          }
+        }.bind(this), 5000)
+      }
     }
   }
   handleResetRace () {
     this.dispatch(eventActions.controlRace('reset', {id: this.state.races[this.state.raceSelected].id}, this.updateRaces))
   }
   handleEndRace () {
-    this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, this.updateRaces))
-  }
-  handleEditResult () {
-    
+    const onSuccess = () => {
+      this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
+      this.updateRaces()
+    }
+    this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
   }
   handleSubmitResult () {
     this.dispatch(eventActions.submitRaceResult(this.state.races[this.state.raceSelected], this.updateRaces))
   }
   handleSelect (index) { return (e) => {
-    if (this.state.races[index].raceStatus === 'init') { this.getReaderStatus() }
-    this.setState({ raceSelected: index}, function () {
-      if (this.state.races[index].result.length === 0) {
-        this.updateResult(index)
-      }
-    })
+    if (this.state.editField === undefined) {
+      this.setState({ raceSelected: index}, function () {
+        if (this.state.races[index].result.length === 0) {
+          this.updateResult(index)
+        }
+      })
+    }
   }}
   render () {
     const { location, event, match } = this.props
