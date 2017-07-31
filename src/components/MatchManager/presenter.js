@@ -56,7 +56,7 @@ const returnFormattedTime = (milS) => {
   const min = Math.floor(milS / 60000);
   return min + ':' + (sec < 10 ? '0' : '') + sec
 }
-const returnLapRecord = (result, laps, startTime) => {
+const returnLapRecord = (result, laps, startTime, raceStatus) => {
   let output = []
   let lastRecord = startTime;
   let lapsLeft = laps
@@ -67,10 +67,11 @@ const returnLapRecord = (result, laps, startTime) => {
       if (result[i]) {
         output.push(returnFormattedTime(result[i] - lastRecord))
         lastRecord = result[i]
-      } else {
+        lapsLeft -= 1
+      } else if (raceStatus === 'started') {
         output.push('🕒')
+        lapsLeft -= 1
       }
-      lapsLeft -= 1
     }
   }
   for (var i = 0; i < lapsLeft; i += 1) {
@@ -109,21 +110,27 @@ const returnRaceResult = (race) => {
   notStarted.sort((a, b) => a[2] - b[2]) // sort notStart by raceNumber
   sortTable = sortTable.concat(incomplete).concat(notStarted)
   // sortTable: [epc, name, raceNumber, timestamp, laps, record]
-  return sortTable.map((item, index) => ({ epc: item[0], registration: item[1], sum: (item[3]) ? returnFormattedTime(item[3] - race.startTime) : '-', laps: item[4], lapRecords: returnLapRecord(item[5], race.laps, race.startTime), advanceTo: returnAdvanceToId(index, race.advancingRules) }))
+  return sortTable.map((item, index) => ({ epc: item[0], registration: item[1], sum: (item[3]) ? returnFormattedTime(item[3] - race.startTime) : '-', laps: item[4], lapRecords: returnLapRecord(item[5], race.laps, race.startTime, race.raceStatus), advanceTo: returnAdvanceToId(index, race.advancingRules) }))
 }
 const render = {
   advanceMenu: ({advancingRules, raceNames, value, handleEditAdvnace, index}) => <select defaultValue={value} onChange={handleEditAdvnace(index)}><option value='-1'>無</option>{advancingRules.map(rule => <option key={'rule' + rule.toRace} value={rule.toRace}>{raceNames[rule.toRace]}</option>)}</select>,
+
   raceList: ({race, raceSelected, index, handleSelect, groupNames}) => {
-    const className = css[((index === raceSelected) ? 'selected' : '') + race.raceStatus]
-    return <li className={className} key={'race' + race.id}>
-      <button className={css.list} onClick={handleSelect(index)}><span>{groupNames[race.group.toString()]}</span><span>:</span> <span>{(race.nameCht) ? race.nameCht : race.name}</span>
+    return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id}>
+      <button className={css.list} onClick={handleSelect(index)}>
+        <span>{groupNames[race.group.toString()]}</span>
+        <span>:</span> 
+        <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
+      <div className={css[race.raceStatus]}></div>
     </li>
   },
   raceListDraggable: ({race, raceSelected, index, handleSelect, groupNames, handleDragStart, handleDragOver, handleDragEnd}) => {
-    const className = css[((index === raceSelected) ? 'selected' : '') + race.raceStatus]
-    return <li className={className} key={'race' + race.id} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}>
-      <button className={css.list} onClick={handleSelect(index)}>{groupNames[race.group.toString()]} - {(race.nameCht) ? race.nameCht : race.name}
+    return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}>
+      <button className={css.list} onClick={handleSelect(index)}>
+        <span>{groupNames[race.group.toString()]}</span>
+        <span>:</span> 
+        <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
       <div className={css.dragHandle}></div>
     </li>
@@ -284,7 +291,7 @@ const render = {
     </table>,
     edit: ({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace}) => <table className={css.dashTable}>
       <thead><tr><th><span>校正成績</span></th></tr></thead>
-      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
+      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{!race.isFinalRace && render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
     </table>
   }
 }
@@ -530,7 +537,7 @@ export class MatchManager extends BaseComponent {
           {raceCtrl}
         </div>
         <div className={css.managerList}>
-          <div className={(editField === 'raceOrder') ? css.draggable : ''}>
+          <div>
             <div className={css.hd}>
             {editField === 'raceOrder'
               ? <span>
