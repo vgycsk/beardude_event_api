@@ -94,7 +94,7 @@ button {
   background: 0;
   font-size: 14px;
   border-bottom: 1px solid #ddd;
-  overflow-x: hidden;
+  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   outline: none;

@@ -28,6 +28,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 body, body>div, body>div>div {
     height: 100%;
+    overflow: auto;
 }
 .container {
     width: 100%;
