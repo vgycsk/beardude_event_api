@@ -184,29 +184,6 @@ const render = {
       }
     }
   },
-  readerStatusBtn: ({ongoingRace, readerStatus, handleControlReader, getReaderStatus}) => {
-    switch (readerStatus) {
-    case 'idle':
-      return <span>
-        <Button style='short' text='啟動RFID' onClick={handleControlReader('startreader')}/>
-        <Button style='shortGrey' text='測試RFID' onClick={handleControlReader('debug')}/>
-      </span>
-    case 'started':
-      return <span>
-        {(ongoingRace === undefined)
-          ? <Button style='shortRed' text='關閉RFID' onClick={handleControlReader('terminatereader')} />
-          : <Button style='shortDisabled' text='關閉RFID' />
-        }
-      </span>
-    case 'debug':
-      return <span>
-        <Button style='shortDisabled' text='啟動RFID' />
-        <Button style='shortGrey' text='結束測試' onClick={handleControlReader('terminatereader')} />
-      </span>
-    default:
-      return <Button style='shortGrey' text='檢查RFID狀態' onClick={getReaderStatus}/>
-    }
-  },
   dialog: {
     startCountdown: ({ handleStartRace, handleUpdateDialog, countdown, handleChangeCountdown }) => <div className={css.form}>
       <h3>開賽倒數</h3>
@@ -450,14 +427,14 @@ export class MatchManager extends BaseComponent {
   handleChangeCountdown () { return (e) => {
     this.setState({ countdown: e.target.value })
   }}
-  handleControlReader (type) { return (e) => {
-    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: {} })
-  }}
+  handleControlReader (type) {
+    this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: { eventId: this.props.event.id } })
+  }
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
     if (this.state.races[this.state.raceSelected].raceStatus === 'init' && this.state.ongoingRace === undefined) {
       if (this.state.readerStatus !== 'started') {
-        this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'startreader', payload: { eventId: this.props.event.id } })
+        this.handleControlReader('startreader')
         this.rfidTimeout = setInterval(function () {
           if (this.state.readerStatus === 'started') {
             clearInterval(this.rfidTimeout)
@@ -477,14 +454,14 @@ export class MatchManager extends BaseComponent {
   }
   handleResetRace () {
     const onSuccess = () => {
-      this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
+      this.handleControlReader('terminatereader')
       this.setState({ ongoingRace: undefined }, function () { this.updateRaces() }.bind(this))
     }
     this.dispatch(eventActions.controlRace('reset', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
   }
   handleEndRace () {
     const onSuccess = () => {
-      this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
+      this.handleControlReader('terminatereader')
       this.setState({ ongoingRace: undefined }, function () { this.updateRaces() }.bind(this))
     }
     this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
@@ -504,7 +481,7 @@ export class MatchManager extends BaseComponent {
   render () {
     const { location, event, match } = this.props
     const { counter, races, raceSelected, readerStatus, dialog, ongoingRace, countdown, editField } = this.state
-    const { getReaderStatus, groupNames, handleControlReader, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
+    const { getReaderStatus, groupNames, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
     let dbLabels = ''
     let dbResults = ''
     let dbSummary = ''
@@ -530,10 +507,7 @@ export class MatchManager extends BaseComponent {
     return (<div className={css.wrap}><Header location={location} nav='event' match={match} />
       <div className={css.mainBody}>
         <div className={css.info}>
-          <h2>{event.nameCht}（ID: {event.id}）</h2>
-          <span className={css.btn}>
-            {render.readerStatusBtn({ongoingRace, readerStatus, handleControlReader, getReaderStatus})}
-          </span>
+          <h2>{event.nameCht}</h2>
           {raceCtrl}
         </div>
         <div className={css.managerList}>

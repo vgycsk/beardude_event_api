@@ -137,7 +137,7 @@ const render = {
     <span className={css.listFt}>{render.ft[model](state[model + 'Selected'], array, handleStartEdit)}</span>
   </div>,
   event: ({event, onEdit}) => <div className={css.info}>
-    <h2>{event.nameCht}（ID: {event.id}）</h2>
+    <h2>{event.nameCht}</h2>
     <h3>{event.name} <span className={css.time}>{returnDateTime(event.startTime, true)} - {returnDateTime(event.endTime, true)}</span></h3>
     <ul className={css.lights}>
       <li className={event.isPublic ? css.on : css.off}>公開活動</li>
