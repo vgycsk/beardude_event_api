@@ -194,6 +194,9 @@ var RaceController = {
             return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
           })
           .catch(function (E) { return res.badRequest(E) })
+        case 'startreader':
+          sails.sockets.broadcast('readerSockets', input.type, input.payload)
+          return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
         default:
           sails.sockets.broadcast('readerSockets', input.type, { result: input.payload })
           return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
