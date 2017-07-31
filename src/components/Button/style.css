@@ -16,7 +16,8 @@ button {
 }
 .short {
   composes: regular;
-  padding: 4px 16px;
+  font-size: 14px;
+  padding: 4px 12px;
   height: 24px;
   line-height: 18px;
 }

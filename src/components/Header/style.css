@@ -67,9 +67,8 @@
     border: solid 1px transparent;
 }
 .navActive {
-    compose: nav;
+    composes: nav;
     color: #fff;
-    font-weight: 700;
     background: rgba(221, 221, 221, 0.48);
     border-color: #fff;
 }

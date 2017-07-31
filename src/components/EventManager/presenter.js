@@ -69,7 +69,7 @@ const returnInputs = {
     {label: '選手號碼', field: 'raceNumber', type: 'number'},
   ]
 }
-const title = { event: '活動', group: '組別', race: '賽事', reg: '選手賽籍' }
+const title = { event: '活動', group: '組別', race: '賽事', reg: '選手' }
 const lists = ['group', 'race', 'reg']
 const render = {
   delete: (model, original, onDelete) => (
