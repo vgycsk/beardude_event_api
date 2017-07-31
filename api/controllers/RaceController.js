@@ -109,7 +109,8 @@ var RaceController = {
 
     Race.findOne({ id: input.id }).populate('group')
     .then(function (raceData) {
-      return Event.findOne({ id: raceData.group.event })
+      eventId = raceData.group.event
+      return Event.findOne({ id: eventId })
     })
     .then(function (eventData) {
       if (eventData.ongoingRace !== input.id) { return false }
@@ -177,22 +178,32 @@ var RaceController = {
   * reader accessing, including starting, receiving race data, terminating
   **/
   readerReceiver: function (req, res) {
-    var isSocket = (req.isSocket) ? req.isSocket : req.query.isSocket
-    var socketReq = (req.query.sid) ? req.query.sid : req
     var input = req.body
+//    var socketReq = (req.query.sid) ? req.query.sid : sails.sockets.getId(req)
 
-    if (!isSocket) { return res.badRequest() }
-    sails.sockets.broadcast('readerSockets', input.type, { result: input.payload }, socketReq)
-    if (input.type === 'rxdata') {
-      return RaceController.insertRfid(input.event, input.payload)
-      .then(function (result) {
-        console.log('result: ', result)
-        sails.sockets.broadcast('raceupdate', 'raceupdate', { result: result }, socketReq)
-        return res.json({ result: 'type-' + input.type + '_receive_OK', input: input, output: result })
-      })
-      .catch(function (E) { return res.badRequest(E) })
+    if (!req.isSocket && !req.query.isSocket) { return res.badRequest() }
+    try {
+      switch (input.type) {
+        case 'rxdata': // RFID reader sending report
+          return RaceController.insertRfid(input.event, input.payload)
+          .then(function (data) {
+            if (data) {
+              var result = { id: data.race.id, recordsHashTable: data.race.recordsHashTable }
+              sails.sockets.broadcast('readerSockets', 'raceupdate', { result: result })
+            }
+            return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+          })
+          .catch(function (E) { return res.badRequest(E) })
+        case 'startreader':
+          sails.sockets.broadcast('readerSockets', input.type, input.payload)
+          return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+        default:
+          sails.sockets.broadcast('readerSockets', input.type, { result: input.payload })
+          return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+      }
+    } catch (E) {
+      console.log('readerReceiver e: ', E)
     }
-    return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
   },
   insertRfid: function (eventId, entriesRaw) {
     var q = Q.defer()
@@ -226,7 +237,7 @@ var RaceController = {
       return q.resolve({ race: raceData[0] })
     })
     .catch(function (E) {
-      console.log('insert RFID error: ', E)
+      console.log('insertRfid e: ', E)
       return q.reject(E)
     })
     return q.promise
