@@ -249,6 +249,12 @@ h4.forbidden {
   }
   .listHds .hd {
     font-size: 14px;
+    white-space: nowrap;
+    overflow-x: scroll;
+    overflow: auto;
+  }
+  .listHds .right {
+    float: none;
   }
   .listHds .hd button {
     margin: 0 2px;
