@@ -59,14 +59,24 @@ const returnFormattedTime = (milS) => {
 const returnLapRecord = (result, laps, startTime) => {
   let output = []
   let lastRecord = startTime;
-  for (var i = 1; i <= laps; i += 1) {
-    if (result[i]) {
-      output.push(returnFormattedTime(result[i] - lastRecord))
-      lastRecord = result[i]
-    } else {
-      output.push('-')
+  let lapsLeft = laps
+
+  // started
+  if (result.length > 0) {
+    for (var i = 1; i <= result.length; i += 1) {
+      if (result[i]) {
+        output.push(returnFormattedTime(result[i] - lastRecord))
+        lastRecord = result[i]
+      } else {
+        output.push('🕒')
+      }
+      lapsLeft -= 1
     }
   }
+  for (var i = 0; i < lapsLeft; i += 1) {
+    output.push('-')
+  }
+
   return output
 }
 const returnAdvanceToId = (index, advancingRules) => {
@@ -295,7 +305,7 @@ export class MatchManager extends BaseComponent {
       races: [],
       raceSelected: -1,
       readerStatus: undefined, // didmount的時候打一次api先init狀態
-      ongoingRace: undefined,
+      ongoingRace: -1,
       dialog: undefined,
       countdown: 60,
       counter: undefined,
@@ -306,7 +316,7 @@ export class MatchManager extends BaseComponent {
   }
   updateRaces () {
     const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
-    const ongoingRace = (this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)
+    const ongoingRace = (this.state.ongoingRace === -1) ? ((this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)) : this.state.ongoingRace
     let stateObj = { races: orderedRaces, raceSelected: this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
     let race
     this.originalData = orderedRaces
@@ -376,13 +386,10 @@ export class MatchManager extends BaseComponent {
     this.sConnection.on('raceupdate', function (data) {
       let races = this.state.races
       let race = races[this.state.ongoingRace]
-      try {
-        race.recordsHashTable = data.result.recordsHashTable
-        race.result = returnRaceResult(race)
-        this.setState({races: races})
-      } catch (e) {
-        console.log('raceupdate error: ', e)
-      }
+
+      race.recordsHashTable = data.result.recordsHashTable
+      race.result = returnRaceResult(race)
+      this.setState({races: races})
     }.bind(this))
   }
   getReaderStatus () {
@@ -441,15 +448,15 @@ export class MatchManager extends BaseComponent {
   }}
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
-    const callback = () => this.setState({ ongoingRace: this.state.raceSelected })
     if (this.state.races[this.state.raceSelected].raceStatus === 'init' && this.state.ongoingRace === undefined) {
       if (this.state.readerStatus !== 'started') {
         this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'startreader', payload: { eventId: this.props.event.id } })
         this.rfidTimeout = setInterval(function () {
           if (this.state.readerStatus === 'started') {
             clearInterval(this.rfidTimeout)
-            this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
-            callback()
+            this.setState({ ongoingRace: this.state.raceSelected }, function () {
+              this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
+            }.bind(this))
           }
         }.bind(this), 300)
         setTimeout(function () {
@@ -464,14 +471,14 @@ export class MatchManager extends BaseComponent {
   handleResetRace () {
     const onSuccess = () => {
       this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
-      this.updateRaces()
+      this.setState({ ongoingRace: undefined }, function () { this.updateRaces() }.bind(this))
     }
     this.dispatch(eventActions.controlRace('reset', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
   }
   handleEndRace () {
     const onSuccess = () => {
       this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'terminatereader', payload: {} })
-      this.updateRaces()
+      this.setState({ ongoingRace: undefined }, function () { this.updateRaces() }.bind(this))
     }
     this.dispatch(eventActions.controlRace('end', {id: this.state.races[this.state.raceSelected].id}, onSuccess))
   }
