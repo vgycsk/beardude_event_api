@@ -41,8 +41,6 @@
     "chai": "*",
     "chunk-manifest-webpack-plugin": "^1.1.0",
     "css-loader": "^0.28.4",
-    "eslint": "*",
-    "eslint-plugin-react": "6.2.0",
     "exports-loader": "^0.6.4",
     "extract-text-webpack-plugin": "2.1.0",
     "file-loader": "*",
