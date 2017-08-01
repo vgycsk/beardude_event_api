@@ -84,5 +84,10 @@
     "url": "git@github.com:azaitw/beardude_event.git"
   },
   "author": "azai",
-  "license": ""
+  "license": "",
+  "standard": {
+      "ignore": [
+          "config/**/*"
+      ]
+  }
 }
