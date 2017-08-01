@@ -12,7 +12,7 @@
 
 module.exports = {
   connections: {
-    dev: {
+    disk: {
       adapter: 'sails-disk'
     }
   },
@@ -20,7 +20,7 @@ module.exports = {
     level: 'info'
   },
   models: {
-    connection: 'dev',
+    connection: 'disk',
     migrate: 'alter'
   }
 }
