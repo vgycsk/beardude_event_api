@@ -13,8 +13,7 @@ const returnNavs = {
   ],
   event: (match) => [
     { name: '賽制', url: '/console/event/' + match.params.id },
-    { name: '賽程管理', url: '/console/eventMatch/' + match.params.id },
-    { name: 'Stream', url: '/console/stream/' + match.params.id }
+    { name: '賽程管理', url: '/console/eventMatch/' + match.params.id }
   ]
 }
 

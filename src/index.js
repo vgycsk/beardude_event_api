@@ -5,8 +5,6 @@ import { configureStore } from './stores/configureStore'
 import { actionCreators } from './ducks/account'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-import Stream from './components/Stream/'
-import Admin from './components/Admin/presenter'
 import EventList from './components/EventList'
 import EventManager from './components/EventManager'
 import MatchManager from './components/MatchManager'
@@ -27,15 +25,12 @@ ReactDOM.render(
     <Router>
       <div className={css.container}>
         <Switch>
-          <Route exact path='/' component={EventList} />
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
           <Route path='/console/event/:id' component={EventManager} />
           <Route path='/console/eventMatch/:id' component={MatchManager} />
-          <Route path='/console/stream' component={Stream} />
           <Route path='/console/racer' component={Racer} />
           <Route path='/console/team' component={Team} />
-          <Route path='/console/admin' component={Admin} />
           <Route path='/console/manager' component={Manager} />
           <Route component={NotFound} />
         </Switch>
