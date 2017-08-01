@@ -17,7 +17,6 @@ const returnDateTime = (timestamp, forDisplay) => {
   const t = new Date(timestamp + 28800000) // taipei diff
   return t.getUTCFullYear() + '-' + ('0' + (t.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + t.getUTCDate()).slice(-2) + (forDisplay ? ' ' : 'T') + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2) //yyyy-mm-ddThh:mm
 }
-const returnListHeight = ({pageHeight = 360, ftHeight = 179}) => Math.max(window.innerHeight - ftHeight, (pageHeight - ftHeight))
 const returnListArray = {
   group: (groups, state) => groups,
   race: (groups, state) => (state.groupSelected === -1) ? undefined : groups[state.groupSelected].races,
@@ -70,7 +69,7 @@ const returnInputs = {
     {label: '選手號碼', field: 'raceNumber', type: 'number'},
   ]
 }
-const title = { event: '活動', group: '組別', race: '賽事', reg: '選手賽籍' }
+const title = { event: '活動', group: '組別', race: '賽事', reg: '選手' }
 const lists = ['group', 'race', 'reg']
 const render = {
   delete: (model, original, onDelete) => (
@@ -110,34 +109,38 @@ const render = {
       </button>
     </li>
   },
-  ft: {
-    group: (selected, array, handleStartEdit) => <span>
-      <Button style='listFtIcon' text='+' onClick={handleStartEdit('group', {})} />
+  ctrl: {
+    group: (selected, array, handleStartEdit) => <span className={css.right}>
       {selected !== -1 && <span>
-        <Button style='listFt' text='編輯' onClick={handleStartEdit('group', array[selected])} />
+        <Button style='short' text='編輯' onClick={handleStartEdit('group', array[selected])} />
+      </span>}
+      <Button style='short' text='新增' onClick={handleStartEdit('group', {})} />
+    </span>,
+    race: (selected, array, handleStartEdit) => <span className={css.right}>
+      {array && <span>
+        {selected !== -1 && <Button style='short' text='編輯' onClick={handleStartEdit('race', array[selected])} /> }
+        <Button style='short' text='新增' onClick={handleStartEdit('race', {})} />
+        <Button style='short' text='晉級規則' onClick={handleStartEdit('advRules', array)} />
       </span>}
     </span>,
-    race: (selected, array, handleStartEdit) => <span>
+    reg: (selected, array, handleStartEdit) => <span className={css.right}>
       {array && <span>
-        <Button style='listFtIcon' text='+' onClick={handleStartEdit('race', {})} />
-        <Button style='listFt' text='編輯晉級規則' onClick={handleStartEdit('advRules', array)} />
-        {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('race', array[selected])} /> }
-      </span>}
-    </span>,
-    reg: (selected, array, handleStartEdit) => <span>
-      {array && <span>
-        <Button style='listFtIcon' text='+' onClick={handleStartEdit('reg', {})} />
-        <Button style='listFt' text='選手分組' onClick={handleStartEdit('assignReg', array)} />
-        {selected !== -1 && <Button style='listFt' text='編輯' onClick={handleStartEdit('reg', array[selected])} />}
+        <Button style='short' text='新增' onClick={handleStartEdit('reg', {})} />
+        <Button style='short' text='選手分組' onClick={handleStartEdit('assignReg', array)} />
+        {selected !== -1 && <Button style='short' text='編輯' onClick={handleStartEdit('reg', array[selected])} />}
       </span>}
     </span>
   },
-  list: ({model, array, state, onSelect, handleStartEdit}) => <div key={'list' + model}><h3>{title[model]}</h3>
-  <ul className={css.ul} style={{height: state.listHeight}}>{array && array.map((V, I) => (render.li[model](V, I, state[model + 'Selected'], onSelect)))}</ul>
-    <span className={css.listFt}>{render.ft[model](state[model + 'Selected'], array, handleStartEdit)}</span>
+  listHd: ({model, state, array, handleStartEdit}) => <div className={css.hd} key={'listHd' + model}>
+    <span>{title[model]}</span>
+    {render.ctrl[model](state[model + 'Selected'], array, handleStartEdit)}
+  </div>,
+  list: ({model, array, state, onSelect}) => <div key={'list' + model}>
+    <ul className={css.ul}>{array && array.map((V, I) => (render.li[model](V, I, state[model + 'Selected'], onSelect)))}</ul>
   </div>,
   event: ({event, onEdit}) => <div className={css.info}>
-    <h2>{event.nameCht}</h2>
+    <h2>{event.nameCht} <span className={css.btn}><Button style='short' text='編輯' onClick={onEdit} /></span>
+</h2>
     <h3>{event.name} <span className={css.time}>{returnDateTime(event.startTime, true)} - {returnDateTime(event.endTime, true)}</span></h3>
     <ul className={css.lights}>
       <li className={event.isPublic ? css.on : css.off}>公開活動</li>
@@ -145,9 +148,7 @@ const render = {
       <li className={event.isRegistrationOpen ? css.on : css.off}>個人報名</li>
       <li className={event.isIndieEvent ? css.on : css.off}>地下活動</li>
       <li className={event.pacerEpc ? css.on : css.off}>前導車RFID</li>
-      <li className={event.testerEpc && event.testerEpc.length > 0 ? css.on : css.off}>測試RFID</li>
     </ul>
-    <span className={css.btn}><Button text='編輯' onClick={onEdit} /></span>
   </div>,
   infoForm: ({model, modified, original, onChange, onSubmit, onCancel, onDelete, rfidForm}) => <div className={css.form}>
     <h3>{original.id ? '編輯' : '新增'}{title[model]}</h3>
@@ -194,16 +195,14 @@ export class EventManager extends BaseComponent {
       groupSelected: -1,
       raceSelected: -1,
       regSelected: -1,
-      listHeight: returnListHeight({}),
       rfidMessage: undefined
     }
     this.dispatch = this.props.dispatch
-    this._bind('handleStartEdit', 'handleKeypress', 'handleKeyup', 'handleAddTesterRfid', 'handleCancelEdit', 'handleDelete', 'handleResize', 'handleSubmit', 'handleInput', 'handleInputRfid', 'handleSelect')
+    this._bind('handleStartEdit', 'handleKeypress', 'handleKeyup', 'handleAddTesterRfid', 'handleCancelEdit', 'handleDelete', 'handleSubmit', 'handleInput', 'handleInputRfid', 'handleSelect')
   }
   componentDidMount () {
     const onSuccess = () => this.setState({model: 'event', original: {}})
     const isMobile = (window.navigator.userAgent.indexOf('Android') !== -1) ? true : false
-    window.addEventListener('resize', this.handleResize);
     if (isMobile) {
       window.addEventListener('keypress', this.handleKeypress)
       window.addEventListener('keyup', this.handleKeyup)
@@ -216,7 +215,6 @@ export class EventManager extends BaseComponent {
 //    this.dispatch(racerActions.getRacers())
   }
   componentWillUnmount () {
-    window.removeEventListener('resize', this.handleResize)
     window.removeEventListener('keypress', this.handleKeypress)
     window.removeEventListener('keyup', this.handleKeyup)
   }
@@ -225,9 +223,6 @@ export class EventManager extends BaseComponent {
   }
   handleKeyup () {
     isRfidReader = false
-  }
-  handleResize () {
-    this.setState({ listHeight: returnListHeight({}) })
   }
   handleStartEdit (model, object) { return (e) => {
     this.setState({model: model, original: object})
@@ -336,8 +331,10 @@ export class EventManager extends BaseComponent {
     return (<div className={model ? css.fixed : css.wrap}><Header location={location} nav='event' match={match} />
       <div className={css.mainBody}>
         {render.event({event, onEdit: this.handleStartEdit('event', event)})}
+        <div className={css.listHds}>{lists.map(V => ( render.listHd({model: V, array: returnListArray[V](this.props.event.groups, this.state), state: this.state, handleStartEdit: this.handleStartEdit}) ))}
+        </div>
         <div className={css.managerList}>
-          {lists.map(V => ( render.list({model: V, array: returnListArray[V](this.props.event.groups, this.state), state: this.state, onSelect: this.handleSelect, handleStartEdit: this.handleStartEdit}) ))}
+        {lists.map(V => ( render.list({model: V, array: returnListArray[V](this.props.event.groups, this.state), state: this.state, onSelect: this.handleSelect, handleStartEdit: this.handleStartEdit}) ))}
         </div>
       </div>
       {model && <Dialogue content={(model === 'advRules')

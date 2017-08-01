@@ -16,6 +16,8 @@ button {
 }
 .short {
   composes: regular;
+  font-size: 14px;
+  padding: 4px 12px;
   height: 24px;
   line-height: 18px;
 }
@@ -25,9 +27,8 @@ button {
   color: #fff;
 }
 .shortDisabled {
-  composes: disabled;
-  height: 24px;
-  line-height: 18px;
+  composes: short;
+  background: #cecece;
 }
 .shortRed {
   composes: short;
@@ -39,9 +40,9 @@ button {
   color: #fff;
 }
 .shortGrey {
-  composes: grey;
-  height: 24px;
-  line-height: 18px;
+  composes: short;
+  background: #999;
+  color: #fff;
 }
 .alert {
   composes: regular;

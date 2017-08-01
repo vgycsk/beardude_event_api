@@ -35,16 +35,14 @@
   margin: 0 0 3px 0;
 }
 .info h3 {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 300;
   color: #ddd;
   letter-spacing: 0.3px;
   display: inline-block;
 }
 .info .btn {
-  position: absolute;
-  bottom: 10px;
-  right: 30px;
+  margin: 0 0 0 20px;
 }
 .lights {
   display: inline-block;
@@ -58,7 +56,7 @@
   border-radius: 20px;
   background: #aaa;
   padding: 1px 5px;
-  margin: 0 20px 0 0;
+  margin: 0 10px 0 0;
   color: #ddd;
   text-indent: 0;
 }
@@ -70,9 +68,7 @@
 .toRight .lights {
   right: 0;
 }
-.managerList .lights li {
-  margin: 0 10px 0 0;
-}
+
 .lights .on {
   background: #00c000;
   color: #fff;
@@ -84,48 +80,65 @@
   position: relative;
   display: flex;
   flex-direction: row;
-  margin: 0 6px 32px;
-  padding: 0 6px;
+  margin: 0;
+  padding: 0;
   color: #E0E4E9;
   font-size: 14px;
   height: 100%;
 }
 .managerList > div {
   position: relative;
+  overflow-y: scroll;
+  overflow: auto;
+  border-top: 1px solid #fff;
+  border-right: 1px solid #fff;
 }
-.managerList > div:nth-child(1) {
+.managerList > div:nth-child(1),
+.listHds .hd:first-child {
   width: 33%;
   flex-shrink: 0;
 }
-.managerList > div:nth-child(2) {
+.managerList > div:nth-child(2),
+.listHds .hd:nth-child(2) {
   width: 33%;
   flex-shrink: 0;
 }
-.managerList > div:nth-child(3) {
+.managerList > div:nth-child(3),
+.listHds .hd:nth-child(3) {
   flex-grow: 1;
+  border-right: 0;
 }
-.managerList > div:first-child h3 {
-  border-radius: 5px 0 0 0;
+.listHds {
+  width: 100%;
+  display: flex;
 }
-.managerList > div:last-child h3 {
-  border-radius: 0 5px 0 0;
+.listHds .hd {
+  color: #fff;
+  height: 36px;
+  line-height: 36px;
+  background: rgba(255, 255, 255, 0.4);
+  position: relative;
+  padding: 0 0 0 8px;
+  border-top: 1px solid #fff;
+  border-right: 1px solid #fff;
+  overflow: hidden;
 }
-.managerList h3 {
-  background: RGBA(66, 66, 66, 0.8);
-  color: #E0E4E9;
-  margin-right: 2px;
-  padding: 8px 16px;
+.listHds .hd button {
+  margin: 0 5px;
+  vertical-align: middle;
 }
 .managerList .ul {
   overflow-y: scroll;
   overflow: auto;
+  padding: 0 0 182px 0;
 }
-
+.managerList .ul .li button {
+  margin: 0;
+}
 .li {
   display: flex;
   color: #fff;
-  margin-right: 8px;
-  min-height: 39px;
+  height: 39px;
   line-height: 39px;
   cursor: pointer;
 }
@@ -154,22 +167,22 @@
 .count {
   display: inline-block;
   position: absolute;
-  top: 4px;
-  right: 2px;
-  padding: 0 8px;
-  border-radius: 8px;
+  top: 10px;
+  right: 6px;
+  padding: 0 6px;
+  border-radius: 10px;
   text-indent: 0;
   text-align: center;
-  color: #dedede;
+  color: #fff;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  font-family: 'Courier';
-  background: #555;
+  letter-spacing: 1px;
+  font-family: Garamond, Times;
+  background: rgba(255, 255, 255, 0.4);
   font-size: 12px;
   font-weight: 500;
   min-width: 30px;
-  height: 30px;
-  line-height: 30px;
+  height: 20px;
+  line-height: 20px;
 }
 .raceNumber {
   margin: 0 10px 0 0;
@@ -187,25 +200,8 @@
 .redTxt {
   color: #fa1229;
 }
-.listFt {
-  position: absolute;
-  bottom: 109px;
-  background: rgba(66,66,66,0.2);
-  width: 99.5%;
-  height: 36px;
-}
-.listFt button {
-  color: #fff;
-}
 .managerList li:active {
   background: RGBA(243, 243, 243, 0.4);
-}
-.managerList .ft {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 39px;
-  background: RGBA(255, 255, 255, 0.4);
 }
 .form {
   max-width: 600px;
@@ -238,12 +234,34 @@ h4.forbidden {
     display: none;
   }
   .info {
-    padding: 10px;
+    padding: 0 15px;
+    margin: 35px 0 10px 0;
+  }
+  .info h2 {
+    font-size: 16px;
+    margin: 0;
   }
   .info .btn {
     right: 15px;
   }
   .managerList {
     padding: 0;
+  }
+  .listHds .hd {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow-x: scroll;
+    overflow: auto;
+  }
+  .listHds .right {
+    float: none;
+  }
+  .listHds .hd button {
+    margin: 0 2px;
+    padding: 4px;
+    font-size: 13px;
+  }
+  .count {
+    display: none;
   }
 }

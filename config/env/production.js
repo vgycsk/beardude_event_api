@@ -15,27 +15,21 @@ module.exports = {
     shortcuts: false
   },
   connections: {
-    aws: {
-      key: '',
-      secret: '',
-      region: 'ap-northeast-1',
-      bucket: ''
-    },
     mysql: {
       adapter: 'sails-mysql',
-      host: 'azai.synology.me',
-      port: 33306,
-      user: 'engine',
-      password: 'BeardudeEngineZhuandao1022',
-      database: 'emrv_api'
+      host: process.env.MYSQL_URL,
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      port: process.env.MYSQL_PORT
     }
   },
   log: {
-    level: 'silent'
+    level: 'info'
   },
   models: {
     connection: 'mysql',
-    migrate: 'safe'
+    migrate: 'alter'
   },
   port: 80
 }

@@ -35,15 +35,15 @@ var plugins = [
   })
 ]
 
-if (process.env.NODE_ENV === 'production') {
+//if (process.env.NODE_ENV === 'production') {
   plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
-        warnings: false
+        warnings: true
       }
     })
   )
-}
+//}
 
 module.exports = {
   module: {
@@ -76,6 +76,7 @@ module.exports = {
             {
               loader: 'css-loader',
               query: {
+                minimize: true,
                 modules: true,
                 importLoaders: 1,
                 localIdentName: '[name]__[local]___[hash:base64:5]',
