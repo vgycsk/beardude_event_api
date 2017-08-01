@@ -86,9 +86,9 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 @keyframes pulse {
-  from { background: rgba(255,255,255, 0.4); }
-  50% { background: rgba(255,255,0, 1); }
-  to { background: rgba(255,255,255, 0.4); }
+  from { opacity: 0.1; }
+  50% { opacity: 1; }
+  to { opacity: 0.1; }
 }
 .ul .li {
   position: relative;
@@ -119,7 +119,7 @@
   animation-name: pulse;
   animation-duration: 1.5s;
   animation-iteration-count: infinite;
-  background: rgba(87,189,55, 1);
+  background: rgb(61, 255, 0);
 }
 .ended {
   composes: init;

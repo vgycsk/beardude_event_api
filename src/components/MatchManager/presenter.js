@@ -433,23 +433,21 @@ export class MatchManager extends BaseComponent {
   handleStartRace () {
     const obj = { id: this.state.races[this.state.raceSelected].id, startTime: Date.now() + (this.state.countdown * 1000) }
     if (this.state.races[this.state.raceSelected].raceStatus === 'init' && this.state.ongoingRace === undefined) {
-      if (this.state.readerStatus !== 'started') {
-        this.handleControlReader('startreader')
-        this.rfidTimeout = setInterval(function () {
-          if (this.state.readerStatus === 'started') {
-            clearInterval(this.rfidTimeout)
-            this.setState({ ongoingRace: this.state.raceSelected }, function () {
-              this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
-            }.bind(this))
-          }
-        }.bind(this), 300)
-        setTimeout(function () {
-          if (this.state.readerStatus !== 'started') {
-            clearInterval(this.rfidTimeout)
-            this.setState({dialog: 'readerNotStarted'})
-          }
-        }.bind(this), 5000)
-      }
+      this.handleControlReader('startreader')
+      this.rfidTimeout = setInterval(function () {
+        if (this.state.readerStatus === 'started') {
+          clearInterval(this.rfidTimeout)
+          this.setState({ ongoingRace: this.state.raceSelected }, function () {
+            this.dispatch(eventActions.controlRace('start', obj, this.updateRaces))
+          }.bind(this))
+        }
+      }.bind(this), 300)
+      setTimeout(function () {
+        if (this.state.readerStatus !== 'started') {
+          clearInterval(this.rfidTimeout)
+          this.setState({dialog: 'readerNotStarted'})
+        }
+      }.bind(this), 5000)
     }
   }
   handleResetRace () {
