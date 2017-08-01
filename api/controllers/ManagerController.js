@@ -41,6 +41,7 @@ module.exports = {
     }
     return Manager.findOne({email: input.email})
     .then(function (V) {
+      if (!V) { throw new Error('User not found') }
       result = V
       return dataService.authenticate(input.password, V.password)
     })
