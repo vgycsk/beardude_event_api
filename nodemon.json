@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "exec": "rm -rf .tmp/public/js/console/ && NODE_ENV=development webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.prod.js && ./scripts/cpReactLayout.sh",
+  "exec": "rm -rf .tmp/public/js/console/ && ./scripts/copyView.sh && NODE_ENV=development webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.prod.js",
   "watch": [
     "src/",
     ".babelrc"

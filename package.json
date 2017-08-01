@@ -73,10 +73,10 @@
     "lint": "./scripts/lint.sh",
     "lint:react": "standard ./src/*.js webpack.config.*.js",
     "lint-report": "./scripts/lint-report.sh",
-    "start": "./scripts/copyView.sh; sails lift",
+    "start": "sails lift",
     "saildev": "nodemon -e xyz --config nodemon.json",
     "dev": "nodemon -e xyz --config nodemon.dev.json",
-    "build": "NODE_ENV=production webpack --display-modules --display-chunks --display-error-details --config ./webpack.config.prod.js",
+    "build": "./scripts/cpReactLayout.sh",
     "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
   },
   "main": "app.js",
