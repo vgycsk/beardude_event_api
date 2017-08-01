@@ -31,5 +31,15 @@ module.exports = {
     connection: 'mysql',
     migrate: 'alter'
   },
-  port: 80
+  port: 80,
+  session: {
+//    secret: '0ef4078c715212419592935512d5dc0d',
+    adapter: 'redis',
+    host: process.env.REDIS_HOST,
+    port: REDIS_PORT,
+  // ttl: <redis session TTL in seconds>,
+    db: 0,
+    pass: '',
+    prefix: 'sess:'
+  }
 }
