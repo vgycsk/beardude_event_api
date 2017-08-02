@@ -6,7 +6,7 @@ module.exports.routes = {
     // 1.1 -
     'post /api/event/create': 'EventController.create',
     // 3.1 -
-    'get  /api/event/info/:id': 'EventController.getGeneralInfo',
+//    'get  /api/event/info/:id': 'EventController.getGeneralInfo',
     'get  /api/event/mgmtInfo/:id': 'EventController.getManagementInfo',
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
@@ -91,7 +91,7 @@ module.exports.routes = {
     // 6.3.6
 //    'post /api/reg/updateDisqualification': 'RegistrationController.updateDisqualification',
     // 6.3.9
-    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
+//    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
 
     'get  /api/reg/delete/:id': 'RegistrationController.delete',
 
@@ -131,14 +131,15 @@ module.exports.routes = {
     //'post /api/team/acceptInvitation': 'TeamController.acceptInvitation',
 
     // Test page
-    'get  /race/update/:id': 'TestPageController.raceUpdatePage',
-    'get  /team/update/:id': 'TestPageController.teamUpdatePage',
-    'get  /group/update/:id': 'TestPageController.groupUpdatePage',
-    'get  /event/update/:id': 'TestPageController.eventUpdatePage',
-    'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
+//    'get  /race/update/:id': 'TestPageController.raceUpdatePage',
+//    'get  /team/update/:id': 'TestPageController.teamUpdatePage',
+//    'get  /group/update/:id': 'TestPageController.groupUpdatePage',
+//    'get  /event/update/:id': 'TestPageController.eventUpdatePage',
+//    'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
 //    'get  /test': 'TestPageController.apiTestPage',
 //    '/testSocket': { view: 'testPages/testSocketPage' },
-    '/': '/console',
+    '/': { view: 'sharePage' },
+    '/event/*': { view: 'sharePage' },
     '/console/*': { view: 'sharePage' },
     '/console': { view: 'sharePage' }
 };
