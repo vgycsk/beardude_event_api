@@ -15,7 +15,7 @@ module.exports.bootstrap = function(cb) {
             firstName: 'Azai',
             lastName: 'Chan',
             password: password,
-            isActive: false
+            isActive: true
         };
 
         Manager.create(managerObj)
