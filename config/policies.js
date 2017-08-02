@@ -4,8 +4,8 @@ module.exports.policies = {
     EventController: {
       create: 'isActiveManager',
 //        getGeneralInfo: '',
-      getManagementInfo: 'isActiveManager',
-      getEvents: 'isActiveManager',
+//      getManagementInfo: '',
+//      getEvents: '',
 //        addManagers: 'isActiveManager',
 //        removeManagers: 'isActiveManager',
       getGroupsAndRacersOfEvent: 'isActiveManager',
