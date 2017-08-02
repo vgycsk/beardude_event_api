@@ -1,7 +1,8 @@
+/* global io */
 import React from 'react'
 import BaseComponent from '../BaseComponent'
 import { Redirect } from 'react-router-dom'
-import { actionCreators as eventActions} from '../../ducks/event'
+import { actionCreators as eventActions } from '../../ducks/event'
 
 import css from './style.css'
 import { Dialogue } from '../Dialogue/presenter'
@@ -16,32 +17,32 @@ const render = {
     return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id}>
       <button className={css.list} onClick={handleSelect(index)}>
         <span>{groupNames[race.group.toString()]}</span>
-        <span>:</span> 
+        <span>:</span>
         <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
-      <div className={css[race.raceStatus]}></div>
+      <div className={css[race.raceStatus]} />
     </li>
   },
   raceListDraggable: ({race, raceSelected, index, handleSelect, groupNames, handleDragStart, handleDragOver, handleDragEnd}) => {
     return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}>
       <button className={css.list} onClick={handleSelect(index)}>
         <span>{groupNames[race.group.toString()]}</span>
-        <span>:</span> 
+        <span>:</span>
         <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
-      <div className={css.dragHandle}></div>
+      <div className={css.dragHandle} />
     </li>
   },
   raceCtrl: ({race, readerStatus, editField, ongoingRace, handleEndRace, handleUpdateDialog, handleToggleEdit, modified}) => {
     switch (race.raceStatus) {
       case 'init': {
-        return <span className={css.raceCtrl}>{(ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')}/> : <Button text='開賽倒數' style='shortDisabled' />}<Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} /></span>
+        return <span className={css.raceCtrl}>{(ongoingRace === undefined) ? <Button style='short' text='開賽倒數' onClick={handleUpdateDialog('startCountdown')} /> : <Button text='開賽倒數' style='shortDisabled' />}<Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} /></span>
       }
       case 'started': {
         return <span className={css.raceCtrl}>
           {(race.result.laps === race.laps)
-            ? <Button style='short' text='結束比賽' onClick={handleEndRace}/>
-            : <Button style='shortRed' text='結束比賽' onClick={handleUpdateDialog('endRace')}/>
+            ? <Button style='short' text='結束比賽' onClick={handleEndRace} />
+            : <Button style='shortRed' text='結束比賽' onClick={handleUpdateDialog('endRace')} />
           }
           <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
         </span>
@@ -51,11 +52,11 @@ const render = {
           <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
           {(editField === 'raceResult')
             ? <span>
-              <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')} />
               <Button style='shortDisabled' text='重設比賽' />
             </span>
             : <span>
-              <Button style='short' text='編輯' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='short' text='編輯' onClick={handleToggleEdit('raceResult')} />
               <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
             </span>
           }
@@ -69,11 +70,11 @@ const render = {
                 ? <Button style='short' text='送出結果' onClick={handleUpdateDialog('submitResult')} />
                 : <Button style='shortDisabled' text='送出結果' />
               }
-              <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='shortGrey' text='取消' onClick={handleToggleEdit('raceResult')} />
               <Button style='shortDisabled' text='重設比賽' />
             </span>
             : <span>
-              <Button style='short' text='編輯' onClick={handleToggleEdit('raceResult')}/>
+              <Button style='short' text='編輯' onClick={handleToggleEdit('raceResult')} />
               <Button style='shortRed' text='重設比賽' onClick={handleUpdateDialog('cancelRace')} />
             </span>
           }
@@ -130,7 +131,7 @@ const render = {
       <div className={css.boxFt}>
         <Button onClick={handleUpdateDialog()} text='關閉' />
       </div>
-    </div>,
+    </div>
   },
   dashboard: {
     labels: (race) => <div className={css.dashId}><table className={css.dashTable}>
@@ -143,15 +144,16 @@ const render = {
         return reg ? <tr className={css.dashItem} key={'rec' + index}>
           <td className={css.no}>{index + 1}</td>
           <td className={css.name}><span className={css.raceNumber}>{reg.raceNumber}</span> <span>{reg.name}</span></td>
-        </tr> : <tr></tr>})
+        </tr> : <tr />
+      })
       }</tbody>
     </table></div>,
     results: (race) => <table className={css.dashTable}>
       <thead><tr>
         {processData.returnLapLabels(race.laps).map((V, I) => <th key={'th-' + I}>{V}</th>)}
       </tr></thead>
-        <tbody>{race.result.map((record, index) => <tr key={'tr' + record.registration} className={css.dashItem}>
-          {record.lapRecords.map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
+      <tbody>{race.result.map((record, index) => <tr key={'tr' + record.registration} className={css.dashItem}>
+        {record.lapRecords.map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
       </tr>)}</tbody>
     </table>,
     summary: (race) => <table className={css.dashTable}>
@@ -165,7 +167,7 @@ const render = {
     </table>,
     edit: ({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace}) => <table className={css.dashTable}>
       <thead><tr><th><span>校正成績</span></th></tr></thead>
-      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{!race.isFinalRace && render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd}></div></td></tr>)}</tbody>
+      <tbody>{race.result.map((record, index) => <tr key={'adv' + index} className={css.dashItem}><td className={css.center}>{!race.isFinalRace && render.advanceMenu({advancingRules: race.advancingRules, raceNames, index, value: record.advanceTo, handleEditAdvnace})}<div className={css.dragHandle} draggable='true' onDragStart={handleDragStart(index)} onDragOver={handleDragOver(index)} onDragEnd={handleDragEnd} /></td></tr>)}</tbody>
     </table>
   }
 }
@@ -199,7 +201,6 @@ export class MatchManager extends BaseComponent {
     const orderedRaces = processData.returnRacesByOrder(processData.returnRaces(this.props.event.groups), this.props.event.raceOrder)
     const ongoingRace = (this.state.ongoingRace === -1) ? ((this.props.event.ongoingRace === -1) ? undefined : processData.returnOngoingRace(this.props.event.ongoingRace, orderedRaces)) : this.state.ongoingRace
     let stateObj = { races: orderedRaces, raceSelected: this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
-    let race
     this.originalData = orderedRaces
     this.modified = false
     if (ongoingRace === undefined) {
@@ -256,11 +257,11 @@ export class MatchManager extends BaseComponent {
     const timeLeft = (startTime - Date.now())
     if (timeLeft <= 0) { return reset() }
     const result = parseFloat(Math.floor(timeLeft / 100) / 10).toFixed(1)
-    this.setState({ counter:  result})
+    this.setState({ counter: result })
   }
   socketIoEvents (callback) {
     this.sConnection.on('connect', function onConnect () {
-      this.sConnection.get('/api/race/joinReaderRoom', function res () { if (callback !== undefined) { callback () } })
+      this.sConnection.get('/api/race/joinReaderRoom', function res () { if (callback !== undefined) { callback() } })
     }.bind(this))
     this.sConnection.on('readerstatus', function (data) {
       this.setState({readerStatus: (data.result && data.result.isSingulating) ? 'started' : 'idle'})
@@ -277,20 +278,26 @@ export class MatchManager extends BaseComponent {
   getReaderStatus () {
     this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: 'getreaderstatus' })
   }
-  handleToggleEdit (field) { return (e) => {
-    if (this.state.editField === field) {
-      this.modified = false
-      return this.setState({ editField: undefined, races: this.originalData })
+  handleToggleEdit (field) {
+    return (e) => {
+      if (this.state.editField === field) {
+        this.modified = false
+        return this.setState({ editField: undefined, races: this.originalData })
+      }
+      this.setState({ editField: field })
     }
-    this.setState({ editField: field })
-  }}
-  handleDragStart (fromIndex) { return (e) => {
-    this.dragFromIndex = fromIndex
-    this.dragOverIndex = fromIndex
-  }}
-  handleDragOver (overIndex) { return (e) => {
-    this.dragOverIndex = overIndex
-  }}
+  }
+  handleDragStart (fromIndex) {
+    return (e) => {
+      this.dragFromIndex = fromIndex
+      this.dragOverIndex = fromIndex
+    }
+  }
+  handleDragOver (overIndex) {
+    return (e) => {
+      this.dragOverIndex = overIndex
+    }
+  }
   handleDragEnd () {
     if (this.dragFromIndex !== this.dragOverIndex) {
       this.modified = true
@@ -304,27 +311,35 @@ export class MatchManager extends BaseComponent {
       }
     }
   }
-  handleEditAdvnace (index) { return (e) => {
-    let stateObj = { races: this.state.races }
-    let race = stateObj.races[this.state.raceSelected]
-    this.modified = true
-    race.result[index].advanceTo = (e.target.value === '-1') ? undefined : parseInt(e.target.value)
-    this.setState(stateObj)
-  }}
+  handleEditAdvnace (index) {
+    return (e) => {
+      let stateObj = { races: this.state.races }
+      let race = stateObj.races[this.state.raceSelected]
+      this.modified = true
+      race.result[index].advanceTo = (e.target.value === '-1') ? undefined : parseInt(e.target.value)
+      this.setState(stateObj)
+    }
+  }
   handleSubmitRaceOrder () {
     const onSuccess = () => this.setState({ editField: undefined })
     const eventStateObj = { model: 'event', original: { id: this.props.event.id }, modified: { raceOrder: this.state.races.map(V => V.id) } }
     return this.dispatch(eventActions.submit(eventStateObj, onSuccess))
   }
-  handleUpdateDialog (value) { return (e) => {
-    this.setState({ dialog: value })
-  }}
-  handleRefreshRace (raceid) { return (e) => {
-    this.dispatch(eventActions.getRace(raceid))
-  }}
-  handleChangeCountdown () { return (e) => {
-    this.setState({ countdown: e.target.value })
-  }}
+  handleUpdateDialog (value) {
+    return (e) => {
+      this.setState({ dialog: value })
+    }
+  }
+  handleRefreshRace (raceid) {
+    return (e) => {
+      this.dispatch(eventActions.getRace(raceid))
+    }
+  }
+  handleChangeCountdown () {
+    return (e) => {
+      this.setState({ countdown: e.target.value })
+    }
+  }
   handleControlReader (type) {
     this.sConnection.post(io.sails.url + '/api/race/readerRoom', { type: type, payload: { eventId: this.props.event.id } })
   }
@@ -365,19 +380,21 @@ export class MatchManager extends BaseComponent {
   handleSubmitResult () {
     this.dispatch(eventActions.submitRaceResult(this.state.races[this.state.raceSelected], this.updateRaces))
   }
-  handleSelect (index) { return (e) => {
-    if (this.state.editField === undefined) {
-      this.setState({ raceSelected: index}, function () {
-        if (this.state.races[index].result.length === 0) {
-          this.updateResult(index)
-        }
-      })
+  handleSelect (index) {
+    return (e) => {
+      if (this.state.editField === undefined) {
+        this.setState({ raceSelected: index }, function () {
+          if (this.state.races[index].result.length === 0) {
+            this.updateResult(index)
+          }
+        })
+      }
     }
-  }}
+  }
   render () {
     const { location, event, match } = this.props
     const { counter, races, raceSelected, readerStatus, dialog, ongoingRace, countdown, editField } = this.state
-    const { getReaderStatus, groupNames, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
+    const { groupNames, handleChangeCountdown, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace, handleEndRace, handleResetRace, handleToggleEdit, handleSelect, handleStartRace, handleSubmitResult, handleUpdateDialog, modified, raceNames } = this
     let dbLabels = ''
     let dbResults = ''
     let dbSummary = ''
@@ -385,8 +402,7 @@ export class MatchManager extends BaseComponent {
     let raceCtrl = ''
     let race
 
-    if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/console'}} /> }
-    else if (!event) { return <div><Header location={location} nav='event' match={match} /><div className={css.loading}>Loading...</div></div> }
+    if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/console'}} /> } else if (!event) { return <div><Header location={location} nav='event' match={match} /><div className={css.loading}>Loading...</div></div> }
 
     if (raceSelected !== -1) {
       race = races[raceSelected]
@@ -394,7 +410,7 @@ export class MatchManager extends BaseComponent {
       dbResults = <div className={css.scrollBox}>{render.dashboard.results(race)}</div>
       dbSummary = <div className={css.summary}>{render.dashboard.summary(race)}</div>
       if (editField === 'raceResult') {
-        dbAdvance = <div className={css.editRank}>{render.dashboard.edit({race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace })}</div>
+        dbAdvance = <div className={css.editRank}>{ render.dashboard.edit({ race, raceNames, handleDragStart, handleDragOver, handleDragEnd, handleEditAdvnace }) }</div>
       } else {
         dbAdvance = <div className={css.advTable}>{render.dashboard.advance({race, raceNames})}</div>
       }
@@ -409,17 +425,15 @@ export class MatchManager extends BaseComponent {
         <div className={css.managerList}>
           <div>
             <div className={css.hd}>
-            {editField === 'raceOrder'
+              {editField === 'raceOrder'
               ? <span>
-                  {modified === false ? <Button style='shortDisabled' text='儲存'/> : <Button style='short' onClick={this.handleSubmitRaceOrder} text='儲存'/>}
-                  <Button style='shortGrey' onClick={this.handleToggleEdit('raceOrder')} text='取消'/>
-                </span>
-              : <Button style='short' text='編輯賽程' onClick={this.handleToggleEdit('raceOrder')}/>
+                {modified === false ? <Button style='shortDisabled' text='儲存' /> : <Button style='short' onClick={this.handleSubmitRaceOrder} text='儲存' />}
+                <Button style='shortGrey' onClick={this.handleToggleEdit('raceOrder')} text='取消' />
+              </span>
+              : <Button style='short' text='編輯賽程' onClick={this.handleToggleEdit('raceOrder')} />
             }
             </div>
-            <ul className={css.ul}>
-              {races.map((race, index) => (editField === 'raceOrder') ? render.raceListDraggable({race, index, raceSelected, groupNames, handleSelect, handleDragStart, handleDragOver, handleDragEnd }) : render.raceList({race, index, raceSelected, groupNames, handleSelect }))}
-            </ul>
+            <ul className={css.ul}>{ races.map((race, index) => (editField === 'raceOrder') ? render.raceListDraggable({ race, index, raceSelected, groupNames, handleSelect, handleDragStart, handleDragOver, handleDragEnd }) : render.raceList({ race, index, raceSelected, groupNames, handleSelect })) }</ul>
           </div>
           {dbLabels}{dbResults}{dbSummary}{dbAdvance}
         </div>

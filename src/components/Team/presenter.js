@@ -17,14 +17,14 @@ const returnInputs = (store, onChange) => [
   { label: '網址', field: 'url', onChange: onChange('url'), value: valueFunc(store, 'url') }
 ]
 const render = {
-  inputSection: ({store, inputFunc}) => <section key='sec-input'><h3>隊伍資料</h3><ul>{returnInputs(store, inputFunc).map(input =>  render.item({ ...input }))}</ul></section>,
+  inputSection: ({store, inputFunc}) => <section key='sec-input'><h3>隊伍資料</h3><ul>{returnInputs(store, inputFunc).map(input => render.item({ ...input }))}</ul></section>,
   memberSection: ({store, inputFunc, deleteFunc}) => {
     const team = store.teams[store.selectedIndex]
     const teamRacers = (store.selectedIndex !== -1) ? (store.inEdit && store.inEdit.racers) ? store.inEdit.racers : team.racers : []
-    return (<section key='sec-member'><h3>成員</h3><table><thead><tr><th>姓名</th><th>隊長</th><th className={css.ctrl}></th></tr></thead>
+    return (<section key='sec-member'><h3>成員</h3><table><thead><tr><th>姓名</th><th>隊長</th><th className={css.ctrl}><span>&nbsp;</span></th></tr></thead>
       <tbody>{teamRacers && teamRacers.map(racer => render.tableItem({ racer: racer, leader: (store.inEdit && store.inEdit.leader !== undefined) ? store.inEdit.leader : team.leader, onChange: inputFunc, onDelete: deleteFunc }))}</tbody></table></section>)
   },
-  newMemberSection: ({racers, addFunc}) => <section key='sec-newMember'><h3>新增隊員</h3><div className={css.addList}><ul>{ (racers.length > 0) && racers.map(racer => { if (!racer.team) {return render.newMemberOption({racer, onClick: addFunc})}} )}</ul></div></section>,
+  newMemberSection: ({racers, addFunc}) => <section key='sec-newMember'><h3>新增隊員</h3><div className={css.addList}><ul>{ (racers.length > 0) && racers.map(racer => { if (!racer.team) { return render.newMemberOption({ racer, onClick: addFunc }) } }) }</ul></div></section>,
   item: ({disabled, label, field, onChange, type = 'text', value}) => { return <li key={field}><label>{label}</label>{ renderInput[type]({disabled, onChange, value}) }</li> },
   tableItem: ({racer, leader, onChange, onDelete}) => (<tr key={'item-' + racer.id}>
     <td>{racer.lastName + racer.firstName}</td>
@@ -46,31 +46,39 @@ export default class Team extends BaseComponent {
     this.dispatch(actionCreators.create())
     this.setState({ readOnly: false })
   }
-  handleInput (field) { return (e) => {
-    this.dispatch(actionCreators.input(field, (field === 'leader') ? parseInt(e.currentTarget.value) : e.currentTarget.value))
-  }}
+  handleInput (field) {
+    return (e) => {
+      this.dispatch(actionCreators.input(field, (field === 'leader') ? parseInt(e.currentTarget.value) : e.currentTarget.value))
+    }
+  }
   handleEditToggle () {
     this.setState({ readOnly: !this.state.readOnly })
     if (!this.state.readOnly) {
       this.dispatch(actionCreators.cancelEdit())
     }
   }
-  handleAddRacer (newRacer) { return (e) => {
-    let added
-    this.props.team.teams[this.props.team.selectedIndex].racers.forEach(racer => {if (racer.id === newRacer.id) { added = true}})
-    if (!added) {
-      this.dispatch(actionCreators.addRacer(newRacer))
+  handleAddRacer (newRacer) {
+    return (e) => {
+      let added
+      this.props.team.teams[this.props.team.selectedIndex].racers.forEach(racer => { if (racer.id === newRacer.id) { added = true } })
+      if (!added) {
+        this.dispatch(actionCreators.addRacer(newRacer))
+      }
     }
-  }}
-  handleRemoveRacer (id, toRestore) { return (e) => {
-    if (this.props.team.teams[this.props.team.selectedIndex].racers.length > 1) {
-      this.dispatch(actionCreators.removeRacer(id, toRestore))
+  }
+  handleRemoveRacer (id, toRestore) {
+    return (e) => {
+      if (this.props.team.teams[this.props.team.selectedIndex].racers.length > 1) {
+        this.dispatch(actionCreators.removeRacer(id, toRestore))
+      }
     }
-  }}
-  handleSelect (index) { return (e) => {
-    this.dispatch(actionCreators.selectTeam(index))
-    this.setState({ readOnly: true })
-  }}
+  }
+  handleSelect (index) {
+    return (e) => {
+      this.dispatch(actionCreators.selectTeam(index))
+      this.setState({ readOnly: true })
+    }
+  }
   handleSubmit () {
     this.dispatch(actionCreators.submit())
     this.setState({ readOnly: true })
@@ -93,7 +101,7 @@ export default class Team extends BaseComponent {
     ] : []
 
     return (<div><Header location={this.props.location} nav='base' /><div className={css.mainBody}>
-      <Table list={store.teams} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={this.props.team.inEdit ? true : false} readOnly={this.state.readOnly} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} handleCreate={this.handleCreate} />
+      <Table list={store.teams} selectedIndex={store.selectedIndex} editBody={editBd} inEdit={this.props.team.inEdit && true} readOnly={this.state.readOnly} listNameFunc={listNameFunc} handleSelect={this.handleSelect} handleSubmit={this.handleSubmit} handleEditToggle={this.handleEditToggle} handleCreate={this.handleCreate} />
     </div></div>)
   }
 }

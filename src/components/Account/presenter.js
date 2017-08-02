@@ -49,22 +49,22 @@ class Account extends BaseComponent {
       </div>
       <div className={css.mainBody}>
         <div className={css.body}>
-            { !this.props.location.state || isAuthenticated !== undefined
-              ? <div>
-                {err}
-                <ul>
-                  <li className={css.li}>
-                    <input type='text' className={css.text1} onChange={this.handleInput('email')} placeholder='電子信箱' />
-                  </li>
-                  <li className={css.li}>
-                    <input type='password' className={css.text2} onChange={this.handleInput('password')} placeholder='密碼' />
-                  </li>
-                </ul>
-                <div className={css.ft}>
-                  <Button onClick={this.handleSubmit} text='登入' />
-                </div>
+          { !this.props.location.state || isAuthenticated !== undefined
+            ? <div>
+              {err}
+              <ul>
+                <li className={css.li}>
+                  <input type='text' className={css.text1} onChange={this.handleInput('email')} placeholder='電子信箱' />
+                </li>
+                <li className={css.li}>
+                  <input type='password' className={css.text2} onChange={this.handleInput('password')} placeholder='密碼' />
+                </li>
+              </ul>
+              <div className={css.ft}>
+                <Button onClick={this.handleSubmit} text='登入' />
               </div>
-            : <div className={css.loading}>Loading...</div> }
+            </div>
+          : <div className={css.loading}>Loading...</div> }
         </div>
       </div>
       <Footer />

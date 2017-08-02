@@ -22,7 +22,7 @@ const processData = {
   },
   returnSelectedRace: (orderedRaces) => {
     for (var i = 0; i < orderedRaces.length; i += 1) {
-      if (orderedRaces[i].raceStatus !== 'submitted') { return i}
+      if (orderedRaces[i].raceStatus !== 'submitted') { return i }
     }
     return 0
   },
@@ -31,29 +31,30 @@ const processData = {
     for (var i = 0; i < laps; i += 1) { result.push(i + 1) }
     return result
   },
-  returnMovedArray: (arr, old_index, new_index) => {
-    while (old_index < 0) { old_index += arr.length; }
-    while (new_index < 0) { new_index += arr.length; }
-    if (new_index >= arr.length) {
-        var k = new_index - arr.length
-        while ((k--) + 1) { arr.push(undefined) }
+  returnMovedArray: (arr, oldIndex, newIndex) => {
+    while (oldIndex < 0) { oldIndex += arr.length }
+    while (newIndex < 0) { newIndex += arr.length }
+    if (newIndex >= arr.length) {
+      let k = newIndex - arr.length
+      while ((k--) + 1) { arr.push(undefined) }
     }
-    arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
-   return arr
+    arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0])
+    return arr
   },
   returnFormattedTime: (milS) => {
-    const sec = ((milS % 60000) / 1000).toFixed(2);
-    const min = Math.floor(milS / 60000);
+    const sec = ((milS % 60000) / 1000).toFixed(2)
+    const min = Math.floor(milS / 60000)
     return min + ':' + (sec < 10 ? '0' : '') + sec
   },
   returnLapRecord: (result, laps, startTime, raceStatus) => {
     let output = []
-    let lastRecord = startTime;
+    let lastRecord = startTime
     let lapsLeft = laps
+    let i
 
     // started
     if (result.length > 0) {
-      for (var i = 1; i <= result.length; i += 1) {
+      for (i = 1; i <= result.length; i += 1) {
         if (result[i]) {
           output.push(processData.returnFormattedTime(result[i] - lastRecord))
           lastRecord = result[i]
@@ -64,14 +65,14 @@ const processData = {
         }
       }
     }
-    for (var i = 0; i < lapsLeft; i += 1) {
+    for (i = 0; i < lapsLeft; i += 1) {
       output.push('-')
     }
     return output
   },
   returnAdvanceToId: (index, advancingRules) => {
     for (var i = 0; i < advancingRules.length; i += 1) {
-      if ( index >= advancingRules[i].rankFrom && index <= advancingRules[i].rankTo) { return advancingRules[i].toRace }
+      if (index >= advancingRules[i].rankFrom && index <= advancingRules[i].rankTo) { return advancingRules[i].toRace }
     }
     return undefined
   },
@@ -95,7 +96,7 @@ const processData = {
     })
     sortTable.sort((a, b) => a[3] - b[3]) // sort completed racer by last lap record
     incomplete.sort((a, b) => b[4] - a[4]) // sort incompleted by laps
-    incomplete.sort((a, b) => (a[4] === b[4]) ? a[3] - b[3] : 0 ) // sort incompleted same-lap by time
+    incomplete.sort((a, b) => (a[4] === b[4]) ? a[3] - b[3] : 0) // sort incompleted same-lap by time
     notStarted.sort((a, b) => a[2] - b[2]) // sort notStart by raceNumber
     sortTable = sortTable.concat(incomplete).concat(notStarted)
     // sortTable: [epc, name, raceNumber, timestamp, laps, record]

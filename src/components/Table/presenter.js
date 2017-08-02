@@ -6,7 +6,7 @@ const renderList = ({selectedIndex, index, handleSelect, name}) => <li className
 const renderFt = ({inEdit, handleSubmit, handleEditToggle}) => <span>{inEdit ? <Button style='listFt' onClick={handleSubmit} text='儲存' /> : <Button style='listFtDisabled' text='儲存' />}<Button style='listFtRight' onClick={handleEditToggle} text='取消' /></span>
 const renderFtReadOnly = ({handleEditToggle}) => <Button style='listFt' onClick={handleEditToggle} text='編輯' />
 
-const Table = ({ list, selectedIndex, editBody, inEdit, listNameFunc, readOnly, handleSelect, handleCreate, handleEditToggle, handleSubmit}) => (<div className={css.body}>
+const Table = ({ list, selectedIndex, editBody, inEdit, listNameFunc, readOnly, handleSelect, handleCreate, handleEditToggle, handleSubmit }) => (<div className={css.body}>
   <div className={css.list}>{ (list && list.length > 0) &&
     <div className={css.table}>
       <div className={css.tableBd}>
