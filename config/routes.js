@@ -136,8 +136,9 @@ module.exports.routes = {
     'get  /group/update/:id': 'TestPageController.groupUpdatePage',
     'get  /event/update/:id': 'TestPageController.eventUpdatePage',
     'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
-    'get  /': 'TestPageController.apiTestPage',
-    '/testSocket': { view: 'testSocketPage' },
+//    'get  /test': 'TestPageController.apiTestPage',
+//    '/testSocket': { view: 'testPages/testSocketPage' },
+    '/': '/console',
     '/console/*': { view: 'sharePage' },
     '/console': { view: 'sharePage' }
 };

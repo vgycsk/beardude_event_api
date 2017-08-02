@@ -36,7 +36,7 @@ module.exports = {
 //    secret: '0ef4078c715212419592935512d5dc0d',
     adapter: 'redis',
     host: process.env.REDIS_HOST,
-    port: REDIS_PORT,
+    port: process.env.REDIS_PORT,
   // ttl: <redis session TTL in seconds>,
     db: 0,
     pass: '',

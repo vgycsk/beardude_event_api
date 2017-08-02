@@ -5,5 +5,7 @@
 
 # Copy view files
 
-cp -R views .tmp/views;
-cp -R assets/js .tmp/public
+mkdir -p ./.tmp
+mkdir -p ./.tmp/public
+cp -R ./views .tmp/views
+cp -R ./assets/js .tmp/public

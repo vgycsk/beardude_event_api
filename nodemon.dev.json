@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "exec": "webpack-dev-server --config webpack.config.dev.js",
+  "exec": "./scripts/copyView.sh && webpack-dev-server --config webpack.config.dev.js",
   "watch": [
     ".babelrc"
   ],
