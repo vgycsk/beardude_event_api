@@ -13,6 +13,8 @@ import Racer from './components/Racer'
 import Team from './components/Team'
 import NotFound from './components/NotFound'
 import Manager from './components/Manager'
+import PublicEventList from './components/PublicEventList'
+import PublicEvent from './components/PublicEvent'
 
 import css from './style/index.css'
 
@@ -25,6 +27,8 @@ ReactDOM.render(
     <Router>
       <div className={css.container}>
         <Switch>
+          <Route exact path='/' component={PublicEventList} />
+          <Route exact path='/event/:id' component={PublicEvent} />
           <Route exact path='/console' component={EventList} />
           <Route path='/console/login' component={Account} />
           <Route path='/console/event/:id' component={EventManager} />

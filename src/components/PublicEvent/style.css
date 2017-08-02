@@ -1,0 +1,256 @@
+.mainBody {
+  position: relative;
+}
+.loading {
+  font-size: 24px;
+  font-weight: 100;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 200px auto;
+  text-align: center;
+}
+.info {
+  position: relative;
+  padding: 0 15px 15px 15px;
+  width: 100%;
+  color: #fff;
+}
+.info h2 {
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 0.4px;
+  margin: 0 0 3px 0;
+  display: inline-block;
+}
+.managerList {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  color: #E0E4E9;
+  font-size: 14px;
+  border-top: 1px solid #fff;
+}
+.managerList > div {
+  position: relative;
+  font-size: 0;
+  vertical-align: top;
+}
+.managerList > div:first-child {
+  width: auto;
+  flex-shrink: 0;
+  border-bottom: 1px solid #fff;
+}
+.managerList > div:first-child .hd {
+  text-align: center;
+}
+.managerList > div:first-child h3 {
+  border-radius: 5px 0 0 0;
+}
+.managerList > div:last-child h3 {
+  border-radius: 0 5px 0 0;
+}
+.managerList > div:first-child ul button {
+  font-size: 13px;
+  margin: 0;
+  cursor: pointer;
+}
+.managerList h3 {
+  background: RGBA(66, 66, 66, 0.8);
+  color: #E0E4E9;
+  margin-right: 2px;
+  padding: 8px 16px;
+}
+.managerList .hd {
+  height: 32px;
+  line-height: 32px;
+  border-bottom: 1px solid #fff;
+  background: rgba(255, 255, 255, 0.4);
+  position: relative;
+}
+.managerList .ul li button {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+@keyframes pulse {
+  from { opacity: 0.1; }
+  50% { opacity: 1; }
+  to { opacity: 0.1; }
+}
+.ul .li {
+  position: relative;
+  display: flex;
+  color: #fff;
+  height: 32px;
+}
+.ul .selected {
+  position: relative;
+  display: flex;
+  color: #fff;
+  height: 32px;
+  background: rgba(255,255,255, 0.4);
+}
+.init {
+  display: block;
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border-radius: 10px;
+  width: 8px;
+  height: 8px;
+  
+}
+.started {
+  composes: init;
+  animation-name: pulse;
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  background: rgb(61, 255, 0);
+}
+.ended {
+  composes: init;
+  background: rgba(255,255,0, 1);
+}
+.submitted {
+  composes: init;
+  background: rgba(87,189,55, 1);
+}
+.list {
+  display: block;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: #fff;
+  margin: 0 0 0 10px;
+  padding: 0 40px 0 0;
+  text-indent: 5px;
+  border: 0;
+  background: 0;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  outline: none;
+  position: relative;
+  font-family: "San Francisco";
+  letter-spacing: 0.5px;
+}
+.listFt {
+  position: absolute;
+  bottom: 121px;
+  background: rgba(66,66,66,0.2);
+  width: 99.5%;
+  height: 36px;
+}
+.form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.form h3 {
+  margin: 0;
+  text-align: center;
+}
+.form h4 {
+  margin: 10px 0;
+  font-weight: 300;
+  text-align: center;
+}
+.right {
+  float: right;
+}
+.dashItem {
+  height: 32px;
+  line-height: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.dashTable {
+  background: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  flex-shrink: 0;
+  color: #fff;
+}
+.dashId {
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+.dashTable thead {
+  background: rgba(255, 255, 255, 0.4);
+}
+.dashTable th,
+.dashTable td {
+  padding: 0 10px;
+  height: 32px;
+  border-left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 50px;
+  font-size: 13px;
+  position: relative;
+}
+.dashTable th {
+  height: 31px;
+  white-space: nowrap;
+}
+.dashTable tbody tr:first-child {
+  height: 33px;
+}
+.dashTable tbody tr {
+  background: 0;
+  height: auto;
+  line-height: 0;
+}
+.dashTable .no {
+  text-align: center;
+}
+.dashTable .name {
+  white-space: nowrap;
+}
+.dashTable .lap {
+  font-size: 13px;
+  text-align: center;
+  color: #fff;
+  font-family: Garamond, Times;
+  padding: 0 6px;
+}
+.raceNumber {
+  margin: 0 5px 0 0;
+}
+.scrollBox {
+  overflow-x: scroll;
+  overflow: auto;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  flex-grow: 1;
+}
+.scrollBox table {
+  width: 100%;
+}
+.scrollBox th:last-child,
+.scrollBox td:last-child {
+  border-right: 1px solid #fff;
+}
+.summary {
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+.summary .lap {
+  padding: 0 10px;
+  text-align: center;
+}
+.advTable,
+.editRank {
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+.editRank .dashTable td{
+  padding: 0 20px 0 10px;
+}
+.editRank select {
+  color: #000;
+}
+.center {
+  text-align: center;
+}

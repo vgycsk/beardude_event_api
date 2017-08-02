@@ -7,111 +7,8 @@ import css from './style.css'
 import { Dialogue } from '../Dialogue/presenter'
 import Button from '../Button'
 import Header from '../Header'
+import processData from './processData'
 
-const returnRaces = (groups) => {
-  let races = []
-  groups.map(V => { races = races.concat(V.races) })
-  return races
-}
-const returnRacesByOrder = (races, order) => {
-  let result = []
-  order.map(raceId => { races.map(race => { if (race.id === raceId) { result.push(race) } }) })
-  return result
-}
-const returnIdNameMap = (objs) => {
-  let result = {}
-  objs.map(obj => { result[obj.id.toString()] = obj.nameCht })
-  return result
-}
-const returnOngoingRace = (ongoingRaceId, orderedRaces) => {
-  for (let i = 0; i < orderedRaces.length; i += 1) {
-    if (orderedRaces[i].id === ongoingRaceId) { return i }
-  }
-  return undefined
-}
-const returnSelectedRace = (orderedRaces) => {
-  for (var i = 0; i < orderedRaces.length; i += 1) {
-    if (orderedRaces[i].raceStatus !== 'submitted') { return i}
-  }
-  return 0
-}
-const returnLapLabels = (laps) => {
-  let result = []
-  for (var i = 0; i < laps; i += 1) { result.push(i + 1) }
-  return result
-}
-const returnMovedArray = (arr, old_index, new_index) => {
-  while (old_index < 0) { old_index += arr.length; }
-  while (new_index < 0) { new_index += arr.length; }
-  if (new_index >= arr.length) {
-      var k = new_index - arr.length
-      while ((k--) + 1) { arr.push(undefined) }
-  }
-  arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
- return arr
-}
-
-const returnFormattedTime = (milS) => {
-  const sec = ((milS % 60000) / 1000).toFixed(2);
-  const min = Math.floor(milS / 60000);
-  return min + ':' + (sec < 10 ? '0' : '') + sec
-}
-const returnLapRecord = (result, laps, startTime, raceStatus) => {
-  let output = []
-  let lastRecord = startTime;
-  let lapsLeft = laps
-
-  // started
-  if (result.length > 0) {
-    for (var i = 1; i <= result.length; i += 1) {
-      if (result[i]) {
-        output.push(returnFormattedTime(result[i] - lastRecord))
-        lastRecord = result[i]
-        lapsLeft -= 1
-      } else if (raceStatus === 'started') {
-        output.push('🕒')
-        lapsLeft -= 1
-      }
-    }
-  }
-  for (var i = 0; i < lapsLeft; i += 1) {
-    output.push('-')
-  }
-
-  return output
-}
-const returnAdvanceToId = (index, advancingRules) => {
-  for (var i = 0; i < advancingRules.length; i += 1) {
-    if ( index >= advancingRules[i].rankFrom && index <= advancingRules[i].rankTo) { return advancingRules[i].toRace }
-  }
-  return undefined
-}
-const returnRaceResult = (race) => {
-  let sortTable = []
-  let incomplete = []
-  let notStarted = []
-  const lastRecordIndex = race.laps + 1
-
-  race.registrations.map(reg => {
-    const record = race.recordsHashTable[reg.epc]
-    if (record) {
-      if (record[lastRecordIndex]) {
-        sortTable.push([reg.epc, reg.id, reg.raceNumber, record[lastRecordIndex], record.length - 1, record])
-      } else {
-        incomplete.push([reg.epc, reg.id, reg.raceNumber, record[record.length - 1], record.length - 1, record])
-      }
-    } else {
-      notStarted.push([reg.epc, reg.id, reg.raceNumber, 0, 0, [], reg.id])
-    }
-  })
-  sortTable.sort((a, b) => a[3] - b[3]) // sort completed racer by last lap record
-  incomplete.sort((a, b) => b[4] - a[4]) // sort incompleted by laps
-  incomplete.sort((a, b) => (a[4] === b[4]) ? a[3] - b[3] : 0 ) // sort incompleted same-lap by time
-  notStarted.sort((a, b) => a[2] - b[2]) // sort notStart by raceNumber
-  sortTable = sortTable.concat(incomplete).concat(notStarted)
-  // sortTable: [epc, name, raceNumber, timestamp, laps, record]
-  return sortTable.map((item, index) => ({ epc: item[0], registration: item[1], sum: (item[3]) ? returnFormattedTime(item[3] - race.startTime) : '-', laps: item[4], lapRecords: returnLapRecord(item[5], race.laps, race.startTime, race.raceStatus), advanceTo: returnAdvanceToId(index, race.advancingRules) }))
-}
 const render = {
   advanceMenu: ({advancingRules, raceNames, value, handleEditAdvnace, index}) => <select defaultValue={value} onChange={handleEditAdvnace(index)}><option value='-1'>無</option>{advancingRules.map(rule => <option key={'rule' + rule.toRace} value={rule.toRace}>{raceNames[rule.toRace]}</option>)}</select>,
 
@@ -251,7 +148,7 @@ const render = {
     </table></div>,
     results: (race) => <table className={css.dashTable}>
       <thead><tr>
-        {returnLapLabels(race.laps).map((V, I) => <th key={'th-' + I}>{V}</th>)}
+        {processData.returnLapLabels(race.laps).map((V, I) => <th key={'th-' + I}>{V}</th>)}
       </tr></thead>
         <tbody>{race.result.map((record, index) => <tr key={'tr' + record.registration} className={css.dashItem}>
           {record.lapRecords.map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
@@ -299,15 +196,15 @@ export class MatchManager extends BaseComponent {
     this._bind('socketIoEvents', 'getReaderStatus', 'countdown', 'handleChangeCountdown', 'handleControlReader', 'handleDragStart', 'handleDragOver', 'handleDragEnd', 'handleEditAdvnace', 'handleEndRace', 'handleRefreshRace', 'handleResize', 'handleSelect', 'handleStartRace', 'handleSubmitRaceOrder', 'handleSubmitResult', 'handleToggleEdit', 'handleUpdateDialog', 'handleResetRace', 'updateRecords', 'updateRaces')
   }
   updateRaces () {
-    const orderedRaces = returnRacesByOrder(returnRaces(this.props.event.groups), this.props.event.raceOrder)
-    const ongoingRace = (this.state.ongoingRace === -1) ? ((this.props.event.ongoingRace === -1) ? undefined : returnOngoingRace(this.props.event.ongoingRace, orderedRaces)) : this.state.ongoingRace
+    const orderedRaces = processData.returnRacesByOrder(processData.returnRaces(this.props.event.groups), this.props.event.raceOrder)
+    const ongoingRace = (this.state.ongoingRace === -1) ? ((this.props.event.ongoingRace === -1) ? undefined : processData.returnOngoingRace(this.props.event.ongoingRace, orderedRaces)) : this.state.ongoingRace
     let stateObj = { races: orderedRaces, raceSelected: this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
     let race
     this.originalData = orderedRaces
     this.modified = false
     if (ongoingRace === undefined) {
       clearInterval(this.timer)
-      if (stateObj.raceSelected === -1) { stateObj.raceSelected = returnSelectedRace(orderedRaces) }
+      if (stateObj.raceSelected === -1) { stateObj.raceSelected = processData.returnSelectedRace(orderedRaces) }
     } else {
       stateObj.raceSelected = ongoingRace
       if (orderedRaces[ongoingRace].startTime && orderedRaces[ongoingRace].startTime > Date.now()) {
@@ -324,14 +221,14 @@ export class MatchManager extends BaseComponent {
   updateResult (index) {
     let races = this.state.races
     let race = races[index]
-    race.result = returnRaceResult(race)
+    race.result = processData.returnRaceResult(race)
     this.setState({races: races})
   }
   componentDidMount () {
     const onSuccess = () => {
-      const races = returnRaces(this.props.event.groups)
-      this.groupNames = returnIdNameMap(this.props.event.groups)
-      this.raceNames = returnIdNameMap(races)
+      const races = processData.returnRaces(this.props.event.groups)
+      this.groupNames = processData.returnIdNameMap(this.props.event.groups)
+      this.raceNames = processData.returnIdNameMap(races)
       if (this.props.event.raceOrder.length === 0 || this.props.event.raceOrder.length < races.length) {
         const eventStateObj = { model: 'event', original: { id: this.props.event.id }, modified: { raceOrder: races.map(race => race.id) } }
         return this.dispatch(eventActions.submit(eventStateObj))
@@ -347,6 +244,7 @@ export class MatchManager extends BaseComponent {
   componentWillUnmount () {
     this.sConnection.off('connect')
     this.sConnection.off('readerstatus')
+    this.sConnection.off('raceupdate')
   }
   countdown () {
     const reset = () => {
@@ -372,7 +270,7 @@ export class MatchManager extends BaseComponent {
       let race = races[this.state.ongoingRace]
 
       race.recordsHashTable = data.result.recordsHashTable
-      race.result = returnRaceResult(race)
+      race.result = processData.returnRaceResult(race)
       this.setState({races: races})
     }.bind(this))
   }
@@ -397,11 +295,11 @@ export class MatchManager extends BaseComponent {
     if (this.dragFromIndex !== this.dragOverIndex) {
       this.modified = true
       if (this.state.editField === 'raceOrder') {
-        this.setState({races: returnMovedArray([...this.state.races], this.dragFromIndex, this.dragOverIndex), raceSelected: this.dragOverIndex})
+        this.setState({races: processData.returnMovedArray([...this.state.races], this.dragFromIndex, this.dragOverIndex), raceSelected: this.dragOverIndex})
       } else if (this.state.editField === 'raceResult') {
         let races = this.state.races
         let race = races[this.state.raceSelected]
-        race.result = returnMovedArray([...race.result], this.dragFromIndex, this.dragOverIndex)
+        race.result = processData.returnMovedArray([...race.result], this.dragFromIndex, this.dragOverIndex)
         this.setState({races: races})
       }
     }
