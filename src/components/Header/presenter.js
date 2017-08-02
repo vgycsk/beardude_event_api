@@ -52,7 +52,7 @@ class Header extends BaseComponent {
     return (<div className={css.mainHeader}>
         <div className={css.heading}>
             <h1 className={css.bdlogo}>
-              <Link to="/console">
+              <Link to={(isPublic) ? '/' : '/console'}>
                 <span className={css.logoB}>Beardude</span>
                 <span className={css.logoE}>Event</span>
               </Link>

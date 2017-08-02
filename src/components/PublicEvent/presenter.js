@@ -7,6 +7,7 @@ import css from './style.css'
 import { Dialogue } from '../Dialogue/presenter'
 import Button from '../Button'
 import Header from '../Header'
+import Footer from '../Footer'
 import processData from '../MatchManager/processData'
 
 
@@ -166,6 +167,7 @@ export class PublicEvent extends BaseComponent {
           {dbLabels}{dbResults}{dbSummary}{dbAdvance}
         </div>
       </div>
+      <Footer />
     </div>)
   }
 }
