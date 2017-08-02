@@ -67,19 +67,10 @@ module.exports = {
       required: true,
       defaultsTo: true
     },
-    // RFID 至尊機傳資料時會帶這個欄位為true的event ID
-    isRfidTerminal: {
-      type: 'boolean',
-      defaultsTo: false
-    },
     requiresPaymentOnReg: {
       type: 'boolean',
       required: true,
       defaultsTo: false
-    },
-    testerEpc: {
-      type: 'array',
-      defaultsTo: []
     },
     pacerEpc: {
       type: 'string'
