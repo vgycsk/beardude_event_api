@@ -1,7 +1,7 @@
 import React from 'react'
 import BaseComponent from '../BaseComponent'
 import Button from '../Button'
-import { actionCreators as eventActions} from '../../ducks/event'
+import { actionCreators as eventActions } from '../../ducks/event'
 
 import css from './style.css'
 
@@ -12,14 +12,11 @@ const returnInitStateObj = (group) => {
   group.races.map(V => { races[V.id] = { regs: [], name: V.name, nameCht: V.nameCht, isEntryRace: V.isEntryRace, isFinalRace: V.isFinalRace, racerNumberAllowed: V.racerNumberAllowed } })
   group.registrations.map(reg => {
     const regObj = {id: reg.id, name: reg.name, raceNumber: reg.raceNumber}
-    if (reg.races.length === 0) { stateObj.unassignedRegs.push(regObj) }
-    else { reg.races.map(race => { races[race.id].regs.push(regObj) }) }
+    if (reg.races.length === 0) { stateObj.unassignedRegs.push(regObj) } else { reg.races.map(race => { races[race.id].regs.push(regObj) }) }
   })
   for (let id in races) {
     const raceObj = {id: id, name: races[id].name, nameCht: races[id].nameCht, regs: races[id].regs, racerNumberAllowed: races[id].racerNumberAllowed}
-    if (races[id].isEntryRace) { stateObj.entrysRegs.push(raceObj) }
-    else if (races[id].isFinalRace) { stateObj.finalRegs.push(raceObj) }
-    else { stateObj.rematchsRegs.push(raceObj) }
+    if (races[id].isEntryRace) { stateObj.entrysRegs.push(raceObj) } else if (races[id].isFinalRace) { stateObj.finalRegs.push(raceObj) } else { stateObj.rematchsRegs.push(raceObj) }
   }
   return stateObj
 }
@@ -40,12 +37,12 @@ class AssignReg extends BaseComponent {
         unassignedRegs: [...stateObj.unassignedRegs]
       }
     }
-    //{id: ID, regs: []}
+    // {id: ID, regs: []}
     this.dispatch = this.props.dispatch
     this._bind('handleAutoAssign', 'handleRestore', 'handleDragStart', 'handleDragOver', 'handleDragEnd', 'handleSubmit')
   }
   handleAutoAssign () {
-    const shuffleArray = (arr) => arr.sort(() => (Math.random() - 0.5))
+//    const shuffleArray = (arr) => arr.sort(() => (Math.random() - 0.5))
     let stateObj = {autoAssign: true, entrysRegs: [...this.state.entrysRegs], unassignedRegs: [...this.state.unassignedRegs], modified: true}
     const slots = Math.floor(this.props.group.registrations.length / stateObj.entrysRegs.length)
 
@@ -99,15 +96,19 @@ class AssignReg extends BaseComponent {
       this.setState({modified: false})
     }
   }
-  handleDragStart (fromState, index, fromIndex) { return (e) => {
-    this.dragFrom = fromState
-    this.dragItemIndex = index
-    this.dragFromIndex = fromIndex
-  }}
-  handleDragOver (overIndex) { return (e) => {
-    e.preventDefault()
-    this.dragOverIndex = overIndex
-  }}
+  handleDragStart (fromState, index, fromIndex) {
+    return (e) => {
+      this.dragFrom = fromState
+      this.dragItemIndex = index
+      this.dragFromIndex = fromIndex
+    }
+  }
+  handleDragOver (overIndex) {
+    return (e) => {
+      e.preventDefault()
+      this.dragOverIndex = overIndex
+    }
+  }
   handleDragEnd (e) {
     let stateObj = {
       unassignedRegs: this.state.unassignedRegs,
@@ -116,29 +117,39 @@ class AssignReg extends BaseComponent {
     }
     let reg
     switch (this.dragFrom) {
-    case 'unassignedRegs':
-      reg = stateObj.unassignedRegs.splice(this.dragItemIndex, 1)[0]
-      reg.toAdd = true
-      stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
-      stateObj.modified = true
-      return this.setState(stateObj)
-    case 'entrysRegs':
-      if (this.dragFromIndex !== this.dragOverIndex) {
+      case 'unassignedRegs':
+        reg = stateObj.unassignedRegs.splice(this.dragItemIndex, 1)[0]
+        reg.toAdd = true
+        stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
         stateObj.modified = true
+        return this.setState(stateObj)
+      case 'entrysRegs':
+        if (this.dragFromIndex !== this.dragOverIndex) {
+          stateObj.modified = true
         // moving unsaved item again
-        if (stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex].toAdd) {
-          let existsInTarget = false
-          reg = stateObj.entrysRegs[this.dragFromIndex].regs.splice([this.dragItemIndex], 1)[0]
-          if (this.dragOverIndex !== -1) {
-            stateObj.entrysRegs[this.dragOverIndex].regs.forEach((regNew, i) => {
-              if (regNew.id === reg.id) {
-                stateObj.entrysRegs[this.dragOverIndex].regs[i].toRemove = false
-                stateObj.entrysRegs[this.dragOverIndex].regs[i].toAdd = false
-                existsInTarget = true
+          if (stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex].toAdd) {
+            let existsInTarget = false
+            reg = stateObj.entrysRegs[this.dragFromIndex].regs.splice([this.dragItemIndex], 1)[0]
+            if (this.dragOverIndex !== -1) {
+              stateObj.entrysRegs[this.dragOverIndex].regs.forEach((regNew, i) => {
+                if (regNew.id === reg.id) {
+                  stateObj.entrysRegs[this.dragOverIndex].regs[i].toRemove = false
+                  stateObj.entrysRegs[this.dragOverIndex].regs[i].toAdd = false
+                  existsInTarget = true
+                }
+              })
+            }
+            if (!existsInTarget) {
+              reg.toAdd = true
+              if (this.dragOverIndex === -1) {
+                stateObj.unassignedRegs.push(reg)
+              } else {
+                stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
               }
-            })
-          }
-          if (!existsInTarget) {
+            }
+          } else {
+            reg = {...stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex]}
+            stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex].toRemove = true
             reg.toAdd = true
             if (this.dragOverIndex === -1) {
               stateObj.unassignedRegs.push(reg)
@@ -146,23 +157,12 @@ class AssignReg extends BaseComponent {
               stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
             }
           }
-        } else {
-          let existsInTarget = false
-          reg = {...stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex]}
-          stateObj.entrysRegs[this.dragFromIndex].regs[this.dragItemIndex].toRemove = true
-          reg.toAdd = true
-          if (this.dragOverIndex === -1) {
-            stateObj.unassignedRegs.push(reg)
-          } else {
-            stateObj.entrysRegs[this.dragOverIndex].regs.push(reg)
-          }
+          return this.setState(stateObj)
         }
-        return this.setState(stateObj)
-      }
     }
   }
   render () {
-    const { autoAssign, modified, unassignedRegs, entrysRegs, rematchsRegs, finalRegs } = this.state
+    const { modified, unassignedRegs, entrysRegs, rematchsRegs, finalRegs } = this.state
 
     const renderMoveBit = ({stateName, reg, regIndex, raceIndex}) => <li className={(reg.toAdd || reg.toRemove) ? css.modifiedMoveBit : css.moveBit} draggable='true' key={'move' + reg.id} onDragStart={this.handleDragStart(stateName, regIndex, raceIndex)} onDragEnd={this.handleDragEnd}>{reg.raceNumber} {(reg.nameCht) ? reg.nameCht : reg.name}</li>
 

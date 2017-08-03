@@ -1,1 +1,1 @@
-./node_modules/.bin/standard api/**/*.js config/**/*.js test/**/*.js test/**/*.spec.js src/**/*.js
+./node_modules/.bin/standard "api/**/*.js" "config/**/*.js" "test/**/*.js" "test/**/*.spec.js" "src/**/*.js"

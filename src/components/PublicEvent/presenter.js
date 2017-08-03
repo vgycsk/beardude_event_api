@@ -1,25 +1,23 @@
+/* global io */
 import React from 'react'
 import BaseComponent from '../BaseComponent'
 import { Redirect } from 'react-router-dom'
-import { actionCreators as eventActions} from '../../ducks/event'
+import { actionCreators as eventActions } from '../../ducks/event'
 
 import css from './style.css'
-import { Dialogue } from '../Dialogue/presenter'
-import Button from '../Button'
 import Header from '../Header'
 import Footer from '../Footer'
 import processData from '../MatchManager/processData'
-
 
 const render = {
   raceList: ({race, raceSelected, index, handleSelect, groupNames}) => {
     return <li className={(index === raceSelected) ? css.selected : css.li} key={'race' + race.id}>
       <button className={css.list} onClick={handleSelect(index)}>
         <span>{groupNames[race.group.toString()]}</span>
-        <span>:</span> 
+        <span>:</span>
         <span>{(race.nameCht) ? race.nameCht : race.name}</span>
       </button>
-      <div className={css[race.raceStatus]}></div>
+      <div className={css[race.raceStatus]} />
     </li>
   },
   dashboard: {
@@ -33,15 +31,16 @@ const render = {
         return reg ? <tr className={css.dashItem} key={'rec' + index}>
           <td className={css.no}>{index + 1}</td>
           <td className={css.name}><span className={css.raceNumber}>{reg.raceNumber}</span> <span>{reg.name}</span></td>
-        </tr> : <tr></tr>})
+        </tr> : <tr />
+      })
       }</tbody>
     </table></div>,
     results: (race) => <table className={css.dashTable}>
       <thead><tr>
         {processData.returnLapLabels(race.laps).map((V, I) => <th key={'th-' + I}>{V}</th>)}
       </tr></thead>
-        <tbody>{race.result.map((record, index) => <tr key={'tr' + record.registration} className={css.dashItem}>
-          {record.lapRecords.map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
+      <tbody>{race.result.map((record, index) => <tr key={'tr' + record.registration} className={css.dashItem}>
+        {record.lapRecords.map((time, index) => <td key={'record-' + index} className={css.lap}>{time}</td>)}
       </tr>)}</tbody>
     </table>,
     summary: (race) => <table className={css.dashTable}>
@@ -77,7 +76,6 @@ export class PublicEvent extends BaseComponent {
     const orderedRaces = processData.returnRacesByOrder(processData.returnRaces(this.props.event.groups), this.props.event.raceOrder)
     const ongoingRace = (this.state.ongoingRace === -1) ? ((this.props.event.ongoingRace === -1) ? undefined : processData.returnOngoingRace(this.props.event.ongoingRace, orderedRaces)) : this.state.ongoingRace
     let stateObj = { races: orderedRaces, raceSelected: this.state.raceSelected, ongoingRace: ongoingRace, dialog: undefined, editField: undefined }
-    let race
     if (ongoingRace === undefined) {
       clearInterval(this.timer)
       if (stateObj.raceSelected === -1) { stateObj.raceSelected = processData.returnSelectedRace(orderedRaces) }
@@ -122,19 +120,23 @@ export class PublicEvent extends BaseComponent {
       this.setState({races: races})
     }.bind(this))
   }
-  handleRefreshRace (raceid) { return (e) => {
-    this.dispatch(eventActions.getRace(raceid))
-  }}
-  handleSelect (index) { return (e) => {
-    this.setState({ raceSelected: index}, function () {
-      if (this.state.races[index].result.length === 0) {
-        this.updateResult(index)
-      }
-    })
-  }}
+  handleRefreshRace (raceid) {
+    return (e) => {
+      this.dispatch(eventActions.getRace(raceid))
+    }
+  }
+  handleSelect (index) {
+    return (e) => {
+      this.setState({ raceSelected: index }, function () {
+        if (this.state.races[index].result.length === 0) {
+          this.updateResult(index)
+        }
+      })
+    }
+  }
   render () {
     const { location, event, match } = this.props
-    const { races, raceSelected, ongoingRace } = this.state
+    const { races, raceSelected } = this.state
     const { groupNames, handleSelect, raceNames } = this
     let dbLabels = ''
     let dbResults = ''
@@ -142,8 +144,7 @@ export class PublicEvent extends BaseComponent {
     let dbAdvance = ''
     let race
 
-    if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/'}} /> }
-    else if (!event) { return <div><Header location={location} match={match} isPublic='1' /><div className={css.loading}>Loading...</div></div> }
+    if (event === -1 || !match.params.id) { return <Redirect to={{pathname: '/'}} /> } else if (!event) { return <div><Header location={location} match={match} isPublic='1' /><div className={css.loading}>Loading...</div></div> }
 
     if (raceSelected !== -1) {
       race = races[raceSelected]
@@ -161,7 +162,7 @@ export class PublicEvent extends BaseComponent {
           <div>
             <div className={css.hd}><span>賽程</span></div>
             <ul className={css.ul}>
-              {races.map((race, index) => render.raceList({race, index, raceSelected, groupNames, handleSelect }))}
+              {races.map((race, index) => render.raceList({ race, index, raceSelected, groupNames, handleSelect }))}
             </ul>
           </div>
           {dbLabels}{dbResults}{dbSummary}{dbAdvance}
