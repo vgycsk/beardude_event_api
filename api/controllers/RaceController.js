@@ -117,7 +117,7 @@ var RaceController = {
       return Event.update({ id: eventId }, { ongoingRace: -1 })
     })
     .then(function () {
-      return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {} })
+      return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [] })
     })
     .then(function (raceData) { return res.ok({ race: raceData }) })
     .catch(function (E) { return res.badRequest(E) })
@@ -176,15 +176,17 @@ var RaceController = {
     try {
       switch (input.type) {
         case 'rxdata': // RFID reader sending report
-          return RaceController.insertRfid(input.event, input.payload)
-          .then(function (data) {
-            if (data) {
-              var result = { id: data.race.id, recordsHashTable: data.race.recordsHashTable }
-              sails.sockets.broadcast('readerSockets', 'raceupdate', { result: result })
-            }
-            return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
-          })
-          .catch(function (E) { return res.badRequest(E) })
+          if (input.event) {
+            return RaceController.insertRfid(input.event, input.payload)
+            .then(function (data) {
+              if (data) {
+                var result = { id: data.race.id, recordsHashTable: data.race.recordsHashTable }
+                sails.sockets.broadcast('readerSockets', 'raceupdate', { result: result })
+              }
+              return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+            })
+            .catch(function (E) { return res.badRequest(E) })
+          }
         case 'startreader':
           sails.sockets.broadcast('readerSockets', input.type, input.payload)
           return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
@@ -202,15 +204,15 @@ var RaceController = {
 
     Event.findOne({id: eventId})
     .then(function (eventData) {
-      return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
+      if (eventData) { return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) }) }
+      return false
     })
     .then(function (eventData) {
-      if (eventData[0].ongoingRace !== -1) { return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations') }
+      if (eventData && eventData.length > 0 && eventData[0].ongoingRace !== -1) { return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations') }
       return false
     })
     .then(function (raceData) {
       if (!raceData) { return false }
-
       var recordsHashTable = raceData.recordsHashTable
       var hasEntry
 
