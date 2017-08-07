@@ -5,24 +5,20 @@ module.exports.routes = {
     // Event
     // 1.1 -
     'post /api/event/create': 'EventController.create',
-    // 3.1 -
-//    'get  /api/event/info/:id': 'EventController.getGeneralInfo',
-    'get  /api/event/mgmtInfo/:id': 'EventController.getManagementInfo',
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
+    // 3.1 -
+    'get  /api/event/mgmtInfo/:id': 'EventController.getInfo',
     // 1.2.7, 1.2.8, 6.2.6, 4.2.3
     'post /api/event/update': 'EventController.update',
     // 1.6
     'get  /api/event/delete/:id': 'EventController.delete',
-    // 8.2
-    'post /api/event/rfid/recycle': 'EventController.rfidRecycle',
 
     // Group
     // 1.2.1
     'post /api/group/create': 'GroupController.create',
     // 3.2, 3.3, 3.4, 5.2.*
-    'get  /api/group/info/:id': 'GroupController.getInfo',
-    'get  /api/group/mgmtInfo/:id': 'GroupController.getManagementInfo',
+    'get  /api/group/mgmtInfo/:id': 'GroupController.getInfo',
     // 1.2.2
     'post /api/group/update': 'GroupController.update',
     // 1.2.3
@@ -32,12 +28,10 @@ module.exports.routes = {
     'post /api/manager/login': 'ManagerController.login',
     'get  /api/manager/logout': 'ManagerController.logout',
     'get  /api/manager/account': 'ManagerController.getAccountInfo',
-    'post /api/manager/activate': 'ManagerController.activate',
     'post /api/manager/create': 'ManagerController.create',
     'get  /api/manager/info/:id': 'ManagerController.getGeneralInfo',
     'get  /api/manager/getManagers': 'ManagerController.getManagers',
     'get  /api/manager/mgmtInfo/:id': 'ManagerController.getManagementInfo',
-    'get  /api/manager/reissuePassword/:id': 'ManagerController.reissuePassword',
     'post /api/manager/update': 'ManagerController.update',
     'post /api/manager/updatePassword': 'ManagerController.updatePassword',
     // Reset password
@@ -45,10 +39,8 @@ module.exports.routes = {
     // Race
     //1.2.5
     'post /api/race/create': 'RaceController.create',
-    // 7.1.1, 7.1.3
-    'get  /api/race/info/:id': 'RaceController.getGeneralInfo',
-    // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3, 6.3.4
-    'get  /api/race/mgmtInfo/:id': 'RaceController.getManagementInfo',
+    // 6.1.2, 6.2.7, 6.2.8, 6.3.1, 6.3.2, 6.3.3, 6.3.4, 7.1.1, 7.1.3
+    'get  /api/race/mgmtInfo/:id': 'RaceController.getInfo',
     // 1.2.8, 1.2.9
     'post /api/race/update': 'RaceController.update',
     // 1.2.6
@@ -63,6 +55,9 @@ module.exports.routes = {
     // 6.3.7, 6.3.10
     'post /api/race/submitResult': 'RaceController.submitResult',
     // 4.2.4, 4.2.5, 4.2.6
+    '/api/socket/mgmt': 'RaceController.socketManagement',
+    'get /api/socket/info': 'RaceController.socket',
+    '/api/socket/impinj': 'RaceController.socketImpinj',
     'get  /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
     'post /api/race/readerRoom': 'RaceController.readerReceiver',
 
@@ -138,8 +133,8 @@ module.exports.routes = {
 //    'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
 //    'get  /test': 'TestPageController.apiTestPage',
 //    '/testSocket': { view: 'testPages/testSocketPage' },
-    '/': { view: 'sharePage' },
-    '/event/*': { view: 'sharePage' },
-    '/console/*': { view: 'sharePage' },
-    '/console': { view: 'sharePage' }
+//    '/': { view: 'sharePage' },
+//    '/event/*': { view: 'sharePage' },
+//    '/console/*': { view: 'sharePage' },
+//    '/console': { view: 'sharePage' }
 };

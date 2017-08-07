@@ -3,9 +3,6 @@
 'use strict'
 
 module.exports = {
-  activate: function (req, res) {
-    return accountService.activate(req, res, 'Manager')
-  },
   create: function (req, res) {
     var input = req.body
 
@@ -56,9 +53,6 @@ module.exports = {
   logout: function (req, res) {
     delete req.session.managerInfo
     return res.ok({message: 'Logged out'})
-  },
-  reissuePassword: function (req, res) {
-    return accountService.reissuePassword(req, res, 'Manager')
   },
   update: function (req, res) {
     var input = req.body

@@ -30,12 +30,7 @@ module.exports = {
     .then(function (V) { return res.ok({events: V}) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  getGeneralInfo: function (req, res) {
-    Event.findOne({id: parseInt(req.params.id)}).populate('groups')
-    .then(function (V) { return res.ok({event: V}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  getManagementInfo: function (req, res) {
+  getInfo: function (req, res) {
     var eventId = parseInt(req.params.id)
     var result
 
@@ -90,12 +85,6 @@ module.exports = {
       return Event.update(query, updateObj)
     })
     .then(function (V) { return res.ok({event: V[0]}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // {epc: STR}
-  rfidRecycle: function (req, res) {
-    Registration.update(req.body, { rfidRecycled: true })
-    .then(function () { return res.ok({ message: 'Rfid recycled', epc: req.body.epc }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   delete: function (req, res) {
