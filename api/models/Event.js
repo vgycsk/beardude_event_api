@@ -39,8 +39,7 @@ module.exports = {
       type: 'integer'
     },
     location: {
-      type: 'string',
-      required: true
+      type: 'string'
     },
     raceOrder: {
       type: 'array',
