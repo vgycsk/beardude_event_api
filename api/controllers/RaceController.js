@@ -117,7 +117,7 @@ var RaceController = {
       return Event.update({ id: eventId }, { ongoingRace: -1 })
     })
     .then(function () {
-      return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {} })
+      return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [] })
     })
     .then(function (raceData) { return res.ok({ race: raceData }) })
     .catch(function (E) { return res.badRequest(E) })
