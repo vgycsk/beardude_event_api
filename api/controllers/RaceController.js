@@ -11,14 +11,8 @@ var RaceController = {
     .then(function (modelData) { return res.ok({ race: modelData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // Get public info
-  getGeneralInfo: function (req, res) {
-    Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
-    .then(function (V) { return res.ok({ race: V }) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
   // /:id
-  getManagementInfo: function (req, res) {
+  getInfo: function (req, res) {
     Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
     .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
@@ -152,11 +146,47 @@ var RaceController = {
     .then(function () { return res.ok({ race: { id: input.id } }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  /**
-  * join | register to reader room
-  * java (reader) side doesnt sent by sails.socket.io.get, so making a query string as flag to make sure its socket connection
-  * but just use sails.socket.io.get when js call
-  **/
+  // get: join room
+  // post: control reader
+  socketManagement: function (req, res) {
+    var input = req.body
+    if (input) {
+      if (input.type === 'startreader') {
+        sails.sockets.broadcast('readerCtrl', input.type, input.payload)
+        return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+      }
+      sails.sockets.broadcast('readerCtrl', input.type, { result: input.payload })
+      return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+    }
+    sails.sockets.join(req.query.sid, 'rxdata')
+    sails.sockets.join(req.query.sid, 'readerCtrl')
+    return res.json({ result: 'join socket_channel_OK' })
+  },
+  socketImpinj: function (req, res) {
+    var input = req.body
+    if (input) {
+      if (input.type === 'rxdata' && input.event) {
+        return RaceController.insertRfid(input.event, input.payload)
+        .then(function (data) {
+          if (data) {
+            var result = { id: data.race.id, recordsHashTable: data.race.recordsHashTable }
+            sails.sockets.broadcast('rxdata', 'raceupdate', { result: result })
+          }
+          return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+        })
+        .catch(function (E) { return res.badRequest(E) })
+      }
+      sails.sockets.broadcast('readerCtrl', input.type, { result: input.payload })
+      return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
+    }
+    sails.sockets.join(req.query.sid, 'rxdata')
+    sails.sockets.join(req.query.sid, 'readerCtrl')
+    return res.json({ result: 'join socket_channel_OK' })
+  },
+  socket: function (req, res) {
+    sails.sockets.join(req.query.sid, 'rxdata')
+    return res.json({ result: 'join socket_channel_OK' })
+  },
   joinReaderRoom: function (req, res) {
     var isSocket = (req.query.isSocket) ? req.query.isSocket : req.isSocket
     var socketReq = (req.query.sid) ? req.query.sid : req
