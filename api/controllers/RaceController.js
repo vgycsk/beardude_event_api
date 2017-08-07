@@ -161,7 +161,6 @@ var RaceController = {
     var isSocket = (req.query.isSocket) ? req.query.isSocket : req.isSocket
     var socketReq = (req.query.sid) ? req.query.sid : req
 
-console.log('isSocket? ', isSocket)
     if (!isSocket) { return res.badRequest() }
     sails.sockets.join(socketReq, 'readerSockets')
     return res.json({ result: 'join socket_channel_OK' })
