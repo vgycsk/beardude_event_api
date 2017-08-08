@@ -73,32 +73,44 @@ describe('services/dataService', function () {
       done()
     })
   })
-  /*
-  describe('.isValidRaceRecord()', function () {
-    it('should validate if a race record', function (done) {
-      var actual
 
-      sandbox.stub(Q, 'defer').callsFake(function () {
-        return {
-          resolve: function (obj) {
-            actual = obj
-          },
-          reject: function (obj) {
-            actual = obj
-          }
-        }
-      })
-      sailsMock.mockModel(Registration, 'findOne')
-      actual = dataService.returnAccessCode(1)
-      this.timeout(200)
-      setTimeout(function () {
-        expect(actual.length).to.equal(4)
-        Registration.findOne.restore()
-        done()
-      }, 150)
+  describe('.isValidRaceRecord()', function () {
+    it('should return true if is pacer epc', function (done) {
+      var epc = 'abc123'
+      var raceData = { requirePacer: true, pacerEpc: 'abc123', raceStatus: 'started' }
+      var actual = dataService.isValidRaceRecord(epc, raceData)
+      expect(actual).to.equal(true)
+      done()
+    })
+    it('should return false if race not started', function (done) {
+      var epc = 'abc123'
+      var raceData = { raceStatus: 'init' }
+      var actual = dataService.isValidRaceRecord(epc, raceData)
+      expect(actual).to.equal(false)
+      done()
+    })
+    it('should return false if race started but countdown unfinished', function (done) {
+      var epc = 'abc123'
+      var raceData = { raceStatus: 'started', startTime: Date.now() + 6000 }
+      var actual = dataService.isValidRaceRecord(epc, raceData)
+      expect(actual).to.equal(false)
+      done()
+    })
+    it('should return false if epc does not belong to regs in this race', function (done) {
+      var epc = 'abc123'
+      var raceData = { raceStatus: 'started', startTime: Date.now() - 6000, registrations: [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'bbb' } ] }
+      var actual = dataService.isValidRaceRecord(epc, raceData)
+      expect(actual).to.equal(false)
+      done()
+    })
+    it('should return true if valid', function (done) {
+      var epc = 'abc123'
+      var raceData = { raceStatus: 'started', startTime: Date.now() - 6000, registrations: [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'abc123' } ] }
+      var actual = dataService.isValidRaceRecord(epc, raceData)
+      expect(actual).to.equal(true)
+      done()
     })
   })
-  */
   describe('.returnUpdatedRaceNotes()', function () {
     it('should append new race note to existing raceNotes array', function (done) {
       var raceId = 7
