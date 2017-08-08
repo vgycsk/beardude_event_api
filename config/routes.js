@@ -55,12 +55,9 @@ module.exports.routes = {
     // 6.3.7, 6.3.10
     'post /api/race/submitResult': 'RaceController.submitResult',
     // 4.2.4, 4.2.5, 4.2.6
+    'get  /api/socket/info': 'RaceController.socket',
     '/api/socket/mgmt': 'RaceController.socketManagement',
-    'get /api/socket/info': 'RaceController.socket',
     '/api/socket/impinj': 'RaceController.socketImpinj',
-    'get  /api/race/joinReaderRoom': 'RaceController.joinReaderRoom',
-    'post /api/race/readerRoom': 'RaceController.readerReceiver',
-
 
     // Racer 2.4
     'post /api/racer/activate': 'RacerController.activate',
