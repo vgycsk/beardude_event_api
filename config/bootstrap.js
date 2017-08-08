@@ -6,7 +6,6 @@ var Q = require('q');
 
 module.exports.bootstrap = function(cb) {
     var initManagerEmail = 'azaitw@github.com';
-    var tempPassword = randomstring.generate();
     var createInitManager = function (email, password) {
         var q = Q.defer();
         var managerObj = {
@@ -14,7 +13,7 @@ module.exports.bootstrap = function(cb) {
             phone: '12345678',
             firstName: 'Azai',
             lastName: 'Chan',
-            password: password,
+            password: '123',
             isActive: true
         };
 
