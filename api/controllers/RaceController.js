@@ -146,8 +146,8 @@ var RaceController = {
     .then(function () { return res.ok({ race: { id: input.id } }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // get: join room
-  // post: control reader
+  // get: 加入socket.io
+  // post: 控制至尊機
   socketManagement: function (req, res) {
     var input = req.body
     if (input) {
@@ -158,10 +158,14 @@ var RaceController = {
       sails.sockets.broadcast('readerCtrl', input.type, { result: input.payload })
       return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
     }
+    // rxdata: 至尊機發送讀卡資料
+    // readerCtrl: 至尊機接收控制及發送狀態
     sails.sockets.join(req.query.sid, 'rxdata')
     sails.sockets.join(req.query.sid, 'readerCtrl')
     return res.json({ result: 'join socket_channel_OK' })
   },
+  // get: 加入socket.io
+  // post: 發送讀卡資料
   socketImpinj: function (req, res) {
     var input = req.body
     if (input) {
@@ -169,8 +173,9 @@ var RaceController = {
         return RaceController.insertRfid(input.event, input.payload)
         .then(function (data) {
           if (data) {
-            var result = { id: data.race.id, recordsHashTable: data.race.recordsHashTable }
-            sails.sockets.broadcast('rxdata', 'raceupdate', { result: result })
+            sails.sockets.broadcast('rxdata', 'raceupdate', { result: {
+              id: data.race.id, recordsHashTable: data.race.recordsHashTable
+            } })
           }
           return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
         })
@@ -179,54 +184,16 @@ var RaceController = {
       sails.sockets.broadcast('readerCtrl', input.type, { result: input.payload })
       return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
     }
+    // rxdata: 至尊機發送讀卡資料
+    // readerCtrl: 至尊機接收控制及發送狀態
     sails.sockets.join(req.query.sid, 'rxdata')
     sails.sockets.join(req.query.sid, 'readerCtrl')
     return res.json({ result: 'join socket_channel_OK' })
   },
+  // Public event, 只加入rxdata接收戰況更新
   socket: function (req, res) {
     sails.sockets.join(req.query.sid, 'rxdata')
     return res.json({ result: 'join socket_channel_OK' })
-  },
-  joinReaderRoom: function (req, res) {
-    var isSocket = (req.query.isSocket) ? req.query.isSocket : req.isSocket
-    var socketReq = (req.query.sid) ? req.query.sid : req
-
-    if (!isSocket) { return res.badRequest() }
-    sails.sockets.join(socketReq, 'readerSockets')
-    return res.json({ result: 'join socket_channel_OK' })
-  },
-  /**
-  * reader accessing, including starting, receiving race data, terminating
-  **/
-  readerReceiver: function (req, res) {
-    var input = req.body
-//    var socketReq = (req.query.sid) ? req.query.sid : sails.sockets.getId(req)
-
-    if (!req.isSocket && !req.query.isSocket) { return res.badRequest() }
-    try {
-      switch (input.type) {
-        case 'rxdata': // RFID reader sending report
-          if (input.event) {
-            return RaceController.insertRfid(input.event, input.payload)
-            .then(function (data) {
-              if (data) {
-                var result = { id: data.race.id, recordsHashTable: data.race.recordsHashTable }
-                sails.sockets.broadcast('readerSockets', 'raceupdate', { result: result })
-              }
-              return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
-            })
-            .catch(function (E) { return res.badRequest(E) })
-          }
-        case 'startreader':
-          sails.sockets.broadcast('readerSockets', input.type, input.payload)
-          return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
-        default:
-          sails.sockets.broadcast('readerSockets', input.type, { result: input.payload })
-          return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
-      }
-    } catch (E) {
-      console.log('readerReceiver e: ', E)
-    }
   },
   insertRfid: function (eventId, entriesRaw) {
     var q = Q.defer()
