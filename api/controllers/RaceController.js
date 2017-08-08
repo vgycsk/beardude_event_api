@@ -79,6 +79,7 @@ var RaceController = {
   startRace: function (req, res) {
     var input = req.body
     var eventId
+    var raceObj
 
     Race.findOne({ id: input.id }).populate('group')
     .then(function (raceData) {
@@ -90,10 +91,11 @@ var RaceController = {
       if (eventData.ongoingRace && eventData.ongoingRace !== -1) { throw new Error('Another race ongoing') }
       return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started' })
     })
-    .then(function () {
+    .then(function (raceData) {
+      raceObj = raceData[0]
       return Event.update({ id: eventId }, { ongoingRace: input.id })
     })
-    .then(function (raceData) { return res.ok({ race: raceData }) })
+    .then(function () { return res.ok({ race: raceObj }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {id: ID}
@@ -113,13 +115,14 @@ var RaceController = {
     .then(function () {
       return Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [] })
     })
-    .then(function (raceData) { return res.ok({ race: raceData }) })
+    .then(function (raceData) { return res.ok({ race: raceData[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {id: ID, endTime: TIMESTAMP}
   endRace: function (req, res) {
     var input = req.body
     var eventId
+    var raceObj
 
     Race.findOne({ id: input.id }).populate('group')
     .then(function (raceData) {
@@ -128,9 +131,10 @@ var RaceController = {
       return Race.update({ id: input.id }, { endTime: (input.endTime) ? input.endTime : Date.now(), raceStatus: 'ended' })
     })
     .then(function (raceData) {
+      raceObj = raceData[0]
       return Event.update({ id: eventId }, { ongoingRace: -1 })
     })
-    .then(function (raceData) { return res.ok({ race: raceData }) })
+    .then(function (raceData) { return res.ok({ race: raceObj }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // { id: ID, result: [], advance: []}
