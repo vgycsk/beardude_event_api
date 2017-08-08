@@ -15,21 +15,18 @@ module.exports = {
     shortcuts: false
   },
   connections: {
-    mysql: {
-      adapter: 'sails-mysql',
-      host: process.env.MYSQL_URL,
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      port: process.env.MYSQL_PORT
+    mongoDb: {
+      adapter: 'sails-mongo',
+      host: 'localhost',
+      port: 27017
     }
   },
   log: {
     level: 'info'
   },
   models: {
-    connection: 'mysql',
-    migrate: 'alter'
+    connection: 'mongoDb',
+    migrate: 'safe'
   },
   port: 80,
   session: {

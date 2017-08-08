@@ -11,7 +11,7 @@
     "q": "*",
     "randomstring": "1.1.5",
     "sails": "0.12.13",
-    "sails-mysql": "*"
+    "sails-mongo": "*"
   },
   "devDependencies": {
     "chai": "*",
