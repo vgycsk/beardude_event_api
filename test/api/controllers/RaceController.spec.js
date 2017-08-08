@@ -164,7 +164,7 @@ describe('/controllers/RaceController', function () {
       var actual
       var req = { body: { races: [ { id: 1, toAdd: [1] }, { id: 2, toRemove: [1] } ] } }
       var res = { ok: function (obj) { actual = true }, badRequest: function (obj) { actual = true } }
-      var RaceController = { assignRegsToRaces: function () { return true } }
+      var RaceController = { addRemoveRegs: function () { return true } }
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () { actual = true })
       this.timeout(200)
@@ -303,7 +303,7 @@ describe('/controllers/RaceController', function () {
       var actual
       var req = { body: { id: 1, result: [ { id: 1 }, { id: 2 } ], advance: [] } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var RaceController = { assignRegsToRaces: function () { return true } }
+      var RaceController = { addRemoveRegs: function () { return true } }
       var mockUpdate = {}
       var expected = { race: { id: 1 } }
 
