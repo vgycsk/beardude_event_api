@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, max-lines */
-/* global afterEach, beforeEach, describe, Event, it, Race */
+/* global afterEach, beforeEach, dataService, describe, Event, it, Race */
 
 var raceController = require('../../../api/controllers/RaceController.js')
 var sinon = require('sinon')
@@ -318,6 +318,71 @@ describe('/controllers/RaceController', function () {
       }, 60)
     })
   })
+  describe('.insertRfid()', function () {
+    it('should not insert record if event not found', function (done) {
+      var actual
+      var eventId = 1
+      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sailsMock.mockModel(Event, 'findOne')
+      this.timeout(90)
+      raceController.insertRfid(eventId, entriesRaw)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(false)
+        Event.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should not insert record to race if no ongoing race', function (done) {
+      var actual
+      var eventId = 1
+      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
+      var mock = { id: 1, ongoingRace: -1, rawRfidData: [ { epc: 'aaa', timestamp: '1507651100000' } ] }
+      var mockUpdate = [ mock ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sailsMock.mockModel(Event, 'findOne', mock)
+      sailsMock.mockModel(Event, 'update', mockUpdate)
+      this.timeout(90)
+      raceController.insertRfid(eventId, entriesRaw)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(false)
+        Event.findOne.restore()
+        Event.update.restore()
+        done()
+      }, 60)
+    })
+    it('should not insert record to race if no ongoing race', function (done) {
+      var actual
+      var eventId = 1
+      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
+      var mock = { id: 1, ongoingRace: 1, rawRfidData: [ { epc: 'aaa', timestamp: '1507651100000' } ] }
+      var mockUpdate = [ mock ]
+      var mockRace = { id: 1, recordsHashTable: { abc123: [], aaa: [] } }
+      var mockRaceUpdate = [ { id: 1, recordsHashTable: { abc123: [], aaa: [] } } ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sandbox.stub(dataService, 'isValidRaceRecord').callsFake(function () { return true })
+      sailsMock.mockModel(Event, 'findOne', mock)
+      sailsMock.mockModel(Event, 'update', mockUpdate)
+      sailsMock.mockModel(Race, 'findOne', mockRace)
+      sailsMock.mockModel(Race, 'update', mockRaceUpdate)
+      this.timeout(90)
+      raceController.insertRfid(eventId, entriesRaw)
+      setTimeout(function () {
+        expect(actual).to.deep.equal({ race: mockRaceUpdate[0] })
+        Event.findOne.restore()
+        Event.update.restore()
+        Race.findOne.restore()
+        Race.update.restore()
+        done()
+      }, 60)
+    })
+  })
   /*
   describe('.socketManagement()', function () {
     it('should submit race result and advance qualified racers to coming races', function (done) {
@@ -331,9 +396,6 @@ describe('/controllers/RaceController', function () {
     it('should submit race result and advance qualified racers to coming races', function (done) {
     })
   })
-  describe('.insertRfid()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
+
   */
 })
