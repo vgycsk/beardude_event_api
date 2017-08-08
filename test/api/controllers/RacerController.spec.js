@@ -204,12 +204,13 @@ describe('/controllers/RacerController', function () {
       mock.toJSON = function () { return mock }
       sandbox.stub(accountService, 'update').callsFake(function () { actual = true })
       sailsMock.mockModel(Racer, 'findOne', mock)
+      that.timeout(150)
       racerController.update(req, res)
       return setTimeout(function () {
         expect(actual).to.deep.equal({ racer: mock })
         Racer.findOne.restore()
         return done()
-      }, 50)
+      }, 90)
     })
   })
   describe('.updatePassword()', function () {

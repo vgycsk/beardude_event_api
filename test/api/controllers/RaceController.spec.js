@@ -167,12 +167,12 @@ describe('/controllers/RaceController', function () {
       var RaceController = {}
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () { actual = true })
-      this.timeout(150)
+      this.timeout(200)
       raceController.assignRegsToRaces(req, res)
       setTimeout(function () {
         expect(actual).to.equal(true)
         done()
-      }, 90)
+      }, 150)
     })
   })
   describe('.startRace()', function () {
@@ -309,13 +309,13 @@ describe('/controllers/RaceController', function () {
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () {})
       sailsMock.mockModel(Race, 'update', mockUpdate)
-      this.timeout(150)
+      this.timeout(200)
       raceController.submitResult(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.update.restore()
         done()
-      }, 90)
+      }, 150)
     })
   })
   describe('.insertRfid()', function () {
