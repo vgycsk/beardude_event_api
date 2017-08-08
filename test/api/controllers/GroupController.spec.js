@@ -43,7 +43,7 @@ describe('/controllers/GroupController', function () {
       }
 
       mockData.toJSON = function () { return mockData }
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
       sailsMock.mockModel(Race, 'find', mockRace)
       sailsMock.mockModel(Registration, 'find', mockDataReg)
@@ -55,7 +55,7 @@ describe('/controllers/GroupController', function () {
         Race.find.restore()
         Registration.find.restore()
         done()
-      }, 30)
+      }, 90)
     })
   })
   describe('.delete()', function () {
@@ -66,14 +66,14 @@ describe('/controllers/GroupController', function () {
       var mockData = { id: 1, name: 'new group', registrations: [1, 2, 3], races: [] }
       var expected = 'Cannot delete group that has racers registered'
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
       groupController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal(expected)
         Group.findOne.restore()
         done()
-      }, 30)
+      }, 90)
     })
     it('should remove empty group', function (done) {
       var actual
@@ -82,7 +82,7 @@ describe('/controllers/GroupController', function () {
       var mockData = { id: 1, name: 'new group', registrations: [], races: [] }
       var expected = { group: 1 }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
 
       groupController.delete(req, res)
@@ -90,7 +90,7 @@ describe('/controllers/GroupController', function () {
         expect(actual).to.deep.equal(expected)
         Group.findOne.restore()
         done()
-      }, 30)
+      }, 90)
     })
     it('should remove group', function (done) {
       var actual
@@ -98,7 +98,7 @@ describe('/controllers/GroupController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new group', registrations: [], races: [ { id: 1 }, { id: 2 }, { id: 3 } ] }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
       sailsMock.mockModel(Race, 'destroy')
 
@@ -108,7 +108,7 @@ describe('/controllers/GroupController', function () {
         Group.findOne.restore()
         Race.destroy.restore()
         done()
-      }, 30)
+      }, 90)
     })
     it('should remove group', function (done) {
       var actual
@@ -117,7 +117,7 @@ describe('/controllers/GroupController', function () {
       var mockData = { id: 1, name: 'new group', registrations: [], races: [] }
       var expected = { group: 1 }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
       sailsMock.mockModel(Race, 'destroy')
 
@@ -127,7 +127,7 @@ describe('/controllers/GroupController', function () {
         Group.findOne.restore()
         Race.destroy.restore()
         done()
-      }, 30)
+      }, 90)
     })
   })
   describe('.update()', function () {
