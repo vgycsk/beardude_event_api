@@ -289,7 +289,7 @@ describe('services/accountService', function () {
       sailsMock.mockModel(Manager, 'findOne', mockData)
       accountService.reissuePassword(req, res, 'Manager')
       Manager.findOne.restore()
-      this.timeout(30)
+      this.timeout(50)
       setTimeout(function () {
         expect(actual.message).to.equal(expected)
         done()

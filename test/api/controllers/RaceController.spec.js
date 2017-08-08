@@ -79,13 +79,13 @@ describe('/controllers/RaceController', function () {
       var expected = 'Cannot delete a started race'
 
       sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(50)
+      this.timeout(90)
       raceController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal(expected)
         Race.findOne.restore()
         done()
-      }, 30)
+      }, 60)
     })
     it('should delete a race', function (done) {
       var actual
@@ -96,14 +96,14 @@ describe('/controllers/RaceController', function () {
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'destroy')
-      this.timeout(50)
+      this.timeout(90)
       raceController.delete(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.findOne.restore()
         Race.destroy.restore()
         done()
-      }, 30)
+      }, 60)
     })
   })
   /*
