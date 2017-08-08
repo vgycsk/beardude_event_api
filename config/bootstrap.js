@@ -1,50 +1,20 @@
 'use strict';
 
-// Execute on app start 
-var randomstring = require('randomstring');
-var Q = require('q');
-
 module.exports.bootstrap = function(cb) {
-    var initManagerEmail = 'azaitw@github.com';
-    var createInitManager = function (email, password) {
-        var q = Q.defer();
-        var managerObj = {
-            email: email,
+    // Initiate first manager account
+    Manager.find({})
+    .then(function (managerData) {
+        if (managerData.length === 0) {
+          return Manager.create({
+            email: 'azaitw@github.com',
             phone: '12345678',
             firstName: 'Azai',
             lastName: 'Chan',
             password: '123',
             isActive: true
-        };
-
-        Manager.create(managerObj)
-        .then(function (managerData) {
-            return q.resolve(managerData);
-        });
-        return q.promise;
-    };
-
-    // Initiate first manager only when there's no manager
-    Manager.find({})
-    .then(function (managerData) {
-        if (managerData.length === 0) {
-            return createInitManager(initManagerEmail, tempPassword);
-        } else if (managerData.length === 1 && (managerData[0].email === initManagerEmail) && !managerData[0].isActive) {
-            // New account and not logged in yet. Reset password
-            return Manager.update({
-                email: initManagerEmail
-            }, {
-                password: tempPassword
-            });
+          })
         }
         return false;
     })
-    .then(function (managerData) {
-        if (managerData) {
-            console.log('Please use this credential to login, and change your password afterward:');
-            console.log('account name: ', initManagerEmail);
-            console.log('password: ', tempPassword);
-        }
-        return cb();
-    });
-};
+    .then(function () { return cb() })
+}
