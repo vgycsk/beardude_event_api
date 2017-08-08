@@ -154,11 +154,10 @@ describe('/controllers/RacerController', function () {
       var res = { ok: function (obj) { actual = obj } }
       var expected = { racer: { id: 1, email: 'info@beardude.com' } }
       var mock = { id: 1, email: 'info@beardude.com', password: '123' }
-      var that = this
 
       sandbox.stub(dataService, 'authenticate').callsFake(function () { return true })
       sailsMock.mockModel(Racer, 'findOne', mock)
-      that.timeout(100)
+      this.timeout(100)
       racerController.login(req, res)
       return setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -204,7 +203,7 @@ describe('/controllers/RacerController', function () {
       mock.toJSON = function () { return mock }
       sandbox.stub(accountService, 'update').callsFake(function () { actual = true })
       sailsMock.mockModel(Racer, 'findOne', mock)
-      that.timeout(150)
+      this.timeout(150)
       racerController.update(req, res)
       return setTimeout(function () {
         expect(actual).to.deep.equal({ racer: mock })
