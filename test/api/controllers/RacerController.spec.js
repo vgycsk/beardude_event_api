@@ -75,7 +75,7 @@ describe('/controllers/RacerController', function () {
         delete actual.toJSON
         expect(actual).to.deep.equal(expected)
         done()
-      }, 80)
+      }, 60)
     })
   })
   describe('.getGeneralInfo()', function () {
