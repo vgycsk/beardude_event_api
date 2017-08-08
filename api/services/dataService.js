@@ -25,13 +25,6 @@ var dataService = {
     })
     return updateObj
   },
-  sluggify: function (string) {
-    return string
-        .trim()
-        .toLowerCase()
-        // condense
-        .replace(/ +/g, '-')
-  },
   returnUpdatedRaceNotes: function (raceId, raceNote, existingRaceNotes) {
     var raceNotes = existingRaceNotes
     var dataExist

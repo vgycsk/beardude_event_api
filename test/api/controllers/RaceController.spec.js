@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, max-lines */
-/* global afterEach, beforeEach, dataService, describe, Group, it, Race, Registration */
+/* global afterEach, beforeEach, dataService, describe, Event, it, Race */
 
 var raceController = require('../../../api/controllers/RaceController.js')
 var sinon = require('sinon')
@@ -11,44 +11,15 @@ var Q = require('q')
 describe('/controllers/RaceController', function () {
   var sandbox
 
-  beforeEach(function () {
-    sandbox = sinon.sandbox.create()
-  })
-
-  afterEach(function () {
-    sandbox.restore()
-  })
+  beforeEach(function () { sandbox = sinon.sandbox.create() })
+  afterEach(function () { sandbox.restore() })
   describe('.create()', function () {
     it('should create a race', function (done) {
       var actual
-            // {group: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL}
-      var req = {
-        body: {
-          group: 5,
-          name: 'new race',
-          racerNumberAllowed: 60,
-          requirePacer: true
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockData = {
-        id: 8,
-        group: 5,
-        name: 'new race',
-        racerNumberAllowed: 60,
-        requirePacer: true
-      }
-      var expected = {
-        message: 'Race created',
-        race: mockData
-      }
+      var req = { body: { group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 8, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true }
+      var expected = { race: mockData }
 
       sailsMock.mockModel(Race, 'create', mockData)
       this.timeout(50)
@@ -60,183 +31,18 @@ describe('/controllers/RaceController', function () {
       }, 30)
     })
   })
-  describe('.delete()', function () {
-    it('return error when trying to delete a started race', function (done) {
-      var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 8,
-        group: 5,
-        name: 'new race',
-        startTime: '2017-10-10T08:00:00-08:00'
-      }
-      var expected = 'Cannot delete a started race'
 
-      sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(50)
-      raceController.delete(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-    it('should delete a race', function (done) {
-      var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 8,
-        group: 5,
-        name: 'new race'
-      }
-      var expected = {
-        message: 'Race deleted',
-        race: 5
-      }
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      sailsMock.mockModel(Race, 'destroy')
-
-      this.timeout(50)
-      raceController.delete(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.findOne.restore()
-        Race.destroy.restore()
-        done()
-      }, 30)
-    })
-  })
-  describe('.getGeneralInfo()', function () {
+  describe('.getInfo()', function () {
     it('should return filtered race info', function (done) {
       var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        registrations: [1, 2, 3],
-        group: 1,
-        name: 'A race',
-        laps: 22,
-        racerNumberAllowed: 60,
-        advancingRules: [],
-        isEntryRace: true,
-        requirePacer: true,
-        startTime: '',
-        endTime: '',
-        recordsHashTable: {},
-        result: []
-      }
-      var expected = {
-        registrations: [1, 2, 3],
-        group: 1,
-        name: 'A race',
-        laps: 22,
-        racerNumberAllowed: 60,
-        advancingRules: [],
-        isEntryRace: true,
-        requirePacer: true,
-        startTime: '',
-        endTime: '',
-        recordsHashTable: {},
-        result: []
-      }
+      var req = { params: { id: '5' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 5, registrations: [1, 2, 3], group: 1, name: 'A race' }
+      var expected = { race: { id: 5, registrations: [1, 2, 3], group: 1, name: 'A race' } }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       this.timeout(50)
-      raceController.getGeneralInfo(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-  })
-  describe('.getManagementInfo()', function () {
-    it('should return complete race info', function (done) {
-      var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        registrations: [1, 2, 3],
-        group: 1,
-        name: 'A race',
-        laps: 22,
-        racerNumberAllowed: 60,
-        advancingRules: [],
-        isEntryRace: true,
-        requirePacer: true,
-        startTime: '',
-        endTime: '',
-        recordsHashTable: {},
-        result: []
-      }
-      var expected = {
-        id: 5,
-        registrations: [1, 2, 3],
-        group: 1,
-        name: 'A race',
-        laps: 22,
-        racerNumberAllowed: 60,
-        advancingRules: [],
-        isEntryRace: true,
-        requirePacer: true,
-        startTime: '',
-        endTime: '',
-        recordsHashTable: {},
-        result: []
-      }
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(50)
-      raceController.getManagementInfo(req, res)
+      raceController.getInfo(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.findOne.restore()
@@ -247,959 +53,349 @@ describe('/controllers/RaceController', function () {
   describe('.update()', function () {
     it('should update race', function (done) {
       var actual
-            // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL}
-
-      var req = {
-        body: {
-          race: '5',
-          laps: 28
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        registrations: [1, 2, 3],
-        group: 1,
-        name: 'A race',
-        laps: 22,
-        racerNumberAllowed: 60,
-        advancingRules: [],
-        isEntryRace: true,
-        requirePacer: true,
-        startTime: '',
-        endTime: '',
-        recordsHashTable: {},
-        result: []
-      }
-      var mockUpdate = [{
-        id: 5,
-        registrations: [1, 2, 3],
-        group: 1,
-        name: 'A race',
-        laps: 28,
-        racerNumberAllowed: 60,
-        advancingRules: [],
-        isEntryRace: true,
-        requirePacer: true,
-        startTime: '',
-        endTime: '',
-        recordsHashTable: {},
-        result: []
-      }]
-      var expected = {
-        message: 'Race updated',
-        race: {
-          id: 5,
-          registrations: [1, 2, 3],
-          group: 1,
-          name: 'A race',
-          laps: 28,
-          racerNumberAllowed: 60,
-          advancingRules: [],
-          isEntryRace: true,
-          requirePacer: true,
-          startTime: '',
-          endTime: '',
-          recordsHashTable: {},
-          result: []
-        }
-      }
+      var req = { body: { race: '5', laps: 28 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 5, group: 1, name: 'A race', laps: 28 }
+      var mockUpdate = [ { id: 5, group: 1, name: 'A race', laps: 28 } ]
+      var expected = { race: { id: 5, group: 1, name: 'A race', laps: 28 } }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'update', mockUpdate)
-      this.timeout(99)
+      this.timeout(100)
       raceController.update(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.findOne.restore()
         Race.update.restore()
         done()
-      }, 70)
+      }, 50)
     })
   })
-  describe('.addRacer()', function () {
-    it('should return error if racer not in group', function (done) {
+  describe('.delete()', function () {
+    it('return error when trying to delete a started race', function (done) {
       var actual
-      var req = {
-        body: {
-          race: '5',
-          raceNumber: '10'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockReg = {
-        id: 10,
-        raceNumber: 10
-      }
-      var mockRace = {
-        id: 5,
-        registrations: [
-          {
-            id: 1,
-            raceNumber: 1
-          }
-        ],
-        group: 1
-      }
-      var expected = 'Racer not in group'
-
-      sailsMock.mockModel(Registration, 'findOne', mockReg)
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      this.timeout(50)
-      raceController.addRacer(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Registration.findOne.restore()
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-    it('should return error if racer already in race', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          raceNumber: '10'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockReg = {
-        id: 10,
-        raceNumber: 10
-      }
-      var mockRace = {
-        id: 5,
-        registrations: [
-          {
-            id: 1,
-            raceNumber: 1
-          },
-          {
-            id: 10,
-            raceNumber: 10
-          }
-        ],
-        group: 1
-      }
-      var expected = 'Racer already in race'
-
-      sailsMock.mockModel(Registration, 'findOne', mockReg)
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      this.timeout(50)
-      raceController.addRacer(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Registration.findOne.restore()
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-    it('should add valid racer to race', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          raceNumber: '10'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockReg = {
-        id: 10,
-        raceNumber: 10,
-        group: 1
-      }
-      var mockRace = {
-        id: 5,
-        registrations: [
-          {
-            id: 1,
-            raceNumber: 1
-          }
-        ],
-        group: 1
-      }
-      var expected = {
-        messange: 'Racer added to race',
-        race: 5,
-        raceNumber: 10
-      }
-
-      sailsMock.mockModel(Registration, 'findOne', mockReg)
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      mockRace.registrations.add = function () {
-        return true
-      }
-      mockRace.save = function () {
-        return true
-      }
-      this.timeout(50)
-      raceController.addRacer(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Registration.findOne.restore()
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-  })
-  describe('.removeRacer()', function () {
-    it('should return error if racer not in race', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          raceNumber: '10'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockRace = {
-        id: 5,
-        registrations: [
-          {
-            id: 1,
-            raceNumber: 1
-          }
-        ],
-        group: 1
-      }
-      var expected = 'Racer not in race'
-
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      this.timeout(50)
-      raceController.removeRacer(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-    it('should remove racer from race', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          raceNumber: '10'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockRace = {
-        id: 5,
-        registrations: [
-          {
-            id: 1,
-            raceNumber: 1
-          },
-          {
-            id: 10,
-            raceNumber: 10
-          }
-        ],
-        group: 1
-      }
-      var expected = {
-        messange: 'Racer removed from race',
-        race: 5,
-        raceNumber: 10
-      }
-
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      mockRace.registrations.remove = function () {
-        return true
-      }
-      mockRace.save = function () {
-        return true
-      }
-      this.timeout(50)
-      raceController.removeRacer(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-  })
-  describe('.assignPacerRfid()', function () {
-    it('should assign RFID to pacer', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          epc: 'abcd0001'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var expected = {
-        message: 'Pacer registered',
-        race: 5,
-        epc: 'abcd0001'
-      }
-
-      sailsMock.mockModel(Race, 'update')
-      this.timeout(50)
-      raceController.assignPacerRfid(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.update.restore()
-        done()
-      }, 30)
-    })
-  })
-  describe('.updateAdvancingRules()', function () {
-    it('should return error if rules not continuous', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          advancingRules: [
-            {
-              rankFrom: 0,
-              rankTo: 9,
-              toRace: 2,
-              insertAt: 0
-            },
-            {
-              rankFrom: 11,
-              rankTo: 19,
-              toRace: 3,
-              insertAt: 0
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var expected = 'Must set rules for continuous rankings'
-
-      this.timeout(50)
-      raceController.updateAdvancingRules(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        done()
-      }, 30)
-    })
-    it('should return error if rules not start from 0', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          advancingRules: [
-            {
-              rankFrom: 1,
-              rankTo: 9,
-              toRace: 2,
-              insertAt: 0
-            },
-            {
-              rankFrom: 10,
-              rankTo: 19,
-              toRace: 3,
-              insertAt: 0
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var expected = 'Must set rankFrom from 0'
-
-      this.timeout(50)
-      raceController.updateAdvancingRules(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        done()
-      }, 30)
-    })
-    it('should return error if racer count in rules exceed the number of racers', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          advancingRules: [
-            {
-              rankFrom: 0,
-              rankTo: 9,
-              toRace: 2,
-              insertAt: 0
-            },
-            {
-              rankFrom: 10,
-              rankTo: 19,
-              toRace: 3,
-              insertAt: 0
-            },
-            {
-              rankFrom: 20,
-              rankTo: 30,
-              toRace: 4,
-              insertAt: 0
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        racerNumberAllowed: 30
-      }
-      var expected = 'Rule setting exceeds max racer'
+      var req = { params: { id: '5' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 8, group: 5, name: 'new race', startTime: '2017-10-10T08:00:00-08:00' }
+      var expected = 'Cannot delete a started race'
 
       sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(50)
-      raceController.updateAdvancingRules(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-    it('should return error if racer number exceed max racer allowed in advanced race', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          advancingRules: [
-            {
-              rankFrom: 0,
-              rankTo: 2,
-              toRace: 2,
-              insertAt: 3
-            },
-            {
-              rankFrom: 3,
-              rankTo: 11,
-              toRace: 3,
-              insertAt: 10
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        racerNumberAllowed: 30
-      }
-      var mockGroup = {
-        id: 1,
-        races: [
-          {
-            id: 1,
-            advancingRules: [
-              {
-                rankFrom: 0,
-                rankTo: 2,
-                toRace: 2,
-                insertAt: 0
-              },
-              {
-                rankFrom: 3,
-                rankTo: 11,
-                toRace: 3,
-                insertAt: 0
-              }
-            ]
-          },
-          {
-            id: 2,
-            racerNumberAllowed: 3,
-            advancingRules: []
-          }
-        ]
-      }
-      var expected = 'Rule setting exceeds max racer'
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      sailsMock.mockModel(Group, 'findOne', mockGroup)
-      this.timeout(99)
-      raceController.updateAdvancingRules(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Race.findOne.restore()
-        Group.findOne.restore()
-        done()
-      }, 70)
-    })
-    it('should update advancing rules', function (done) {
-      var actual
-      var req = {
-        body: {
-          race: '5',
-          advancingRules: [
-            {
-              rankFrom: 0,
-              rankTo: 2,
-              toRace: 2,
-              insertAt: 3
-            },
-            {
-              rankFrom: 3,
-              rankTo: 11,
-              toRace: 3,
-              insertAt: 10
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        racerNumberAllowed: 30
-      }
-      var mockGroup = {
-        id: 1,
-        races: [
-          {
-            id: 1,
-            advancingRules: [
-              {
-                rankFrom: 0,
-                rankTo: 2,
-                toRace: 2,
-                insertAt: 0
-              },
-              {
-                rankFrom: 3,
-                rankTo: 11,
-                toRace: 3,
-                insertAt: 0
-              }
-            ]
-          },
-          {
-            id: 2,
-            racerNumberAllowed: 6,
-            advancingRules: []
-          }
-        ]
-      }
-      var expected = {
-        message: 'Advancing rules updated',
-        race: 5,
-        advancingRules: req.body.advancingRules,
-        notices: [
-          'There may be overlapped racers in advanced race: 2',
-          'Advanced race spots unfilled: 2',
-          'There may be overlapped racers in advanced race: 3',
-          'Advanced race spots unfilled: 3'
-        ]
-      }
-      var mockUpdate = [{
-        id: 5,
-        advancingRules: req.body.advancingRules
-      }]
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      sailsMock.mockModel(Race, 'update', mockUpdate)
-      sailsMock.mockModel(Group, 'findOne', mockGroup)
-      this.timeout(99)
-      raceController.updateAdvancingRules(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.update.restore()
-        Race.findOne.restore()
-        Group.findOne.restore()
-        done()
-      }, 60)
-    })
-  })
-  describe('.getParsedRaceResult()', function () {
-    it('should return error if race not started', function (done) {
-      var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5
-      }
-      var expected = 'Race not started'
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(99)
-      raceController.getParsedRaceResult(req, res)
+      this.timeout(90)
+      raceController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal(expected)
         Race.findOne.restore()
         done()
       }, 60)
     })
-    it('should return error if race not finished', function (done) {
+    it('should delete a race', function (done) {
       var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        startTime: '2017-10-10T08:00:00-08:00'
-      }
-      var expected = 'Race not finished'
+      var req = { params: { id: '5' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 8, group: 5, name: 'new race' }
+      var expected = { id: 5 }
 
       sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(99)
-      raceController.getParsedRaceResult(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 60)
-    })
-    it('should return parsed race result', function (done) {
-      var recordsHashTable1 = require('../../mockdata/recordsHashTable1.json')
-      var registrations1 = require('../../mockdata/registrations1.json')
-      var actual
-      var req = {
-        params: {
-          id: '5'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        startTime: '2017-10-10T08:00:00-08:00',
-        endTime: '2017-10-10T8:30:00-08:00',
-        recordsHashTable: recordsHashTable1,
-        laps: 9,
-        registrations: registrations1
-      }
-      var expected = dataService.returnParsedRaceResult(mock.recordsHashTable, mock.laps, mock.registrations)
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(99)
-      raceController.getParsedRaceResult(req, res)
+      sailsMock.mockModel(Race, 'destroy')
+      this.timeout(90)
+      raceController.delete(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.findOne.restore()
+        Race.destroy.restore()
         done()
       }, 60)
     })
   })
-  describe('.advancingRacerToRace()', function () {
-    it('should advance racers that match advancingRules to next race', function (done) {
-            /*
-    // 晉級規則 advancingRule: [{ rankFrom: INT, rankTo: INT, toRace: ID, insertAt: INT }, {...}]
-    // 該場比賽排名 rankings: [{registration: ID, time: INT/'dnf'}, {...}]
-            */
+  describe('.addRemoveRegs()', function () {
+    it('should do nothing if no regs present', function (done) {
+      var mock = { id: 1, registrations: [] }
       var actual
-      var added = []
-      var advancingRule = {
-        rankFrom: 0,
-        rankTo: 2,
-        toRace: 5
-      }
-      var rankings = [
-        {
-          registration: 1
-        },
-        {
-          registration: 3
-        },
-        {
-          registration: 5
-        },
-        {
-          registration: 7
-        },
-        {
-          registration: 9
-        }
-      ]
-      var mock = {
-        id: 5,
-        registrations: []
-      }
-      var expected = {
-        message: 'Racers allocated to coming races',
-        race: 5,
-        rankFrom: 0,
-        rankTo: 2
-      }
-
+      var raceObj = { toAdd: [], toRemove: [] }
       sandbox.stub(Q, 'defer').callsFake(function () {
-        return {
-          resolve: function (obj) {
-            actual = obj
-          },
-          reject: function (obj) {
-            actual = obj
-          }
-        }
+        return { promise: function () {}, resolve: function () { actual = true }, reject: function () {} }
       })
-      mock.registrations.add = function (id) {
-        added.push(id)
-      }
-      mock.save = function () {
-        return true
-      }
       sailsMock.mockModel(Race, 'findOne', mock)
-      raceController.advancingRacerToRace(advancingRule, rankings)
-      this.timeout(99)
+      this.timeout(90)
+      raceController.addRemoveRegs(raceObj)
       setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        expect(added).to.deep.equal([1, 3, 5])
+        expect(actual).to.equal(true)
+        Race.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should add regs', function (done) {
+      var mock = { id: 1, registrations: [] }
+      var actual
+      var raceObj = { toAdd: [1], toRemove: [] }
+      mock.registrations.add = function () { actual = true }
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { promise: function () {}, resolve: function () { actual = true }, reject: function () {} }
+      })
+      sailsMock.mockModel(Race, 'findOne', mock)
+      this.timeout(90)
+      raceController.addRemoveRegs(raceObj)
+      setTimeout(function () {
+        expect(actual).to.equal(true)
+        Race.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should remove regs', function (done) {
+      var mock = { id: 1, registrations: [] }
+      var actual
+      var raceObj = { toAdd: [], toRemove: [1] }
+      mock.registrations.remove = function () { actual = true }
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { promise: function () {}, resolve: function () { actual = true }, reject: function () {} }
+      })
+      sailsMock.mockModel(Race, 'findOne', mock)
+      this.timeout(90)
+      raceController.addRemoveRegs(raceObj)
+      setTimeout(function () {
+        expect(actual).to.equal(true)
         Race.findOne.restore()
         done()
       }, 60)
     })
   })
-  describe('.submitRaceResult()', function () {
-    it('should submit race result and update group if is last race', function (done) {
+  describe('.assignRegsToRaces()', function () {
+    it('should call addRemoveRegs', function (done) {
       var actual
-      var req = {
-        body: {
-          race: '5',
-          rankings: [
-            {
-              registration: 1
-            },
-            {
-              registration: 3
-            },
-            {
-              registration: 5
-            },
-            {
-              registration: 7
-            },
-            {
-              registration: 9
-            }
-          ],
-          disqualified: [
-            {
-              registration: 2
-            },
-            {
-              registration: 4
-            },
-            {
-              registration: 6
-            },
-            {
-              registration: 8
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        group: 3,
-        advancingRules: []
-      }
-      var mockGroup = [{
-        id: 3
-      }]
-      var expected = {
-        message: 'Result submitted',
-        group: 3,
-        race: 5
-      }
+      var req = { body: { races: [ { id: 1, toAdd: [1] }, { id: 2, toRemove: [1] } ] } }
+      var res = { ok: function (obj) { actual = true }, badRequest: function (obj) { actual = true } }
+      var RaceController = {}
+
+      sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () { actual = true })
+      this.timeout(90)
+      raceController.assignRegsToRaces(req, res)
+      setTimeout(function () {
+        expect(actual).to.equal(true)
+        done()
+      }, 60)
+    })
+  })
+  describe('.startRace()', function () {
+    it('should throw error if raceStatus not init', function (done) {
+      var actual
+      var req = { body: { id: 1, startTime: 1507651200000 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, raceStatus: 'started' }
 
       sailsMock.mockModel(Race, 'findOne', mock)
-      sailsMock.mockModel(Race, 'update')
-      sailsMock.mockModel(Group, 'update', mockGroup)
-      this.timeout(99)
-      raceController.submitRaceResult(req, res)
+      this.timeout(90)
+      raceController.startRace(req, res)
+      setTimeout(function () {
+        expect(actual.message).to.equal('Can only start an init race')
+        Race.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should throw error if Another race ongoing', function (done) {
+      var actual
+      var req = { body: { id: 1, startTime: 1507651200000 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
+      var mockEvent = { id: 1, ongoingRace: 3 }
+
+      sailsMock.mockModel(Race, 'findOne', mock)
+      sailsMock.mockModel(Event, 'findOne', mockEvent)
+      this.timeout(90)
+      raceController.startRace(req, res)
+      setTimeout(function () {
+        expect(actual.message).to.equal('Another race ongoing')
+        Race.findOne.restore()
+        Event.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should start a race', function (done) {
+      var actual
+      var req = { body: { id: 1, startTime: 1507651200000 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
+      var mockEvent = { id: 1, ongoingRace: -1 }
+      var mockupdate = [ { id: 1, raceStatus: 'started' } ]
+      var expected = { race: { id: 1, raceStatus: 'started' } }
+
+      sailsMock.mockModel(Race, 'findOne', mock)
+      sailsMock.mockModel(Race, 'update', mockupdate)
+      sailsMock.mockModel(Event, 'findOne', mockEvent)
+      this.timeout(90)
+      raceController.startRace(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.findOne.restore()
         Race.update.restore()
-        Group.update.restore()
+        Event.findOne.restore()
         done()
       }, 60)
     })
+  })
+  describe('.resetRace()', function () {
+    it('should reset a race', function (done) {
+      var actual
+      var req = { body: { id: 1 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
+      var mockEvent = { id: 1, ongoingRace: -1 }
+      var mockupdate = [ { id: 1, raceStatus: 'init' } ]
+      var expected = { race: { id: 1, raceStatus: 'init' } }
+
+      sailsMock.mockModel(Race, 'findOne', mock)
+      sailsMock.mockModel(Race, 'update', mockupdate)
+      sailsMock.mockModel(Event, 'findOne', mockEvent)
+      sailsMock.mockModel(Event, 'update', [mockEvent])
+      this.timeout(90)
+      raceController.resetRace(req, res)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(expected)
+        Race.findOne.restore()
+        Race.update.restore()
+        Event.findOne.restore()
+        Event.update.restore()
+        done()
+      }, 60)
+    })
+  })
+  describe('.endRace()', function () {
+    it('should return error if not started', function (done) {
+      var actual
+      var req = { body: { id: 1 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, raceStatus: 'init' }
+
+      sailsMock.mockModel(Race, 'findOne', mock)
+      this.timeout(90)
+      raceController.endRace(req, res)
+      setTimeout(function () {
+        expect(actual.message).to.equal('Can only stop a started race')
+        Race.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should return error if not started', function (done) {
+      var actual
+      var req = { body: { id: 1 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, raceStatus: 'started', group: { event: 1 } }
+      var mockEvent = { id: 1, ongoingRace: -1 }
+      var mockupdate = [ { id: 1, raceStatus: 'ended' } ]
+      var expected = { race: mockupdate[0] }
+
+      sailsMock.mockModel(Race, 'findOne', mock)
+      sailsMock.mockModel(Race, 'update', mockupdate)
+      sailsMock.mockModel(Event, 'update', [mockEvent])
+      this.timeout(90)
+      raceController.endRace(req, res)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(expected)
+        Race.findOne.restore()
+        Race.update.restore()
+        Event.update.restore()
+        done()
+      }, 60)
+    })
+  })
+  describe('.submitResult()', function () {
     it('should submit race result and advance qualified racers to coming races', function (done) {
+      //  // { id: ID, result: [], advance: []}
       var actual
-      var req = {
-        body: {
-          race: '5',
-          rankings: [
-            {
-              registration: 1
-            },
-            {
-              registration: 3
-            },
-            {
-              registration: 5
-            },
-            {
-              registration: 7
-            },
-            {
-              registration: 9
-            }
-          ],
-          disqualified: [
-            {
-              registration: 2
-            },
-            {
-              registration: 4
-            },
-            {
-              registration: 6
-            },
-            {
-              registration: 8
-            }
-          ]
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 5,
-        group: 3,
-        advancingRules: [
-          {
-            rankFrom: 0,
-            rankTo: 2,
-            toRace: 2,
-            insertAt: 3
-          }
-        ]
-      }
-      var expected = {
-        message: 'Result submitted',
-        race: 5
-      }
+      var req = { body: { id: 1, result: [ { id: 1 }, { id: 2 } ], advance: [] } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var RaceController = {}
+      var mockUpdate = {}
+      var expected = { race: { id: 1 } }
 
-      sandbox.stub(Q, 'all').callsFake(function () {
-        return true
-      })
-      sailsMock.mockModel(Race, 'findOne', mock)
-      sailsMock.mockModel(Race, 'update')
-      this.timeout(99)
-      raceController.submitRaceResult(req, res)
+      sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () {})
+      sailsMock.mockModel(Race, 'update', mockUpdate)
+      this.timeout(90)
+      raceController.submitResult(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
+        Race.update.restore()
+        done()
+      }, 60)
+    })
+  })
+  describe('.insertRfid()', function () {
+    it('should not insert record if event not found', function (done) {
+      var actual
+      var eventId = 1
+      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sailsMock.mockModel(Event, 'findOne')
+      this.timeout(90)
+      raceController.insertRfid(eventId, entriesRaw)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(false)
+        Event.findOne.restore()
+        done()
+      }, 60)
+    })
+    it('should not insert record to race if no ongoing race', function (done) {
+      var actual
+      var eventId = 1
+      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
+      var mock = { id: 1, ongoingRace: -1, rawRfidData: [ { epc: 'aaa', timestamp: '1507651100000' } ] }
+      var mockUpdate = [ mock ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sailsMock.mockModel(Event, 'findOne', mock)
+      sailsMock.mockModel(Event, 'update', mockUpdate)
+      this.timeout(90)
+      raceController.insertRfid(eventId, entriesRaw)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(false)
+        Event.findOne.restore()
+        Event.update.restore()
+        done()
+      }, 60)
+    })
+    it('should not insert record to race if no ongoing race', function (done) {
+      var actual
+      var eventId = 1
+      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
+      var mock = { id: 1, ongoingRace: 1, rawRfidData: [ { epc: 'aaa', timestamp: '1507651100000' } ] }
+      var mockUpdate = [ mock ]
+      var mockRace = { id: 1, recordsHashTable: { abc123: [], aaa: [] } }
+      var mockRaceUpdate = [ { id: 1, recordsHashTable: { abc123: [], aaa: [] } } ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sandbox.stub(dataService, 'isValidRaceRecord').callsFake(function () { return true })
+      sailsMock.mockModel(Event, 'findOne', mock)
+      sailsMock.mockModel(Event, 'update', mockUpdate)
+      sailsMock.mockModel(Race, 'findOne', mockRace)
+      sailsMock.mockModel(Race, 'update', mockRaceUpdate)
+      this.timeout(90)
+      raceController.insertRfid(eventId, entriesRaw)
+      setTimeout(function () {
+        expect(actual).to.deep.equal({ race: mockRaceUpdate[0] })
+        Event.findOne.restore()
+        Event.update.restore()
         Race.findOne.restore()
         Race.update.restore()
         done()
       }, 60)
     })
   })
-    /*
-    */
+  /*
+  describe('.socketManagement()', function () {
+    it('should submit race result and advance qualified racers to coming races', function (done) {
+    })
+  })
+  describe('.socketImpinj()', function () {
+    it('should submit race result and advance qualified racers to coming races', function (done) {
+    })
+  })
+  describe('.socket()', function () {
+    it('should submit race result and advance qualified racers to coming races', function (done) {
+    })
+  })
+
+  */
 })

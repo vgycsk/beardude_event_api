@@ -11,66 +11,18 @@ var sinon = require('sinon')
 describe('/controllers/TeamController', function () {
   var sandbox
 
-  beforeEach(function () {
-    sandbox = sinon.sandbox.create()
-  })
-
-  afterEach(function () {
-    sandbox.restore()
-  })
-  describe('.teamExist()', function () {
+  beforeEach(function () { sandbox = sinon.sandbox.create() })
+  afterEach(function () { sandbox.restore() })
+  describe('.nameAvailable()', function () {
     it('should return team not found message if team not exist', function (done) {
       var actual
-      var req = {
-        body: {
-          name: 'Team Murica'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var expected = {
-        name: 'Team Murica',
-        exist: false
-      }
-
-      sailsMock.mockModel(Team, 'findOne')
-      teamController.teamExist(req, res)
-      this.timeout(50)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Team.findOne.restore()
-        done()
-      }, 25)
-    })
-    it('should return team exist message if team found', function (done) {
-      var actual
-      var req = {
-        body: {
-          name: 'Team Murica'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        }
-      }
-      var expected = {
-        name: 'Team Murica',
-        exist: true
-      }
-      var mock = {
-        id: 1,
-        name: 'Team Murica'
-      }
+      var req = { body: { name: 'Team Murica' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, name: 'Team Murica' }
+      var expected = { team: { id: 1, name: 'Team Murica' } }
 
       sailsMock.mockModel(Team, 'findOne', mock)
-      teamController.teamExist(req, res)
+      teamController.nameAvailable(req, res)
       this.timeout(50)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -83,12 +35,7 @@ describe('/controllers/TeamController', function () {
         // {name: STR, desc: STR, url: STR}
     it('should create team', function (done) {
       var actual
-      var obj = {
-        name: 'Team Murica',
-        desc: 'The best of the best of the best',
-        url: 'http://team-murica.cafe'
-      }
-
+      var obj = { name: 'Team Murica', desc: 'The best of the best of the best', url: 'http://team-murica.cafe' }
       var mock = obj
       var expected
 
@@ -96,14 +43,7 @@ describe('/controllers/TeamController', function () {
       expected = mock
       sailsMock.mockModel(Team, 'create', mock)
       sandbox.stub(Q, 'defer').callsFake(function () {
-        return {
-          resolve: function (obj) {
-            actual = obj
-          },
-          reject: function (obj) {
-            actual = obj
-          }
-        }
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
       })
       teamController.createTeam(obj)
       this.timeout(50)
@@ -118,34 +58,10 @@ describe('/controllers/TeamController', function () {
         // {name: STR, desc: STR, url: STR}
     it('should create team', function (done) {
       var actual
-      var req = {
-        body: {
-          name: 'Team Murica',
-          desc: 'The best of the best of the best',
-          url: 'http://team-murica.cafe'
-        },
-        session: {
-          racerInfo: {
-            id: 1
-          }
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        }
-      }
-      var mock = {
-        id: 1,
-        name: 'Team Murica',
-        desc: 'The best of the best of the best',
-        url: 'http://team-murica.cafe',
-        leader: 1
-      }
-      var expected = {
-        message: 'Team created',
-        team: mock
-      }
+      var req = { body: { name: 'Team Murica', desc: 'The best of the best of the best', url: 'http://team-murica.cafe' }, session: { racerInfo: { id: 1 } } }
+      var res = { ok: function (obj) { actual = obj } }
+      var mock = { id: 1, name: 'Team Murica', desc: 'The best of the best of the best', url: 'http://team-murica.cafe', leader: 1 }
+      var expected = { team: mock }
 
       sailsMock.mockModel(Team, 'create', mock)
       teamController.create(req, res)
@@ -160,54 +76,10 @@ describe('/controllers/TeamController', function () {
   describe('.getInfo()', function () {
     it('should return team info', function (done) {
       var actual
-      var req = {
-        params: {
-          id: '1'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new team',
-        nameCht: '新隊伍',
-        racers: [
-          {
-            id: 1,
-            firstName: 'Jane'
-          },
-          {
-            id: 2,
-            firstName: 'John'
-          }
-        ],
-        leader: 1
-      }
-      var expected = {
-        id: 1,
-        name: 'new team',
-        nameCht: '新隊伍',
-        racers: [
-          {
-            id: 1,
-            firstName: 'Jane'
-          },
-          {
-            id: 2,
-            firstName: 'John'
-          }
-        ],
-        leader: {
-          id: 1,
-          firstName: 'Jane'
-        }
-      }
+      var req = { params: { id: '1' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new team', nameCht: '新隊伍', racers: [ { id: 1, firstName: 'Jane' }, { id: 2, firstName: 'John' } ], leader: 1 }
+      var expected = { team: { id: 1, name: 'new team', nameCht: '新隊伍', racers: [ { id: 1, firstName: 'Jane' }, { id: 2, firstName: 'John' } ], leader: 1 } }
 
       this.timeout(99)
       sailsMock.mockModel(Team, 'findOne', mockData)
@@ -222,42 +94,11 @@ describe('/controllers/TeamController', function () {
   describe('.update()', function () {
     it('should update changed fields', function (done) {
       var actual
-      var req = {
-        body: {
-          name: 'new team name'
-        }
-      }
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (obj) {
-          actual = obj
-        }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new team',
-        nameCht: '新隊伍',
-        leader: 1
-      }
-      var mockUpdate = [
-        {
-          id: 1,
-          name: 'new team name',
-          nameCht: '新隊伍',
-          leader: 1
-        }
-      ]
-      var expected = {
-        message: 'Team updated',
-        team: {
-          id: 1,
-          name: 'new team name',
-          nameCht: '新隊伍',
-          leader: 1
-        }
-      }
+      var req = { body: { name: 'new team name' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new team', nameCht: '新隊伍', leader: 1 }
+      var mockUpdate = [ { id: 1, name: 'new team name', nameCht: '新隊伍', leader: 1 } ]
+      var expected = { team: { id: 1, name: 'new team', nameCht: '新隊伍', leader: 1 } }
 
       this.timeout(99)
       sailsMock.mockModel(Team, 'findOne', mockData)

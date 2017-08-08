@@ -63,11 +63,14 @@ var TeamController = {
       return Team.findOne(queryObj).populate('racers')
     })
     .then(function (modelData) {
-      input.racers.forEach(function (racer) {
-        if (racer.toAdd) { modelData.racers.add(racer.id) }
-        if (racer.toRemove) { modelData.racers.remove(racer.id) }
-      })
-      return modelData.save()
+      if (input.racers) {
+        input.racers.forEach(function (racer) {
+          if (racer.toAdd) { modelData.racers.add(racer.id) }
+          if (racer.toRemove) { modelData.racers.remove(racer.id) }
+        })
+        return modelData.save()
+      }
+      return false
     })
     .then(function () { return Team.findOne(queryObj).populate('racers') })
     .then(function (modeldata) { return res.ok({ team: modeldata }) })
