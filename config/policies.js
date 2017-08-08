@@ -20,7 +20,7 @@ module.exports.policies = {
 //        getGeneralInfo: '',
         getManagers: 'isActiveManager',
         getManagementInfo: 'isActiveManager',
-        login: 'isNotLoggedInManager',
+        login: 'isNotLoggedIn',
 //        logout: '',
 //        reissuePassword: ''
         update: 'isActiveManager',
@@ -42,12 +42,12 @@ module.exports.policies = {
 //      socketImpinj: ''
     },
     RacerController: {
-        activate: 'isInactive',
+//        activate: 'isInactive',
 //        create: '',
 //        getGeneralInfo: '',
         getRacers: 'isActiveManager',
         getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
-        login: 'isNotLoggedInRacer',
+        login: 'isNotLoggedIn',
 //        logout: '',
 //        reissuePassword: ''
         update: 'isRacerSelfOrTeamLeaderOrManager',

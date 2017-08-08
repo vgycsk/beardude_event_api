@@ -5,15 +5,11 @@
 var Q = require('q')
 var randomstring = require('randomstring')
 var returnModelObj = function (modelName) {
-  if (modelName === 'Manager') {
-    return Manager
-  }
+  if (modelName === 'Manager') { return Manager }
   return Racer
 }
 var returnSessionObj = function (req, modelName) {
-  if (modelName === 'Manager') {
-    return req.session.managerInfo
-  }
+  if (modelName === 'Manager') { return req.session.managerInfo }
   return req.session.racerInfo
 }
 
@@ -24,15 +20,9 @@ module.exports = {
     var ModelObj = returnModelObj(modelName)
     var sessionObj = returnSessionObj(req, modelName)
 
-    if (input.password === '') {
-      return res.badRequest('Please enter password')
-    }
-    if (input.password !== input.confirmPassword) {
-      return res.badRequest('Password and confirm-password mismatch')
-    }
-    if (!sessionObj) {
-      return res.badRequest('Please login')
-    }
+    if (input.password === '') { return res.badRequest('Please enter password') }
+    if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
+    if (!sessionObj) { return res.badRequest('Please login') }
     return ModelObj.update({ email: sessionObj.email }, { password: input.password, isActive: true })
       .then(function (modelData) {
         if (modelName === 'Manager') {
@@ -64,16 +54,14 @@ module.exports = {
       delete input.confirmPassword
       input.isActive = true
     } else {
-            // TO DO: send email and notify temp password
+      // TO DO: send email and notify temp password
       input.password = randomstring.generate()
       input.isActive = false
       returnPassword = true
     }
     ModelObj.findOne({ email: input.email })
       .then(function (modelData) {
-        if (typeof modelData !== 'undefined') {
-          throw new Error('Account exists')
-        }
+        if (typeof modelData !== 'undefined') { throw new Error('Account exists') }
         return ModelObj.create(input)
       })
       .then(function (modelData) {
@@ -98,9 +86,7 @@ module.exports = {
 
     ModelObj.findOne({ id: input.id })
       .then(function (modelData) {
-        if (modelData.isActive) {
-          throw new Error('Cannot reissue password to activated account')
-        }
+        if (modelData.isActive) { throw new Error('Cannot reissue password to activated account') }
         newPassword = randomstring.generate()
         return ModelObj.update({ id: input.id }, { password: newPassword })
       })
@@ -118,23 +104,15 @@ module.exports = {
     var ModelObj = returnModelObj(modelName)
     var sessionObj = returnSessionObj(req, modelName)
 
-    if (input.password === '') {
-      return res.badRequest('Empty password')
-    }
-    if (input.password !== input.confirmPassword) {
-      return res.badRequest('Password and confirm-password mismatch')
-    }
-    if (input.oldPassword === input.password) {
-      return res.badRequest('Password unchanged')
-    }
+    if (input.password === '') { return res.badRequest('Empty password') }
+    if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
+    if (input.oldPassword === input.password) { return res.badRequest('Password unchanged') }
     return ModelObj.findOne({ id: sessionObj.id })
       .then(function (modelData) {
         return dataService.authenticate(input.oldPassword, modelData.password)
       })
       .then(function (authenticated) {
-        if (!authenticated) {
-          throw new Error('Old password incorrect')
-        }
+        if (!authenticated) { throw new Error('Old password incorrect') }
         return ModelObj.update({ id: input.id }, { password: input.password })
       })
       .then(function () {

@@ -13,13 +13,8 @@ var Q = require('q')
 describe('services/accountService', function () {
   var sandbox
 
-  beforeEach(function () {
-    sandbox = sinon.sandbox.create()
-  })
-
-  afterEach(function () {
-    sandbox.restore()
-  })
+  beforeEach(function () { sandbox = sinon.sandbox.create() })
+  afterEach(function () { sandbox.restore() })
   describe('activate()', function () {
     it('should return error message if passwords not specified', function (done) {
       var req = {
@@ -184,12 +179,8 @@ describe('services/accountService', function () {
 
       sandbox.stub(Q, 'defer').callsFake(function () {
         return {
-          resolve: function (obj) {
-            actual = obj
-          },
-          reject: function (obj) {
-            actual = obj
-          }
+          resolve: function (obj) { actual = obj },
+          reject: function (obj) { actual = obj }
         }
       })
       sailsMock.mockModel(Manager, 'findOne', mockData)
@@ -216,17 +207,14 @@ describe('services/accountService', function () {
       }
       var mockData = {
         id: 5,
-        email: 'info@beardude.com'
+        email: 'info@beardude.com',
+        street: '123'
       }
 
       sandbox.stub(Q, 'defer').callsFake(function () {
         return {
-          resolve: function (obj) {
-            actual = obj
-          },
-          reject: function (obj) {
-            actual = obj
-          }
+          resolve: function (obj) { actual = obj },
+          reject: function (obj) { actual = obj }
         }
       })
       sandbox.stub(randomstring, 'generate').callsFake(function () {
@@ -257,17 +245,14 @@ describe('services/accountService', function () {
       }
       var mockData = {
         id: 5,
-        email: 'info@beardude.com'
+        email: 'info@beardude.com',
+        street: '123'
       }
 
       sandbox.stub(Q, 'defer').callsFake(function () {
         return {
-          resolve: function (obj) {
-            actual = obj
-          },
-          reject: function (obj) {
-            actual = obj
-          }
+          resolve: function (obj) { actual = obj },
+          reject: function (obj) { actual = obj }
         }
       })
       sailsMock.mockModel(Manager, 'findOne')
@@ -291,12 +276,8 @@ describe('services/accountService', function () {
       }
       var actual
       var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (msg) {
-          actual = msg
-        }
+        ok: function (obj) { actual = obj },
+        badRequest: function (msg) { actual = msg }
       }
       var expected = 'Cannot reissue password to activated account'
       var mockData = {
@@ -322,12 +303,8 @@ describe('services/accountService', function () {
       }
       var actual
       var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (msg) {
-          actual = msg
-        }
+        ok: function (obj) { actual = obj },
+        badRequest: function (msg) { actual = msg }
       }
       var expected = {
         message: 'Temporary password created',
@@ -360,62 +337,6 @@ describe('services/accountService', function () {
       }, 10)
     })
   })
-  describe('update()', function () {
-    it('should update account', function (done) {
-      var req = {
-        body: {
-          id: 1,
-          firstName: 'Jane',
-          lastName: 'Doh'
-        }
-      }
-      var actual
-      var res = {
-        ok: function (obj) {
-          actual = obj
-        },
-        badRequest: function (msg) {
-          actual = msg
-        }
-      }
-      var expected = {
-        message: 'Account updated',
-        accountType: 'Manager',
-        account: {
-          id: 1,
-          email: 'info@beardude.com',
-          firstName: 'Jane',
-          lastName: 'Doh',
-          street: '123'
-        }
-      }
-      var mockData = {
-        id: 1,
-        email: 'info@beardude.com',
-        firstName: 'Jack',
-        Doe: 'Doe'
-      }
-      var mockData1 = [{
-        id: 1,
-        email: 'info@beardude.com',
-        firstName: 'Jane',
-        Doe: 'Doh'
-      }]
-
-      sailsMock.mockModel(Manager, 'findOne', mockData)
-      sailsMock.mockModel(Manager, 'update', mockData1)
-
-      accountService.update(req, res, 'Manager')
-      Manager.findOne.restore()
-      this.timeout(90)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Manager.update.restore()
-        done()
-      }, 50)
-    })
-  })
-
   describe('updatePassword()', function () {
     it('Should return error if no password entered', function (done) {
       var actual
@@ -433,11 +354,7 @@ describe('services/accountService', function () {
           }
         }
       }
-      var res = {
-        badRequest: function (msg) {
-          actual = msg
-        }
-      }
+      var res = { badRequest: function (msg) { actual = msg } }
       var expected = 'Empty password'
 
       accountService.updatePassword(req, res, 'Manager')
@@ -460,11 +377,7 @@ describe('services/accountService', function () {
           }
         }
       }
-      var res = {
-        badRequest: function (msg) {
-          actual = msg
-        }
-      }
+      var res = { badRequest: function (msg) { actual = msg } }
       var expected = 'Password and confirm-password mismatch'
 
       accountService.updatePassword(req, res, 'Manager')
@@ -487,11 +400,7 @@ describe('services/accountService', function () {
           }
         }
       }
-      var res = {
-        badRequest: function (msg) {
-          actual = msg
-        }
-      }
+      var res = { badRequest: function (msg) { actual = msg } }
       var expected = 'Password unchanged'
 
       accountService.updatePassword(req, res, 'Manager')
@@ -515,17 +424,11 @@ describe('services/accountService', function () {
         }
       }
       var res = {
-        badRequest: function (msg) {
-          actual = msg
-        },
-        ok: function (msg) {
-          actual = msg
-        }
+        badRequest: function (msg) { actual = msg },
+        ok: function (msg) { actual = msg }
       }
       var mockData
-      var expected = {
-        message: 'Password updated'
-      }
+      var expected = { message: 'Password updated' }
       var that = this
 
       return bcrypt.hash('123abc', null, null, function (err, hash) {
