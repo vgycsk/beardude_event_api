@@ -84,15 +84,17 @@ describe('/controllers/GroupController', function () {
 
       this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
+      sailsMock.mockModel(Group, 'destroy')
 
       groupController.delete(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Group.findOne.restore()
+        Group.destroy.restore()
         done()
       }, 90)
     })
-    it('should remove group', function (done) {
+    it('should throw error if group contains races', function (done) {
       var actual
       var req = { params: { id: '1' } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
@@ -100,13 +102,11 @@ describe('/controllers/GroupController', function () {
 
       this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
-      sailsMock.mockModel(Race, 'destroy')
 
       groupController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.deep.equal('Cannot delete group that contains races')
         Group.findOne.restore()
-        Race.destroy.restore()
         done()
       }, 90)
     })
@@ -119,13 +119,13 @@ describe('/controllers/GroupController', function () {
 
       this.timeout(150)
       sailsMock.mockModel(Group, 'findOne', mockData)
-      sailsMock.mockModel(Race, 'destroy')
+      sailsMock.mockModel(Group, 'destroy')
 
       groupController.delete(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Group.findOne.restore()
-        Race.destroy.restore()
+        Group.destroy.restore()
         done()
       }, 90)
     })

@@ -199,6 +199,7 @@ describe('/controllers/RacerController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var actual
       var mock = { email: 'info@beardude.com' }
+      var accountService = { update: function () { return true } }
 
       mock.toJSON = function () { return mock }
       sandbox.stub(accountService, 'update').callsFake(function () { actual = true })
