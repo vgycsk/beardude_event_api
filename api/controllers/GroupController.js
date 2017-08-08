@@ -9,32 +9,8 @@ module.exports = {
     .then(function (modelData) { return res.ok({group: modelData}) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  getInfo: function (req, res) {
-    var result = {}
-    var groupId = parseInt(req.params.id)
-
-    Group.findOne({id: groupId}).populate('races')
-    .then(function (modelData) {
-      result = modelData.toJSON()
-      return Registration.find({group: groupId}).populate('racer')
-    })
-    .then(function (V) {
-      result.registrations = V.map(function (reg) {
-        var obj = { id: reg.id, raceNumber: reg.raceNumber }
-
-        if (reg.racer) {
-          obj.racer = { id: reg.racer.id, firstName: reg.racer.firstName, lastName: reg.racer.lastName, nickName: reg.racer.nickName, team: reg.racer.team }
-        }
-        return obj
-      })
-      return res.ok({group: result})
-    })
-    .catch(function (E) {
-      return res.badRequest(E)
-    })
-  },
   // /:id
-  getManagementInfo: function (req, res) {
+  getInfo: function (req, res) {
     var result = {}
     var groupId = parseInt(req.params.id)
 

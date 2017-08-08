@@ -3,28 +3,19 @@
 module.exports.policies = {
     EventController: {
       create: 'isActiveManager',
-//        getGeneralInfo: '',
-//      getManagementInfo: '',
-//      getEvents: '',
-//        addManagers: 'isActiveManager',
-//        removeManagers: 'isActiveManager',
-      getGroupsAndRacersOfEvent: 'isActiveManager',
+//    getEvents: '',
+//    getInfo: '',
       update: 'isActiveManager',
-      delete: 'isActiveManager',
-      rfidReg: 'isActiveManager',
-      rfidTester: 'isActiveManager',
-      rfidPacer: 'isActiveManager',
-      rfidRecycle: 'isActiveManager'
+      delete: 'isActiveManager'
     },
     GroupController: {
         create: 'isActiveManager',
-//        getInfo: '',
-        getManagementInfo: 'isActiveManager',
+//        getInfo: 'isActiveManager',
         update: 'isActiveManager',
         delete: 'isActiveManager'
     },
     ManagerController: {
-        activate: 'isInactive',
+//        activate: 'isInactive',
         create: 'isActiveManager',
 //        getGeneralInfo: '',
         getManagers: 'isActiveManager',
@@ -45,7 +36,10 @@ module.exports.policies = {
         startRace: 'isActiveManager',
         resetRace: 'isActiveManager',
         endRace: 'isActiveManager',
-        submitResult: 'isActiveManager'
+        submitResult: 'isActiveManager',
+        socketManagement: 'isActiveManager'
+//      socket: '',
+//      socketImpinj: ''
     },
     RacerController: {
         activate: 'isInactive',
