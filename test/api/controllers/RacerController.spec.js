@@ -6,6 +6,7 @@ var sailsMock = require('sails-mock-models')
 var sinon = require('sinon')
 var chai = require('chai')
 var expect = chai.expect
+var Q = require('q')
 
 describe('/controllers/RacerController', function () {
   var sandbox
@@ -22,6 +23,59 @@ describe('/controllers/RacerController', function () {
       racerController.activate(req, res)
       expect(actual).to.equal(true)
       done()
+    })
+  })
+  describe('.getRacers()', function () {
+    it('should return filtered info', function (done) {
+      var actual
+      var req = { params: { id: 1 } }
+      var res = { ok: function (obj) { actual = obj } }
+      var mock = [ { id: 1, firstName: 'John', lastName: 'Doe', isActive: true, team: 1 } ]
+      var expected = { racers: [ { id: 1, firstName: 'John', lastName: 'Doe', isActive: true, team: 1 } ] }
+
+      mock[0].toJSON = function () { return mock[0] }
+      sailsMock.mockModel(Racer, 'find', mock)
+      racerController.getRacers(req, res)
+      this.timeout(100)
+      setTimeout(function () {
+        delete mock[0].toJSON
+        expect(actual).to.deep.equal(expected)
+        Racer.find.restore()
+        done()
+      }, 50)
+    })
+  })
+  describe('.create()', function () {
+    it('should return error if password mismatch', function (done) {
+      var actual
+      var req = { body: { password: '123', confirmPassword: '456' } }
+      var res = { badRequest: function (obj) { actual = obj } }
+      var expected = 'Password and confirm-password mismatch'
+
+      racerController.create(req, res)
+      expect(actual).to.equal(expected)
+      done()
+    })
+    it('should call accountService and create account', function (done) {
+      var actual
+      var req = { body: { email: 'info@beardude.com', password: '123', confirmPassword: '123' } }
+      var res = { ok: function (obj) { actual = obj } }
+      var expected = { racer: { id: 1 } }
+
+      sandbox.stub(accountService, 'create').callsFake(function () {
+        var q = Q.defer()
+        var result = { id: 1 }
+        result.toJSON = function () { return { id: 1 } }
+        q.resolve(result)
+        return q.promise
+      })
+      racerController.create(req, res)
+      this.timeout(100)
+      setTimeout(function () {
+        delete actual.toJSON
+        expect(actual).to.deep.equal(expected)
+        done()
+      }, 80)
     })
   })
   describe('.getGeneralInfo()', function () {
@@ -42,7 +96,6 @@ describe('/controllers/RacerController', function () {
       }, 50)
     })
   })
-
   describe('.getManagementInfo()', function () {
     it('should return complete info', function (done) {
       var actual

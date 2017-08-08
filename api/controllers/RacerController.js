@@ -8,14 +8,15 @@ module.exports = {
   },
   getRacers: function (req, res) {
     Racer.find({})
-    .then(function (modelData) { return res.ok({ racers: modelData.map(function (racer) { return racer.toJSON() }) }) })
+    .then(function (V) { return res.ok({ racers: V.map(function (racer) { return racer.toJSON() }) }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   create: function (req, res) {
-    if (req.body.password !== req.body.confirmPassword) { throw new Error('Password and confirm-password mismatch') }
-    accountService.create(req.body, 'Racer')
-      .then(function (result) { return res.ok({ racer: result.toJSON() }) })
-      .catch(function (E) { return res.badRequest(E) })
+    var input = req.body
+    if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
+    return accountService.create(input, 'Racer')
+    .then(function (result) { return res.ok({ racer: result.toJSON() }) })
+    .catch(function (E) { return res.badRequest(E) })
   },
   // Get insensitive account info
   getGeneralInfo: function (req, res) {
