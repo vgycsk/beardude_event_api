@@ -167,12 +167,12 @@ describe('/controllers/RaceController', function () {
       var RaceController = {}
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () { actual = true })
-      this.timeout(90)
+      this.timeout(150)
       raceController.assignRegsToRaces(req, res)
       setTimeout(function () {
         expect(actual).to.equal(true)
         done()
-      }, 60)
+      }, 90)
     })
   })
   describe('.startRace()', function () {
@@ -183,13 +183,13 @@ describe('/controllers/RaceController', function () {
       var mock = { id: 1, raceStatus: 'started' }
 
       sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(90)
+      this.timeout(150)
       raceController.startRace(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Can only start an init race')
         Race.findOne.restore()
         done()
-      }, 60)
+      }, 90)
     })
     it('should throw error if Another race ongoing', function (done) {
       var actual
@@ -200,14 +200,14 @@ describe('/controllers/RaceController', function () {
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
-      this.timeout(90)
+      this.timeout(150)
       raceController.startRace(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Another race ongoing')
         Race.findOne.restore()
         Event.findOne.restore()
         done()
-      }, 60)
+      }, 90)
     })
     it('should start a race', function (done) {
       var actual
@@ -221,7 +221,7 @@ describe('/controllers/RaceController', function () {
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'update', mockupdate)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
-      this.timeout(90)
+      this.timeout(150)
       raceController.startRace(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -229,7 +229,7 @@ describe('/controllers/RaceController', function () {
         Race.update.restore()
         Event.findOne.restore()
         done()
-      }, 60)
+      }, 90)
     })
   })
   describe('.resetRace()', function () {
@@ -246,7 +246,7 @@ describe('/controllers/RaceController', function () {
       sailsMock.mockModel(Race, 'update', mockupdate)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
       sailsMock.mockModel(Event, 'update', [mockEvent])
-      this.timeout(90)
+      this.timeout(150)
       raceController.resetRace(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -255,7 +255,7 @@ describe('/controllers/RaceController', function () {
         Event.findOne.restore()
         Event.update.restore()
         done()
-      }, 60)
+      }, 90)
     })
   })
   describe('.endRace()', function () {
@@ -286,7 +286,7 @@ describe('/controllers/RaceController', function () {
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'update', mockupdate)
       sailsMock.mockModel(Event, 'update', [mockEvent])
-      this.timeout(90)
+      this.timeout(150)
       raceController.endRace(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -294,7 +294,7 @@ describe('/controllers/RaceController', function () {
         Race.update.restore()
         Event.update.restore()
         done()
-      }, 60)
+      }, 90)
     })
   })
   describe('.submitResult()', function () {
@@ -309,13 +309,13 @@ describe('/controllers/RaceController', function () {
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () {})
       sailsMock.mockModel(Race, 'update', mockUpdate)
-      this.timeout(90)
+      this.timeout(150)
       raceController.submitResult(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.update.restore()
         done()
-      }, 60)
+      }, 90)
     })
   })
   describe('.insertRfid()', function () {
@@ -327,13 +327,13 @@ describe('/controllers/RaceController', function () {
         return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
       })
       sailsMock.mockModel(Event, 'findOne')
-      this.timeout(90)
+      this.timeout(150)
       raceController.insertRfid(eventId, entriesRaw)
       setTimeout(function () {
         expect(actual).to.deep.equal(false)
         Event.findOne.restore()
         done()
-      }, 60)
+      }, 90)
     })
     it('should not insert record to race if no ongoing race', function (done) {
       var actual
@@ -346,14 +346,14 @@ describe('/controllers/RaceController', function () {
       })
       sailsMock.mockModel(Event, 'findOne', mock)
       sailsMock.mockModel(Event, 'update', mockUpdate)
-      this.timeout(90)
+      this.timeout(150)
       raceController.insertRfid(eventId, entriesRaw)
       setTimeout(function () {
         expect(actual).to.deep.equal(false)
         Event.findOne.restore()
         Event.update.restore()
         done()
-      }, 60)
+      }, 90)
     })
     it('should not insert record to race if no ongoing race', function (done) {
       var actual
@@ -371,7 +371,7 @@ describe('/controllers/RaceController', function () {
       sailsMock.mockModel(Event, 'update', mockUpdate)
       sailsMock.mockModel(Race, 'findOne', mockRace)
       sailsMock.mockModel(Race, 'update', mockRaceUpdate)
-      this.timeout(90)
+      this.timeout(150)
       raceController.insertRfid(eventId, entriesRaw)
       setTimeout(function () {
         expect(actual).to.deep.equal({ race: mockRaceUpdate[0] })
@@ -380,7 +380,7 @@ describe('/controllers/RaceController', function () {
         Race.findOne.restore()
         Race.update.restore()
         done()
-      }, 60)
+      }, 90)
     })
   })
   /*

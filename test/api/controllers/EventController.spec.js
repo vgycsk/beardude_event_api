@@ -77,7 +77,7 @@ describe('/controllers/EventController', function () {
       mockData.toJSON = function () { return mockData }
       mockGroups[0].toJSON = function () { return mockGroups[0] }
       mockGroups[1].toJSON = function () { return mockGroups[1] }
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       sailsMock.mockModel(Group, 'find', mockGroups)
       sailsMock.mockModel(Race, 'find', mockRaces)
@@ -90,7 +90,7 @@ describe('/controllers/EventController', function () {
         Race.find.restore()
         Registration.find.restore()
         done()
-      }, 30)
+      }, 90)
     })
   })
   describe('.update()', function () {
@@ -122,14 +122,14 @@ describe('/controllers/EventController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new event1', isPublic: true }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       eventController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Cannot delete a public event')
         Event.findOne.restore()
         done()
-      }, 30)
+      }, 90)
     })
 
     it('should return error if is an ongoing event', function (done) {
@@ -138,14 +138,14 @@ describe('/controllers/EventController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new event1', isPublic: false, startTime: Date.now() - 10000, endTime: Date.now() + 10000 }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       eventController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Cannot delete an ongoing event')
         Event.findOne.restore()
         done()
-      }, 30)
+      }, 90)
     })
     it('should return error if event contains groups', function (done) {
       var actual
@@ -153,14 +153,14 @@ describe('/controllers/EventController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new event1', isPublic: false, startTime: 1507651200000, endTime: 1507680000000, groups: [ { id: 1, name: 'group1' } ] }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       eventController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Cannot delete an event that contains group')
         Event.findOne.restore()
         done()
-      }, 30)
+      }, 90)
     })
     it('should delete event', function (done) {
       var actual
@@ -168,7 +168,7 @@ describe('/controllers/EventController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new event1', isPublic: false, startTime: 1507651200000, endTime: 1507680000000, groups: [] }
 
-      this.timeout(99)
+      this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       sailsMock.mockModel(Event, 'destroy', { id: 1 })
       eventController.delete(req, res)
@@ -177,7 +177,7 @@ describe('/controllers/EventController', function () {
         Event.findOne.restore()
         Event.destroy.restore()
         done()
-      }, 30)
+      }, 90)
     })
   })
 })
