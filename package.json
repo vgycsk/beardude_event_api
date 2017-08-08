@@ -68,11 +68,7 @@
   "scripts": {
     "coverage": "./scripts/coverage.sh",
     "lint": "./scripts/lint.sh",
-    "lint:react": "standard ./src/*.js webpack.config.*.js",
     "start": "NODE_ENV=production node app.js",
-    "saildev": "nodemon -e xyz --config nodemon.json",
-    "dev": "nodemon -e xyz --config nodemon.dev.json",
-    "build": "./scripts/copyView.sh; ./node_modules/.bin/webpack --config ./webpack.config.prod.js --progress; ./scripts/cpReactLayout.sh",
     "test": "./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
   },
   "main": "app.js",
