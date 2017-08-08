@@ -11,41 +11,14 @@ describe('/controllers/EventController', function () {
     it('should create an event under current manager', function (done) {
       var actual
       var req = {
-        body: {
-          name: 'new event',
-          nameCht: '新比賽',
-          startTime: '2017-10-10T08:00:00-08:00',
-          endTime: '2017-10-10T16:00:00-08:00',
-          lapDistance: 1100,
-          location: 'Taipei'
-        },
-        session: {
-          managerInfo: {
-            id: 1,
-            email: 'info@beardude.com'
-          }
+        body: { name: 'new event', nameCht: '新比賽', startTime: '2017-10-10T08:00:00-08:00', endTime: '2017-10-10T16:00:00-08:00', lapDistance: 1100, location: 'Taipei' },
+        session: { managerInfo: { id: 1, email: 'info@beardude.com' }
         }
       }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = req.body
-      var mockDataManager = {
-        id: 1,
-        managers: { add: function () { return true } },
-        save: function () { return true }
-      }
-      var expected = {
-        event: {
-          name: 'new event',
-          nameCht: '新比賽',
-          startTime: 1507651200000,
-          endTime: 1507680000000,
-          lapDistance: 1100,
-          location: 'Taipei'
-        }
-      }
+      var mockDataManager = { id: 1, managers: { add: function () { return true } }, save: function () { return true } }
+      var expected = { event: { name: 'new event', nameCht: '新比賽', startTime: 1507651200000, endTime: 1507680000000, lapDistance: 1100, location: 'Taipei' } }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'create', mockData)
@@ -95,52 +68,12 @@ describe('/controllers/EventController', function () {
     it('should return event info if found', function (done) {
       var actual
       var req = { params: { id: '1' } }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new event',
-        nameCht: '新活動'
-      }
-      var mockGroups = [
-        {
-          id: 1,
-          name: 'Group1',
-          nameCht: '組別1'
-        },
-        {
-          id: 2,
-          name: 'Group2',
-          nameCht: '組別2'
-        }
-      ]
-      var mockRaces = [
-        {
-          id: 1,
-          name: 'Race1',
-          nameCht: 'Race1'
-        },
-        {
-          id: 2,
-          name: 'Race2',
-          nameCht: 'Race2'
-        }
-      ]
-      var mockRegs = [
-        {
-          id: 1,
-          name: 'reg1'
-        },
-        {
-          id: 2,
-          name: 'reg'
-        }
-      ]
-      var expected = {
-        event: mockData
-      }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new event', nameCht: '新活動' }
+      var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
+      var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
+      var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]
+      var expected = { event: mockData }
       mockData.toJSON = function () { return mockData }
       mockGroups[0].toJSON = function () { return mockGroups[0] }
       mockGroups[1].toJSON = function () { return mockGroups[1] }
@@ -163,29 +96,16 @@ describe('/controllers/EventController', function () {
   describe('.update()', function () {
     it('should update specified fields', function (done) {
       var actual
-      var req = {
-        body: {
-          name: 'new event1',
-          assignedRaceNumber: 50
-        }
-      }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
+      var req = { body: { name: 'new event1', assignedRaceNumber: 50 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = req.body
-      var mockDataUpdate = [{
-        id: 1,
-        name: 'new event1',
-        assignedRaceNumber: 50
-      }]
+      var mockDataUpdate = [ { id: 1, name: 'new event1', assignedRaceNumber: 50 } ]
       var expected = { event: mockDataUpdate[0] }
 
       mockData.id = 1
       this.timeout(99)
       sailsMock.mockModel(Event, 'create', mockData)
       sailsMock.mockModel(Event, 'update', mockDataUpdate)
-
       eventController.update(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -199,15 +119,8 @@ describe('/controllers/EventController', function () {
     it('should return error if is a public event', function (done) {
       var actual
       var req = { params: { id: 1 } }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new event1',
-        isPublic: true
-      }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new event1', isPublic: true }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'findOne', mockData)
@@ -222,21 +135,11 @@ describe('/controllers/EventController', function () {
     it('should return error if is an ongoing event', function (done) {
       var actual
       var req = { params: { id: 1 } }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new event1',
-        isPublic: false,
-        startTime: Date.now() - 10000,
-        endTime: Date.now() + 10000
-      }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new event1', isPublic: false, startTime: Date.now() - 10000, endTime: Date.now() + 10000 }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'findOne', mockData)
-
       eventController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Cannot delete an ongoing event')
@@ -247,27 +150,11 @@ describe('/controllers/EventController', function () {
     it('should return error if event contains groups', function (done) {
       var actual
       var req = { params: { id: 1 } }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new event1',
-        isPublic: false,
-        startTime: 1507651200000,
-        endTime: 1507680000000,
-        groups: [
-          {
-            id: 1,
-            name: 'group1'
-          }
-        ]
-      }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new event1', isPublic: false, startTime: 1507651200000, endTime: 1507680000000, groups: [ { id: 1, name: 'group1' } ] }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'findOne', mockData)
-
       eventController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Cannot delete an event that contains group')
@@ -278,18 +165,8 @@ describe('/controllers/EventController', function () {
     it('should delete event', function (done) {
       var actual
       var req = { params: { id: 1 } }
-      var res = {
-        ok: function (obj) { actual = obj },
-        badRequest: function (obj) { actual = obj }
-      }
-      var mockData = {
-        id: 1,
-        name: 'new event1',
-        isPublic: false,
-        startTime: 1507651200000,
-        endTime: 1507680000000,
-        groups: []
-      }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mockData = { id: 1, name: 'new event1', isPublic: false, startTime: 1507651200000, endTime: 1507680000000, groups: [] }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'findOne', mockData)
