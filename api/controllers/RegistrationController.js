@@ -76,9 +76,9 @@ var RegistrationController = {
       if (V.raceNotes) { throw new Error('Cannot delete racer that has raceNotes') }
       return Registration.destroy(query)
     })
-    .then(function (V) { return res.ok({ registration: query }) })
+    .then(function (V) { return res.ok({ registration: query.id }) })
     .catch(function (E) { return res.badRequest(E) })
-  },
+  }
 /*
   // {id: ID, race: ID, note: STR, isDisqualified: BOOL}
   updateDisqualification: function (req, res) {
@@ -95,6 +95,7 @@ var RegistrationController = {
   },
 */
   // {id: ID, race: ID, note: STR}
+/*
   updateRaceNote: function (req, res) {
     var input = req.body
 
@@ -107,6 +108,7 @@ var RegistrationController = {
     .then(function (V) { return res.ok({ registration: V[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   }
+*/
 }
 
 module.exports = RegistrationController

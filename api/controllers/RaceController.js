@@ -205,18 +205,17 @@ var RaceController = {
 
     Event.findOne({id: eventId})
     .then(function (eventData) {
-      if (eventData) { return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) }) }
-      return false
+      if (!eventData) { return false }
+      return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
     })
     .then(function (eventData) {
-      if (eventData && eventData.length > 0 && eventData[0].ongoingRace !== -1) { return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations') }
-      return false
+      if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === -1) { return false }
+      return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations')
     })
     .then(function (raceData) {
       if (!raceData) { return false }
       var recordsHashTable = raceData.recordsHashTable
       var hasEntry
-
       entries.map(function (entry) {
         if (dataService.isValidRaceRecord(entry.epc, raceData)) {
           if (!recordsHashTable[entry.epc]) { recordsHashTable[entry.epc] = [] }
@@ -224,7 +223,8 @@ var RaceController = {
           hasEntry = true
         }
       })
-      if (hasEntry) { return Race.update({id: raceData.id}, {recordsHashTable: recordsHashTable}) }
+      if (!hasEntry) { return false }
+      return Race.update({id: raceData.id}, {recordsHashTable: recordsHashTable})
     })
     .then(function (raceData) {
       if (!raceData) { return q.resolve(false) }
