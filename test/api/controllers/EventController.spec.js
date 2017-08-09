@@ -18,7 +18,7 @@ describe('/controllers/EventController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = req.body
       var mockDataManager = { id: 1, managers: { add: function () { return true } }, save: function () { return true } }
-      var expected = { event: { name: 'new event', nameCht: '新比賽', startTime: 1507651200000, endTime: 1507680000000, lapDistance: 1100, location: 'Taipei' } }
+      var expected = { event: { name: 'new event', uniqueName: 'newevent', nameCht: '新比賽', startTime: 1507651200000, endTime: 1507680000000, lapDistance: 1100, location: 'Taipei' } }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'create', mockData)

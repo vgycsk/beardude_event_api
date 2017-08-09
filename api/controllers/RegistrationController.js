@@ -69,7 +69,7 @@ var RegistrationController = {
   },
   // /:id
   delete: function (req, res) {
-    var query = {id: parseInt(req.params.id)}
+    var query = {id: req.params.id}
 
     Registration.findOne(query).populate('races')
     .then(function (V) {

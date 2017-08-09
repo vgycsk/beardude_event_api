@@ -70,6 +70,10 @@ var dataService = {
 
     getCode(code)
     return q.promise
+  },
+  // 1. lowercase 2. remove special char 3. condense
+  sluggify: function (string) {
+    return string.toLowerCase().replace(/[^\w\s]/gi, '').replace(/ +/g, '')
   }
 }
 

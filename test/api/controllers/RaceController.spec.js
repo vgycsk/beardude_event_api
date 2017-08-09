@@ -74,7 +74,7 @@ describe('/controllers/RaceController', function () {
   describe('.delete()', function () {
     it('return error when trying to delete a started race', function (done) {
       var actual
-      var req = { params: { id: '5' } }
+      var req = { params: { id: 5 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 8, group: 5, name: 'new race', startTime: '2017-10-10T08:00:00-08:00' }
       var expected = 'Cannot delete a started race'
@@ -90,7 +90,7 @@ describe('/controllers/RaceController', function () {
     })
     it('should delete a race', function (done) {
       var actual
-      var req = { params: { id: '5' } }
+      var req = { params: { id: 5 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 8, group: 5, name: 'new race' }
       var expected = { id: 5 }

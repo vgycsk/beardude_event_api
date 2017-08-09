@@ -13,7 +13,7 @@ var RaceController = {
   },
   // /:id
   getInfo: function (req, res) {
-    Race.findOne({ id: parseInt(req.params.id) }).populate('registrations')
+    Race.findOne({ id: req.params.id }).populate('registrations')
     .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -22,7 +22,7 @@ var RaceController = {
     var input = req.body
     var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'advancingRules']
     var updateObj = dataService.returnUpdateObj(fields, input)
-    var query = { id: parseInt(input.id) }
+    var query = { id: input.id }
 
     Race.update(query, updateObj)
     .then(function () { return Race.findOne(query).populate('registrations') })
@@ -31,7 +31,7 @@ var RaceController = {
   },
   // /:id
   delete: function (req, res) {
-    var query = { id: parseInt(req.params.id) }
+    var query = { id: req.params.id }
 
     Race.findOne(query)
     .then(function (modelData) {

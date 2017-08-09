@@ -17,6 +17,11 @@ module.exports = {
       via: 'event'
     },
 
+    uniqueName: {
+      type: 'string',
+      unique: true,
+      required: true
+    },
     name: {
       type: 'string',
       required: true

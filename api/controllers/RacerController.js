@@ -20,7 +20,7 @@ module.exports = {
   },
   // Get insensitive account info
   getGeneralInfo: function (req, res) {
-    Racer.findOne({ id: parseInt(req.params.id) }).populate('team')
+    Racer.findOne({ id: req.params.id }).populate('team')
     .then(function (V) { return res.ok({ racer: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive, team: V.team} }) })
     .catch(function (E) { return res.badRequest(E) })
   },

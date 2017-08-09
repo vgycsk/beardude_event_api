@@ -12,7 +12,7 @@ module.exports = {
   // /:id
   getInfo: function (req, res) {
     var result = {}
-    var groupId = parseInt(req.params.id)
+    var groupId = req.params.id
 
     Group.findOne({id: groupId})
     .then(function (modelData) {
@@ -33,7 +33,7 @@ module.exports = {
   },
   // /id
   delete: function (req, res) {
-    var query = {id: parseInt(req.params.id)}
+    var query = {id: req.params.id}
 
     Group.findOne(query).populate('races').populate('registrations')
     .then(function (V) {
@@ -50,7 +50,7 @@ module.exports = {
     var fields = ['name', 'nameCht', 'racerNumberAllowed', 'rules']
     var updateObj = dataService.returnUpdateObj(fields, input)
 
-    Group.update({id: parseInt(input.id)}, updateObj)
+    Group.update({id: input.id}, updateObj)
     .then(function (modelData) { return res.ok({group: modelData[0]}) })
     .catch(function (E) { return res.badRequest(E) })
   }
