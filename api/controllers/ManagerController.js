@@ -57,7 +57,7 @@ module.exports = {
   update: function (req, res) {
     var input = req.body
     var fields = ['email', 'phone', 'firstName', 'lastName', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive']
-    var query = {id: parseInt(input.id)}
+    var query = {id: input.id}
     var updateObj = dataService.returnUpdateObj(fields, input)
 
     if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }

@@ -11,6 +11,7 @@ module.exports = {
     var input = req.body
     var resultObj
 
+    input.uniqueName = dataService.sluggify(input.name)
     input.startTime = moment(input.startTime).valueOf()
     input.endTime = moment(input.endTime).valueOf()
     Event.create(input)
@@ -30,11 +31,12 @@ module.exports = {
     .then(function (V) { return res.ok({events: V}) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // :uniqueName
   getInfo: function (req, res) {
-    var eventId = parseInt(req.params.id)
+    var eventId = req.params.uniqueName
     var result
 
-    Event.findOne({ id: eventId })
+    Event.findOne({ uniqueName: eventId })
     .then(function (V) {
       result = V.toJSON()
       return Group.find({event: eventId}).populate('registrations')
@@ -79,6 +81,7 @@ module.exports = {
       updateObj = dataService.returnUpdateObj(fields, input)
       if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
       if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
+      if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name)}
       return false
     })
     .then(function () {

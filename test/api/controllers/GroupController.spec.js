@@ -61,7 +61,7 @@ describe('/controllers/GroupController', function () {
   describe('.delete()', function () {
     it('should return error if event has registrations', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new group', registrations: [1, 2, 3], races: [] }
       var expected = 'Cannot delete group that has racers registered'
@@ -77,7 +77,7 @@ describe('/controllers/GroupController', function () {
     })
     it('should remove empty group', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new group', registrations: [], races: [] }
       var expected = { group: 1 }
@@ -96,7 +96,7 @@ describe('/controllers/GroupController', function () {
     })
     it('should throw error if group contains races', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new group', registrations: [], races: [ { id: 1 }, { id: 2 }, { id: 3 } ] }
 
@@ -112,7 +112,7 @@ describe('/controllers/GroupController', function () {
     })
     it('should remove group', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mockData = { id: 1, name: 'new group', registrations: [], races: [] }
       var expected = { group: 1 }

@@ -67,7 +67,7 @@ describe('/controllers/RegistrationController', function () {
   describe('.getInfo()', function () {
     it('should return registration info with racer id', function (done) {
       var actual
-      var req = { body: { event: '1', racer: '1' } }
+      var req = { body: { event: 1, racer: 1 } }
       var mock = {
         races: [ { id: 1 }, { id: 2 } ],
         event: 1,
@@ -124,7 +124,7 @@ describe('/controllers/RegistrationController', function () {
         refunded: false
       }
       var res = { ok: function (obj) { actual = obj } }
-      var req = { body: { event: '1', accessCode: 'abcd' } }
+      var req = { body: { event: 1, accessCode: 'abcd' } }
 
       sailsMock.mockModel(Registration, 'findOne', mock)
       registrationController.getInfo(req, res)
@@ -156,7 +156,7 @@ describe('/controllers/RegistrationController', function () {
   describe('.delete()', function () {
     it('should throw error if reg has race notes', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 1, name: 'newName', raceNotes: [ { message: 'a race note' } ] }
 
@@ -171,7 +171,7 @@ describe('/controllers/RegistrationController', function () {
     })
     it('should delete a reg', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 1, name: 'newName' }
 

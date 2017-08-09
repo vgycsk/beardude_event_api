@@ -29,7 +29,7 @@ var TeamController = {
   },
   // /:ID
   delete: function (req, res) {
-    var query = {id: parseInt(req.params.id)}
+    var query = {id: req.params.id}
 
     Team.findOne(query).populate('racers')
     .then(function (V) {
@@ -40,7 +40,7 @@ var TeamController = {
     .catch(function (E) { return res.badRequest(E) })
   },
   getInfo: function (req, res) {
-    Team.findOne({ id: parseInt(req.params.id) }).populate('racers')
+    Team.findOne({ id: req.params.id }).populate('racers')
     .then(function (teamData) { return res.ok({ team: teamData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -53,7 +53,7 @@ var TeamController = {
   update: function (req, res) {
     var input = req.body
     var fields = ['name', 'nameCht', 'description', 'url', 'leader']
-    var queryObj = { id: parseInt(input.id) }
+    var queryObj = { id: input.id }
 
     Team.findOne(queryObj)
     .then(function (modelData) {

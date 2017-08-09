@@ -8,7 +8,7 @@ module.exports.routes = {
     // 3.1
     'get  /api/event/getEvents': 'EventController.getEvents',
     // 3.1 -
-    'get  /api/event/mgmtInfo/:id': 'EventController.getInfo',
+    'get  /api/event/mgmtInfo/:uniqueName': 'EventController.getInfo',
     // 1.2.7, 1.2.8, 6.2.6, 4.2.3
     'post /api/event/update': 'EventController.update',
     // 1.6
