@@ -81,7 +81,7 @@ module.exports = {
       updateObj = dataService.returnUpdateObj(fields, input)
       if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
       if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
-      if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name)}
+      if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
       return false
     })
     .then(function () {
