@@ -60,7 +60,7 @@ module.exports = {
   eventUpdatePage: function (req, res) {
     returnParams(req.session)
         .then(function (params) {
-          var inputId = parseInt(req.params.id)
+          var inputId = req.params.id
           var eventToUpdate
 
           params.events.forEach(function (event) {
@@ -82,7 +82,7 @@ module.exports = {
   raceUpdatePage: function (req, res) {
     returnParams(req.session)
         .then(function (params) {
-          var inputId = parseInt(req.params.id)
+          var inputId = req.params.id
           var raceToUpdate
 
           params.races.forEach(function (race) {
@@ -102,7 +102,7 @@ module.exports = {
   teamUpdatePage: function (req, res) {
     returnParams(req.session)
         .then(function (params) {
-          var inputId = parseInt(req.params.id)
+          var inputId = req.params.id
           var teamToUpdate
 
           params.teams.forEach(function (team) {
@@ -122,7 +122,7 @@ module.exports = {
   groupUpdatePage: function (req, res) {
     returnParams(req.session)
         .then(function (params) {
-          var inputId = parseInt(req.params.id)
+          var inputId = req.params.id
           var groupToUpdate
 
           params.groups.forEach(function (group) {
@@ -142,7 +142,7 @@ module.exports = {
   managerUpdatePage: function (req, res) {
     returnParams(req.session)
         .then(function (params) {
-          var inputId = parseInt(req.params.id)
+          var inputId = req.params.id
           var managerToUpdate
 
           params.managers.forEach(function (manager) {

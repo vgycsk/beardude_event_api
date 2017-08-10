@@ -73,7 +73,7 @@ module.exports = {
     var input = req.body
     var updateObj
     var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace']
-    var query = {id: parseInt(input.id)}
+    var query = {id: input.id}
 
     Event.findOne(query)
     .then(function (eventData) {
@@ -90,7 +90,7 @@ module.exports = {
     .catch(function (E) { return res.badRequest(E) })
   },
   delete: function (req, res) {
-    var query = { id: parseInt(req.params.id) }
+    var query = { id: req.params.id }
 
     Event.findOne(query).populate('groups')
     .then(function (V) {

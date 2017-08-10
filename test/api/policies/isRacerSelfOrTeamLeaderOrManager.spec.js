@@ -24,7 +24,7 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
       },
       session: {
         racerInfo: {
-          id: 3,
+          id: '3',
           email: 'info@beardude.com'
         }
       }
@@ -52,11 +52,11 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
       },
       session: {
         racerInfo: {
-          id: 3,
+          id: '3',
           email: 'info@beardude.com',
           team: {
             id: 1,
-            leader: 3
+            leader: '3'
           }
         }
       }
@@ -84,7 +84,7 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
       },
       session: {
         managerInfo: {
-          id: 3,
+          id: '3',
           email: 'info@beardude.com',
           isActive: true
         }
@@ -123,7 +123,7 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
       },
       session: {
         managerInfo: {
-          id: 3,
+          id: '3',
           email: 'info@beardude.com',
           isActive: true
         }
@@ -139,7 +139,7 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
       actual = 'verified'
     }
     var mockData = {
-      id: 3,
+      id: '3',
       email: 'info@beardude.com',
       isActive: false
     }
@@ -162,7 +162,7 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
       },
       session: {
         racerInfo: {
-          id: 3,
+          id: '3',
           email: 'info@beardude.com'
         }
       }

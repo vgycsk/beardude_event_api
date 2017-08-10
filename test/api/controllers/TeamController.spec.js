@@ -23,12 +23,12 @@ describe('/controllers/TeamController', function () {
 
       sailsMock.mockModel(Team, 'findOne', mock)
       teamController.nameAvailable(req, res)
-      this.timeout(50)
+      this.timeout(90)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Team.findOne.restore()
         done()
-      }, 25)
+      }, 60)
     })
   })
   describe('.createTeam()', function () {

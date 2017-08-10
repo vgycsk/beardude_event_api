@@ -180,7 +180,7 @@ module.exports = RegistrationController
     updatePayment: function (req, res) {
         var input = req.body;
         var query = {
-            registration: parseInt(input.registration)
+            registration: input.registration
         };
         var updateObj = {
             paid: false
@@ -207,7 +207,7 @@ module.exports = RegistrationController
     requestRefund: function (req, res) {
         var input = req.body;
         var query = {
-            id: parseInt(input.registration)
+            id: input.registration
         };
         var updateObj = {};
 
@@ -237,7 +237,7 @@ module.exports = RegistrationController
     refunded: function (req, res) {
         var input = req.body;
         var query = {
-            id: parseInt(input.registration)
+            id: input.registration
         };
         var updateObj = {};
 
@@ -267,7 +267,7 @@ module.exports = RegistrationController
     // {registration: ID}
 /*
   confirmRegistration: function (req, res) {
-    var regId = parseInt(req.body.registration)
+    var regId = req.body.registration
     var raceNumber
     var eventId
 
@@ -299,7 +299,7 @@ module.exports = RegistrationController
   admitRacer: function (req, res) {
     var input = req.body
 
-    input.race = parseInt(input.race)
+    input.race = input.race
     // validate racer in selected race
     Registration.findOne({ epc: input.epc })
       .populate('races')

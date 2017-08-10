@@ -4,7 +4,7 @@
 
 module.exports = function (req, res, callback) {
   if (req.session.racerInfo) {
-    if (req.session.racerInfo.id === parseInt(req.params.id)) {
+    if (req.session.racerInfo.id === req.params.id) {
       return callback()
     } else if (req.session.racerInfo.team && (req.session.racerInfo.id === req.session.racerInfo.team.leader)) {
       return callback()
