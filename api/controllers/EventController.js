@@ -33,17 +33,17 @@ module.exports = {
   },
   // :uniqueName
   getInfo: function (req, res) {
-    var eventId = req.params.uniqueName
+    var eventId
     var result
 
-    Event.findOne({ uniqueName: eventId })
+    Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
+      eventId = V.id
       result = V.toJSON()
       return Group.find({event: eventId}).populate('registrations')
     })
     .then(function (V) {
       var funcs = []
-
       result.groups = V.map(function (group) {
         funcs.push(Race.find({group: group.id}).populate('registrations'))
         return group.toJSON()
@@ -52,7 +52,6 @@ module.exports = {
     })
     .then(function (V) {
       var funcs = []
-
       result.groups = result.groups.map(function (group, I) {
         group.races = V[I]
         funcs.push(Registration.find({group: group.id}).sort('raceNumber ASC').populate('races'))
