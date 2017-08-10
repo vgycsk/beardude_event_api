@@ -355,28 +355,71 @@ describe('/controllers/RaceController', function () {
         done()
       }, 90)
     })
-    it('should not insert record to race if no ongoing race', function (done) {
+    /*
+
+    */
+  })
+  describe('.insertRfidToRace()', function () {
+    it('should not insert record to race if not a valid record', function (done) {
       var actual
-      var eventId = 1
-      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
-      var mock = { id: 1, ongoingRace: 1, rawRfidData: [ { epc: 'aaa', timestamp: '1507651100000' } ] }
-      var mockUpdate = [ mock ]
+      var raceId = 'abc'
+      var entries = [ { epc: 'abc123', timestamp: 1507651100000 } ]
       var mockRace = { id: 1, recordsHashTable: { abc123: [], aaa: [] } }
       var mockRaceUpdate = [ { id: 1, recordsHashTable: { abc123: [], aaa: [] } } ]
+
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sandbox.stub(dataService, 'isValidRaceRecord').callsFake(function () { return false })
+      sailsMock.mockModel(Race, 'findOne', mockRace)
+      sailsMock.mockModel(Race, 'update', mockRaceUpdate)
+      this.timeout(150)
+      raceController.insertRfidToRace(raceId, entries)
+      setTimeout(function () {
+        expect(actual).to.equal(false)
+        Race.findOne.restore()
+        Race.update.restore()
+        done()
+      }, 90)
+    })
+    it('should not insert record to race if interval too short', function (done) {
+      var actual
+      var raceId = 'abc'
+      var entries = [ { epc: 'abc123', timestamp: 1507651100000 } ]
+      var mockRace = { id: 1, recordsHashTable: { abc123: [ 1507651099900 ], aaa: [] } }
+      var mockRaceUpdate = [ { id: 1, recordsHashTable: { abc123: [], aaa: [] } } ]
+
       sandbox.stub(Q, 'defer').callsFake(function () {
         return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
       })
       sandbox.stub(dataService, 'isValidRaceRecord').callsFake(function () { return true })
-      sailsMock.mockModel(Event, 'findOne', mock)
-      sailsMock.mockModel(Event, 'update', mockUpdate)
       sailsMock.mockModel(Race, 'findOne', mockRace)
       sailsMock.mockModel(Race, 'update', mockRaceUpdate)
       this.timeout(150)
-      raceController.insertRfid(eventId, entriesRaw)
+      raceController.insertRfidToRace(raceId, entries)
+      setTimeout(function () {
+        expect(actual).to.equal(false)
+        Race.findOne.restore()
+        Race.update.restore()
+        done()
+      }, 90)
+    })
+    it('should insert record if valid', function (done) {
+      var actual
+      var raceId = 'abc'
+      var entries = [ { epc: 'abc123', timestamp: 1507651100000 } ]
+      var mockRace = { id: 'abc', recordsHashTable: { abc123: [ 1507651000000 ], aaa: [] } }
+      var mockRaceUpdate = [ { id: 'abc', recordsHashTable: { abc123: [ 1507651000000, 1507651100000 ], aaa: [] } } ]
+      sandbox.stub(Q, 'defer').callsFake(function () {
+        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
+      })
+      sandbox.stub(dataService, 'isValidRaceRecord').callsFake(function () { return true })
+      sailsMock.mockModel(Race, 'findOne', mockRace)
+      sailsMock.mockModel(Race, 'update', mockRaceUpdate)
+      this.timeout(150)
+      raceController.insertRfidToRace(raceId, entries)
       setTimeout(function () {
         expect(actual).to.deep.equal({ race: mockRaceUpdate[0] })
-        Event.findOne.restore()
-        Event.update.restore()
         Race.findOne.restore()
         Race.update.restore()
         done()

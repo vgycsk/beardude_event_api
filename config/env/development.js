@@ -14,13 +14,18 @@ module.exports = {
   connections: {
     dev: {
       adapter: 'sails-disk'
+    },
+    mongoDev: {
+      adapter: 'sails-mongo',
+      host: 'localhost',
+      port: 27017
     }
   },
   log: {
     level: 'info'
   },
   models: {
-    connection: 'dev',
+    connection: 'mongoDev',
     migrate: 'alter'
   }
 }

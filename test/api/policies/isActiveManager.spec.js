@@ -98,13 +98,13 @@ describe('policies/isActiveManager', function () {
     }
     var expected = 'Unauthorized'
 
-    this.timeout(50)
+    this.timeout(90)
     sailsMock.mockModel(Manager, 'findOne', mockData)
     isActiveManager(req, res, callbackFunc)
     setTimeout(function () {
       assert.equal(actual, expected)
       Manager.findOne.restore()
       done()
-    }, 30)
+    }, 50)
   })
 })

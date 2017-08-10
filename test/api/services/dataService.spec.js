@@ -73,7 +73,33 @@ describe('services/dataService', function () {
       done()
     })
   })
-
+  describe('.isValidReadTagInterval()', function () {
+    it('should return true if read interval is larger than specified value', function (done) {
+      var entry = { epc: 'abc123', timestamp: 1507651200000 }
+      var recordsHashTable = { 'abc123': [ 1507651000000, 1507651100000 ], 'abc333': [ 1507651000000, 1507651199000, 1507651199900 ] }
+      var intervalInMs = 10000 // 10 secs
+      var actual = dataService.isValidReadTagInterval(entry, recordsHashTable, intervalInMs)
+      expect(actual).to.equal(true)
+      done()
+    })
+    it('should return false if read interval is larger than specified value', function (done) {
+      var entry = { epc: 'abc123', timestamp: 1507651200000 }
+      var recordsHashTable = { 'abc123': [ 1507651000000, 1507651100000, 1507651199000 ], 'abc333': [ 1507651000000, 1507651199000, 1507651199900 ] }
+      var intervalInMs = 10000 // 10 secs
+      var actual = dataService.isValidReadTagInterval(entry, recordsHashTable, intervalInMs)
+      expect(actual).to.equal(false)
+      done()
+    })
+  })
+/*
+  isValidReadTagInterval: function (entry, recordsHashTable, intervalInMs) {
+    var records = recordsHashTable[entry.epc]
+    var lastRecord = records[records.length - 1]
+    if (records.length === 0) { return true }
+    if (entry.timestamp - lastRecord > intervalInMs) { return true }
+    return false
+  },
+*/
   describe('.isValidRaceRecord()', function () {
     it('should return true if is pacer epc', function (done) {
       var epc = 'abc123'

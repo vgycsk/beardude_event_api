@@ -40,6 +40,13 @@ var dataService = {
     if (!dataExist) { raceNotes.push({ race: raceId, note: raceNote }) }
     return raceNotes
   },
+  isValidReadTagInterval: function (entry, recordsHashTable, intervalInMs) {
+    var records = recordsHashTable[entry.epc]
+    var lastRecord = records[records.length - 1]
+    if (records.length === 0) { return true }
+    if (entry.timestamp - lastRecord > intervalInMs) { return true }
+    return false
+  },
   isValidRaceRecord: function (epc, raceData) {
     var validateRaceStarted = function (raceData) {
       if (raceData.raceStatus === 'started' && Date.now() >= raceData.startTime) { return true }
