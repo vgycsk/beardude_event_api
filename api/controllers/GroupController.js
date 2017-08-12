@@ -53,5 +53,11 @@ module.exports = {
     Group.update({id: input.id}, updateObj)
     .then(function (modelData) { return res.ok({group: modelData[0]}) })
     .catch(function (E) { return res.badRequest(E) })
+  },
+  // query. E.g. { event: ID }
+  getGroups: function (req, res) {
+    Group.find(req.body)
+    .then(function (V) { return res.ok({ groups: V }) })
+    .catch(function (E) { return res.badRequest(E) })
   }
 }

@@ -14,6 +14,8 @@ module.exports.routes = {
     'post /api/group/update': 'GroupController.update',
     'get  /api/group/delete/:id': 'GroupController.delete',
 
+    'post /api/groups': 'GroupController.getGroups',
+
     // Manager 1.5
     'post /api/manager/login': 'ManagerController.login',
     'get  /api/manager/logout': 'ManagerController.logout',
@@ -62,8 +64,9 @@ module.exports.routes = {
     'post /api/reg/info': 'RegistrationController.getInfo',
     'post /api/reg/update': 'RegistrationController.update',
 //    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
-
     'get  /api/reg/delete/:id': 'RegistrationController.delete',
+    'post  /api/regs': 'RegistrationController.getRegs',
+
 
     // 正式版再說
 //    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',

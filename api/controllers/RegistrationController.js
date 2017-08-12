@@ -48,6 +48,7 @@ var RegistrationController = {
     .catch(function (E) { return res.badRequest(E) })
   },
   // {(racer: ID || accessCode: STR || raceNumber: INT)}
+  // 目前沒在用  考慮刪除. 用getRegs取代
   getInfo: function (req, res) {
     var input = req.body
 
@@ -78,22 +79,13 @@ var RegistrationController = {
     })
     .then(function (V) { return res.ok({ registration: query.id }) })
     .catch(function (E) { return res.badRequest(E) })
-  }
-/*
-  // {id: ID, race: ID, note: STR, isDisqualified: BOOL}
-  updateDisqualification: function (req, res) {
-    var input = req.body
-
-    Registration.findOne({ id: input.id })
-    .then(function (regData) {
-      var raceNotes = dataService.returnUpdatedRaceNotes(input.race, input.note, regData.raceNotes)
-
-      return Registration.update({ id: input.id }, { isDisqualified: input.isDisqualified, raceNotes: raceNotes })
-    })
-    .then(function (V) { return res.ok({ registration: V[0] }) })
-    .catch(function (E) { return res.badRequest(E) })
   },
-*/
+  // query. e.g. { event: ID }
+  getRegs: function (req, res) {
+    Registration.find(req.body)
+    .then(function (V) { return res.ok({ registrations: V }) })
+    .catch(function (E) { return res.badRequest(E) })
+  }
   // {id: ID, race: ID, note: STR}
 /*
   updateRaceNote: function (req, res) {
