@@ -8,6 +8,11 @@ module.exports = {
       via: 'races'
     },
 
+    registrationIds: {
+      type: 'array',
+      defaultsTo: []
+    },
+
     group: {
       model: 'Group'
     },

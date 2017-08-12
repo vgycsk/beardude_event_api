@@ -7,6 +7,21 @@ var bcrypt = require('bcrypt-nodejs')
 var randomstring = require('randomstring')
 var Q = require('q')
 var dataService = {
+  addToArray: function (itemToAdd, array) {
+    var found
+    var newArray = array
+    array.map(function (V, I) {
+      if (V === itemToAdd) { found = true }
+    })
+    if (!found) { newArray.push(itemToAdd) }
+    return newArray
+  },
+  removeFromArray: function (itemToRemove, array) {
+    array.map(function (V, I) {
+      if (V === itemToRemove) { array.splice(I, 1) }
+    })
+    return array
+  },
   authenticate: function (inputPassword, userDataPassword) {
     var q = Q.defer()
 

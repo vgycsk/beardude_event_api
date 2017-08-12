@@ -31,7 +31,7 @@ var RaceController = {
   // query. E.g. { group: ID }
   getRaces: function (req, res) {
     Race.find(req.body).populate('registrations')
-    .then(function (V) { return res.ok({ race: V }) })
+    .then(function (V) { return res.ok({ races: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
@@ -77,17 +77,25 @@ var RaceController = {
     Race.findOne({id: raceObj.id}).populate('registrations')
     .then(function (raceData) {
       var modified
+      var registrationIds = raceData.registrationIds
 
       if (raceObj.toRemove && raceObj.toRemove.length > 0) {
         modified = true
-        raceObj.toRemove.map(function (regId) { raceData.registrations.remove(regId) })
+        raceObj.toRemove.map(function (regId) {
+          raceData.registrations.remove(regId)
+          registrationIds = dataService.removeFromArray(regId, registrationIds)
+        })
       }
       if (raceObj.toAdd && raceObj.toAdd.length > 0) {
         modified = true
-        raceObj.toAdd.map(function (regId) { raceData.registrations.add(regId) })
+        raceObj.toAdd.map(function (regId) {
+          raceData.registrations.add(regId)
+          registrationIds = dataService.addToArray(regId, registrationIds)
+        })
       }
       if (!modified) { return false }
-      return raceData.save()
+      raceData.save()
+      return Race.update({ id: raceObj.id }, { registrationIds: registrationIds })
     })
     .then(function () { return q.resolve() })
     .catch(function (E) { return q.reject(E) })
