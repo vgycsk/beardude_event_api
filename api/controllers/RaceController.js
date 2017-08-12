@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global dataService, Event, Race, sails */
+/* global dataService, Event, Group, Race, sails */
 
 'use strict'
 
@@ -7,8 +7,19 @@ var Q = require('q')
 var RaceController = {
   // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}
   create: function (req, res) {
+    var result
     Race.create(req.body)
-    .then(function (modelData) { return res.ok({ race: modelData }) })
+    .then(function (V) {
+      result = V
+      return Group.findOne({id: req.body.group}).populate('event')
+    })
+    .then(function (V) {
+      var raceOrder
+      if (V && V.event) { raceOrder = V.event.raceOrder }
+      raceOrder.push(result.id)
+      return Event.update({ id: V.event.id }, { raceOrder: raceOrder })
+    })
+    .then(function () { return res.ok({ race: result }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // /:id
@@ -19,7 +30,7 @@ var RaceController = {
   },
   // query. E.g. { group: ID }
   getRaces: function (req, res) {
-    Race.find(input.body).populate('registrations')
+    Race.find(req.body).populate('registrations')
     .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -38,11 +49,23 @@ var RaceController = {
   // /:id
   delete: function (req, res) {
     var query = { id: req.params.id }
+    var eventId
 
-    Race.findOne(query)
-    .then(function (modelData) {
-      if (modelData.startTime && modelData.startTime !== '') { throw new Error('Cannot delete a started race') }
+    Race.findOne(query).populate('group')
+    .then(function (V) {
+      if (V.startTime && V.startTime !== '') { throw new Error('Cannot delete a started race') }
+      eventId = V.group.event
       return Race.destroy(query)
+    })
+    .then(function () {
+      return Event.findOne({ id: eventId })
+    })
+    .then(function (V) {
+      var raceOrder = V.raceOrder
+      raceOrder.map(function (item, index) {
+        if (item === query.id) { raceOrder.splice(index, 1) }
+      })
+      return Event.update({ id: eventId }, { raceOrder: raceOrder })
     })
     .then(function () { return res.ok(query) })
     .catch(function (E) { return res.badRequest(E) })
