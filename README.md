@@ -11,17 +11,16 @@ Scenarios:
 編號(*done)| 時程   | 使用者   | Task         | Task-item   | API  | 說明
 ------ | ----- | ------- | ------------ | ------------ | ---- | ----
 1.1    | 賽前   | 管理者   | 新增活動      |              | /event/create |
-*1.2.1  |       |         | 修改活動內容   | 新增競賽組別   | /group/create |
-*1.2.2  |       |         |              | 修改競賽組別   | /group/update |
-*1.2.3  |       |         |              | 刪除競賽組別   | /group/delete |
--1.2.4  |       |         |              | 開放組別報名   | (刪掉)         |
-*1.2.5  |       |         |              | 新增組別比賽   | /race/create   |
-*1.2.6  |       |         |              | 刪除組別比賽   | /race/delete/:id |
-*1.2.7  |       |         |              | 修改活動內容   | /event/update  |
-*1.2.8  |       |         |              | 修改比賽內容   | /race/update  |
-*1.2.9  |       |         |              | 設定比賽賽制   | /race/update |
-*1.3    |       |         | 新增其他管理者 |               | /event/managers/add |
-*1.4.1  |       |         | 修改參賽資料   | 修改隊伍資料   | /team/update    |
+1.2.1  |       |         | 修改活動內容   | 新增競賽組別   | /group/create |
+1.2.2  |       |         |              | 修改競賽組別   | /group/update |
+1.2.3  |       |         |              | 刪除競賽組別   | /group/delete |
+1.2.5  |       |         |              | 新增組別比賽   | /race/create   |
+1.2.6  |       |         |              | 刪除組別比賽   | /race/delete/:id |
+1.2.7  |       |         |              | 修改活動內容   | /event/update  |
+1.2.8  |       |         |              | 修改比賽內容   | /race/update  |
+1.2.9  |       |         |              | 設定比賽賽制   | /race/update |
+1.3    |       |         | 新增其他管理者 |               | /event/managers/add |
+1.4.1  |       |         | 修改參賽資料   | 修改隊伍資料   | /team/update    |
 -1.4.2  |       |         |              | 刪除隊伍      | /team/delete   |
 -1.4.3  |       |         |              | 修改付款狀態   | /reg/updatePayment |
 -1.4.4  |       |         |              | 退款          | /reg/refunded    |
@@ -92,26 +91,16 @@ n/a    |        |  觀眾    | (同3.1)      |      n/a         | 
 7.1.3  |        |        |             | 顯示成績          |  /race/info/:id   |
  n/a    |        |  觀眾   | (同3.1)      |      n/a         |    n/a    |
 8.1    | 賽後    |         | 檢視成績       |              | /event/info/:id |
-8.2    |         |  選手   | 歸還Rfid   |              | event/rfid/recycle  |
 
 
 安裝與執行
 
+開發: 
+> 系統需安裝 MongoDB，預設的設定值在 /config/env/development.js
 > npm i
+> sails lift
 
-> npm run start
-
-===
-
-DEV (need two screen):
-
-one screen (API)
-> npm run start
-
-the other (frontend)
-> npm run dev (enter rs if reload fail or seems strange)
-
-GO TO http://localhost:8080/
+前端搭配 beardude_event_app 使用
 
 ===
 Wireframe

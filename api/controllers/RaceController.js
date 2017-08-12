@@ -210,28 +210,45 @@ var RaceController = {
     })
     .then(function (eventData) {
       if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === -1) { return false }
-      return Race.findOne({id: eventData[0].ongoingRace}).populate('registrations')
+      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries)
     })
+    .then(function (result) {
+      return q.resolve(result)
+    })
+    .catch(function (E) {
+      console.log('insertRfid e: ', E)
+      return q.reject(E)
+    })
+    return q.promise
+  },
+  insertRfidToRace: function (raceId, entries) {
+    var validRecordInterval = 10000 // 10secs
+    var q = Q.defer()
+    Race.findOne({id: raceId}).populate('registrations')
     .then(function (raceData) {
       if (!raceData) { return false }
       var recordsHashTable = raceData.recordsHashTable
       var hasEntry
       entries.map(function (entry) {
         if (dataService.isValidRaceRecord(entry.epc, raceData)) {
-          if (!recordsHashTable[entry.epc]) { recordsHashTable[entry.epc] = [] }
-          recordsHashTable[entry.epc].push(entry.timestamp)
-          hasEntry = true
+          if (!recordsHashTable[entry.epc]) {
+            recordsHashTable[entry.epc] = [ entry.timestamp ]
+            hasEntry = true
+          } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validRecordInterval)) {
+            recordsHashTable[entry.epc].push(entry.timestamp)
+            hasEntry = true
+          }
         }
       })
       if (!hasEntry) { return false }
-      return Race.update({id: raceData.id}, {recordsHashTable: recordsHashTable})
+      return Race.update({id: raceId}, {recordsHashTable: recordsHashTable})
     })
     .then(function (raceData) {
       if (!raceData) { return q.resolve(false) }
       return q.resolve({ race: raceData[0] })
     })
     .catch(function (E) {
-      console.log('insertRfid e: ', E)
+      console.log('insertRfidToRace e: ', E)
       return q.reject(E)
     })
     return q.promise
