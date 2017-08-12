@@ -24,7 +24,7 @@
     "standard": "^10.0.2"
   },
   "scripts": {
-    "coverage": "./scripts/coverage.sh",
+    "coverage": "NODE_ENV=test ./scripts/coverage.sh",
     "lint": "./scripts/lint.sh",
     "start": "NODE_ENV=production node app.js",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
