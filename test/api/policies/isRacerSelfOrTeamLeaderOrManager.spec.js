@@ -108,12 +108,12 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
 
     sailsMock.mockModel(Manager, 'findOne', mockData)
     isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc)
-    this.timeout(40)
+    this.timeout(90)
     setTimeout(function () {
       assert.equal(actual, expected)
       Manager.findOne.restore()
       done()
-    }, 25)
+    }, 50)
   })
 
   it('should return unauthorized if the user is not an active manager', function (done) {
@@ -147,12 +147,12 @@ describe('policies/isRacerSelfOrTeamLeaderOrManager', function () {
 
     sailsMock.mockModel(Manager, 'findOne', mockData)
     isRacerSelfOrTeamLeaderOrManager(req, res, callbackFunc)
-    this.timeout(40)
+    this.timeout(90)
     setTimeout(function () {
       assert.equal(actual, expected)
       Manager.findOne.restore()
       done()
-    }, 25)
+    }, 50)
   })
 
   it('should return false if the user is not the racer', function (done) {
