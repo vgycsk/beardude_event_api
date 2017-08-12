@@ -35,6 +35,11 @@ module.exports.routes = {
     'post /api/race/reset': 'RaceController.resetRace',
     'post /api/race/end': 'RaceController.endRace',
     'post /api/race/submitResult': 'RaceController.submitResult',
+
+    'post  /api/races': 'RaceController.getRaces',
+
+
+    // Socket.io
     'get  /api/socket/info': 'RaceController.socket',
     '/api/socket/mgmt': 'RaceController.socketManagement',
     '/api/socket/impinj': 'RaceController.socketImpinj',
