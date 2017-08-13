@@ -8,6 +8,8 @@ module.exports.routes = {
     'post /api/event/update': 'EventController.update',
     'get  /api/event/delete/:id': 'EventController.delete',
 
+    'get  /api/event/info/:uniqueName': 'EventController.getInfoNew',
+
     // Group
     'post /api/group/create': 'GroupController.create',
     'get  /api/group/mgmtInfo/:id': 'GroupController.getInfo',
@@ -37,9 +39,6 @@ module.exports.routes = {
     'post /api/race/reset': 'RaceController.resetRace',
     'post /api/race/end': 'RaceController.endRace',
     'post /api/race/submitResult': 'RaceController.submitResult',
-
-    'post  /api/races': 'RaceController.getRaces',
-
 
     // Socket.io
     'get  /api/socket/info': 'RaceController.socket',

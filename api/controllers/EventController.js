@@ -103,5 +103,28 @@ module.exports = {
     })
     .then(function () { return res.ok({event: query.id}) })
     .catch(function (E) { return res.badRequest(E) })
+  },
+  getInfoNew: function (req, res) {
+    var result = {}
+    var query
+    Event.findOne({ uniqueName: req.params.uniqueName })
+    .then(function (V) {
+      query = { event: V.id }
+      result.event = V.toJSON()
+      return Group.find(query)
+    })
+    .then(function (V) {
+      result.groups = (V.length > 0) ? V.map(function (group) { return group.toJSON() }) : []
+      return Race.find(query)
+    })
+    .then(function (V) {
+      result.races = (V.length > 0) ? V.map(function (race) { return race.toJSON() }) : []
+      return Registration.find(query)
+    })
+    .then(function (V) {
+      result.registrations = V
+      return res.ok(result)
+    })
+    .catch(function (E) { return res.badRequest(E) })
   }
 }

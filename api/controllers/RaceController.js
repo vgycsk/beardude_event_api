@@ -28,12 +28,6 @@ var RaceController = {
     .then(function (V) { return res.ok({ race: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // query. E.g. { group: ID }
-  getRaces: function (req, res) {
-    Race.find(req.body).populate('registrations')
-    .then(function (V) { return res.ok({ races: V }) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
   // {race: ID, name: STR, laps: INT, racerNumberAllowed: INT, isEntryRace: BOOL, requirePacer: BOOL, advancingRules: ARRAY}
   update: function (req, res) {
     var input = req.body
