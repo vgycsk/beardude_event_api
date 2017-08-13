@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, max-lines */
-/* global afterEach, beforeEach, dataService, describe, Event, Group, it, Race */
+/* global afterEach, beforeEach, dataService, describe, Event, it, Race */
 
 var raceController = require('../../../api/controllers/RaceController.js')
 var sinon = require('sinon')
@@ -16,22 +16,22 @@ describe('/controllers/RaceController', function () {
   describe('.create()', function () {
     it('should create a race', function (done) {
       var actual
-      var req = { body: { group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true } }
+      var req = { body: { event: 1, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mockData = { id: 8, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true }
-      var mockGroup = { id: 5, event: { id: 1, raceOrder: [] } }
+      var mockData = { id: 8, event: 1, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true }
+      var mockEvent = { id: 1, raceOrder: [] }
       var mockEventUpdate = [ { id: 1, raceOrder: [8] } ]
       var expected = { race: mockData }
 
       sailsMock.mockModel(Race, 'create', mockData)
-      sailsMock.mockModel(Group, 'findOne', mockGroup)
+      sailsMock.mockModel(Event, 'findOne', mockEvent)
       sailsMock.mockModel(Event, 'update', mockEventUpdate)
       this.timeout(50)
       raceController.create(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.create.restore()
-        Group.findOne.restore()
+        Event.findOne.restore()
         Event.update.restore()
         done()
       }, 30)

@@ -1,23 +1,23 @@
 /* eslint-disable no-console */
-/* global dataService, Event, Group, Race, sails */
+/* global dataService, Event, Race, sails */
 
 'use strict'
 
 var Q = require('q')
 var RaceController = {
-  // {group: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}
+  // {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}
   create: function (req, res) {
     var result
     Race.create(req.body)
     .then(function (V) {
       result = V
-      return Group.findOne({id: req.body.group}).populate('event')
+      return Event.findOne({id: V.event})
     })
     .then(function (V) {
       var raceOrder
-      if (V && V.event) { raceOrder = V.event.raceOrder }
+      if (V) { raceOrder = V.raceOrder }
       raceOrder.push(result.id)
-      return Event.update({ id: V.event.id }, { raceOrder: raceOrder })
+      return Event.update({ id: V.id }, { raceOrder: raceOrder })
     })
     .then(function () { return res.ok({ race: result }) })
     .catch(function (E) { return res.badRequest(E) })

@@ -13,6 +13,9 @@ module.exports = {
       defaultsTo: []
     },
 
+    event: {
+      model: 'Event'
+    },
     group: {
       model: 'Group'
     },
