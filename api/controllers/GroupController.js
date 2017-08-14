@@ -41,7 +41,7 @@ module.exports = {
       if (V.registrations.length > 0) { throw new Error('Cannot delete group that has racers registered') }
       return Group.destroy(query)
     })
-    .then(function () { return res.ok({group: query.id}) })
+    .then(function () { return res.ok({ group: query }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {id: ID, name: STR, nameCht: STR, racerNumberAllowed: INT, rules: ARRAY}

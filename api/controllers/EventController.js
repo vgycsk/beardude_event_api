@@ -15,57 +15,35 @@ module.exports = {
     input.startTime = moment(input.startTime).valueOf()
     input.endTime = moment(input.endTime).valueOf()
     Event.create(input)
-    .then(function (V) {
-      resultObj = V
-      return Event.findOne({ id: V.id }).populate('managers')
-    })
-    .then(function (V) {
-      V.managers.add(req.session.managerInfo.id)
-      return V.save()
-    })
-    .then(function () { return res.ok({event: resultObj}) })
+    .then(function (V) { return res.ok({event: V}) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  getEvent: function (req, res) {
+    var result = {}
+    var query
+    Event.findOne({ uniqueName: req.params.uniqueName })
+    .then(function (V) {
+      query = { event: V.id }
+      result.event = V.toJSON()
+      return Group.find(query)
+    })
+    .then(function (V) {
+      result.groups = (V.length > 0) ? V.map(function (group) { return group.toJSON() }) : []
+      return Race.find(query)
+    })
+    .then(function (V) {
+      result.races = (V.length > 0) ? V.map(function (race) { return race.toJSON() }) : []
+      return Registration.find(query)
+    })
+    .then(function (V) {
+      result.registrations = V
+      return res.ok(result)
+    })
+    .catch(function (E) { return res.badRequest(E) })
+  }
   getEvents: function (req, res) {
     Event.find({})
     .then(function (V) { return res.ok({events: V}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // :uniqueName
-  getInfo: function (req, res) {
-    var eventId
-    var result
-
-    Event.findOne({ uniqueName: req.params.uniqueName })
-    .then(function (V) {
-      eventId = V.id
-      result = V.toJSON()
-      return Group.find({event: eventId}).populate('registrations')
-    })
-    .then(function (V) {
-      var funcs = []
-      result.groups = V.map(function (group) {
-        funcs.push(Race.find({group: group.id}).populate('registrations'))
-        return group.toJSON()
-      }) || []
-      return Q.all(funcs)
-    })
-    .then(function (V) {
-      var funcs = []
-      result.groups = result.groups.map(function (group, I) {
-        group.races = V[I]
-        funcs.push(Registration.find({group: group.id}).sort('raceNumber ASC').populate('races'))
-        return group
-      })
-      return Q.all(funcs)
-    })
-    .then(function (V) {
-      result.groups = result.groups = result.groups.map(function (group, I) {
-        group.registrations = V[I]
-        return group
-      })
-      return res.ok({ event: result })
-    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {id: ID}
@@ -101,30 +79,7 @@ module.exports = {
       if (V.groups.length > 0) { throw new Error('Cannot delete an event that contains group') }
       return Event.destroy(query)
     })
-    .then(function () { return res.ok({event: query.id}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  getInfoNew: function (req, res) {
-    var result = {}
-    var query
-    Event.findOne({ uniqueName: req.params.uniqueName })
-    .then(function (V) {
-      query = { event: V.id }
-      result.event = V.toJSON()
-      return Group.find(query)
-    })
-    .then(function (V) {
-      result.groups = (V.length > 0) ? V.map(function (group) { return group.toJSON() }) : []
-      return Race.find(query)
-    })
-    .then(function (V) {
-      result.races = (V.length > 0) ? V.map(function (race) { return race.toJSON() }) : []
-      return Registration.find(query)
-    })
-    .then(function (V) {
-      result.registrations = V
-      return res.ok(result)
-    })
+    .then(function () { return res.ok({ event: query }) })
     .catch(function (E) { return res.badRequest(E) })
   }
 }

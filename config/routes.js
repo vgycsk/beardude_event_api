@@ -3,12 +3,10 @@
 module.exports.routes = {
     // Event
     'post /api/event/create': 'EventController.create',
+    'get  /api/event/info/:uniqueName': 'EventController.getEvent',
     'get  /api/event/getEvents': 'EventController.getEvents',
-    'get  /api/event/mgmtInfo/:uniqueName': 'EventController.getInfo',
     'post /api/event/update': 'EventController.update',
     'get  /api/event/delete/:id': 'EventController.delete',
-
-    'get  /api/event/info/:uniqueName': 'EventController.getInfoNew',
 
     // Group
     'post /api/group/create': 'GroupController.create',

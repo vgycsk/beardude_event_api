@@ -77,7 +77,7 @@ var RegistrationController = {
       if (V.raceNotes) { throw new Error('Cannot delete racer that has raceNotes') }
       return Registration.destroy(query)
     })
-    .then(function (V) { return res.ok({ registration: query.id }) })
+    .then(function (V) { return res.ok({ registration: query }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // query. e.g. { event: ID }
