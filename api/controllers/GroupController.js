@@ -10,6 +10,7 @@ module.exports = {
     .catch(function (E) { return res.badRequest(E) })
   },
   // /:id
+  /*
   getInfo: function (req, res) {
     var result = {}
     var groupId = req.params.id
@@ -31,14 +32,18 @@ module.exports = {
       return res.badRequest(E)
     })
   },
+  */
   // /id
   delete: function (req, res) {
     var query = {id: req.params.id}
 
-    Group.findOne(query).populate('races').populate('registrations')
-    .then(function (V) {
-      if (V.races.length > 0) { throw new Error('Cannot delete group that contains races') }
-      if (V.registrations.length > 0) { throw new Error('Cannot delete group that has racers registered') }
+    Race.count({ group: query.id })
+    .then(function (raceCount) {
+      if (raceCount > 0) { throw new Error('Cannot delete group that contains races') }
+      return Registration.count({ group: query.id })
+    })
+    .then(function (regCount) {
+      if (regCount > 0) { throw new Error('Cannot delete group that has racers registered') }
       return Group.destroy(query)
     })
     .then(function () { return res.ok({ group: query }) })

@@ -101,7 +101,7 @@ describe('/controllers/RaceController', function () {
       var mock = { id: 8, group: 5, name: 'new race' }
       var mockEvent = { id: 1, raceOrder: [5] }
       var mockEventUpdate = [ { id: 1, raceOrder: [] } ]
-      var expected = { id: 5 }
+      var expected = { race: { id: 5 } }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'destroy')
@@ -136,6 +136,7 @@ describe('/controllers/RaceController', function () {
         done()
       }, 60)
     })
+    /*
     it('should add regs', function (done) {
       var mock = { id: 1, registrations: [] }
       var actual
@@ -170,6 +171,7 @@ describe('/controllers/RaceController', function () {
         done()
       }, 60)
     })
+    */
   })
   describe('.assignRegsToRaces()', function () {
     it('should call addRemoveRegs', function (done) {
@@ -316,8 +318,8 @@ describe('/controllers/RaceController', function () {
       var req = { body: { id: 1, result: [ { id: 1 }, { id: 2 } ], advance: [] } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var RaceController = { addRemoveRegs: function () { return true } }
-      var mockUpdate = {}
-      var expected = { race: { id: 1 } }
+      var mockUpdate = [ { id: 1, result: [ { id: 1 }, { id: 2 } ] } ]
+      var expected = { race: { id: 1, result: [ { id: 1 }, { id: 2 } ] } }
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () {})
       sailsMock.mockModel(Race, 'update', mockUpdate)
@@ -438,19 +440,4 @@ describe('/controllers/RaceController', function () {
       }, 90)
     })
   })
-  /*
-  describe('.socketManagement()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
-  describe('.socketImpinj()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
-  describe('.socket()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
-
-  */
 })

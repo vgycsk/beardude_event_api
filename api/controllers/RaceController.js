@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global dataService, Event, Race, sails */
+/* global dataService, Event, Race, Registration, sails */
 
 'use strict'
 
@@ -33,11 +33,9 @@ var RaceController = {
     var input = req.body
     var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'advancingRules']
     var updateObj = dataService.returnUpdateObj(fields, input)
-    var query = { id: input.id }
 
-    Race.update(query, updateObj)
-    .then(function () { return Race.findOne(query).populate('registrations') })
-    .then(function (modelData) { return res.ok({ race: modelData }) })
+    Race.update({ id: input.id }, updateObj)
+    .then(function (raceData) { return res.ok({ race: raceData[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // /:id
@@ -45,10 +43,10 @@ var RaceController = {
     var query = { id: req.params.id }
     var eventId
 
-    Race.findOne(query).populate('group')
+    Race.findOne(query)
     .then(function (V) {
       if (V.startTime && V.startTime !== '') { throw new Error('Cannot delete a started race') }
-      eventId = V.group.event
+      eventId = V.event
       return Race.destroy(query)
     })
     .then(function () {
@@ -100,7 +98,15 @@ var RaceController = {
     input.races.map(function (race) { funcs.push(RaceController.addRemoveRegs(race)) })
 
     Q.all(funcs)
-    .then(function () { return res.ok(input) })
+    .then(function () {
+      var raceIds = []
+      input.races.map(function (V) { raceIds.push(V.id) })
+      return Race.find({ id: raceIds })
+    })
+    .then(function (raceData) {
+      console.log('raceData: ', raceData)
+      return res.ok({ races: raceData })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {id: ID, startTime: TIMESTAMP}
@@ -111,7 +117,6 @@ var RaceController = {
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
-      eventId = raceData.group.event
       return Event.findOne({ id: raceData.event })
     })
     .then(function (eventData) {
@@ -131,7 +136,6 @@ var RaceController = {
 
     Race.findOne({ id: input.id })
     .then(function (raceData) {
-      eventId = raceData.group.event
       return Event.findOne({ id: raceData.event })
     })
     .then(function (eventData) {
@@ -247,14 +251,19 @@ var RaceController = {
   },
   insertRfidToRace: function (raceId, entries) {
     var validRecordInterval = 10000 // 10secs
+    var raceObj
     var q = Q.defer()
-    Race.findOne({id: raceId}).populate('registrations')
+    Race.findOne({id: raceId})
     .then(function (raceData) {
       if (!raceData) { return false }
-      var recordsHashTable = raceData.recordsHashTable
+      raceObj = raceData
+      return Registration.find({ id: raceObj.registrationIds })
+    })
+    .then(function (regData) {
+      var recordsHashTable = raceObj.recordsHashTable
       var hasEntry
       entries.map(function (entry) {
-        if (dataService.isValidRaceRecord(entry.epc, raceData)) {
+        if (dataService.isValidRaceRecord(entry.epc, raceObj, regData)) {
           if (!recordsHashTable[entry.epc]) {
             recordsHashTable[entry.epc] = [ entry.timestamp ]
             hasEntry = true

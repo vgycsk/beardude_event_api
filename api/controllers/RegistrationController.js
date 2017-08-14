@@ -49,6 +49,7 @@ var RegistrationController = {
   },
   // {(racer: ID || accessCode: STR || raceNumber: INT)}
   // 目前沒在用  考慮刪除. 用getRegs取代
+  /*
   getInfo: function (req, res) {
     var input = req.body
 
@@ -58,6 +59,7 @@ var RegistrationController = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
+  */
   // {id: ID, name: STR}
   update: function (req, res) {
     var input = req.body
@@ -72,20 +74,22 @@ var RegistrationController = {
   delete: function (req, res) {
     var query = {id: req.params.id}
 
-    Registration.findOne(query).populate('races')
+    Registration.findOne(query)
     .then(function (V) {
       if (V.raceNotes) { throw new Error('Cannot delete racer that has raceNotes') }
       return Registration.destroy(query)
     })
     .then(function (V) { return res.ok({ registration: query }) })
     .catch(function (E) { return res.badRequest(E) })
-  },
+  }
   // query. e.g. { event: ID }
+  /*
   getRegs: function (req, res) {
     Registration.find(req.body)
     .then(function (V) { return res.ok({ registrations: V }) })
     .catch(function (E) { return res.badRequest(E) })
   }
+  */
   // {id: ID, race: ID, note: STR}
 /*
   updateRaceNote: function (req, res) {

@@ -3,13 +3,11 @@
 'use strict'
 
 var moment = require('moment')
-var Q = require('q')
 
 module.exports = {
   // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
   create: function (req, res) {
     var input = req.body
-    var resultObj
 
     input.uniqueName = dataService.sluggify(input.name)
     input.startTime = moment(input.startTime).valueOf()
@@ -18,21 +16,21 @@ module.exports = {
     .then(function (V) { return res.ok({event: V}) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  getEvent: function (req, res) {
+  getInfo: function (req, res) {
     var result = {}
     var query
     Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
       query = { event: V.id }
-      result.event = V.toJSON()
+      result.event = V
       return Group.find(query)
     })
     .then(function (V) {
-      result.groups = (V.length > 0) ? V.map(function (group) { return group.toJSON() }) : []
+      result.groups = V
       return Race.find(query)
     })
     .then(function (V) {
-      result.races = (V.length > 0) ? V.map(function (race) { return race.toJSON() }) : []
+      result.races = V
       return Registration.find(query)
     })
     .then(function (V) {
@@ -40,7 +38,7 @@ module.exports = {
       return res.ok(result)
     })
     .catch(function (E) { return res.badRequest(E) })
-  }
+  },
   getEvents: function (req, res) {
     Event.find({})
     .then(function (V) { return res.ok({events: V}) })
@@ -70,13 +68,15 @@ module.exports = {
   delete: function (req, res) {
     var query = { id: req.params.id }
 
-    Event.findOne(query).populate('groups')
+    Event.findOne(query)
     .then(function (V) {
       var now = moment().valueOf()
-
       if (V.isPublic) { throw new Error('Cannot delete a public event') }
       if (now > V.startTime && now < V.endTime) { throw new Error('Cannot delete an ongoing event') }
-      if (V.groups.length > 0) { throw new Error('Cannot delete an event that contains group') }
+      return Group.count({ event: query.id })
+    })
+    .then(function (groupLen) {
+      if (groupLen > 0) { throw new Error('Cannot delete an event that contains group') }
       return Event.destroy(query)
     })
     .then(function () { return res.ok({ event: query }) })
