@@ -10,7 +10,6 @@ module.exports.routes = {
 
     // Group
     'post /api/group/create': 'GroupController.create',
-//    'get  /api/group/mgmtInfo/:id': 'GroupController.getInfo',
     'post /api/group/update': 'GroupController.update',
     'get  /api/group/delete/:id': 'GroupController.delete',
 
@@ -55,14 +54,10 @@ module.exports.routes = {
 
     // Registration
     'post /api/reg/create': 'RegistrationController.create',
-//    'post /api/reg/info': 'RegistrationController.getInfo',
     'post /api/reg/update': 'RegistrationController.update',
-//    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
     'get  /api/reg/delete/:id': 'RegistrationController.delete',
+//    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
 //    'post  /api/regs': 'RegistrationController.getRegs',
-
-
-    // 正式版再說
 //    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
 //    'post /api/reg/signupAndCreateTeam': 'RegistrationController.signupAndCreateTeam',
     //'post /api/reg/updatePayment': 'RegistrationController.updatePayment',
