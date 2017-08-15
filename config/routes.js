@@ -14,8 +14,6 @@ module.exports.routes = {
     'post /api/group/update': 'GroupController.update',
     'get  /api/group/delete/:id': 'GroupController.delete',
 
-    'post /api/groups': 'GroupController.getGroups',
-
     // Manager 1.5
     'post /api/manager/login': 'ManagerController.login',
     'get  /api/manager/logout': 'ManagerController.logout',
@@ -29,7 +27,6 @@ module.exports.routes = {
 
     // Race
     'post /api/race/create': 'RaceController.create',
-    'get  /api/race/mgmtInfo/:id': 'RaceController.getInfo',
     'post /api/race/update': 'RaceController.update',
     'get  /api/race/delete/:id': 'RaceController.delete',
     'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',

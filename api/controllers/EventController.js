@@ -5,17 +5,17 @@
 var moment = require('moment')
 
 module.exports = {
-  // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
+  // input: { name: STR, nameCht: STR, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR }, output: { event: {} }
   create: function (req, res) {
     var input = req.body
-
     input.uniqueName = dataService.sluggify(input.name)
     input.startTime = moment(input.startTime).valueOf()
     input.endTime = moment(input.endTime).valueOf()
     Event.create(input)
-    .then(function (V) { return res.ok({event: V}) })
+    .then(function (V) { return res.ok({ event: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // input: /:uniqueName  output: { event: {}, groups: [], races: [], registrations: [] }
   getInfo: function (req, res) {
     var result = {}
     var query
@@ -39,47 +39,36 @@ module.exports = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // input: na, output: { events: [] }
   getEvents: function (req, res) {
     Event.find({})
-    .then(function (V) { return res.ok({events: V}) })
+    .then(function (V) { return res.ok({ events: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID}
+  // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var input = req.body
-    var updateObj
     var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace']
-    var query = {id: input.id}
-
-    Event.findOne(query)
-    .then(function (eventData) {
-      updateObj = dataService.returnUpdateObj(fields, input)
-      if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
-      if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
-      if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
-      return false
-    })
-    .then(function () {
-      return Event.update(query, updateObj)
-    })
-    .then(function (V) { return res.ok({event: V[0]}) })
+    var updateObj = dataService.returnUpdateObj(fields, req.body)
+    if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
+    if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
+    if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
+    Event.update({ id: req.body.id }, updateObj)
+    .then(function (V) { return res.ok({ event: V[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // input: /:id, output: { event: { id: ID } }
   delete: function (req, res) {
-    var query = { id: req.params.id }
-
-    Event.findOne(query)
+    Event.findOne({ id: req.params.id })
     .then(function (V) {
       var now = moment().valueOf()
-      if (V.isPublic) { throw new Error('Cannot delete a public event') }
       if (now > V.startTime && now < V.endTime) { throw new Error('Cannot delete an ongoing event') }
-      return Group.count({ event: query.id })
+      return Group.count({ event: req.params.id })
     })
     .then(function (groupLen) {
       if (groupLen > 0) { throw new Error('Cannot delete an event that contains group') }
-      return Event.destroy(query)
+      return Event.destroy({ id: req.params.id })
     })
-    .then(function () { return res.ok({ event: query }) })
+    .then(function () { return res.ok({ event: { id: req.params.id } }) })
     .catch(function (E) { return res.badRequest(E) })
   }
 }

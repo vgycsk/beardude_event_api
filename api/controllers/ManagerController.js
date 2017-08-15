@@ -5,7 +5,6 @@
 module.exports = {
   create: function (req, res) {
     var input = req.body
-
     if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
     return accountService.create(input, 'Manager')
     .then(function (result) { return res.ok({manager: result}) })
@@ -32,7 +31,6 @@ module.exports = {
   login: function (req, res) {
     var input = req.body
     var result
-
     if (input.email === '' || input.password === '') {
       return res.badRequest('Please enter valid credentials')
     }
@@ -59,7 +57,6 @@ module.exports = {
     var fields = ['email', 'phone', 'firstName', 'lastName', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive']
     var query = {id: input.id}
     var updateObj = dataService.returnUpdateObj(fields, input)
-
     if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
     return Manager.update(query, updateObj)
     .then(function (V) { return res.ok({manager: V[0].toJSON()}) })

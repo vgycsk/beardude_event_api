@@ -113,22 +113,6 @@ describe('/controllers/EventController', function () {
     })
   })
   describe('.delete()', function () {
-    it('should return error if is a public event', function (done) {
-      var actual
-      var req = { params: { id: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mockData = { id: 1, name: 'new event1', isPublic: true }
-
-      this.timeout(150)
-      sailsMock.mockModel(Event, 'findOne', mockData)
-      eventController.delete(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal('Cannot delete a public event')
-        Event.findOne.restore()
-        done()
-      }, 90)
-    })
-
     it('should return error if is an ongoing event', function (done) {
       var actual
       var req = { params: { id: 1 } }

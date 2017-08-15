@@ -38,24 +38,6 @@ describe('/controllers/RaceController', function () {
     })
   })
 
-  describe('.getInfo()', function () {
-    it('should return filtered race info', function (done) {
-      var actual
-      var req = { params: { id: '5' } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 5, registrations: [1, 2, 3], group: 1, name: 'A race' }
-      var expected = { race: { id: 5, registrations: [1, 2, 3], group: 1, name: 'A race' } }
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(50)
-      raceController.getInfo(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-  })
   describe('.update()', function () {
     it('should update race', function (done) {
       var actual
@@ -319,7 +301,7 @@ describe('/controllers/RaceController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var RaceController = { addRemoveRegs: function () { return true } }
       var mockUpdate = [ { id: 1, result: [ { id: 1 }, { id: 2 } ] } ]
-      var expected = { race: { id: 1, result: [ { id: 1 }, { id: 2 } ] } }
+      var expected = { races: [{ id: 1, result: [ { id: 1 }, { id: 2 } ] }] }
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () {})
       sailsMock.mockModel(Race, 'update', mockUpdate)

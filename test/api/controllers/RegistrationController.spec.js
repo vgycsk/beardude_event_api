@@ -12,6 +12,79 @@ describe('/controllers/RegistrationController', function () {
 
   beforeEach(function () { sandbox = sinon.sandbox.create() })
   afterEach(function () { sandbox.restore() })
+  describe('.create()', function () {
+    it('should return registration exist if already registered', function (done) {
+      var actual
+      var req = { body: { group: 1, event: 1, racer: 1 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var expected = 'Already registered'
+      var mock = { id: 1, group: 1 }
+      var mockGroup = { id: 1, event: 1 }
+
+      sailsMock.mockModel(Group, 'findOne', mockGroup)
+      sailsMock.mockModel(Registration, 'findOne', mock)
+      registrationController.create(req, res)
+      this.timeout(99)
+      setTimeout(function () {
+        expect(actual.message).to.equal(expected)
+        Group.findOne.restore()
+        Registration.findOne.restore()
+        done()
+      }, 50)
+    })
+  })
+  describe('.update()', function () {
+    it('should update registration', function (done) {
+      var actual
+      var req = { body: { id: 1, name: 'newName' } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = [ { id: 1, name: 'newName' } ]
+
+      sailsMock.mockModel(Registration, 'update', mock)
+      registrationController.update(req, res)
+      this.timeout(99)
+      setTimeout(function () {
+        expect(actual).to.deep.equal({ registration: mock[0] })
+        Registration.update.restore()
+        done()
+      }, 50)
+    })
+  })
+  describe('.delete()', function () {
+    it('should throw error if reg has race notes', function (done) {
+      var actual
+      var req = { params: { id: 1 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, name: 'newName', raceNotes: [ { message: 'a race note' } ] }
+
+      sailsMock.mockModel(Registration, 'findOne', mock)
+      registrationController.delete(req, res)
+      this.timeout(99)
+      setTimeout(function () {
+        expect(actual.message).to.equal('Cannot delete racer that has raceNotes')
+        Registration.findOne.restore()
+        done()
+      }, 50)
+    })
+    it('should delete a reg', function (done) {
+      var actual
+      var req = { params: { id: 1 } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
+      var mock = { id: 1, name: 'newName' }
+
+      sailsMock.mockModel(Registration, 'findOne', mock)
+      sailsMock.mockModel(Registration, 'destroy', { registration: { id: 1 } })
+      registrationController.delete(req, res)
+      this.timeout(99)
+      setTimeout(function () {
+        expect(actual).to.deep.equal({ registration: { id: 1 } })
+        Registration.findOne.restore()
+        Registration.destroy.restore()
+        done()
+      }, 50)
+    })
+  })
+})
 /*
   describe('.createReg()', function () {
     it('should create registration', function (done) {
@@ -42,29 +115,6 @@ describe('/controllers/RegistrationController', function () {
       }, 50)
     })
   })
-*/
-  describe('.create()', function () {
-    it('should return registration exist if already registered', function (done) {
-      var actual
-      var req = { body: { group: 1, event: 1, racer: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var expected = 'Already registered'
-      var mock = { id: 1, group: 1 }
-      var mockGroup = { id: 1, event: 1 }
-
-      sailsMock.mockModel(Group, 'findOne', mockGroup)
-      sailsMock.mockModel(Registration, 'findOne', mock)
-      registrationController.create(req, res)
-      this.timeout(99)
-      setTimeout(function () {
-        expect(actual.message).to.equal(expected)
-        Group.findOne.restore()
-        Registration.findOne.restore()
-        done()
-      }, 50)
-    })
-  })
-  /*
   describe('.getInfo()', function () {
     it('should return registration info with racer id', function (done) {
       var actual
@@ -137,59 +187,6 @@ describe('/controllers/RegistrationController', function () {
       }, 50)
     })
   })
-  */
-  describe('.update()', function () {
-    it('should update registration', function (done) {
-      var actual
-      var req = { body: { id: 1, name: 'newName' } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = [ { id: 1, name: 'newName' } ]
-
-      sailsMock.mockModel(Registration, 'update', mock)
-      registrationController.update(req, res)
-      this.timeout(99)
-      setTimeout(function () {
-        expect(actual).to.deep.equal({ registration: mock[0] })
-        Registration.update.restore()
-        done()
-      }, 50)
-    })
-  })
-  describe('.delete()', function () {
-    it('should throw error if reg has race notes', function (done) {
-      var actual
-      var req = { params: { id: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 1, name: 'newName', raceNotes: [ { message: 'a race note' } ] }
-
-      sailsMock.mockModel(Registration, 'findOne', mock)
-      registrationController.delete(req, res)
-      this.timeout(99)
-      setTimeout(function () {
-        expect(actual.message).to.equal('Cannot delete racer that has raceNotes')
-        Registration.findOne.restore()
-        done()
-      }, 50)
-    })
-    it('should delete a reg', function (done) {
-      var actual
-      var req = { params: { id: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 1, name: 'newName' }
-
-      sailsMock.mockModel(Registration, 'findOne', mock)
-      sailsMock.mockModel(Registration, 'destroy', { registration: { id: 1 } })
-      registrationController.delete(req, res)
-      this.timeout(99)
-      setTimeout(function () {
-        expect(actual).to.deep.equal({ registration: { id: 1 } })
-        Registration.findOne.restore()
-        Registration.destroy.restore()
-        done()
-      }, 50)
-    })
-  })
-/*
   describe('.signupAndCreate()', function () {
     it('should create a racer account and register for an event', function (done) {
       var actual
@@ -374,20 +371,16 @@ describe('/controllers/RegistrationController', function () {
       }, 70)
     })
   })
+  describe('.updatePayment()', function () {
+      it('should ', function (done) {
+      });
+  });
+  describe('.requestRefund()', function () {
+      it('should ', function (done) {
+      });
+  });
+  describe('.refunded()', function () {
+      it('should ', function (done) {
+      });
+  });
 */
-    /*
-    describe('.updatePayment()', function () {
-        it('should ', function (done) {
-        });
-    });
-    describe('.requestRefund()', function () {
-        it('should ', function (done) {
-        });
-    });
-    describe('.refunded()', function () {
-        it('should ', function (done) {
-        });
-    });
-
-    */
-})
