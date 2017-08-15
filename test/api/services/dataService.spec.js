@@ -104,35 +104,40 @@ describe('services/dataService', function () {
     it('should return true if is pacer epc', function (done) {
       var epc = 'abc123'
       var raceData = { requirePacer: true, pacerEpc: 'abc123', raceStatus: 'started' }
-      var actual = dataService.isValidRaceRecord(epc, raceData)
+      var regs = []
+      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
       expect(actual).to.equal(true)
       done()
     })
     it('should return false if race not started', function (done) {
       var epc = 'abc123'
       var raceData = { raceStatus: 'init' }
-      var actual = dataService.isValidRaceRecord(epc, raceData)
+      var regs = []
+      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
       expect(actual).to.equal(false)
       done()
     })
     it('should return false if race started but countdown unfinished', function (done) {
       var epc = 'abc123'
       var raceData = { raceStatus: 'started', startTime: Date.now() + 6000 }
-      var actual = dataService.isValidRaceRecord(epc, raceData)
+      var regs = []
+      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
       expect(actual).to.equal(false)
       done()
     })
     it('should return false if epc does not belong to regs in this race', function (done) {
       var epc = 'abc123'
       var raceData = { raceStatus: 'started', startTime: Date.now() - 6000, registrations: [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'bbb' } ] }
-      var actual = dataService.isValidRaceRecord(epc, raceData)
+      var regs = []
+      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
       expect(actual).to.equal(false)
       done()
     })
     it('should return true if valid', function (done) {
       var epc = 'abc123'
-      var raceData = { raceStatus: 'started', startTime: Date.now() - 6000, registrations: [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'abc123' } ] }
-      var actual = dataService.isValidRaceRecord(epc, raceData)
+      var raceData = { raceStatus: 'started', startTime: Date.now() - 6000 }
+      var regs = [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'abc123' } ]
+      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
       expect(actual).to.equal(true)
       done()
     })

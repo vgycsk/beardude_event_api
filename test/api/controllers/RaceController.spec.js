@@ -16,40 +16,28 @@ describe('/controllers/RaceController', function () {
   describe('.create()', function () {
     it('should create a race', function (done) {
       var actual
-      var req = { body: { group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true } }
+      var req = { body: { event: 1, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mockData = { id: 8, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true }
+      var mockData = { id: 8, event: 1, group: 5, name: 'new race', racerNumberAllowed: 60, requirePacer: true }
+      var mockEvent = { id: 1, raceOrder: [] }
+      var mockEventUpdate = [ { id: 1, raceOrder: [8] } ]
       var expected = { race: mockData }
 
       sailsMock.mockModel(Race, 'create', mockData)
+      sailsMock.mockModel(Event, 'findOne', mockEvent)
+      sailsMock.mockModel(Event, 'update', mockEventUpdate)
       this.timeout(50)
       raceController.create(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.create.restore()
+        Event.findOne.restore()
+        Event.update.restore()
         done()
       }, 30)
     })
   })
 
-  describe('.getInfo()', function () {
-    it('should return filtered race info', function (done) {
-      var actual
-      var req = { params: { id: '5' } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 5, registrations: [1, 2, 3], group: 1, name: 'A race' }
-      var expected = { race: { id: 5, registrations: [1, 2, 3], group: 1, name: 'A race' } }
-
-      sailsMock.mockModel(Race, 'findOne', mock)
-      this.timeout(50)
-      raceController.getInfo(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.findOne.restore()
-        done()
-      }, 30)
-    })
-  })
   describe('.update()', function () {
     it('should update race', function (done) {
       var actual
@@ -76,7 +64,7 @@ describe('/controllers/RaceController', function () {
       var actual
       var req = { params: { id: 5 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 8, group: 5, name: 'new race', startTime: '2017-10-10T08:00:00-08:00' }
+      var mock = { id: 8, group: { id: 5, event: 1 }, name: 'new race', startTime: '2017-10-10T08:00:00-08:00' }
       var expected = 'Cannot delete a started race'
 
       sailsMock.mockModel(Race, 'findOne', mock)
@@ -93,16 +81,22 @@ describe('/controllers/RaceController', function () {
       var req = { params: { id: 5 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 8, group: 5, name: 'new race' }
-      var expected = { id: 5 }
+      var mockEvent = { id: 1, raceOrder: [5] }
+      var mockEventUpdate = [ { id: 1, raceOrder: [] } ]
+      var expected = { race: { id: 5 } }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'destroy')
+      sailsMock.mockModel(Event, 'findOne', mockEvent)
+      sailsMock.mockModel(Event, 'update', mockEventUpdate)
       this.timeout(90)
       raceController.delete(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
         Race.findOne.restore()
         Race.destroy.restore()
+        Event.findOne.restore()
+        Event.update.restore()
         done()
       }, 60)
     })
@@ -124,6 +118,7 @@ describe('/controllers/RaceController', function () {
         done()
       }, 60)
     })
+    /*
     it('should add regs', function (done) {
       var mock = { id: 1, registrations: [] }
       var actual
@@ -158,6 +153,7 @@ describe('/controllers/RaceController', function () {
         done()
       }, 60)
     })
+    */
   })
   describe('.assignRegsToRaces()', function () {
     it('should call addRemoveRegs', function (done) {
@@ -304,8 +300,8 @@ describe('/controllers/RaceController', function () {
       var req = { body: { id: 1, result: [ { id: 1 }, { id: 2 } ], advance: [] } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var RaceController = { addRemoveRegs: function () { return true } }
-      var mockUpdate = {}
-      var expected = { race: { id: 1 } }
+      var mockUpdate = [ { id: 1, result: [ { id: 1 }, { id: 2 } ] } ]
+      var expected = { races: [{ id: 1, result: [ { id: 1 }, { id: 2 } ] }] }
 
       sandbox.stub(RaceController, 'addRemoveRegs').callsFake(function () {})
       sailsMock.mockModel(Race, 'update', mockUpdate)
@@ -426,19 +422,4 @@ describe('/controllers/RaceController', function () {
       }, 90)
     })
   })
-  /*
-  describe('.socketManagement()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
-  describe('.socketImpinj()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
-  describe('.socket()', function () {
-    it('should submit race result and advance qualified racers to coming races', function (done) {
-    })
-  })
-
-  */
 })

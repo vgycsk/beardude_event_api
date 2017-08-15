@@ -3,105 +3,72 @@
 'use strict'
 
 var moment = require('moment')
-var Q = require('q')
 
 module.exports = {
-  // {name: STR, nameCht: STR, assignedRaceNumber: INT, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR}
+  // input: { name: STR, nameCht: STR, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR }, output: { event: {} }
   create: function (req, res) {
     var input = req.body
-    var resultObj
-
     input.uniqueName = dataService.sluggify(input.name)
     input.startTime = moment(input.startTime).valueOf()
     input.endTime = moment(input.endTime).valueOf()
     Event.create(input)
-    .then(function (V) {
-      resultObj = V
-      return Event.findOne({ id: V.id }).populate('managers')
-    })
-    .then(function (V) {
-      V.managers.add(req.session.managerInfo.id)
-      return V.save()
-    })
-    .then(function () { return res.ok({event: resultObj}) })
+    .then(function (V) { return res.ok({ event: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  getEvents: function (req, res) {
-    Event.find({})
-    .then(function (V) { return res.ok({events: V}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // :uniqueName
+  // input: /:uniqueName  output: { event: {}, groups: [], races: [], registrations: [] }
   getInfo: function (req, res) {
-    var eventId
-    var result
-
+    var result = {}
+    var query
     Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
-      eventId = V.id
-      result = V.toJSON()
-      return Group.find({event: eventId}).populate('registrations')
+      query = { event: V.id }
+      result.event = V
+      return Group.find(query)
     })
     .then(function (V) {
-      var funcs = []
-      result.groups = V.map(function (group) {
-        funcs.push(Race.find({group: group.id}).populate('registrations'))
-        return group.toJSON()
-      }) || []
-      return Q.all(funcs)
+      result.groups = V
+      return Race.find(query)
     })
     .then(function (V) {
-      var funcs = []
-      result.groups = result.groups.map(function (group, I) {
-        group.races = V[I]
-        funcs.push(Registration.find({group: group.id}).sort('raceNumber ASC').populate('races'))
-        return group
-      })
-      return Q.all(funcs)
+      result.races = V
+      return Registration.find(query)
     })
     .then(function (V) {
-      result.groups = result.groups = result.groups.map(function (group, I) {
-        group.registrations = V[I]
-        return group
-      })
-      return res.ok({ event: result })
+      result.registrations = V
+      return res.ok(result)
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID}
+  // input: na, output: { events: [] }
+  getEvents: function (req, res) {
+    Event.find({})
+    .then(function (V) { return res.ok({ events: V }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var input = req.body
-    var updateObj
     var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace']
-    var query = {id: input.id}
-
-    Event.findOne(query)
-    .then(function (eventData) {
-      updateObj = dataService.returnUpdateObj(fields, input)
-      if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
-      if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
-      if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
-      return false
-    })
-    .then(function () {
-      return Event.update(query, updateObj)
-    })
-    .then(function (V) { return res.ok({event: V[0]}) })
+    var updateObj = dataService.returnUpdateObj(fields, req.body)
+    if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
+    if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
+    if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
+    Event.update({ id: req.body.id }, updateObj)
+    .then(function (V) { return res.ok({ event: V[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // input: /:id, output: { event: { id: ID } }
   delete: function (req, res) {
-    var query = { id: req.params.id }
-
-    Event.findOne(query).populate('groups')
+    Event.findOne({ id: req.params.id })
     .then(function (V) {
       var now = moment().valueOf()
-
-      if (V.isPublic) { throw new Error('Cannot delete a public event') }
       if (now > V.startTime && now < V.endTime) { throw new Error('Cannot delete an ongoing event') }
-      if (V.groups.length > 0) { throw new Error('Cannot delete an event that contains group') }
-      return Event.destroy(query)
+      return Group.count({ event: req.params.id })
     })
-    .then(function () { return res.ok({event: query.id}) })
+    .then(function (groupLen) {
+      if (groupLen > 0) { throw new Error('Cannot delete an event that contains group') }
+      return Event.destroy({ id: req.params.id })
+    })
+    .then(function () { return res.ok({ event: { id: req.params.id } }) })
     .catch(function (E) { return res.badRequest(E) })
   }
 }

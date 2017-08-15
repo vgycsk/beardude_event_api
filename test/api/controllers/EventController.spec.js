@@ -73,10 +73,7 @@ describe('/controllers/EventController', function () {
       var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
       var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
       var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]
-      var expected = { event: mockData }
-      mockData.toJSON = function () { return mockData }
-      mockGroups[0].toJSON = function () { return mockGroups[0] }
-      mockGroups[1].toJSON = function () { return mockGroups[1] }
+      var expected = { event: mockData, groups: mockGroups, races: mockRaces, registrations: mockRegs }
       this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       sailsMock.mockModel(Group, 'find', mockGroups)
@@ -116,22 +113,6 @@ describe('/controllers/EventController', function () {
     })
   })
   describe('.delete()', function () {
-    it('should return error if is a public event', function (done) {
-      var actual
-      var req = { params: { id: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mockData = { id: 1, name: 'new event1', isPublic: true }
-
-      this.timeout(150)
-      sailsMock.mockModel(Event, 'findOne', mockData)
-      eventController.delete(req, res)
-      setTimeout(function () {
-        expect(actual.message).to.equal('Cannot delete a public event')
-        Event.findOne.restore()
-        done()
-      }, 90)
-    })
-
     it('should return error if is an ongoing event', function (done) {
       var actual
       var req = { params: { id: 1 } }
@@ -155,10 +136,12 @@ describe('/controllers/EventController', function () {
 
       this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
+      sailsMock.mockModel(Group, 'count', 2)
       eventController.delete(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Cannot delete an event that contains group')
         Event.findOne.restore()
+        Group.count.restore()
         done()
       }, 90)
     })
@@ -173,7 +156,7 @@ describe('/controllers/EventController', function () {
       sailsMock.mockModel(Event, 'destroy', { id: 1 })
       eventController.delete(req, res)
       setTimeout(function () {
-        expect(actual).to.deep.equal({ event: 1 })
+        expect(actual).to.deep.equal({ event: { id: 1 } })
         Event.findOne.restore()
         Event.destroy.restore()
         done()

@@ -3,54 +3,32 @@
 'use strict'
 
 module.exports = {
-  // { event: ID, name: STR, nameCht: STR, rules: STR }
+  // input: { event: ID, name: STR, nameCht: STR, rules: STR }, output: { group: {}}
   create: function (req, res) {
     Group.create(req.body)
-    .then(function (modelData) { return res.ok({group: modelData}) })
+    .then(function (modelData) { return res.ok({ group: modelData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // /:id
-  getInfo: function (req, res) {
-    var result = {}
-    var groupId = req.params.id
-
-    Group.findOne({id: groupId})
-    .then(function (modelData) {
-      result = modelData.toJSON()
-      return Registration.find({group: groupId}).sort('raceNumber ASC').populate('racer').populate('races')
-    })
-    .then(function (V) {
-      result.registrations = V
-      return Race.find({group: groupId}).populate('registrations')
-    })
-    .then(function (V) {
-      result.races = V
-      return res.ok({group: result})
-    })
-    .catch(function (E) {
-      return res.badRequest(E)
-    })
-  },
-  // /id
+  // input: /:id, output: { group: { id: ID }}
   delete: function (req, res) {
-    var query = {id: req.params.id}
-
-    Group.findOne(query).populate('races').populate('registrations')
-    .then(function (V) {
-      if (V.races.length > 0) { throw new Error('Cannot delete group that contains races') }
-      if (V.registrations.length > 0) { throw new Error('Cannot delete group that has racers registered') }
-      return Group.destroy(query)
+    var groupId = req.params.id
+    Race.count({ group: groupId })
+    .then(function (raceCount) {
+      if (raceCount > 0) { throw new Error('Cannot delete group that contains races') }
+      return Registration.count({ group: groupId })
     })
-    .then(function () { return res.ok({group: query.id}) })
+    .then(function (regCount) {
+      if (regCount > 0) { throw new Error('Cannot delete group that has racers registered') }
+      return Group.destroy({ id: groupId })
+    })
+    .then(function () { return res.ok({ group: { id: groupId } }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID, name: STR, nameCht: STR, racerNumberAllowed: INT, rules: ARRAY}
+  // input: { id: ID, name: STR, nameCht: STR, racerNumberAllowed: INT, rules: ARRAY }, output: { group: {} }
   update: function (req, res) {
-    var input = req.body
     var fields = ['name', 'nameCht', 'racerNumberAllowed', 'rules']
-    var updateObj = dataService.returnUpdateObj(fields, input)
-
-    Group.update({id: input.id}, updateObj)
+    var updateObj = dataService.returnUpdateObj(fields, req.body)
+    Group.update({id: req.body.id}, updateObj)
     .then(function (modelData) { return res.ok({group: modelData[0]}) })
     .catch(function (E) { return res.badRequest(E) })
   }

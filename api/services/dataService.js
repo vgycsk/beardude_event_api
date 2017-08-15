@@ -7,6 +7,21 @@ var bcrypt = require('bcrypt-nodejs')
 var randomstring = require('randomstring')
 var Q = require('q')
 var dataService = {
+  addToArray: function (itemToAdd, array) {
+    var found
+    var newArray = array
+    array.map(function (V, I) {
+      if (V === itemToAdd) { found = true }
+    })
+    if (!found) { newArray.push(itemToAdd) }
+    return newArray
+  },
+  removeFromArray: function (itemToRemove, array) {
+    array.map(function (V, I) {
+      if (V === itemToRemove) { array.splice(I, 1) }
+    })
+    return array
+  },
   authenticate: function (inputPassword, userDataPassword) {
     var q = Q.defer()
 
@@ -47,7 +62,7 @@ var dataService = {
     if (entry.timestamp - lastRecord > intervalInMs) { return true }
     return false
   },
-  isValidRaceRecord: function (epc, raceData) {
+  isValidRaceRecord: function (epc, raceData, regData) {
     var validateRaceStarted = function (raceData) {
       if (raceData.raceStatus === 'started' && Date.now() >= raceData.startTime) { return true }
       return false
@@ -57,7 +72,7 @@ var dataService = {
       return false
     }
     if (raceData.requirePacer && epc === raceData.pacerEpc) { return true }
-    if (validateRaceStarted(raceData) && validateRegInRace(epc, raceData.registrations)) { return true }
+    if (validateRaceStarted(raceData) && validateRegInRace(epc, regData)) { return true }
     return false
   },
   returnAccessCode: function (eventId) {

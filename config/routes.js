@@ -3,14 +3,13 @@
 module.exports.routes = {
     // Event
     'post /api/event/create': 'EventController.create',
+    'get  /api/event/info/:uniqueName': 'EventController.getInfo',
     'get  /api/event/getEvents': 'EventController.getEvents',
-    'get  /api/event/mgmtInfo/:uniqueName': 'EventController.getInfo',
     'post /api/event/update': 'EventController.update',
     'get  /api/event/delete/:id': 'EventController.delete',
 
     // Group
     'post /api/group/create': 'GroupController.create',
-    'get  /api/group/mgmtInfo/:id': 'GroupController.getInfo',
     'post /api/group/update': 'GroupController.update',
     'get  /api/group/delete/:id': 'GroupController.delete',
 
@@ -27,7 +26,6 @@ module.exports.routes = {
 
     // Race
     'post /api/race/create': 'RaceController.create',
-    'get  /api/race/mgmtInfo/:id': 'RaceController.getInfo',
     'post /api/race/update': 'RaceController.update',
     'get  /api/race/delete/:id': 'RaceController.delete',
     'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
@@ -35,6 +33,8 @@ module.exports.routes = {
     'post /api/race/reset': 'RaceController.resetRace',
     'post /api/race/end': 'RaceController.endRace',
     'post /api/race/submitResult': 'RaceController.submitResult',
+
+    // Socket.io
     'get  /api/socket/info': 'RaceController.socket',
     '/api/socket/mgmt': 'RaceController.socketManagement',
     '/api/socket/impinj': 'RaceController.socketImpinj',
@@ -54,13 +54,10 @@ module.exports.routes = {
 
     // Registration
     'post /api/reg/create': 'RegistrationController.create',
-    'post /api/reg/info': 'RegistrationController.getInfo',
     'post /api/reg/update': 'RegistrationController.update',
-//    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
-
     'get  /api/reg/delete/:id': 'RegistrationController.delete',
-
-    // 正式版再說
+//    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
+//    'post  /api/regs': 'RegistrationController.getRegs',
 //    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
 //    'post /api/reg/signupAndCreateTeam': 'RegistrationController.signupAndCreateTeam',
     //'post /api/reg/updatePayment': 'RegistrationController.updatePayment',
