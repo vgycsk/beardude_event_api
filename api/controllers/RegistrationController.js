@@ -1,4 +1,4 @@
-/* global dataService, Group, Registration */
+/* global dataService, Race, Registration */
 
 'use strict'
 
@@ -30,16 +30,12 @@ var RegistrationController = {
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
-  // {group: ID, name: STR, racer: ID}
+  // {event: ID, group: ID, name: STR, racer: ID}
   create: function (req, res) {
     var input = req.body
     var query = (input.racer) ? {group: input.group, racer: input.racer} : {group: input.group, name: input.name}
 
-    Group.findOne({ id: input.group })
-    .then(function (V) {
-      input.event = V.event
-      return Registration.findOne(query)
-    })
+    Registration.findOne(query)
     .then(function (modelData) {
       if (modelData) { throw new Error('Already registered') }
       return RegistrationController.createReg(input)
@@ -71,15 +67,41 @@ var RegistrationController = {
     .catch(function (E) { return res.badRequest(E) })
   },
   // /:id
+  // 1. Find and remove registrationIds from races
+  // 2. remove reg
   delete: function (req, res) {
     var query = {id: req.params.id}
+    var result = { registration: query }
 
     Registration.findOne(query)
     .then(function (V) {
       if (V.raceNotes) { throw new Error('Cannot delete racer that has raceNotes') }
+      return Race.find({ group: V.group })
+    })
+    .then(function (races) {
+      var funcs = []
+      races.map(function (race) {
+        var updateObj = { id: race.id, registrationIds: race.registrationIds }
+        var toUpdate
+        updateObj.registrationIds.map(function (regId, index) {
+          if (regId === query.id) {
+            updateObj.registrationIds.splice(index, 1)
+            toUpdate = true
+          }
+        })
+        if (toUpdate) {
+          funcs.push(Race.update({ id: updateObj.id }, { registrationIds: updateObj.registrationIds }))
+        }
+      })
+      if (funcs.length > 0) { return Q.all(funcs) }
+      return false
+    })
+    .then(function (raceData) {
+      var races = raceData.map(function (race) { return race[0] })
+      if (raceData) { result.races = races }
       return Registration.destroy(query)
     })
-    .then(function (V) { return res.ok({ registration: query }) })
+    .then(function (V) { return res.ok(result) })
     .catch(function (E) { return res.badRequest(E) })
   }
   // query. e.g. { event: ID }

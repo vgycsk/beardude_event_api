@@ -86,7 +86,7 @@ var RaceController = {
       if (!modified) { return false }
       return Race.update({ id: raceObj.id }, { registrationIds: registrationIds })
     })
-    .then(function () { return q.resolve() })
+    .then(function (V) { return q.resolve(V) })
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
@@ -96,16 +96,11 @@ var RaceController = {
     var funcs = []
 
     input.races.map(function (race) { funcs.push(RaceController.addRemoveRegs(race)) })
-
     Q.all(funcs)
-    .then(function () {
-      var raceIds = []
-      input.races.map(function (V) { raceIds.push(V.id) })
-      return Race.find({ id: raceIds })
-    })
-    .then(function (raceData) {
-      console.log('raceData: ', raceData)
-      return res.ok({ races: raceData })
+    .then(function (V) {
+      var races = []
+      V.map(function (raceData) { races.push(raceData[0]) })
+      return res.ok({ races: races })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -127,7 +122,10 @@ var RaceController = {
       raceObj = raceData[0]
       return Event.update({ id: raceObj.event }, { ongoingRace: input.id })
     })
-    .then(function () { return res.ok({ race: raceObj }) })
+    .then(function () {
+      sails.sockets.broadcast('rxdata', 'raceupdate', { race: raceObj })
+      return res.ok({ race: raceObj })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // {id: ID}
@@ -162,22 +160,29 @@ var RaceController = {
       raceObj = raceData[0]
       return Event.update({ id: raceObj.event }, { ongoingRace: -1 })
     })
-    .then(function () { return res.ok({ race: raceObj }) })
+    .then(function () {
+      sails.sockets.broadcast('rxdata', 'raceupdate', { race: raceObj })
+      return res.ok({ race: raceObj })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // { id: ID, result: [], advance: []}
   submitResult: function (req, res) {
     var input = req.body
-    var raceObj
+    var races = []
 
     Race.update({id: input.id}, { result: input.result, raceStatus: 'submitted' })
     .then(function (raceData) {
       var funcs = []
-      raceObj = raceData[0]
+      races.push(raceData[0])
       input.advance.map(function (obj) { funcs.push(RaceController.addRemoveRegs(obj)) })
       return Q.all(funcs)
     })
-    .then(function () { return res.ok({ race: raceObj }) })
+    .then(function (V) {
+      V.map(function (raceData) { races.push(raceData[0]) })
+      sails.sockets.broadcast('rxdata', 'raceresult', { races: races })
+      return res.ok({ races: races })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // get: 加入socket.io
