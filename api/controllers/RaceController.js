@@ -119,7 +119,10 @@ var RaceController = {
       raceObj = raceData[0]
       return Event.update({ id: raceObj.event }, { ongoingRace: -1 })
     })
-    .then(function () { return res.ok({ race: raceObj }) })
+    .then(function () {
+      sails.sockets.broadcast('rxdata', 'raceupdate', { race: raceObj })
+      return res.ok({ race: raceObj })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: {id: ID, endTime: TIMESTAMP}, output: { race: {} }

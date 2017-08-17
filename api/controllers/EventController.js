@@ -1,4 +1,4 @@
-/* global dataService, Event, Group, Race, Registration */
+/* global dataService, Event, Group, Race, Registration, sails */
 
 'use strict'
 
@@ -53,7 +53,12 @@ module.exports = {
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
     if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
     Event.update({ id: req.body.id }, updateObj)
-    .then(function (V) { return res.ok({ event: V[0] }) })
+    .then(function (V) {
+      if (updateObj.resultLatency) {
+        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { event: {resultLatency: V[0].resultLatency} })
+      }
+      return res.ok({ event: V[0] })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: /:id, output: { event: { id: ID } }
