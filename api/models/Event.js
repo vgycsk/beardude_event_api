@@ -88,6 +88,10 @@ module.exports = {
       type: 'integer',
       defaultsTo: -1
     },
+    resultLatency: {
+      type: 'integer',
+      defaultsTo: 0
+    },
     toJSON: function () {
       return this.toObject()
     }
