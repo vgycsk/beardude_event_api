@@ -148,7 +148,7 @@ var RaceController = {
   submitResult: function (req, res) {
     var input = req.body
     var races = []
-    Race.update({id: input.id}, { result: input.result, raceStatus: 'submitted' })
+    Race.update({id: input.id}, { result: input.result, raceStatus: 'submitted', submitTime: Date.now() })
     .then(function (raceData) {
       var funcs = []
       races.push(raceData[0])

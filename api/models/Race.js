@@ -65,6 +65,9 @@ module.exports = {
     endTime: {
       type: 'integer'
     },
+    submitTime: {
+      type: 'integer'
+    },
     // init, started, ended, submitted. (TO DO: paused)
     raceStatus: {
       type: 'string',
