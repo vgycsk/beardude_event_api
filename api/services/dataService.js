@@ -57,8 +57,9 @@ var dataService = {
   },
   isValidReadTagInterval: function (entry, recordsHashTable, intervalInMs) {
     var records = recordsHashTable[entry.epc]
-    var lastRecord = records[records.length - 1]
+    var lastRecord
     if (records.length === 0) { return true }
+    lastRecord = records[records.length - 1]
     if (entry.timestamp - lastRecord > intervalInMs) { return true }
     return false
   },
