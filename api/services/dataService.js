@@ -57,22 +57,10 @@ var dataService = {
   },
   isValidReadTagInterval: function (entry, recordsHashTable, intervalInMs) {
     var records = recordsHashTable[entry.epc]
-    var lastRecord = records[records.length - 1]
+    var lastRecord
     if (records.length === 0) { return true }
+    lastRecord = records[records.length - 1]
     if (entry.timestamp - lastRecord > intervalInMs) { return true }
-    return false
-  },
-  isValidRaceRecord: function (epc, raceData, regData) {
-    var validateRaceStarted = function (raceData) {
-      if (raceData.raceStatus === 'started' && Date.now() >= raceData.startTime) { return true }
-      return false
-    }
-    var validateRegInRace = function (epc, regs) {
-      for (var i = 0; i < regs.length; i += 1) { if (regs[i].epc === epc) { return true } }
-      return false
-    }
-    if (raceData.requirePacer && epc === raceData.pacerEpc) { return true }
-    if (validateRaceStarted(raceData) && validateRegInRace(epc, regData)) { return true }
     return false
   },
   returnAccessCode: function (eventId) {
@@ -92,6 +80,11 @@ var dataService = {
 
     getCode(code)
     return q.promise
+  },
+  returnRacesByOrder: function (races, order) {
+    let result = []
+    order.map(raceId => { races.map(race => { if (race.id === raceId) { result.push(race) } }) })
+    return result
   },
   // 1. lowercase 2. remove special char 3. condense
   sluggify: function (string) {

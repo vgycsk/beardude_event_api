@@ -69,7 +69,7 @@ describe('/controllers/EventController', function () {
       var actual
       var req = { params: { id: '1' } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mockData = { id: 1, name: 'new event', nameCht: '新活動' }
+      var mockData = { id: 1, name: 'new event', nameCht: '新活動', raceOrder: [1, 2] }
       var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
       var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
       var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]

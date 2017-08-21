@@ -100,48 +100,6 @@ describe('services/dataService', function () {
     return false
   },
 */
-  describe('.isValidRaceRecord()', function () {
-    it('should return true if is pacer epc', function (done) {
-      var epc = 'abc123'
-      var raceData = { requirePacer: true, pacerEpc: 'abc123', raceStatus: 'started' }
-      var regs = []
-      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
-      expect(actual).to.equal(true)
-      done()
-    })
-    it('should return false if race not started', function (done) {
-      var epc = 'abc123'
-      var raceData = { raceStatus: 'init' }
-      var regs = []
-      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
-      expect(actual).to.equal(false)
-      done()
-    })
-    it('should return false if race started but countdown unfinished', function (done) {
-      var epc = 'abc123'
-      var raceData = { raceStatus: 'started', startTime: Date.now() + 6000 }
-      var regs = []
-      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
-      expect(actual).to.equal(false)
-      done()
-    })
-    it('should return false if epc does not belong to regs in this race', function (done) {
-      var epc = 'abc123'
-      var raceData = { raceStatus: 'started', startTime: Date.now() - 6000, registrations: [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'bbb' } ] }
-      var regs = []
-      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
-      expect(actual).to.equal(false)
-      done()
-    })
-    it('should return true if valid', function (done) {
-      var epc = 'abc123'
-      var raceData = { raceStatus: 'started', startTime: Date.now() - 6000 }
-      var regs = [ { id: 1, epc: 'aaa' }, { id: 1, epc: 'abc123' } ]
-      var actual = dataService.isValidRaceRecord(epc, raceData, regs)
-      expect(actual).to.equal(true)
-      done()
-    })
-  })
   describe('.returnUpdatedRaceNotes()', function () {
     it('should append new race note to existing raceNotes array', function (done) {
       var raceId = 7
@@ -201,6 +159,28 @@ describe('services/dataService', function () {
         Registration.findOne.restore()
         done()
       }, 150)
+    })
+  })
+  describe('.returnRacesByOrder()', function () {
+    it('should return races by order', function (done) {
+      var actual
+      var races = [{id: '11111'}, {id: '22222'}, {id: '33333'}, {id: '44444'}, {id: '55555'}]
+      var raceOrder = ['33333', '22222', '55555', '11111', '44444']
+      var expected = [{id: '33333'}, {id: '22222'}, {id: '55555'}, {id: '11111'}, {id: '44444'}]
+
+      actual = dataService.returnRacesByOrder(races, raceOrder)
+      expect(actual).to.deep.equal(expected)
+      done()
+    })
+    it('should not equal result of different order', function (done) {
+      var actual
+      var races = [{id: '11111'}, {id: '22222'}, {id: '33333'}, {id: '44444'}, {id: '55555'}]
+      var raceOrder = ['33333', '22222', '55555', '11111', '44444']
+      var expected = [{id: '11111'}, {id: '22222'}, {id: '33333'}, {id: '44444'}, {id: '55555'}]
+
+      actual = dataService.returnRacesByOrder(races, raceOrder)
+      expect(actual).to.not.deep.equal(expected)
+      done()
     })
   })
 })
