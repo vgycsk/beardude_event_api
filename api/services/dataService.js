@@ -93,6 +93,11 @@ var dataService = {
     getCode(code)
     return q.promise
   },
+  returnRacesByOrder: function (races, order) {
+    let result = []
+    order.map(raceId => { races.map(race => { if (race.id === raceId) { result.push(race) } }) })
+    return result
+  },
   // 1. lowercase 2. remove special char 3. condense
   sluggify: function (string) {
     return string.toLowerCase().replace(/[^\w\s]/gi, '').replace(/ +/g, '')

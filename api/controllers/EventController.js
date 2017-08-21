@@ -30,7 +30,7 @@ module.exports = {
       return Race.find(query)
     })
     .then(function (V) {
-      result.races = V
+      result.races = dataService.returnRacesByOrder(V, result.event.raceOrder)
       return Registration.find(query)
     })
     .then(function (V) {

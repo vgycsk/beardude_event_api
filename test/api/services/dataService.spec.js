@@ -203,4 +203,26 @@ describe('services/dataService', function () {
       }, 150)
     })
   })
+  describe('.returnRacesByOrder()', function () {
+    it('should return races by order', function (done) {
+      var actual
+      var races = [{id: '11111'}, {id: '22222'}, {id: '33333'}, {id: '44444'}, {id: '55555'}]
+      var raceOrder = ['33333', '22222', '55555', '11111', '44444']
+      var expected = [{id: '33333'}, {id: '22222'}, {id: '55555'}, {id: '11111'}, {id: '44444'}]
+
+      actual = dataService.returnRacesByOrder(races, raceOrder)
+      expect(actual).to.deep.equal(expected)
+      done()
+    })
+    it('should not equal result of different order', function (done) {
+      var actual
+      var races = [{id: '11111'}, {id: '22222'}, {id: '33333'}, {id: '44444'}, {id: '55555'}]
+      var raceOrder = ['33333', '22222', '55555', '11111', '44444']
+      var expected = [{id: '11111'}, {id: '22222'}, {id: '33333'}, {id: '44444'}, {id: '55555'}]
+
+      actual = dataService.returnRacesByOrder(races, raceOrder)
+      expect(actual).to.not.deep.equal(expected)
+      done()
+    })
+  })
 })
