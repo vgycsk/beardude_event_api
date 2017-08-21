@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* global dataService, Event, Race, Registration, sails */
+/* global dataService, Event, Race, sails */
 
 'use strict'
 
@@ -222,26 +222,21 @@ var RaceController = {
   },
   insertRfidToRace: function (raceId, entries) {
     var validRecordInterval = 10000 // 10secs
-    var raceObj
     var q = Q.defer()
     Race.findOne({id: raceId})
     .then(function (raceData) {
       if (!raceData) { return false }
-      raceObj = raceData
-      return Registration.find({ id: raceObj.registrationIds })
-    })
-    .then(function (regData) {
-      var recordsHashTable = raceObj.recordsHashTable
+      if (raceData.raceStatus !== 'started' || Date.now() < raceData.startTime) { return false }
+
+      var recordsHashTable = raceData.recordsHashTable
       var hasEntry
       entries.map(function (entry) {
-        if (dataService.isValidRaceRecord(entry.epc, raceObj, regData)) {
-          if (!recordsHashTable[entry.epc]) {
-            recordsHashTable[entry.epc] = [ entry.timestamp ]
-            hasEntry = true
-          } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validRecordInterval)) {
-            recordsHashTable[entry.epc].push(entry.timestamp)
-            hasEntry = true
-          }
+        if (!recordsHashTable[entry.epc]) {
+          recordsHashTable[entry.epc] = [ entry.timestamp ]
+          hasEntry = true
+        } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validRecordInterval)) {
+          recordsHashTable[entry.epc].push(entry.timestamp)
+          hasEntry = true
         }
       })
       if (!hasEntry) { return false }

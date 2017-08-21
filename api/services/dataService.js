@@ -62,19 +62,6 @@ var dataService = {
     if (entry.timestamp - lastRecord > intervalInMs) { return true }
     return false
   },
-  isValidRaceRecord: function (epc, raceData, regData) {
-    var validateRaceStarted = function (raceData) {
-      if (raceData.raceStatus === 'started' && Date.now() >= raceData.startTime) { return true }
-      return false
-    }
-    var validateRegInRace = function (epc, regs) {
-      for (var i = 0; i < regs.length; i += 1) { if (regs[i].epc === epc) { return true } }
-      return false
-    }
-    if (raceData.requirePacer && epc === raceData.pacerEpc) { return true }
-    if (validateRaceStarted(raceData) && validateRegInRace(epc, regData)) { return true }
-    return false
-  },
   returnAccessCode: function (eventId) {
     var q = Q.defer()
     var codeLength = 4
