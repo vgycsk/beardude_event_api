@@ -8,6 +8,7 @@ module.exports = {
   // input: { name: STR, nameCht: STR, startTime: DATETIME, endTime: DATETIME, lapDistance: INT, location: STR }, output: { event: {} }
   create: function (req, res) {
     var input = req.body
+    input.managerIds = [req.session.managerInfo.id]
     input.uniqueName = dataService.sluggify(input.name)
     input.startTime = moment(input.startTime).valueOf()
     input.endTime = moment(input.endTime).valueOf()

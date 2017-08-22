@@ -3,12 +3,6 @@
 // 註冊比賽的選手賽籍
 module.exports = {
   attributes: {
-    races: {
-      collection: 'Race',
-      via: 'registrations',
-      dominant: true
-    },
-
     event: {
       model: 'Event'
     },

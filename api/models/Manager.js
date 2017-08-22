@@ -6,11 +6,6 @@ var bcrypt = require('bcrypt-nodejs')
 // TO DO: 分權限
 module.exports = {
   attributes: {
-    events: {
-      collection: 'Event',
-      via: 'managers'
-    },
-
     email: {
       type: 'email',
       required: true,
