@@ -3,9 +3,10 @@
 
 'use strict'
 
+var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'advancingRules', 'registrationIds', 'result']
 var Q = require('q')
 var RaceController = {
-  // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: {} }
+  // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: [] }
   create: function (req, res) {
     var result
     Race.create(req.body)
@@ -22,16 +23,30 @@ var RaceController = {
     .then(function () { return res.ok({ races: [result] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: {}, output: { races: {} }
+  // input: {}, output: { races: [] }
   update: function (req, res) {
     var input = req.body
-    var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'advancingRules']
-    var updateObj = dataService.returnUpdateObj(fields, input)
+    var updateObj = dataService.returnUpdateObj(updateFields, input)
     Race.update({ id: input.id }, updateObj)
     .then(function (raceData) { return res.ok({ races: raceData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: /:id output: { races: { id: ID } }
+  // input: [{ id: ID, OBJ }], output: { races: []}
+  updateMulti: function (req, res) {
+    var input = req.body
+    var funcs = []
+    input.map(function (race) {
+      var updateObj = dataService.returnUpdateObj(updateFields, race)
+      funcs.push(Race.update({ id: race.id }, updateObj))
+    })
+    Q.all(funcs)
+    .then(function (output) {
+      var races = output.map(function (data) { return data[0] })
+      return res.ok({ races: races })
+    })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // input: /:id output: { race: { id: ID } }
   delete: function (req, res) {
     var query = { id: req.params.id }
     var eventId
@@ -88,7 +103,7 @@ var RaceController = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: {id: ID, startTime: TIMESTAMP}, output: { races: {} }
+  // input: {id: ID, startTime: TIMESTAMP}, output: { races: [] }
   startRace: function (req, res) {
     var input = req.body
     var raceObj
@@ -111,7 +126,7 @@ var RaceController = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: { id: ID }, output: { races: {} }
+  // input: { id: ID }, output: { races: [] }
   resetRace: function (req, res) {
     var raceObj
     Race.update({ id: req.body.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [] })
@@ -125,7 +140,7 @@ var RaceController = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: {id: ID, endTime: TIMESTAMP}, output: { races: {} }
+  // input: {id: ID, endTime: TIMESTAMP}, output: { races: [] }
   endRace: function (req, res) {
     var input = req.body
     var raceObj

@@ -27,6 +27,7 @@ module.exports.routes = {
     // Race
     'post /api/race/create': 'RaceController.create',
     'post /api/race/update': 'RaceController.update',
+    'post /api/race/updateMulti': 'RaceController.updateMulti',
     'get  /api/race/delete/:id': 'RaceController.delete',
     'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
     'post /api/race/start': 'RaceController.startRace',
