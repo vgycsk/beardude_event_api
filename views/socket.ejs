@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Impinj Simulator</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="justangon's blog">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          .info {
+            font-family: courier;
+            line-height: 25px;
+            height: 400px;
+            overflow-y: scroll;
+            overflow: auto;
+          }
+          .info:before {
+            content: "Console Output";
+            color: #fff;
+            padding: 5px 0;
+            background: #555;
+            display: block;
+          }
+          .tags {
+            margin: 0 0 10px 0;
+          }
+          .tag {
+            margin: 10px;
+            display: inline-block;
+          }
+        </style>
+    </head>
+    <body>
+      <div id="main" class="main">
+      <h1>Simulate Read Tag</h1>
+      <div class="tags"></div>
+      <div class="info"></div>
+    </div>
+    <script src="/js/socket.io.js"></script>
+    <script src="/js/fetch.js"></script>
+    <script>
+      var epcs = ['e00000000000000000000001', 'e00000000000000000000002', 'e00000000000000000000003', 'e00000000000000000000004', 'e00000000000000000000005', 'e00000000000000000000006', 'e00000000000000000000007', 'e00000000000000000000008', 'e00000000000000000000009', 'e00000000000000000000010']
+      var tags = document.querySelector('.tags')
+      var info = document.querySelector('.info')
+      for (var i = 0; i < epcs.length; i += 1) {
+         tags.innerHTML += '<div class="tag">' + epcs[i] + ' <button onClick="sendRxData(this)" data-epc=' + epcs[i]+ '>發送</button></div>'
+      }
+      var mApiHost = 'http://localhost:1337'
+      var mSocketId
+      var mEventId
+      var socketio = io(mApiHost);
+      var isSingulating = false
+      var sendRxData = function (btn) {
+        var tagData = {epc: btn.dataset.epc, timestamp: Date.now()}
+        var output = {type: 'rxdata', event: mEventId, payload: [tagData]}
+        var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(output) }
+        println(JSON.stringify(tagData))
+        fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
+      }
+      var sendReaderStatus = function (obj) {
+        var readerStatus = { modelName: '', modelNumber: '', firmwareVersion: '', antennaCount: 4, isConnected: true, isSingulating: isSingulating, temperature: '40', readerMode: 'dunno', searchMode: 'DualTarget', session: 1 }
+        var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'readerstatus', event: mEventId, payload: readerStatus }) }
+        setTimeout(function () {
+          fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
+        }, 800)
+      }
+      var println = function (output) { info.innerHTML += '<div>' + output + '</div>' }
+
+      println('Try to connect to socket:')
+      socketio.on('connect', function () {
+        mSocketId = socketio.id
+        println('Connected to socket: ' + mApiHost + '. socket ID: ' + mSocketId)
+        fetch('/api/socket/impinj?sid=' + mSocketId, {credentials: 'same-origin'})
+      })
+      socketio.on('startreader', function (args) {
+        isSingulating = true
+        println('start reader')
+        mEventId = args.eventId
+        sendReaderStatus()
+      })
+      socketio.on('getreaderstatus', function () {
+        println('get reader status')
+        sendReaderStatus()
+      })
+      socketio.on('terminatereader', function () {
+        isSingulating = false
+        println('stop reader')
+        sendReaderStatus()
+      })
+    </script>
+    </body>
+</html>

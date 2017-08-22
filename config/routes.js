@@ -77,12 +77,6 @@ module.exports.routes = {
     //'post /api/team/acceptInvitation': 'TeamController.acceptInvitation',
 
     // Test page
-//    'get  /race/update/:id': 'TestPageController.raceUpdatePage',
-//    'get  /team/update/:id': 'TestPageController.teamUpdatePage',
-//    'get  /group/update/:id': 'TestPageController.groupUpdatePage',
-//    'get  /event/update/:id': 'TestPageController.eventUpdatePage',
-//    'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
-//    'get  /test': 'TestPageController.apiTestPage',
-//    'get  /testSocket': { view: 'testPages/testSocketPage' }
+    'get  /test/socket': { view: 'testPages/socket' }
 
 };
