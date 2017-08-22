@@ -9,7 +9,10 @@ module.exports = {
       collection: 'Registration',
       via: 'racer'
     },
-
+    registrationIds: {
+      type: 'array',
+      defaultsTo: []
+    },
     team: {
       model: 'Team'
     },

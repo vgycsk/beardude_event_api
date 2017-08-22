@@ -3,11 +3,6 @@
 // 分組裡面的個別賽事
 module.exports = {
   attributes: {
-    registrations: {
-      collection: 'Registration',
-      via: 'races'
-    },
-
     registrationIds: {
       type: 'array',
       defaultsTo: []

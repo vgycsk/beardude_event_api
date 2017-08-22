@@ -27,6 +27,7 @@ module.exports.routes = {
     // Race
     'post /api/race/create': 'RaceController.create',
     'post /api/race/update': 'RaceController.update',
+    'post /api/race/updateMulti': 'RaceController.updateMulti',
     'get  /api/race/delete/:id': 'RaceController.delete',
     'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
     'post /api/race/start': 'RaceController.startRace',
@@ -77,12 +78,6 @@ module.exports.routes = {
     //'post /api/team/acceptInvitation': 'TeamController.acceptInvitation',
 
     // Test page
-//    'get  /race/update/:id': 'TestPageController.raceUpdatePage',
-//    'get  /team/update/:id': 'TestPageController.teamUpdatePage',
-//    'get  /group/update/:id': 'TestPageController.groupUpdatePage',
-//    'get  /event/update/:id': 'TestPageController.eventUpdatePage',
-//    'get  /manager/update/:id': 'TestPageController.managerUpdatePage',
-//    'get  /test': 'TestPageController.apiTestPage',
-//    'get  /testSocket': { view: 'testPages/testSocketPage' }
+    'get  /test/socket': { view: 'socket' }
 
 };

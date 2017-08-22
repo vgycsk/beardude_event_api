@@ -3,20 +3,6 @@
 // 活動
 module.exports = {
   attributes: {
-    managers: {
-      collection: 'Manager',
-      via: 'events',
-      dominant: true
-    },
-    groups: {
-      collection: 'Group',
-      via: 'event'
-    },
-    registrations: {
-      collection: 'Registration',
-      via: 'event'
-    },
-
     uniqueName: {
       type: 'string',
       unique: true,

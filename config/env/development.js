@@ -12,9 +12,6 @@
 
 module.exports = {
   connections: {
-    dev: {
-      adapter: 'sails-disk'
-    },
     mongoDev: {
       adapter: 'sails-mongo',
       host: 'localhost',

@@ -7,7 +7,10 @@ module.exports = {
       collection: 'Racer',
       via: 'team'
     },
-
+    racerIds: {
+      type: 'array',
+      defaultsTo: []
+    },
     leader: {
       model: 'Racer'
     },

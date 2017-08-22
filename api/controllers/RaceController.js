@@ -3,9 +3,10 @@
 
 'use strict'
 
+var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'advancingRules', 'registrationIds', 'result']
 var Q = require('q')
 var RaceController = {
-  // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { race: {} }
+  // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: [] }
   create: function (req, res) {
     var result
     Race.create(req.body)
@@ -19,16 +20,30 @@ var RaceController = {
       raceOrder.push(result.id)
       return Event.update({ id: V.id }, { raceOrder: raceOrder })
     })
-    .then(function () { return res.ok({ race: result }) })
+    .then(function () { return res.ok({ races: [result] }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: {}, output: { race: {} }
+  // input: {}, output: { races: [] }
   update: function (req, res) {
     var input = req.body
-    var fields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'advancingRules']
-    var updateObj = dataService.returnUpdateObj(fields, input)
+    var updateObj = dataService.returnUpdateObj(updateFields, input)
     Race.update({ id: input.id }, updateObj)
-    .then(function (raceData) { return res.ok({ race: raceData[0] }) })
+    .then(function (raceData) { return res.ok({ races: raceData }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  // input: [{ id: ID, OBJ }], output: { races: []}
+  updateMulti: function (req, res) {
+    var input = req.body
+    var funcs = []
+    input.map(function (race) {
+      var updateObj = dataService.returnUpdateObj(updateFields, race)
+      funcs.push(Race.update({ id: race.id }, updateObj))
+    })
+    Q.all(funcs)
+    .then(function (output) {
+      var races = output.map(function (data) { return data[0] })
+      return res.ok({ races: races })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: /:id output: { race: { id: ID } }
@@ -88,7 +103,7 @@ var RaceController = {
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: {id: ID, startTime: TIMESTAMP}, output: { race: {} }
+  // input: {id: ID, startTime: TIMESTAMP}, output: { races: [] }
   startRace: function (req, res) {
     var input = req.body
     var raceObj
@@ -102,30 +117,30 @@ var RaceController = {
       return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started' })
     })
     .then(function (raceData) {
-      raceObj = raceData[0]
+      raceObj = raceData
       return Event.update({ id: raceObj.event }, { ongoingRace: input.id })
     })
     .then(function () {
-      sails.sockets.broadcast('rxdata', 'raceupdate', { race: raceObj })
-      return res.ok({ race: raceObj })
+      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceObj })
+      return res.ok({ races: raceObj })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: { id: ID }, output: { race: {} }
+  // input: { id: ID }, output: { races: [] }
   resetRace: function (req, res) {
     var raceObj
     Race.update({ id: req.body.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [] })
     .then(function (raceData) {
-      raceObj = raceData[0]
+      raceObj = raceData
       return Event.update({ id: raceObj.event }, { ongoingRace: -1 })
     })
     .then(function () {
-      sails.sockets.broadcast('rxdata', 'raceupdate', { race: raceObj })
-      return res.ok({ race: raceObj })
+      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceObj })
+      return res.ok({ races: raceObj })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // input: {id: ID, endTime: TIMESTAMP}, output: { race: {} }
+  // input: {id: ID, endTime: TIMESTAMP}, output: { races: [] }
   endRace: function (req, res) {
     var input = req.body
     var raceObj
@@ -135,12 +150,12 @@ var RaceController = {
       return Race.update({ id: input.id }, { endTime: (input.endTime) ? input.endTime : Date.now(), raceStatus: 'ended' })
     })
     .then(function (raceData) {
-      raceObj = raceData[0]
+      raceObj = raceData
       return Event.update({ id: raceObj.event }, { ongoingRace: -1 })
     })
     .then(function () {
-      sails.sockets.broadcast('rxdata', 'raceupdate', { race: raceObj })
-      return res.ok({ race: raceObj })
+      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceObj })
+      return res.ok({ races: raceObj })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -244,7 +259,7 @@ var RaceController = {
     })
     .then(function (raceData) {
       if (!raceData) { return q.resolve(false) }
-      return q.resolve({ race: raceData[0] })
+      return q.resolve({ races: raceData })
     })
     .catch(function (E) {
       console.log('insertRfidToRace e: ', E)
