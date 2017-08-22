@@ -77,6 +77,6 @@ module.exports.routes = {
     //'post /api/team/acceptInvitation': 'TeamController.acceptInvitation',
 
     // Test page
-    'get  /test/socket': { view: 'testPages/socket' }
+    'get  /test/socket': { view: 'socket' }
 
 };

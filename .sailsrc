@@ -1,8 +1,5 @@
 {
   "hooks": {
     "grunt": false
-  },
-  "paths": {
-    "views": ".tmp/views"
   }
 }

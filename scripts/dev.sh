@@ -1,6 +1,4 @@
-rm -rf .tmp/views
-rm -rf .tmp/public/js
-cp -r views .tmp
+mkdir -p .tmp/public/js
 cp -r assets/js .tmp/public
 
 sails lift
