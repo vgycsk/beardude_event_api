@@ -71,8 +71,8 @@ module.exports = {
       defaultsTo: []
     },
     ongoingRace: {
-      type: 'integer',
-      defaultsTo: -1
+      type: 'string',
+      defaultsTo: ''
     },
     resultLatency: {
       type: 'integer',
