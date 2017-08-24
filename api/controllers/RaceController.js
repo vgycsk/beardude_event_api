@@ -175,14 +175,13 @@ var RaceController = {
     })
     .then(function (eventData) {
       if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === '') { return false }
-      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries)
+      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries, eventData.validIntervalMs)
     })
     .then(function (result) { return q.resolve(result) })
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
-  insertRfidToRace: function (raceId, entries) {
-    var validRecordInterval = 10000 // 10secs
+  insertRfidToRace: function (raceId, entries, validIntervalMs) {
     var q = Q.defer()
     Race.findOne({id: raceId})
     .then(function (raceData) {
@@ -195,7 +194,7 @@ var RaceController = {
         if (!recordsHashTable[entry.epc]) {
           recordsHashTable[entry.epc] = [ entry.timestamp ]
           hasEntry = true
-        } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validRecordInterval)) {
+        } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validIntervalMs)) {
           recordsHashTable[entry.epc].push(entry.timestamp)
           hasEntry = true
         }

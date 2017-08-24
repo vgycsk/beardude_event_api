@@ -48,7 +48,7 @@ module.exports = {
   },
   // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace', 'resultLatency']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isTeamRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace', 'resultLatency', 'validIntervalMs']
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
