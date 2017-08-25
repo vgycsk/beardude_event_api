@@ -46,11 +46,6 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
-    isTeamRegistrationOpen: {
-      type: 'boolean',
-      required: true,
-      defaultsTo: false
-    },
     // Doesnt require racer info
     isIndieEvent: {
       type: 'boolean',
@@ -61,9 +56,6 @@ module.exports = {
       type: 'boolean',
       required: true,
       defaultsTo: false
-    },
-    pacerEpc: {
-      type: 'string'
     },
     // [{epc:1 time: ms}, {}, {}]
     rawRfidData: {
@@ -81,6 +73,9 @@ module.exports = {
     validIntervalMs: {
       type: 'integer',
       defaultsTo: 10000
+    },
+    streamingIframe: {
+      type: 'string'
     },
     toJSON: function () {
       return this.toObject()
