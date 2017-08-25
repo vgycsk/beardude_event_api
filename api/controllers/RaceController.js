@@ -3,7 +3,7 @@
 
 'use strict'
 
-var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'advancingRules', 'registrationIds', 'result']
+var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'advancingRules', 'registrationIds', 'raceStatus', 'result']
 var Q = require('q')
 var RaceController = {
   // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: [] }
@@ -35,6 +35,7 @@ var RaceController = {
   updateMulti: function (req, res) {
     var input = req.body
     var funcs = []
+    var toBroadcast = (input[0].raceStatus && input[0].raceStatus === 'submitted')
     input.map(function (race) {
       var updateObj = dataService.returnUpdateObj(updateFields, race)
       funcs.push(Race.update({ id: race.id }, updateObj))
@@ -42,6 +43,7 @@ var RaceController = {
     Q.all(funcs)
     .then(function (output) {
       var races = output.map(function (data) { return data[0] })
+      if (toBroadcast) { sails.sockets.broadcast('rxdata', 'raceend', { races: races }) }
       return res.ok({ races: races })
     })
     .catch(function (E) { return res.badRequest(E) })
@@ -67,113 +69,57 @@ var RaceController = {
     .then(function () { return res.ok({ race: query }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // {id: ID, toAdd: [ID, ID...], toRemove: [ID, ID...]}
-  addRemoveRegs: function (raceObj) {
-    var q = Q.defer()
-    Race.findOne({id: raceObj.id})
-    .then(function (raceData) {
-      var modified
-      var registrationIds = raceData.registrationIds
-      if (raceObj.toRemove && raceObj.toRemove.length > 0) {
-        modified = true
-        raceObj.toRemove.map(function (regId) { registrationIds = dataService.removeFromArray(regId, registrationIds) })
-      }
-      if (raceObj.toAdd && raceObj.toAdd.length > 0) {
-        modified = true
-        raceObj.toAdd.map(function (regId) { registrationIds = dataService.addToArray(regId, registrationIds) })
-      }
-      if (!modified) { return false }
-      return Race.update({ id: raceObj.id }, { registrationIds: registrationIds })
-    })
-    .then(function (V) { return q.resolve(V) })
-    .catch(function (E) { return q.reject(E) })
-    return q.promise
-  },
-  // inpit: { races: [{id: ID, toAdd: [ID, ID, ID], toRemove: ID, ID, ID}, {}, {}] }, output: { races: [] }
-  assignRegsToRaces: function (req, res) {
-    var input = req.body
-    var funcs = []
-
-    input.races.map(function (race) { funcs.push(RaceController.addRemoveRegs(race)) })
-    Q.all(funcs)
-    .then(function (V) {
-      var races = []
-      V.map(function (raceData) { races.push(raceData[0]) })
-      return res.ok({ races: races })
-    })
-    .catch(function (E) { return res.badRequest(E) })
-  },
   // input: {id: ID, startTime: TIMESTAMP}, output: { races: [] }
   startRace: function (req, res) {
     var input = req.body
-    var raceObj
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
       return Event.findOne({ id: raceData.event })
     })
     .then(function (eventData) {
-      if (eventData.ongoingRace && eventData.ongoingRace !== -1) { throw new Error('Another race ongoing') }
+      if (eventData.ongoingRace !== '') { throw new Error('Another race ongoing') }
+      return Event.update({ id: eventData.id }, { ongoingRace: input.id })
+    })
+    .then(function () {
       return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started' })
     })
     .then(function (raceData) {
-      raceObj = raceData
-      return Event.update({ id: raceObj.event }, { ongoingRace: input.id })
-    })
-    .then(function () {
-      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceObj })
-      return res.ok({ races: raceObj })
+      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceData })
+      return res.ok({ races: raceData })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: { id: ID }, output: { races: [] }
   resetRace: function (req, res) {
-    var raceObj
+    var output
     Race.update({ id: req.body.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [] })
     .then(function (raceData) {
-      raceObj = raceData
-      return Event.update({ id: raceObj.event }, { ongoingRace: -1 })
+      output = raceData
+      return Event.update({ id: output[0].event }, { ongoingRace: '' })
     })
     .then(function () {
-      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceObj })
-      return res.ok({ races: raceObj })
+      sails.sockets.broadcast('rxdata', 'raceend', { races: output })
+      return res.ok({ races: output })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: {id: ID, endTime: TIMESTAMP}, output: { races: [] }
   endRace: function (req, res) {
     var input = req.body
-    var raceObj
+    var output
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'started') { throw new Error('Can only stop a started race') }
       return Race.update({ id: input.id }, { endTime: (input.endTime) ? input.endTime : Date.now(), raceStatus: 'ended' })
     })
     .then(function (raceData) {
-      raceObj = raceData
-      return Event.update({ id: raceObj.event }, { ongoingRace: -1 })
+      output = raceData
+      return Event.update({ id: output[0].event }, { ongoingRace: '' })
     })
     .then(function () {
-      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceObj })
-      return res.ok({ races: raceObj })
-    })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // input: { id: ID, result: [], advance: []}, output: { races: [] }
-  submitResult: function (req, res) {
-    var input = req.body
-    var races = []
-    Race.update({id: input.id}, { result: input.result, raceStatus: 'submitted', submitTime: Date.now() })
-    .then(function (raceData) {
-      var funcs = []
-      races.push(raceData[0])
-      input.advance.map(function (obj) { funcs.push(RaceController.addRemoveRegs(obj)) })
-      return Q.all(funcs)
-    })
-    .then(function (V) {
-      V.map(function (raceData) { races.push(raceData[0]) })
-      sails.sockets.broadcast('rxdata', 'raceresult', { races: races })
-      return res.ok({ races: races })
+      sails.sockets.broadcast('rxdata', 'raceend', { races: output })
+      return res.ok({ races: output })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -228,15 +174,14 @@ var RaceController = {
       return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
     })
     .then(function (eventData) {
-      if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === -1) { return false }
-      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries)
+      if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === '') { return false }
+      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries, eventData.validIntervalMs)
     })
     .then(function (result) { return q.resolve(result) })
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
-  insertRfidToRace: function (raceId, entries) {
-    var validRecordInterval = 10000 // 10secs
+  insertRfidToRace: function (raceId, entries, validIntervalMs) {
     var q = Q.defer()
     Race.findOne({id: raceId})
     .then(function (raceData) {
@@ -249,7 +194,7 @@ var RaceController = {
         if (!recordsHashTable[entry.epc]) {
           recordsHashTable[entry.epc] = [ entry.timestamp ]
           hasEntry = true
-        } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validRecordInterval)) {
+        } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validIntervalMs)) {
           recordsHashTable[entry.epc].push(entry.timestamp)
           hasEntry = true
         }

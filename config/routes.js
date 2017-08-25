@@ -29,11 +29,9 @@ module.exports.routes = {
     'post /api/race/update': 'RaceController.update',
     'post /api/race/updateMulti': 'RaceController.updateMulti',
     'get  /api/race/delete/:id': 'RaceController.delete',
-    'post /api/race/assignRegsToRaces': 'RaceController.assignRegsToRaces',
     'post /api/race/start': 'RaceController.startRace',
     'post /api/race/reset': 'RaceController.resetRace',
     'post /api/race/end': 'RaceController.endRace',
-    'post /api/race/submitResult': 'RaceController.submitResult',
 
     // Socket.io
     'get  /api/socket/info': 'RaceController.socket',

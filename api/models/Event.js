@@ -71,12 +71,16 @@ module.exports = {
       defaultsTo: []
     },
     ongoingRace: {
-      type: 'integer',
-      defaultsTo: -1
+      type: 'string',
+      defaultsTo: ''
     },
     resultLatency: {
       type: 'integer',
       defaultsTo: 0
+    },
+    validIntervalMs: {
+      type: 'integer',
+      defaultsTo: 10000
     },
     toJSON: function () {
       return this.toObject()
