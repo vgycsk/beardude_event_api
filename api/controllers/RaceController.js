@@ -175,7 +175,7 @@ var RaceController = {
     })
     .then(function (eventData) {
       if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === '') { return false }
-      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries, eventData.validIntervalMs)
+      return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries, eventData[0].validIntervalMs)
     })
     .then(function (result) { return q.resolve(result) })
     .catch(function (E) { return q.reject(E) })
