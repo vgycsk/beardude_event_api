@@ -26,7 +26,7 @@ describe('/controllers/RaceController', function () {
       sailsMock.mockModel(Race, 'create', mockData)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
       sailsMock.mockModel(Event, 'update', mockEventUpdate)
-      this.timeout(50)
+      this.timeout(90)
       raceController.create(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -34,7 +34,7 @@ describe('/controllers/RaceController', function () {
         Event.findOne.restore()
         Event.update.restore()
         done()
-      }, 30)
+      }, 50)
     })
   })
 
@@ -275,7 +275,6 @@ describe('/controllers/RaceController', function () {
       sandbox.stub(Q, 'defer').callsFake(function () {
         return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
       })
-      sandbox.stub(dataService, 'isValidRaceRecord').callsFake(function () { return true })
       sailsMock.mockModel(Race, 'findOne', mockRace)
       sailsMock.mockModel(Race, 'update', mockRaceUpdate)
       this.timeout(150)
