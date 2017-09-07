@@ -77,6 +77,15 @@ module.exports = {
     streamingIframe: {
       type: 'string'
     },
+    promoVideo: {
+      type: 'string'
+    },
+    streamingStart: {
+      type: 'integer'
+    },
+    rules: {
+      type: 'string'
+    },
     toJSON: function () {
       return this.toObject()
     }
