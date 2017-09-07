@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, max-lines */
-/* global afterEach, beforeEach, dataService, describe, Event, it, Race */
+/* global afterEach, beforeEach, describe, Event, it, Race */
 
 var raceController = require('../../../api/controllers/RaceController.js')
 var sinon = require('sinon')
