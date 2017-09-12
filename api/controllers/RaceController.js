@@ -69,6 +69,32 @@ var RaceController = {
     .then(function () { return res.ok({ race: query }) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // input: {id: EVENT_ID, action: 'start' || 'end' || 'reset'}
+  testRfid: function (req, res) {
+    var input = req.body
+    var query = { id: input.id }
+    return Event.findOne(query)
+    .then(function (eventData) {
+      var updateObj = { ongoingRace: '' }
+      if (input.action === 'start') {
+        if (eventData.ongoingRace !== '') {
+          throw new Error('Another race ongoing')
+        }
+        updateObj = { ongoingRace: 'testRfid', testRfidHashTable: {} }
+      }
+      if (input.action === 'reset') {
+        if (eventData.ongoingRace === 'testRfid') {
+          updateObj = { testRfidHashTable: {} }
+        } else {
+          updateObj = { ongoingRace: '', testRfidHashTable: {} }
+        }
+      }
+      if (input.action === 'end' && eventData.ongoingRace !== 'testRfid') { throw new Error('Not in test Rfid mode') }
+      return Event.update(query, updateObj)
+    })
+    .then(function (eventData) { return res.ok({ event: eventData[0] }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
   // input: {id: ID, startTime: TIMESTAMP}, output: { races: [] }
   startRace: function (req, res) {
     var input = req.body
@@ -124,7 +150,7 @@ var RaceController = {
     .catch(function (E) { return res.badRequest(E) })
   },
   // get: 加入socket.io, post: 控制至尊機, rxdata: 至尊機發送讀卡資料, readerCtrl: 至尊機接收控制及發送狀態
-  // input: { type: STR, payload: {} }
+  // input: { type: STR, payload: { eventId: ID } }
   socketManagement: function (req, res) {
     var input = req.body
     if (input) {
@@ -147,7 +173,10 @@ var RaceController = {
       if (input.type === 'rxdata' && input.event) {
         return RaceController.insertRfid(input.event, input.payload)
         .then(function (data) {
-          if (data) { sails.sockets.broadcast('rxdata', 'raceupdate', data) }
+          if (data) {
+            if (data.races) { sails.sockets.broadcast('rxdata', 'raceupdate', data) }
+            if (data.event) { sails.sockets.broadcast('rxdata', 'testrfid', data) }
+          }
           return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
         })
         .catch(function (E) { return res.badRequest(E) })
@@ -168,13 +197,25 @@ var RaceController = {
   insertRfid: function (eventId, entriesRaw) {
     var q = Q.defer()
     var entries = entriesRaw.map(function (entry) { return { epc: entry.epc, timestamp: parseInt(entry.timestamp) } })
+    var isTest
     Event.findOne({id: eventId})
     .then(function (eventData) {
       if (!eventData) { return false }
-      return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
+      var updateObj = { rawRfidData: eventData.rawRfidData.concat(entries) }
+      if (eventData.ongoingRace === 'testRfid') {
+        var recordsHashTable = eventData.testRfidHashTable
+        isTest = true
+        entries.map(function (entry) {
+          if (!recordsHashTable[entry.epc]) { recordsHashTable[entry.epc] = [] }
+          recordsHashTable[entry.epc].push(entry.timestamp)
+        })
+        updateObj.testRfidHashTable = recordsHashTable
+      }
+      return Event.update({ id: eventId }, updateObj)
     })
     .then(function (eventData) {
       if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === '') { return false }
+      if (isTest) { return {event: eventData[0]} }
       return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries, eventData[0].validIntervalMs)
     })
     .then(function (result) { return q.resolve(result) })
