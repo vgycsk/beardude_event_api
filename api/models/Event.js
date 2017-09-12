@@ -62,6 +62,10 @@ module.exports = {
       type: 'array',
       defaultsTo: []
     },
+    testRfidHashTable: {
+      type: 'json',
+      defaultsTo: {}
+    },
     ongoingRace: {
       type: 'string',
       defaultsTo: ''

@@ -32,6 +32,7 @@ module.exports.routes = {
     'post /api/race/start': 'RaceController.startRace',
     'post /api/race/reset': 'RaceController.resetRace',
     'post /api/race/end': 'RaceController.endRace',
+    'post /api/race/testRfid': 'RaceController.testRfid',
 
     // Socket.io
     'get  /api/socket/info': 'RaceController.socket',
