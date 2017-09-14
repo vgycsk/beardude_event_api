@@ -78,7 +78,7 @@ var RaceController = {
     .then(function (eventData) {
       if (input.action === 'start') {
         if (eventData.ongoingRace !== '') { throw new Error('Another race ongoing') }
-        updateObj = { ongoingRace: 'testRfid', testRfidHashTable: {} }
+        updateObj = { ongoingRace: 'testRfid', testRfidHashTable: {}, slaveEpcStat: {} }
         return dataService.returnSlaveEpcMap({ event: eventData.id })
       }
       if (input.action === 'reset') {
@@ -243,8 +243,8 @@ var RaceController = {
       }
       // Save slave epc read stat, for debugging
       if (isSlave && result.hasEntry) {
-        if (typeof result.slaveEpcStat[epc] === 'undefined') { result.slaveEpcStat[epc] = [] }
-        result.slaveEpcStat[epc].push(result.recordsHashTable[epc].length - 1)
+        if (typeof result.slaveEpcStat[epc] === 'undefined') { result.slaveEpcStat[epc] = {} }
+        result.slaveEpcStat[epc][(result.recordsHashTable[epc].length - 1).toString()] = 1
       }
     })
     return result
