@@ -54,6 +54,9 @@ module.exports = {
     pacerEpc: {
       type: 'string'
     },
+    pacerEpcSlave: {
+      type: 'string'
+    },
     startTime: {
       type: 'integer'
     },
@@ -77,6 +80,16 @@ module.exports = {
     result: {
       type: 'array',
       defaultsTo: []
+    },
+    // {EPC_1_SLAVE: EPC_1, EPC_2_SLAVE: EPC_2 ...}
+    slaveEpcMap: {
+      type: 'json',
+      defaultsTo: {}
+    },
+    // {EPC_1: [index1, index2]}
+    slaveEpcStat: {
+      type: 'json',
+      defaultsTo: {}
     },
     toJSON: function () {
       var obj = this.toObject()

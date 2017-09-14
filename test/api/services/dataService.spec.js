@@ -78,7 +78,7 @@ describe('services/dataService', function () {
       var entry = { epc: 'abc123', timestamp: 1507651200000 }
       var recordsHashTable = { 'abc123': [ 1507651000000, 1507651100000 ], 'abc333': [ 1507651000000, 1507651199000, 1507651199900 ] }
       var intervalInMs = 10000 // 10 secs
-      var actual = dataService.isValidReadTagInterval(entry, recordsHashTable, intervalInMs)
+      var actual = dataService.isValidReadTagInterval(entry.epc, entry.timestamp, recordsHashTable, intervalInMs)
       expect(actual).to.equal(true)
       done()
     })
@@ -86,7 +86,7 @@ describe('services/dataService', function () {
       var entry = { epc: 'abc123', timestamp: 1507651200000 }
       var recordsHashTable = { 'abc123': [ 1507651000000, 1507651100000, 1507651199000 ], 'abc333': [ 1507651000000, 1507651199000, 1507651199900 ] }
       var intervalInMs = 10000 // 10 secs
-      var actual = dataService.isValidReadTagInterval(entry, recordsHashTable, intervalInMs)
+      var actual = dataService.isValidReadTagInterval(entry.epc, entry.timestamp, recordsHashTable, intervalInMs)
       expect(actual).to.equal(false)
       done()
     })

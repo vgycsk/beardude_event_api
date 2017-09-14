@@ -55,12 +55,12 @@ var dataService = {
     if (!dataExist) { raceNotes.push({ race: raceId, note: raceNote }) }
     return raceNotes
   },
-  isValidReadTagInterval: function (entry, recordsHashTable, intervalInMs) {
-    var records = recordsHashTable[entry.epc]
+  isValidReadTagInterval: function (epc, timestamp, recordsHashTable, intervalInMs) {
+    var records = recordsHashTable[epc]
     var lastRecord
     if (records.length === 0) { return true }
     lastRecord = records[records.length - 1]
-    if (entry.timestamp - lastRecord > intervalInMs) { return true }
+    if (timestamp - lastRecord > intervalInMs) { return true }
     return false
   },
   returnAccessCode: function (eventId) {
@@ -89,6 +89,18 @@ var dataService = {
   // 1. lowercase 2. remove special char 3. condense
   sluggify: function (string) {
     return string.toLowerCase().replace(/[^\w\s]/gi, '').replace(/ +/g, '')
+  },
+  // raceObj: { event: ID, (pacerEpcSlave: STR, pacerEpc: STR) }
+  returnSlaveEpcMap: function (raceObj) {
+    var q = Q.defer()
+    var result = {}
+    if (raceObj.pacerEpcSlave) { result[raceObj.pacerEpcSlave] = raceObj.pacerEpc }
+    Registration.find({ event: raceObj.event })
+    .then(function (regData) {
+      regData.map(function (reg) { if (reg.epcSlave) { result[reg.epcSlave] = reg.epc } })
+      return q.resolve(result)
+    })
+    return q.promise
   }
 }
 

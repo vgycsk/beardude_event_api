@@ -269,7 +269,7 @@ describe('/controllers/RaceController', function () {
       var actual
       var raceId = 'abc'
       var entries = [ { epc: 'abc123', timestamp: 1507651100000 } ]
-      var mockRace = { id: 1, recordsHashTable: { abc123: [ 1507651099900 ], aaa: [] } }
+      var mockRace = { id: 1, recordsHashTable: { abc123: [ 1507651099900 ], aaa: [], slaveEpcMap: {} } }
       var mockRaceUpdate = [ { id: 1, recordsHashTable: { abc123: [], aaa: [] } } ]
 
       sandbox.stub(Q, 'defer').callsFake(function () {
@@ -290,7 +290,7 @@ describe('/controllers/RaceController', function () {
       var actual
       var raceId = 'abc'
       var entries = [ { epc: 'abc123', timestamp: 1507651200000 } ]
-      var mockRace = { id: 'abc', raceStatus: 'started', startTime: Date.now() - 10000, recordsHashTable: { abc123: [ 1507651000000 ], aaa: [] } }
+      var mockRace = { id: 'abc', raceStatus: 'started', startTime: Date.now() - 10000, recordsHashTable: { abc123: [ 1507651000000 ], aaa: [] }, slaveEpcMap: {} }
       var mockRaceUpdate = [ { id: 'abc', recordsHashTable: { abc123: [ 1507651000000, 1507651100000 ], aaa: [] } } ]
       sandbox.stub(Q, 'defer').callsFake(function () {
         return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
