@@ -28,6 +28,10 @@ module.exports = {
       type: 'string',
       defaultsTo: ''
     },
+    epcSlave: {
+      type: 'string',
+      defaultsTo: ''
+    },
     paid: {
       type: 'boolean',
       required: true,
