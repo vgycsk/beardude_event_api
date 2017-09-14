@@ -3,7 +3,7 @@
 
 'use strict'
 
-var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'advancingRules', 'registrationIds', 'raceStatus', 'result']
+var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'pacerEpcSlave', 'advancingRules', 'registrationIds', 'raceStatus', 'result']
 var Q = require('q')
 var RaceController = {
   // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: [] }
@@ -73,23 +73,24 @@ var RaceController = {
   testRfid: function (req, res) {
     var input = req.body
     var query = { id: input.id }
+    var updateObj = { ongoingRace: '' }
     return Event.findOne(query)
     .then(function (eventData) {
-      var updateObj = { ongoingRace: '' }
       if (input.action === 'start') {
-        if (eventData.ongoingRace !== '') {
-          throw new Error('Another race ongoing')
-        }
+        if (eventData.ongoingRace !== '') { throw new Error('Another race ongoing') }
         updateObj = { ongoingRace: 'testRfid', testRfidHashTable: {} }
+        return dataService.returnSlaveEpcMap({ event: eventData.id })
       }
       if (input.action === 'reset') {
-        if (eventData.ongoingRace === 'testRfid') {
-          updateObj = { testRfidHashTable: {} }
-        } else {
-          updateObj = { ongoingRace: '', testRfidHashTable: {} }
-        }
+        if (eventData.ongoingRace === 'testRfid') { updateObj = {} }
+        updateObj.testRfidHashTable = {}
+        updateObj.slaveEpcStat = {}
       }
       if (input.action === 'end' && eventData.ongoingRace !== 'testRfid') { throw new Error('Not in test Rfid mode') }
+      return false
+    })
+    .then(function (slaveEpcMapData) {
+      if (slaveEpcMapData) { updateObj.slaveEpcMap = slaveEpcMapData }
       return Event.update(query, updateObj)
     })
     .then(function (eventData) { return res.ok({ event: eventData[0] }) })
@@ -98,17 +99,24 @@ var RaceController = {
   // input: {id: ID, startTime: TIMESTAMP}, output: { races: [] }
   startRace: function (req, res) {
     var input = req.body
+    var eventId
+    var slaveEpcMap
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
-      return Event.findOne({ id: raceData.event })
+      eventId = raceData.event
+      return dataService.returnSlaveEpcMap(raceData)
+    })
+    .then(function (slaveEpcMapData) {
+      slaveEpcMap = slaveEpcMapData
+      return Event.findOne({ id: eventId })
     })
     .then(function (eventData) {
       if (eventData.ongoingRace !== '') { throw new Error('Another race ongoing') }
       return Event.update({ id: eventData.id }, { ongoingRace: input.id })
     })
     .then(function () {
-      return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started' })
+      return Race.update({ id: input.id }, { startTime: (input.startTime) ? input.startTime : Date.now(), raceStatus: 'started', slaveEpcMap: slaveEpcMap })
     })
     .then(function (raceData) {
       sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceData })
@@ -198,29 +206,48 @@ var RaceController = {
     var q = Q.defer()
     var entries = entriesRaw.map(function (entry) { return { epc: entry.epc, timestamp: parseInt(entry.timestamp) } })
     var isTest
+    var validIntervalMs = 1000 // 1s
     Event.findOne({id: eventId})
     .then(function (eventData) {
       if (!eventData) { return false }
-      var updateObj = { rawRfidData: eventData.rawRfidData.concat(entries) }
       if (eventData.ongoingRace === 'testRfid') {
-        var recordsHashTable = eventData.testRfidHashTable
+        var updateObj = RaceController.returnRfidUpdateObj(entries, eventData.testRfidHashTable, eventData.slaveEpcMap, eventData.slaveEpcStat, validIntervalMs)
         isTest = true
-        entries.map(function (entry) {
-          if (!recordsHashTable[entry.epc]) { recordsHashTable[entry.epc] = [] }
-          recordsHashTable[entry.epc].push(entry.timestamp)
-        })
-        updateObj.testRfidHashTable = recordsHashTable
+        if (!updateObj.hasEntry) { return false }
+        return Event.update({ id: eventId }, { testRfidHashTable: updateObj.recordsHashTable, slaveEpcStat: updateObj.slaveEpcStat })
       }
-      return Event.update({ id: eventId }, updateObj)
+      return Event.update({ id: eventId }, { rawRfidData: eventData.rawRfidData.concat(entries) })
     })
     .then(function (eventData) {
       if (!eventData || eventData.length === 0 || eventData[0].ongoingRace === '') { return false }
-      if (isTest) { return {event: eventData[0]} }
+      if (isTest) { return { event: eventData[0] } }
       return RaceController.insertRfidToRace(eventData[0].ongoingRace, entries, eventData[0].validIntervalMs)
     })
     .then(function (result) { return q.resolve(result) })
     .catch(function (E) { return q.reject(E) })
     return q.promise
+  },
+  returnRfidUpdateObj: function (entries, recordsHashTable, slaveEpcMap, slaveEpcStat, validIntervalMs) {
+    var result = { recordsHashTable: recordsHashTable, slaveEpcStat: slaveEpcStat, hasEntry: false }
+    entries.map(function (entry) {
+      var epc = entry.epc
+      var isSlave
+      if (typeof slaveEpcMap[epc] !== 'undefined') {
+        epc = slaveEpcMap[epc]
+        isSlave = true
+      }
+      if (!result.recordsHashTable[epc]) { result.recordsHashTable[epc] = [] }
+      if (dataService.isValidReadTagInterval(epc, entry.timestamp, recordsHashTable, validIntervalMs)) {
+        result.recordsHashTable[epc].push(entry.timestamp)
+        result.hasEntry = true
+      }
+      // Save slave epc read stat, for debugging
+      if (isSlave && result.hasEntry) {
+        if (typeof result.slaveEpcStat[epc] === 'undefined') { result.slaveEpcStat[epc] = [] }
+        result.slaveEpcStat[epc].push(result.recordsHashTable[epc].length - 1)
+      }
+    })
+    return result
   },
   insertRfidToRace: function (raceId, entries, validIntervalMs) {
     var q = Q.defer()
@@ -228,20 +255,9 @@ var RaceController = {
     .then(function (raceData) {
       if (!raceData) { return false }
       if (raceData.raceStatus !== 'started' || Date.now() < raceData.startTime) { return false }
-
-      var recordsHashTable = raceData.recordsHashTable
-      var hasEntry
-      entries.map(function (entry) {
-        if (!recordsHashTable[entry.epc]) {
-          recordsHashTable[entry.epc] = [ entry.timestamp ]
-          hasEntry = true
-        } else if (dataService.isValidReadTagInterval(entry, recordsHashTable, validIntervalMs)) {
-          recordsHashTable[entry.epc].push(entry.timestamp)
-          hasEntry = true
-        }
-      })
-      if (!hasEntry) { return false }
-      return Race.update({id: raceId}, {recordsHashTable: recordsHashTable})
+      var updateObj = RaceController.returnRfidUpdateObj(entries, raceData.recordsHashTable, raceData.slaveEpcMap, raceData.slaveEpcStat, validIntervalMs)
+      if (!updateObj.hasEntry) { return false }
+      return Race.update({id: raceId}, {recordsHashTable: updateObj.recordsHashTable, slaveEpcStat: updateObj.slaveEpcStat})
     })
     .then(function (raceData) {
       if (!raceData) { return q.resolve(false) }
