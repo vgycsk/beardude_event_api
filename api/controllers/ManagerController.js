@@ -1,6 +1,7 @@
 /* global accountService, dataService, Manager */
 
 'use strict'
+var randomstring = require('randomstring')
 
 module.exports = {
   create: function (req, res) {
@@ -64,5 +65,14 @@ module.exports = {
   },
   updatePassword: function (req, res) {
     return accountService.updatePassword(req, res, 'Manager')
+  },
+  resetPassword: function (req, res) {
+    var newPassword = randomstring.generate()
+    Manager.update({ email: req.params.email }, { password: newPassword })
+    .then(function (D) {
+      console.log('new Password: ', newPassword)
+      return res.ok({ manager: { email: req.params.email } })
+    })
+    .catch(function (E) { return res.badRequest(E) })
   }
 }

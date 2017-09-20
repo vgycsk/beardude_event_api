@@ -23,6 +23,7 @@ module.exports.routes = {
     'get  /api/manager/mgmtInfo/:id': 'ManagerController.getManagementInfo',
     'post /api/manager/update': 'ManagerController.update',
     'post /api/manager/updatePassword': 'ManagerController.updatePassword',
+    'get /api/manager/resetPassword/:email': 'ManagerController.resetPassword',
 
     // Race
     'post /api/race/create': 'RaceController.create',
