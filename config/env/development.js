@@ -18,6 +18,9 @@ module.exports = {
       port: 27017
     }
   },
+  cors: {
+    allRoutes: true
+  },
   log: {
     level: 'info'
   },
