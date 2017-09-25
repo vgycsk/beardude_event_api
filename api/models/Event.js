@@ -57,12 +57,7 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
-    // [{epc:1 time: ms}, {}, {}]
-    rawRfidData: {
-      type: 'array',
-      defaultsTo: []
-    },
-    testRfidHashTable: {
+    recordsHashTable: {
       type: 'json',
       defaultsTo: {}
     },

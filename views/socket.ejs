@@ -48,14 +48,65 @@
       var mApiHost = 'http://localhost:1337'
       var mSocketId
       var mEventId
+      var mRaceId
+      var mLogFileName
+      var mValidIntervalMs
+      var mSlaveEpcMap = {}
       var socketio = io(mApiHost);
       var isSingulating = false
+      var log = { recordsHashTable: {}, slaveEpcStat: {} }
+      var getLogFileName = function () {
+        if (mEventId) {
+          mLogFileName = 'event-' + mEventId
+        }
+        if (mRaceId) {
+          mLogFileName = 'race-' + mRaceId
+        }
+        println('LogFileName: ' + mLogFileName)
+      }
       var sendRxData = function (btn) {
-        var tagData = {epc: btn.dataset.epc, timestamp: Date.now()}
-        var output = {type: 'rxdata', event: mEventId, payload: [tagData]}
-        var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(output) }
-        println(JSON.stringify(tagData))
-        fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
+        if (isSingulating) {
+          var readingEpc = btn.dataset.epc
+          var epc = readingEpc
+          var ts = Date.now()
+          var isSlave
+          var isValidRecord = true
+          var lastValueIndex = -1
+          var printResult = ''
+          if (mSlaveEpcMap[readingEpc]) {
+            epc = mSlaveEpcMap[readingEpc]
+            isSlave = true
+          }
+          if (log.recordsHashTable[epc]) {
+            lastValueIndex = log.recordsHashTable[epc].length - 1
+          } else {
+            log.recordsHashTable[epc] = []
+          }
+          if (lastValueIndex > -1 && (ts - log.recordsHashTable[epc][lastValueIndex]) < mValidIntervalMs) {
+            isValidRecord = false
+          }
+          if (isValidRecord) {
+            log.recordsHashTable[epc].push(ts)
+            printResult = 'Valid - epc: ' + readingEpc + '. timestamp: ' + ts;
+            if (isSlave) {
+              lastValueIndex = (log.recordsHashTable[epc].length - 1).toString()
+              if (!log.slaveEpcStat[epc]) { log.slaveEpcStat[epc] = {} }
+              log.slaveEpcStat[epc][lastValueIndex] = 1
+              printResult += '. isSlaveOf: ' + epc
+            }
+          }
+          var output
+          if (typeof mEventId !== 'undefined') {
+            output = {type: 'rxdatatest', event: mEventId, payload: log}
+          }
+          if (typeof mRaceId !== 'undefined') {
+            output = {type: 'rxdata', race: mRaceId, payload: log}
+          }
+          var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(output) }
+          console.log('log: ', log)
+          println(printResult)
+          fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
+        }
       }
       var sendReaderStatus = function (obj) {
         var readerStatus = { modelName: '', modelNumber: '', firmwareVersion: '', antennaCount: 4, isConnected: true, isSingulating: isSingulating, temperature: '40', readerMode: 'dunno', searchMode: 'DualTarget', session: 1 }
@@ -73,9 +124,15 @@
         fetch('/api/socket/impinj?sid=' + mSocketId, {credentials: 'same-origin'})
       })
       socketio.on('startreader', function (args) {
+        console.log('startreader args: ', args)
         isSingulating = true
         println('start reader')
         mEventId = args.eventId
+        mRaceId = args.raceId
+        mValidIntervalMs = args.validIntervalMs
+        mSlaveEpcMap = args.slaveEpcMap || {}
+        log = { recordsHashTable: {}, slaveEpcStat: {} }
+        getLogFileName()
         sendReaderStatus()
       })
       socketio.on('getreaderstatus', function () {
