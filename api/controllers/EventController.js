@@ -22,19 +22,26 @@ module.exports = {
     var query
     Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
+      // Hide event if event is not public and request is not from manager
+      if (!V.isPublic && (!req.session.managerInfo || req.session.managerInfo.id)) {
+        return false
+      }
       query = { event: V.id }
       result.event = V
       return Group.find(query)
     })
     .then(function (V) {
+      if (!V) { return false }
       result.groups = V
       return Race.find(query)
     })
     .then(function (V) {
+      if (!V) { return false }
       result.races = dataService.returnRacesByOrder(V, result.event.raceOrder)
       return Registration.find(query)
     })
     .then(function (V) {
+      if (!V) { return res.notFound() }
       result.registrations = V
       return res.ok(result)
     })
