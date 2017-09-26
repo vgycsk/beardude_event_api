@@ -123,25 +123,22 @@
         println('Connected to socket: ' + mApiHost + '. socket ID: ' + mSocketId)
         fetch('/api/socket/impinj?sid=' + mSocketId, {credentials: 'same-origin'})
       })
-      socketio.on('startreader', function (args) {
-        console.log('startreader args: ', args)
-        isSingulating = true
-        println('start reader')
-        mEventId = args.eventId
-        mRaceId = args.raceId
-        mValidIntervalMs = args.validIntervalMs
-        mSlaveEpcMap = args.slaveEpcMap || {}
-        log = { recordsHashTable: {}, slaveEpcStat: {} }
-        getLogFileName()
-        sendReaderStatus()
-      })
-      socketio.on('getreaderstatus', function () {
-        println('get reader status')
-        sendReaderStatus()
-      })
-      socketio.on('terminatereader', function () {
-        isSingulating = false
-        println('stop reader')
+      socketio.on('readercommand', function (args) {
+        console.log('readercommand args: ', args)
+        if (args.command === 'START') {
+          isSingulating = true
+          println('start reader')
+          mEventId = args.eventId
+          mRaceId = args.raceId
+          mValidIntervalMs = args.validIntervalMs
+          mSlaveEpcMap = args.slaveEpcMap || {}
+          log = { recordsHashTable: {}, slaveEpcStat: {} }
+          getLogFileName()
+        }
+        if (args.command === 'STOP') {
+          isSingulating = false
+          println('stop reader')
+        }
         sendReaderStatus()
       })
     </script>
