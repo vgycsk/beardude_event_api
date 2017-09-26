@@ -23,8 +23,9 @@ module.exports = {
     Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
       // Hide event if event is not public and request is not from manager
-      if (!V.isPublic && (!req.session.managerInfo || req.session.managerInfo.id)) {
-        return false
+      if (!V.isPublic) {
+        if (!req.session.managerInfo) { return false }
+        if (!req.session.managerInfo.id) { return false }
       }
       query = { event: V.id }
       result.event = V
