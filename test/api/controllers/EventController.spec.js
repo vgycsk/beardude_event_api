@@ -33,9 +33,9 @@ describe('/controllers/EventController', function () {
     })
   })
   describe('.getEvents()', function () {
-    it('should return events info', function (done) {
+    it('should return filtered events info to public', function (done) {
       var actual
-      var req = {}
+      var req = { session: {} }
       var res = {
         ok: function (obj) { actual = obj },
         badRequest: function (obj) { actual = obj }
@@ -44,12 +44,70 @@ describe('/controllers/EventController', function () {
         {
           id: 1,
           name: 'new event',
-          nameCht: '新活動'
+          nameCht: '新活動',
+          isPublic: true,
+          isIndieEvent: false
         },
         {
           id: 2,
           name: 'new event 2',
-          nameCht: '新活動 2'
+          nameCht: '新活動 2',
+          isPublic: false,
+          isIndieEvent: false
+        },
+        {
+          id: 2,
+          name: 'new event 3',
+          nameCht: '新活動 3',
+          isPublic: true,
+          isIndieEvent: true
+        }
+      ]
+      var expected = { events: [{
+          id: 1,
+          name: 'new event',
+          nameCht: '新活動',
+          isPublic: true,
+          isIndieEvent: false
+        }] }
+
+      this.timeout(99)
+      sailsMock.mockModel(Event, 'find', mockData)
+      eventController.getEvents(req, res)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(expected)
+        Event.find.restore()
+        done()
+      }, 30)
+    })
+    it('should return all events info to manager', function (done) {
+      var actual
+      var req = { session: { managerInfo: { id: 1, email: 'info@beardude.com' } } }
+      var res = {
+        ok: function (obj) { actual = obj },
+        badRequest: function (obj) { actual = obj }
+      }
+      var mockData = [
+        {
+          id: 1,
+          name: 'new event',
+          nameCht: '新活動',
+          isPublic: true,
+          isIndieEvent: false
+        },
+        {
+          id: 2,
+          name: 'new event 2',
+          nameCht: '新活動 2',
+          isPublic: false,
+          isIndieEvent: false
+        },
+        {
+          id: 2,
+          name: 'new event 3',
+          nameCht: '新活動 3',
+          isPublic: true,
+          isIndieEvent: true
         }
       ]
       var expected = { events: mockData }

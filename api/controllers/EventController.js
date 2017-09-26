@@ -43,7 +43,15 @@ module.exports = {
   // input: na, output: { events: [] }
   getEvents: function (req, res) {
     Event.find({})
-    .then(function (V) { return res.ok({ events: V }) })
+    .then(function (V) {
+      if (req.session.managerInfo && req.session.managerInfo) {
+        return res.ok({ events: V })
+      }
+      var filteredResults = V.filter(function (eventData) {
+        return (eventData.isPublic && !eventData.isIndieEvent)
+      })
+      return res.ok({ events: filteredResults })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: {id: ID}, output: { event: {} }
