@@ -6,7 +6,6 @@ var sinon = require('sinon')
 var sailsMock = require('sails-mock-models')
 var chai = require('chai')
 var expect = chai.expect
-var Q = require('q')
 
 describe('/controllers/RaceController', function () {
   var sandbox

@@ -72,23 +72,27 @@ var RaceController = {
   testRfid: function (req, res) {
     var input = req.body
     var query = { id: input.id }
-    var updateObj = { ongoingRace: '' }
-    var impinjCommand = 'terminatereader'
+    var updateObj
+    var impinjCommand
     var validIntervalMs = 3000
     return Event.findOne(query)
     .then(function (eventData) {
       if (input.action === 'start') {
         if (eventData.ongoingRace !== '' && eventData.ongoingRace !== 'testRfid') { throw new Error('Another race ongoing') }
         updateObj = { ongoingRace: 'testRfid', slaveEpcStat: {}, recordsHashTable: {} }
-        impinjCommand = 'startreader'
+        impinjCommand = 'START'
         return dataService.returnSlaveEpcMap({ event: eventData.id })
       }
       if (input.action === 'reset') {
-        if (eventData.ongoingRace === 'testRfid') { updateObj = { ongoingRace: '' } }
-        updateObj.recordsHashTable = {}
-        updateObj.slaveEpcStat = {}
+        if (eventData.ongoingRace !== '' && eventData.ongoingRace !== 'testRfid') { throw new Error('Another race ongoing') }
+        updateObj = { ongoingRace: '', slaveEpcStat: {}, recordsHashTable: {} }
+        impinjCommand = 'STOP'
       }
-      if (input.action === 'end' && eventData.ongoingRace !== 'testRfid') { throw new Error('Not in test Rfid mode') }
+      if (input.action === 'end') {
+        if (eventData.ongoingRace !== 'testRfid') { throw new Error('Not in test Rfid mode') }
+        updateObj = { ongoingRace: '' }
+        impinjCommand = 'STOP'
+      }
       return false
     })
     .then(function (slaveEpcMapData) {
@@ -96,7 +100,12 @@ var RaceController = {
       return Event.update(query, updateObj)
     })
     .then(function (eventData) {
-      sails.sockets.broadcast('readerCtrl', impinjCommand, { eventId: eventData[0].id, slaveEpcMap: eventData[0].slaveEpcMap, validIntervalMs: validIntervalMs }) // start impinj
+      sails.sockets.broadcast('readerCtrl', 'readercommand', {
+        command: impinjCommand,
+        eventId: eventData[0].id,
+        slaveEpcMap: eventData[0].slaveEpcMap,
+        validIntervalMs: validIntervalMs
+      })
       return res.ok({ event: eventData[0] })
     })
     .catch(function (E) { return res.badRequest(E) })
@@ -131,7 +140,7 @@ var RaceController = {
       return Race.update({ id: input.id }, { startTime: startTime, raceStatus: 'started', validIntervalMs: validIntervalMs })
     })
     .then(function (raceData) {
-      sails.sockets.broadcast('readerCtrl', 'startreader', { raceId: input.id, slaveEpcMap: slaveEpcMap, validIntervalMs: validIntervalMs }) // start impinj
+      sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'START', raceId: input.id, slaveEpcMap: slaveEpcMap, validIntervalMs: validIntervalMs }) // start impinj
       sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceData })
       return res.ok({ races: raceData })
     })
@@ -146,7 +155,7 @@ var RaceController = {
       return Event.update({ id: output[0].event }, { ongoingRace: '' })
     })
     .then(function (eventData) {
-      sails.sockets.broadcast('readerCtrl', 'terminatereader', { eventId: eventData[0].id }) // stop impinj
+      sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STOP', eventId: eventData[0].id }) // stop impinj
       sails.sockets.broadcast('rxdata', 'raceend', { races: output })
       return res.ok({ races: output })
     })
@@ -166,7 +175,7 @@ var RaceController = {
       return Event.update({ id: output[0].event }, { ongoingRace: '' })
     })
     .then(function (eventData) {
-      sails.sockets.broadcast('readerCtrl', 'terminatereader', { eventId: eventData[0].id }) // stop impinj
+      sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STOP', eventId: eventData[0].id }) // stop impinj
       sails.sockets.broadcast('rxdata', 'raceend', { races: output })
       return res.ok({ races: output })
     })
@@ -177,7 +186,7 @@ var RaceController = {
     sails.sockets.join(req.query.sid, 'rxdata')
     sails.sockets.join(req.query.sid, 'rxdatatest')
     sails.sockets.join(req.query.sid, 'readerCtrl')
-    sails.sockets.broadcast('readerCtrl', 'getreaderstatus') // get impinj status
+    sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STATUS' }) // get impinj status
     return res.json({ result: 'join socket_channel_OK' })
   },
   // get: 加入socket.io, post: 發送讀卡資料
@@ -186,28 +195,32 @@ var RaceController = {
     var input = req.body
     if (input) {
       if (input.type === 'rxdata') {
-        if (!input.race) { throw new Error('Race id unspeficied') }
+        if (!input.race) { throw new Error('Race id unspecified') }
         return Race.update({ id: input.race }, input.payload)
         .then(function (raceData) {
+          // Broadcast read tag
           sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceData })
           return res.json({ result: 'type-' + input.type + '_receive_OK' })
         })
         .catch(function (E) { return res.badRequest(E) })
       }
       if (input.type === 'rxdatatest') {
-        if (!input.event) { throw new Error('Event id unspeficied') }
+        if (!input.event) { throw new Error('Event id unspecified') }
         return Event.update({ id: input.event }, input.payload)
         .then(function (eventData) {
-          sails.sockets.broadcast('rxdata', 'testrfid', { event: eventData[0] })
+          // Broadcast test rfid
+          sails.sockets.broadcast('rxdatatest', 'testrfid', { event: eventData[0] })
           return res.json({ result: 'type-' + input.type + '_receive_OK' })
         })
         .catch(function (E) { return res.badRequest(E) })
       }
+      // Broadcast readerstatus
       sails.sockets.broadcast('readerCtrl', input.type, { result: input.payload })
       return res.json({ result: 'type-' + input.type + '_receive_OK', input: input })
     }
-    // rxdata: 至尊機發送讀卡資料, readerCtrl: 至尊機接收控制及發送狀態
+    // 加入socket room. rxdata: 至尊機發送讀卡資料, readerCtrl: 至尊機接收控制及發送狀態
     sails.sockets.join(req.query.sid, 'rxdata')
+    sails.sockets.join(req.query.sid, 'rxdatatest')
     sails.sockets.join(req.query.sid, 'readerCtrl')
     return res.json({ result: 'join socket_channel_OK' })
   },
