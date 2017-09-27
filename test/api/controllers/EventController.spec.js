@@ -64,12 +64,12 @@ describe('/controllers/EventController', function () {
         }
       ]
       var expected = { events: [{
-          id: 1,
-          name: 'new event',
-          nameCht: '新活動',
-          isPublic: true,
-          isIndieEvent: false
-        }] }
+        id: 1,
+        name: 'new event',
+        nameCht: '新活動',
+        isPublic: true,
+        isIndieEvent: false
+      }] }
 
       this.timeout(99)
       sailsMock.mockModel(Event, 'find', mockData)
