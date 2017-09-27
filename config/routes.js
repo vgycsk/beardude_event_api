@@ -37,7 +37,7 @@ module.exports.routes = {
 
     // Socket.io
     'get  /api/socket/info': 'RaceController.socket',
-    '/api/socket/mgmt': 'RaceController.socketManagement',
+    'get  /api/socket/mgmt': 'RaceController.socketManagement',
     '/api/socket/impinj': 'RaceController.socketImpinj',
 
     // Racer 2.4

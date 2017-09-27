@@ -22,19 +22,27 @@ module.exports = {
     var query
     Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
+      // Hide event if event is not public and request is not from manager
+      if (!V.isPublic) {
+        if (!req.session.managerInfo) { return false }
+        if (!req.session.managerInfo.id) { return false }
+      }
       query = { event: V.id }
       result.event = V
       return Group.find(query)
     })
     .then(function (V) {
+      if (!V) { return false }
       result.groups = V
       return Race.find(query)
     })
     .then(function (V) {
+      if (!V) { return false }
       result.races = dataService.returnRacesByOrder(V, result.event.raceOrder)
       return Registration.find(query)
     })
     .then(function (V) {
+      if (!V) { return res.notFound() }
       result.registrations = V
       return res.ok(result)
     })
@@ -43,12 +51,20 @@ module.exports = {
   // input: na, output: { events: [] }
   getEvents: function (req, res) {
     Event.find({})
-    .then(function (V) { return res.ok({ events: V }) })
+    .then(function (V) {
+      if (req.session.managerInfo && req.session.managerInfo) {
+        return res.ok({ events: V })
+      }
+      var filteredResults = V.filter(function (eventData) {
+        return (eventData.isPublic && !eventData.isIndieEvent)
+      })
+      return res.ok({ events: filteredResults })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace', 'resultLatency', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'pacerEpc', 'raceOrder', 'ongoingRace', 'resultLatency', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo', 'registerDesc']
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }

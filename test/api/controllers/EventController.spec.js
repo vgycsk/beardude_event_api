@@ -33,9 +33,9 @@ describe('/controllers/EventController', function () {
     })
   })
   describe('.getEvents()', function () {
-    it('should return events info', function (done) {
+    it('should return filtered events info to public', function (done) {
       var actual
-      var req = {}
+      var req = { session: {} }
       var res = {
         ok: function (obj) { actual = obj },
         badRequest: function (obj) { actual = obj }
@@ -44,12 +44,70 @@ describe('/controllers/EventController', function () {
         {
           id: 1,
           name: 'new event',
-          nameCht: '新活動'
+          nameCht: '新活動',
+          isPublic: true,
+          isIndieEvent: false
         },
         {
           id: 2,
           name: 'new event 2',
-          nameCht: '新活動 2'
+          nameCht: '新活動 2',
+          isPublic: false,
+          isIndieEvent: false
+        },
+        {
+          id: 2,
+          name: 'new event 3',
+          nameCht: '新活動 3',
+          isPublic: true,
+          isIndieEvent: true
+        }
+      ]
+      var expected = { events: [{
+          id: 1,
+          name: 'new event',
+          nameCht: '新活動',
+          isPublic: true,
+          isIndieEvent: false
+        }] }
+
+      this.timeout(99)
+      sailsMock.mockModel(Event, 'find', mockData)
+      eventController.getEvents(req, res)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(expected)
+        Event.find.restore()
+        done()
+      }, 30)
+    })
+    it('should return all events info to manager', function (done) {
+      var actual
+      var req = { session: { managerInfo: { id: 1, email: 'info@beardude.com' } } }
+      var res = {
+        ok: function (obj) { actual = obj },
+        badRequest: function (obj) { actual = obj }
+      }
+      var mockData = [
+        {
+          id: 1,
+          name: 'new event',
+          nameCht: '新活動',
+          isPublic: true,
+          isIndieEvent: false
+        },
+        {
+          id: 2,
+          name: 'new event 2',
+          nameCht: '新活動 2',
+          isPublic: false,
+          isIndieEvent: false
+        },
+        {
+          id: 2,
+          name: 'new event 3',
+          nameCht: '新活動 3',
+          isPublic: true,
+          isIndieEvent: true
         }
       ]
       var expected = { events: mockData }
@@ -67,9 +125,48 @@ describe('/controllers/EventController', function () {
   describe('.getInfo()', function () {
     it('should return event info if found', function (done) {
       var actual
-      var req = { params: { id: '1' } }
+      var req = { params: { id: '1' }, session: {} }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mockData = { id: 1, name: 'new event', nameCht: '新活動', raceOrder: [1, 2] }
+      var mockData = { id: 1, name: 'new event', nameCht: '新活動', raceOrder: [1, 2], isPublic: true }
+      var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
+      var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
+      var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]
+      var expected = { event: mockData, groups: mockGroups, races: mockRaces, registrations: mockRegs }
+      this.timeout(150)
+      sailsMock.mockModel(Event, 'findOne', mockData)
+      sailsMock.mockModel(Group, 'find', mockGroups)
+      sailsMock.mockModel(Race, 'find', mockRaces)
+      sailsMock.mockModel(Registration, 'find', mockRegs)
+      eventController.getInfo(req, res)
+      setTimeout(function () {
+        expect(actual).to.deep.equal(expected)
+        Event.findOne.restore()
+        Group.find.restore()
+        Race.find.restore()
+        Registration.find.restore()
+        done()
+      }, 90)
+    })
+    it('should hide non-public event', function (done) {
+      var actual
+      var req = { params: { id: '1' }, session: {} }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj }, notFound: function () { actual = false } }
+      var mockData = { id: 1, name: 'new event', nameCht: '新活動', raceOrder: [1, 2], isPublic: false }
+      var expected = false
+      this.timeout(150)
+      sailsMock.mockModel(Event, 'findOne', mockData)
+      eventController.getInfo(req, res)
+      setTimeout(function () {
+        expect(actual).to.equal(expected)
+        Event.findOne.restore()
+        done()
+      }, 90)
+    })
+    it('should show non-public event info to manager', function (done) {
+      var actual
+      var req = { params: { id: '1' }, session: { managerInfo: { id: 1, email: 'info@beardude.com' } } }
+      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj }, notFound: function () { actual = false } }
+      var mockData = { id: 1, name: 'new event', nameCht: '新活動', raceOrder: [1, 2], isPublic: false }
       var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
       var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
       var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]

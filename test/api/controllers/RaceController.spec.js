@@ -6,7 +6,6 @@ var sinon = require('sinon')
 var sailsMock = require('sails-mock-models')
 var chai = require('chai')
 var expect = chai.expect
-var Q = require('q')
 
 describe('/controllers/RaceController', function () {
   var sandbox
@@ -219,90 +218,6 @@ describe('/controllers/RaceController', function () {
         Race.findOne.restore()
         Race.update.restore()
         Event.update.restore()
-        done()
-      }, 90)
-    })
-  })
-  describe('.insertRfid()', function () {
-    it('should not insert record if event not found', function (done) {
-      var actual
-      var eventId = 1
-      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
-      sandbox.stub(Q, 'defer').callsFake(function () {
-        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
-      })
-      sailsMock.mockModel(Event, 'findOne')
-      this.timeout(150)
-      raceController.insertRfid(eventId, entriesRaw)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(false)
-        Event.findOne.restore()
-        done()
-      }, 90)
-    })
-    it('should not insert record to race if no ongoing race', function (done) {
-      var actual
-      var eventId = 1
-      var entriesRaw = [ { epc: 'abc123', timestamp: '1507651200000' } ]
-      var mock = { id: 1, ongoingRace: '', rawRfidData: [ { epc: 'aaa', timestamp: '1507651100000' } ] }
-      var mockUpdate = [ mock ]
-      sandbox.stub(Q, 'defer').callsFake(function () {
-        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
-      })
-      sailsMock.mockModel(Event, 'findOne', mock)
-      sailsMock.mockModel(Event, 'update', mockUpdate)
-      this.timeout(150)
-      raceController.insertRfid(eventId, entriesRaw)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(false)
-        Event.findOne.restore()
-        Event.update.restore()
-        done()
-      }, 90)
-    })
-    /*
-
-    */
-  })
-  describe('.insertRfidToRace()', function () {
-    it('should not insert record to race if interval too short', function (done) {
-      var actual
-      var raceId = 'abc'
-      var entries = [ { epc: 'abc123', timestamp: 1507651100000 } ]
-      var mockRace = { id: 1, recordsHashTable: { abc123: [ 1507651099900 ], aaa: [], slaveEpcMap: {} } }
-      var mockRaceUpdate = [ { id: 1, recordsHashTable: { abc123: [], aaa: [] } } ]
-
-      sandbox.stub(Q, 'defer').callsFake(function () {
-        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
-      })
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      sailsMock.mockModel(Race, 'update', mockRaceUpdate)
-      this.timeout(150)
-      raceController.insertRfidToRace(raceId, entries, 100)
-      setTimeout(function () {
-        expect(actual).to.equal(false)
-        Race.findOne.restore()
-        Race.update.restore()
-        done()
-      }, 90)
-    })
-    it('should insert record if valid', function (done) {
-      var actual
-      var raceId = 'abc'
-      var entries = [ { epc: 'abc123', timestamp: 1507651200000 } ]
-      var mockRace = { id: 'abc', raceStatus: 'started', startTime: Date.now() - 10000, recordsHashTable: { abc123: [ 1507651000000 ], aaa: [] }, slaveEpcMap: {} }
-      var mockRaceUpdate = [ { id: 'abc', recordsHashTable: { abc123: [ 1507651000000, 1507651100000 ], aaa: [] } } ]
-      sandbox.stub(Q, 'defer').callsFake(function () {
-        return { resolve: function (obj) { actual = obj }, reject: function (obj) { actual = obj } }
-      })
-      sailsMock.mockModel(Race, 'findOne', mockRace)
-      sailsMock.mockModel(Race, 'update', mockRaceUpdate)
-      this.timeout(150)
-      raceController.insertRfidToRace(raceId, entries, 5000)
-      setTimeout(function () {
-        expect(actual).to.deep.equal({ races: mockRaceUpdate })
-        Race.findOne.restore()
-        Race.update.restore()
         done()
       }, 90)
     })
