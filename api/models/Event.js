@@ -95,6 +95,9 @@ module.exports = {
     rules: {
       type: 'string'
     },
+    registerDesc: {
+      type: 'string'
+    },
     toJSON: function () {
       return this.toObject()
     }
