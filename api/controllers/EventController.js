@@ -56,7 +56,7 @@ module.exports = {
         return res.ok({ events: V })
       }
       var filteredResults = V.filter(function (eventData) {
-        return (eventData.isPublic && !eventData.isIndieEvent)
+        return (eventData.isPublic)
       })
       return res.ok({ events: filteredResults })
     })
