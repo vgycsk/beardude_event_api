@@ -98,6 +98,9 @@ module.exports = {
     registerDesc: {
       type: 'string'
     },
+    announcement: {
+      type: 'string'
+    },
     toJSON: function () {
       return this.toObject()
     }
