@@ -23,7 +23,7 @@
     "standard": "^10.0.2"
   },
   "scripts": {
-    "coverage": "NODE_ENV=test; mkdir -p build/coverage; ./node_modules/istanbul/lib/cli.js cover --include-all-sources -x \"*.js\" -x \"config/**/*.js\" -x \"tasks/**/*.js\" -x \"api/responses/*.js\" -x \"api/models/*.js\" -x \"assets/js/*\" --report lcov --report cobertura --dir build/coverage ./node_modules/mocha/bin/_mocha -- -R spec test/bootstrap.test.js test/**/*.spec.js",
+    "coverage": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover --include-all-sources -x \"*.js\" -x \"config/**/*.js\" -x \"tasks/**/*.js\" -x \"api/responses/*.js\" -x \"api/models/*.js\" -x \"assets/js/*\" --report lcov --report cobertura --dir build/coverage ./node_modules/mocha/bin/_mocha -- -R spec test/bootstrap.test.js test/**/*.spec.js",
     "lint": "./node_modules/standard/bin/cmd.js api/**/*.js config/**/*.js test/**/*.js test/**/*.spec.js",
     "start": "NODE_ENV=production node app.js",
     "dev": "mkdir -p .tmp/public/js; cp -r assets/js .tmp/public; ./node_modules/sails/bin/sails.js lift",
