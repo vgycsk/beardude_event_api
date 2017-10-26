@@ -1,1 +1,0 @@
-./node_modules/.bin/standard "api/**/*.js" "config/**/*.js" "test/**/*.js" "test/**/*.spec.js"
