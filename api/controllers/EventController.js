@@ -12,6 +12,7 @@ module.exports = {
     input.uniqueName = dataService.sluggify(input.name)
     input.startTime = moment(input.startTime).valueOf()
     input.endTime = moment(input.endTime).valueOf()
+		if (input.streamingStart) { input.streamingStart = moment(input.streamingStart).valueOf() }
     Event.create(input)
     .then(function (V) { return res.ok({ event: V }) })
     .catch(function (E) { return res.badRequest(E) })
