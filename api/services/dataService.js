@@ -106,7 +106,7 @@ var dataService = {
   updateRfidRecords: function (newRecordsToAdd, recordsHashTable, slaveEpcStat, slaveEpcMap, validIntervalMs) {
     var result = { recordsHashTable: recordsHashTable, slaveEpcStat: slaveEpcStat }
     newRecordsToAdd.map(function (record) {
-      var epc
+      var epc = record.epc
       var isSlave
       if (typeof slaveEpcMap[record.epc] !== 'undefined') {
         epc = slaveEpcMap[record.epc]
