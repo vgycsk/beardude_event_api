@@ -36,9 +36,10 @@ module.exports.routes = {
     'post /api/race/testRfid': 'RaceController.testRfid',
 
     // Socket.io
-    'get  /api/socket/info': 'RaceController.socket',
+    'get  /api/socket/info': 'RaceController.socketPublic',
     'get  /api/socket/mgmt': 'RaceController.socketManagement',
-    '/api/socket/impinj': 'RaceController.socketImpinj',
+    'get  /api/socket/impinj': 'RaceController.socketImpinj',
+    'post /api/socket/impinj': 'RaceController.socketImpinjReceiver',
 
     // Racer 2.4
     'post /api/racer/activate': 'RacerController.activate',
