@@ -101,6 +101,27 @@ var dataService = {
       return q.resolve(result)
     })
     return q.promise
+  },
+  // Validate new records' interval, determine if slaveEpc, then append into existing recordHashTable
+  updateRfidRecords: function (newRecordsToAdd, recordsHashTable, slaveEpcStat, slaveEpcMap, validIntervalMs) {
+    var result = { recordsHashTable: recordsHashTable, slaveEpcStat: slaveEpcStat }
+    newRecordsToAdd.map(function (record) {
+      var epc = record.epc
+      var isSlave
+      if (typeof slaveEpcMap[record.epc] !== 'undefined') {
+        epc = slaveEpcMap[record.epc]
+        isSlave = true
+      }
+      if (!result.recordsHashTable[epc]) { result.recordsHashTable[epc] = [] } // 還沒資料的話, 新增一個空的array
+      if (dataService.isValidReadTagInterval(epc, record.timestamp, result.recordsHashTable, validIntervalMs)) {
+        result.recordsHashTable[epc].push(record.timestamp)
+        if (isSlave) {  // Save slave epc read stat, for debugging
+          if (typeof result.slaveEpcStat[epc] === 'undefined') { result.slaveEpcStat[epc] = [] }
+          result.slaveEpcStat[epc].push(result.recordsHashTable[epc].length - 1)
+        }
+      }
+    })
+    return result
   }
 }
 

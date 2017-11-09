@@ -71,6 +71,10 @@ module.exports = {
       type: 'string',
       defaultsTo: 'init'
     },
+    recordsRaw: {
+      type: 'array',
+      defaultsTo: []
+    },
     // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
     recordsHashTable: {
       type: 'json',

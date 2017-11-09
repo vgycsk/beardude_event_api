@@ -183,4 +183,58 @@ describe('services/dataService', function () {
       done()
     })
   })
+  describe('.updateRfidRecords()', function () {
+    it('should return expected result from single record', function (done) {
+      var expected = { recordsHashTable: { 'e00000000000000000000001': [1510164230] }, slaveEpcStat: {} }
+      var actual
+      var newRecordsToAdd = [{ epc: 'e00000000000000000000001', timestamp: 1510164230 }]
+      var recordsHashTable = {}
+      var slaveEpcStat = {}
+      var slaveEpcMap = {}
+      var validIntervalMs = 10000
+
+      actual = dataService.updateRfidRecords(newRecordsToAdd, recordsHashTable, slaveEpcStat, slaveEpcMap, validIntervalMs)
+      expect(actual).to.deep.equal(expected)
+      done()
+    })
+    it('should return expected result from multiple records', function (done) {
+      var expected = { recordsHashTable: { 'e00000000000000000000001': [1510164230], 'e00000000000000000000002': [1510164330], 'e00000000000000000000003': [1510164331] }, slaveEpcStat: {} }
+      var actual
+      var newRecordsToAdd = [{ epc: 'e00000000000000000000001', timestamp: 1510164230 }, { epc: 'e00000000000000000000001', timestamp: 1510164332 }, { epc: 'e00000000000000000000002', timestamp: 1510164330 }, { epc: 'e00000000000000000000003', timestamp: 1510164331 }]
+      var recordsHashTable = {}
+      var slaveEpcStat = {}
+      var slaveEpcMap = {}
+      var validIntervalMs = 10000
+
+      actual = dataService.updateRfidRecords(newRecordsToAdd, recordsHashTable, slaveEpcStat, slaveEpcMap, validIntervalMs)
+      expect(actual).to.deep.equal(expected)
+      done()
+    })
+    it('should append new records to existing', function (done) {
+      var expected = { recordsHashTable: { 'e00000000000000000000001': [1510064230, 1510164230], 'e00000000000000000000002': [1510064330, 1510164330], 'e00000000000000000000003': [1510164331] }, slaveEpcStat: {} }
+      var actual
+      var newRecordsToAdd = [{ epc: 'e00000000000000000000001', timestamp: 1510164230 }, { epc: 'e00000000000000000000001', timestamp: 1510164332 }, { epc: 'e00000000000000000000002', timestamp: 1510164330 }, { epc: 'e00000000000000000000003', timestamp: 1510164331 }]
+      var recordsHashTable = { 'e00000000000000000000001': [1510064230], 'e00000000000000000000002': [1510064330] }
+      var slaveEpcStat = {}
+      var slaveEpcMap = {}
+      var validIntervalMs = 10000
+
+      actual = dataService.updateRfidRecords(newRecordsToAdd, recordsHashTable, slaveEpcStat, slaveEpcMap, validIntervalMs)
+      expect(actual).to.deep.equal(expected)
+      done()
+    })
+    it('should apply slave epcs and log it in stats', function (done) {
+      var expected = { recordsHashTable: { 'e00000000000000000000001': [1510064230, 1510164230], 'e00000000000000000000002': [1510064330, 1510164330], 'e00000000000000000000003': [1510164331] }, slaveEpcStat: { 'e00000000000000000000001': [1] } }
+      var actual
+      var newRecordsToAdd = [{ epc: 'e0000000000000000000000a', timestamp: 1510164230 }, { epc: 'e00000000000000000000001', timestamp: 1510164332 }, { epc: 'e00000000000000000000002', timestamp: 1510164330 }, { epc: 'e00000000000000000000003', timestamp: 1510164331 }]
+      var recordsHashTable = { 'e00000000000000000000001': [1510064230], 'e00000000000000000000002': [1510064330] }
+      var slaveEpcStat = {}
+      var slaveEpcMap = { 'e0000000000000000000000a': 'e00000000000000000000001' }
+      var validIntervalMs = 10000
+
+      actual = dataService.updateRfidRecords(newRecordsToAdd, recordsHashTable, slaveEpcStat, slaveEpcMap, validIntervalMs)
+      expect(actual).to.deep.equal(expected)
+      done()
+    })
+  })
 })
