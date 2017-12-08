@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "chai": "*",
-    "ejs": "2.3.4",
+    "ejs": "2.5.7",
     "istanbul": "0.4.5",
     "mocha": "3.4.2",
 		"sails-disk": "*",
