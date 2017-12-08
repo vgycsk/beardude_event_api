@@ -1,4 +1,4 @@
-/* global dataService, Event, Race, sails */
+/* global dataService, Event, Race, Registration, sails */
 
 'use strict'
 
@@ -255,7 +255,8 @@ var RaceController = {
           return res.json({ result: 'type-' + type + '_receive_OK' })
         })
         .catch(function (E) {
-          return res.badRequest(E) })
+          return res.badRequest(E)
+        })
         break
       case 'txdata':
         Race.findOne({ id: payload.raceId })
