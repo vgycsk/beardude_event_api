@@ -43,79 +43,116 @@
       var tags = document.querySelector('.tags')
       var info = document.querySelector('.info')
       for (var i = 0; i < epcs.length; i += 1) {
-         tags.innerHTML += '<div class="tag">' + epcs[i] + ' <button onClick="sendRxData(this)" data-epc=' + epcs[i]+ '>發送</button></div>'
+         tags.innerHTML += '<div class="tag">' + epcs[i] + ' <button onClick="addEntry(this)" data-epc=' + epcs[i]+ '>發送</button></div>'
+      }
+      var controlReaderFromSocketIo = function (args) {
+        println(args)
+        var command = args.command;
+        var eventId = args.eventId;
+        var raceId = args.raceId;
+        var result = controlReader(command, eventId, raceId)
+        return result
+      }
+      var mReader = {
+        isSingulating: false,
+        getIsSingulating: function () {
+          return this.isSingulating
+        },
+        start: function () {
+          this.isSingulating = true
+        },
+        stop: function () {
+          this.isSingulating = false
+        }
       }
       var mApiHost = 'http://localhost:1337'
       var mSocketId
-      var mEventId
-      var mRaceId
-      var mLogFileName
-      var mValidIntervalMs
-      var mSlaveEpcMap = {}
       var socketio = io(mApiHost);
-      var isSingulating = false
-      var log = { recordsHashTable: {}, slaveEpcStat: {} }
-      var getLogFileName = function () {
-        if (mEventId) {
-          mLogFileName = 'event-' + mEventId
+      var mEventId = ''
+      var mRaceId = ''
+      var controlReader = function (command, eventId, raceId) {
+        var rs = {
+          type: 'readerstatus',
+          payload: {
+            message: '',
+            error: false,
+            isSingulating: false,
+            raceId: undefined,
+            debugMode: false,
+            logFile: ''
+          }
         }
-        if (mRaceId) {
-          mLogFileName = 'race-' + mRaceId
+        var isSingulating = mReader.getIsSingulating()
+        if (command === 'STOP') {
+          if (!isSingulating) {
+            rs.payload.message = 'Already stopped. Ignoring stop command'
+            rs.payload.error = true
+          }
+          mReader.stop()
+          mEventId = ''
+          mRaceId = ''
+        } else if (command === 'DEBUG' || command === 'START') {
+          if (isSingulating) {
+            rs.payload.message = 'Already started. Ignoring start command'
+            rs.payload.error = true
+          }
+          if (command === 'DEBUG') {
+            rs.payload.debugMode = true
+          }
+          rs.payload.raceId = raceId
+          rs.payload.message = 'starting reader'
+          mReader.start()
+          mEventId = eventId
+          if (raceId) {
+            mRaceId = raceId
+          }
+        } else if (command === 'STATUS') {
+          rs.payload.message = 'Reader status'
+        } else {
+          rs.payload.message = 'Unknown command: ' + command
         }
-        println('LogFileName: ' + mLogFileName)
+        rs.payload.isSingulating = mReader.getIsSingulating()
+        return rs
       }
-      var sendRxData = function (btn) {
-        if (isSingulating) {
-          var readingEpc = btn.dataset.epc
-          var epc = readingEpc
-          var ts = Date.now()
-          var isSlave
-          var isValidRecord = true
-          var lastValueIndex = -1
-          var printResult = ''
-          if (mSlaveEpcMap[readingEpc]) {
-            epc = mSlaveEpcMap[readingEpc]
-            isSlave = true
-          }
-          if (log.recordsHashTable[epc]) {
-            lastValueIndex = log.recordsHashTable[epc].length - 1
-          } else {
-            log.recordsHashTable[epc] = []
-          }
-          if (lastValueIndex > -1 && (ts - log.recordsHashTable[epc][lastValueIndex]) < mValidIntervalMs) {
-            isValidRecord = false
-          }
-          if (isValidRecord) {
-            log.recordsHashTable[epc].push(ts)
-            printResult = 'Valid - epc: ' + readingEpc + '. timestamp: ' + ts;
-            if (isSlave) {
-              lastValueIndex = (log.recordsHashTable[epc].length - 1).toString()
-              if (!log.slaveEpcStat[epc]) { log.slaveEpcStat[epc] = {} }
-              log.slaveEpcStat[epc][lastValueIndex] = 1
-              printResult += '. isSlaveOf: ' + epc
-            }
-          }
-          var output
-          if (typeof mEventId !== 'undefined') {
-            output = {type: 'rxdatatest', event: mEventId, payload: log}
-          }
-          if (typeof mRaceId !== 'undefined') {
-            output = {type: 'rxdata', race: mRaceId, payload: log}
-          }
-          var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(output) }
-          console.log('log: ', log)
-          println(printResult)
-          fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
+      var addEntry = function (btn) {
+        var record = {
+          epc: undefined,
+          timestamp: Date.now(),
+          ant: 1,
+          signal: '0.0dbm'
+        }
+        var output
+        if (mReader.getIsSingulating()) {
+          record.epc = btn.dataset.epc
+          sendResult(record)
+        } else {
+          println('(not singulating)')
         }
       }
-      var sendReaderStatus = function (obj) {
-        var readerStatus = { modelName: '', modelNumber: '', firmwareVersion: '', antennaCount: 4, isConnected: true, isSingulating: isSingulating, temperature: '40', readerMode: 'dunno', searchMode: 'DualTarget', session: 1 }
-        var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'readerstatus', event: mEventId, payload: readerStatus }) }
-        setTimeout(function () {
-          fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
-        }, 800)
+      var sendResult = function (record) {
+        var txData = {
+          type: '',
+          payload: {
+            eventId: mEventId,
+            raceId: mRaceId,
+            records: []
+          }
+        }
+        var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }}
+        if (mRaceId === '') {
+          txData.type = 'txdata_test'
+        } else {
+          txData.type = 'txdata'
+        }
+        txData.payload.records.push(record)
+        header.body = JSON.stringify(txData)
+        println(txData)
+        fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
       }
-      var println = function (output) { info.innerHTML += '<div>' + output + '</div>' }
+      var println = function (output) {
+        console.log(output)
+        info.innerHTML += '<div>' + JSON.stringify(output) + '</div>'
+      }
 
       println('Try to connect to socket:')
       socketio.on('connect', function () {
@@ -124,22 +161,10 @@
         fetch('/api/socket/impinj?sid=' + mSocketId, {credentials: 'same-origin'})
       })
       socketio.on('readercommand', function (args) {
-        console.log('readercommand args: ', args)
-        if (args.command === 'START') {
-          isSingulating = true
-          println('start reader')
-          mEventId = args.eventId
-          mRaceId = args.raceId
-          mValidIntervalMs = args.validIntervalMs
-          mSlaveEpcMap = args.slaveEpcMap || {}
-          log = { recordsHashTable: {}, slaveEpcStat: {} }
-          getLogFileName()
-        }
-        if (args.command === 'STOP') {
-          isSingulating = false
-          println('stop reader')
-        }
-        sendReaderStatus()
+        var body = controlReaderFromSocketIo(args)
+        var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+        println(body)
+        fetch(mApiHost + '/api/socket/impinj?sid=' + mSocketId, header)
       })
     </script>
     </body>
