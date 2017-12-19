@@ -45,6 +45,10 @@ module.exports = {
     .then(function (V) {
       if (!V) { return res.notFound() }
       result.registrations = V
+      return System.findOne({ key: 0 })
+    })
+    .then(function (V) {
+      result.system = V
       return res.ok(result)
     })
     .catch(function (E) { return res.badRequest(E) })
@@ -71,12 +75,18 @@ module.exports = {
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
     if (updateObj.streamingStart) { updateObj.streamingStart = moment(updateObj.streamingStart).valueOf() }
     if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
+    var eventObj
     Event.update({ id: req.body.id }, updateObj)
     .then(function (V) {
+      eventObj = V[0]
       if (updateObj.resultLatency) {
-        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { event: {resultLatency: V[0].resultLatency} })
+        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { event: {resultLatency: eventObj.resultLatency} })
+        return System.update({ key: 0 }, { resultLatency: updateObj.resultLatency })
       }
-      return res.ok({ event: V[0] })
+      return false
+    })
+    .then(function () {
+      return res.ok({ event: eventObj })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
