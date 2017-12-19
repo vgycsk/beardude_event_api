@@ -98,6 +98,10 @@ module.exports = {
       type: 'json',
       defaultsTo: {}
     },
+    logFile: {
+      type: 'string',
+      defaultsTo: ''
+    },
     toJSON: function () {
       var obj = this.toObject()
 

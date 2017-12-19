@@ -314,28 +314,28 @@ var RaceController = {
   socketImpinjReceiver: function (req, res) {
     var type = req.body.type
     var payload = req.body.payload
-    switch (type) {
-      case 'readerstatus':
+
+    return System.findOne({ key: 0 })
+    .then(function (systemData) {
+      if (type === 'readerstatus') {
         sails.sockets.broadcast('readerCtrl', type, { result: payload })
-        return res.json({ result: 'type-' + type + '_receive_OK' })
-      case 'txdata':
-        return System.findOne({ key: 0 })
-        .then(function (systemData) {
-          // 判斷目前進行中的是測試或特定賽程
-          switch (systemData.ongoingRace) {
-            case '':
-              throw new Error('No ongoing event or race')
-            case 'testRfid':
-              return RaceController.insertTestReadsToEvent(systemData, payload)
-            default:
-              return RaceController.insertOfficalReadsToRace(systemData, payload)
-          }
-        })
-        .then(function (resultObj) { return res.json({ result: 'type-' + type + '_receive_OK' }) })
-        .catch(function (E) { return res.badRequest(E) })
-      default:
-        return res.json({ result: 'type-' + type + '_receive_OK' })
-    }
+        if (systemData.ongoingRace !== '' && payload.logFile) {
+          return Race.update({ id: systemData.ongoingRace }, { logFile: payload.logFile })
+        }
+      } else if (type === 'txdata') {
+        // 判斷目前進行中的是測試或特定賽程
+        switch (systemData.ongoingRace) {
+          case '':
+            throw new Error('No ongoing event or race')
+          case 'testRfid':
+            return RaceController.insertTestReadsToEvent(systemData, payload)
+          default:
+            return RaceController.insertOfficalReadsToRace(systemData, payload)
+        }
+      }
+    })
+    .then(function () { return res.json({ result: 'type-' + type + '_receive_OK' }) })
+    .catch(function (E) { return res.badRequest(E) })
   }
 }
 module.exports = RaceController
