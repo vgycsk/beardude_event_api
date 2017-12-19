@@ -57,10 +57,6 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
-    recordsRaw: {
-      type: 'array',
-      defaultsTo: []
-    },
     recordsHashTable: {
       type: 'json',
       defaultsTo: {}

@@ -57,13 +57,15 @@ module.exports = {
     pacerEpcSlave: {
       type: 'string'
     },
+    // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
+    recordsHashTable: {
+      type: 'json',
+      defaultsTo: {}
+    },
     startTime: {
       type: 'integer'
     },
     endTime: {
-      type: 'integer'
-    },
-    submitTime: {
       type: 'integer'
     },
     // init, started, ended, submitted. (TO DO: paused)
@@ -71,17 +73,23 @@ module.exports = {
       type: 'string',
       defaultsTo: 'init'
     },
-    recordsRaw: {
+    // [ { epc: STR, registration: ID, sum: timeMs, laps: INT, lapRecords: [Ms, Ms], advanceTo: ID } ]
+    result: {
       type: 'array',
       defaultsTo: []
     },
-    // {EPC_1: [time1, time2], EPC_2: [time1, time2]}
-    recordsHashTable: {
-      type: 'json',
-      defaultsTo: {}
+    startTimeWithLatency: {
+      type: 'integer'
     },
-    // [ { epc: STR, registration: ID, sum: timeMs, laps: INT, lapRecords: [Ms, Ms], advanceTo: ID } ]
-    result: {
+    endTimeWithLatency: {
+      type: 'integer'
+    },
+    // init, started, ended, submitted. (TO DO: paused)
+    raceStatusWithLatency: {
+      type: 'string',
+      defaultsTo: 'init'
+    },
+    resultWithLatency: {
       type: 'array',
       defaultsTo: []
     },

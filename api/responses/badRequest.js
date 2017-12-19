@@ -26,6 +26,7 @@ module.exports = function (data) {
   var statusCode = 400
   var viewData = data
 
+  console.log('Bad Request: ', data)
     // Set status code
   res.status(statusCode)
   sails.log.verbose(response, logContent)
