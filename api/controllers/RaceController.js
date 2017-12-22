@@ -159,7 +159,7 @@ var RaceController = {
         sails.sockets.broadcast('rxdatapublic', 'raceupdate', { races: raceDataObj }) // Broadcast read tag
         Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', result: raceResult })
       }, systemData[0].resultLatency)
-      return res.ok({ races: raceDataObj })
+      return res.ok({ races: raceDataObj, system: systemData[0] })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -183,7 +183,7 @@ var RaceController = {
         sails.sockets.broadcast('rxdatapublic', 'raceend', { races: output }) // Broadcast read tag
         Race.update({ id: req.body.id }, { startTimeWithLatency: undefined, endTime: undefined, raceStatusWithLatency: 'init', resultWithLatency: [] })
       }, systemData[0].resultLatency)
-      return res.ok({ races: output })
+      return res.ok({ races: output, system: systemData[0] })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -211,7 +211,7 @@ var RaceController = {
         sails.sockets.broadcast('rxdatapublic', 'raceend', { races: output }) // Broadcast read tag
         Race.update({ id: input.id }, { endTime: endTime, raceStatusWithLatency: 'ended' })
       }, systemData[0].resultLatency)
-      return res.ok({ races: output })
+      return res.ok({ races: output, system: systemData[0] })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -221,19 +221,28 @@ var RaceController = {
     sails.sockets.join(req.query.sid, 'rxdata')
     sails.sockets.join(req.query.sid, 'readerCtrl')
     sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STATUS' }) // get impinj status
-    return res.json({ result: 'join socket_channel_OK' })
+    System.findOne({ key: 0 })
+    .then(function (systemData) {
+      return res.json({ system: systemData })
+    })
   },
   // Public event 加入 rxdatapublic 接收戰況更新. 有別於 rxdata, 這個chatroom可配合latency更新狀態
   socketPublic: function (req, res) {
     sails.sockets.join(req.query.sid, 'rxdatapublic')
-    return res.json({ result: 'join socket_channel_OK' })
+    System.findOne({ key: 0 })
+    .then(function (systemData) {
+      return res.json({ system: systemData })
+    })
   },
   // get: 加入socket.io. rxdata: 至尊機發送讀卡資料, readerCtrl: 至尊機接收控制及發送狀態
   // TO DO: 回傳eventId & isSingulating狀態
   socketImpinj: function (req, res) {
     sails.sockets.join(req.query.sid, 'rxdata')
     sails.sockets.join(req.query.sid, 'readerCtrl')
-    return res.json({ result: 'join socket_channel_OK' })
+    System.findOne({ key: 0 })
+    .then(function (systemData) {
+      return res.json({ system: systemData })
+    })
   },
   // 接收到測試讀取時，將資料塞入event, 並透過socket.io廣播
   insertTestReadsToEvent: function (systemObj, payload) {
