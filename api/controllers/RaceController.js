@@ -326,7 +326,7 @@ var RaceController = {
         // 判斷目前進行中的是測試或特定賽程
         switch (systemData.ongoingRace) {
           case '':
-            throw new Error('No ongoing event or race')
+            return console.log('No ongoing event or race')
           case 'testRfid':
             return RaceController.insertTestReadsToEvent(systemData, payload)
           default:
