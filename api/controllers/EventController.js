@@ -43,11 +43,12 @@ module.exports = {
       return Registration.find(query)
     })
     .then(function (V) {
-      if (!V) { return res.notFound() }
+      if (!V) { return false }
       result.registrations = V
       return System.findOne({ key: 0 })
     })
     .then(function (V) {
+      if (!V) { return res.notFound() }
       result.system = V
       return res.ok(result)
     })

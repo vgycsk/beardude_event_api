@@ -127,10 +127,10 @@ var RaceController = {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
       eventId = raceData.event
       raceDataObj = raceData
-      return Event.findOne({ id: eventId })
+      return System.findOne({ key: 0 })
     })
-    .then(function (eventData) {
-      if (eventData.ongoingRace !== '') { throw new Error('Another race ongoing') }
+    .then(function (systemData) {
+      if (systemData.ongoingRace !== '') { throw new Error('Another race ongoing') }
       return dataService.returnSlaveEpcMap({ event: eventId })
     })
     .then(function (slaveEpcMapData) {
