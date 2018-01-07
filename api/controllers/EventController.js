@@ -70,7 +70,7 @@ module.exports = {
   },
   // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'raceOrder', 'ongoingRace', 'resultLatency', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo', 'registerDesc', 'announcement']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'raceOrder', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo', 'registerDesc', 'announcement']
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
@@ -80,13 +80,15 @@ module.exports = {
     Event.update({ id: req.body.id }, updateObj)
     .then(function (V) {
       eventObj = V[0]
-      if (updateObj.resultLatency) {
-        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { event: {resultLatency: eventObj.resultLatency} })
-        return System.update({ key: 0 }, { resultLatency: updateObj.resultLatency })
+      if (req.body.resultLatency) {
+        return System.update({ key: 0 }, { resultLatency: req.body.resultLatency })
       }
       return false
     })
-    .then(function () {
+    .then(function (systemData) {
+      if (systemData) {
+        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { system: {resultLatency: systemData[0].resultLatency} })
+      }
       return res.ok({ event: eventObj })
     })
     .catch(function (E) { return res.badRequest(E) })

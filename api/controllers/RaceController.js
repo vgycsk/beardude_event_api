@@ -71,46 +71,33 @@ var RaceController = {
   // input: {id: EVENT_ID, action: 'start' || 'end' || 'reset'}
   testRfid: function (req, res) {
     var input = req.body
-    var query = { id: input.id }
-    var updateObj = { ongoingRace: '' }
     var impinjCommand = 'STOP'
-    var systemObj = { ongoingEvent: '', ongoingRace: '', slaveEpcMap: {} }
-
-    return Event.findOne(query)
-    .then(function (eventData) {
-      if (input.action === 'start') {
-        if (eventData.ongoingRace !== '' && eventData.ongoingRace !== 'testRfid') { throw new Error('Another race ongoing') }
-        updateObj = { ongoingRace: 'testRfid', slaveEpcStat: {}, recordsHashTable: {} }
-        impinjCommand = 'START'
-        systemObj = { ongoingEvent: input.id, ongoingRace: 'testRfid' }
-        return dataService.returnSlaveEpcMap({ event: eventData.id })
+    var updateObj = { ongoingRace: '' }
+    return System.findOne({ key: 0 })
+    .then(function (systemData) {
+      switch (input.action) {
+        case 'start':
+          if (systemData.ongoingRace !== '' && systemData.ongoingRace !== 'testRfid') { throw new Error('Another race ongoing') }
+          impinjCommand = 'START'
+          updateObj = { ongoingRace: 'testRfid', recordsHashTable: {}, slaveEpcStat: {} }
+          return dataService.returnSlaveEpcMap({ event: input.id })
+        case 'reset':
+          if (systemData.ongoingRace !== '') { throw new Error('Another race ongoing') }
+          updateObj = { ongoingRace: '', recordsHashTable: {}, slaveEpcStat: {} }
+          break
+        case 'end':
+          if (systemData.ongoingRace !== '' && systemData.ongoingRace !== 'testRfid') { throw new Error('Not in test Rfid mode') }
+          break
       }
-      if (input.action === 'reset') {
-        if (eventData.ongoingRace !== '') { throw new Error('Another race ongoing') }
-        updateObj = { ongoingRace: '', slaveEpcStat: {}, recordsHashTable: {} }
-      }
-      if (input.action === 'end' && eventData.ongoingRace !== '' && eventData.ongoingRace !== 'testRfid') {
-        throw new Error('Not in test Rfid mode')
-      }
-      return false
+      return {}
     })
     .then(function (slaveEpcMapData) {
-      if (slaveEpcMapData) {
-        updateObj.slaveEpcMap = slaveEpcMapData
-        systemObj.slaveEpcMap = slaveEpcMapData
-      }
-      return System.update({ key: 0 }, systemObj)
+      updateObj.slaveEpcMap = slaveEpcMapData
+      return System.update({ key: 0 }, updateObj)
     })
-    .then(function () {
-      return Event.update(query, updateObj)
-    })
-    .then(function (eventData) {
-      sails.sockets.broadcast('readerCtrl', 'readercommand', {
-        command: impinjCommand,
-        eventId: input.id,
-        raceId: ''
-      })
-      return res.ok({ event: eventData[0] })
+    .then(function (systemData) {
+      sails.sockets.broadcast('readerCtrl', 'readercommand', { command: impinjCommand })
+      return res.ok({ system: systemData[0] })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -120,8 +107,7 @@ var RaceController = {
     var eventId
     var raceDataObj
     var startTime = (input.startTime) ? input.startTime : Date.now()
-    var systemObj
-    var raceResult
+    var systemDataObj
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
@@ -134,54 +120,45 @@ var RaceController = {
       return dataService.returnSlaveEpcMap({ event: eventId })
     })
     .then(function (slaveEpcMapData) {
-      systemObj = { ongoingEvent: eventId, ongoingRace: input.id, slaveEpcMap: slaveEpcMapData }
-      return Event.update({ id: eventId }, { ongoingRace: input.id, slaveEpcMap: slaveEpcMapData })
+      return System.update({ key: 0 }, { ongoingRace: input.id, slaveEpcMap: slaveEpcMapData })
     })
-    .then(function () {
+    .then(function (systemData) {
+      systemDataObj = systemData[0]
       return Registration.find({ event: raceDataObj.event })
     })
     .then(function (regData) {
-      raceResult = dataService.returnRaceResult(raceDataObj, regData)
+      var raceResult = dataService.returnRaceResult(raceDataObj, regData)
       return Race.update({ id: input.id }, { startTime: startTime, raceStatus: 'started', result: raceResult })
     })
     .then(function (raceData) {
-      raceDataObj = raceData
-      return System.update({ key: 0 }, systemObj)
-    })
-    .then(function (systemData) {
-      sails.sockets.broadcast('readerCtrl', 'readercommand', {
-        command: 'START',
-        eventId: eventId,
-        raceId: input.id
-      }) // start impinj
+      sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'START' })
       sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceDataObj }) // send race data to clients
       setTimeout(function () {
         sails.sockets.broadcast('rxdatapublic', 'raceupdate', { races: raceDataObj }) // Broadcast read tag
-        Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', result: raceResult })
-      }, systemData[0].resultLatency)
-      return res.ok({ races: raceDataObj, system: systemData[0] })
+        Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', resultWithLatency: raceData[0].result })
+        System.update({ key: 0 }, { ongoingRaceWithLatency: input.id })
+      }, systemDataObj.resultLatency)
+      return res.ok({ races: raceData, system: systemDataObj })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: { id: ID }, output: { races: [] }
   // DANGER: Hide this function on console app. requires additional step to reveal this
   resetRace: function (req, res) {
+    var input = req.body
     var output
-
-    Race.update({ id: req.body.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [], slaveEpcStat: {} })
+    Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [], slaveEpcStat: {} })
     .then(function (raceData) {
       output = raceData
-      return Event.update({ id: output[0].event }, { ongoingRace: '' })
-    })
-    .then(function () {
-      return System.update({ key: 0 }, { ongoingEvent: '', ongoingRace: '', slaveEpcMap: {} })
+      return System.update({ key: 0 }, { ongoingRace: '' })
     })
     .then(function (systemData) {
       sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STOP' }) // stop impinj
       sails.sockets.broadcast('rxdata', 'raceend', { races: output })
       setTimeout(function () {
         sails.sockets.broadcast('rxdatapublic', 'raceend', { races: output }) // Broadcast read tag
-        Race.update({ id: req.body.id }, { startTimeWithLatency: undefined, endTime: undefined, raceStatusWithLatency: 'init', resultWithLatency: [] })
+        Race.update({ id: input.id }, { startTimeWithLatency: undefined, endTime: undefined, raceStatusWithLatency: 'init', resultWithLatency: [] })
+        System.update({ key: 0 }, { ongoingRaceWithLatency: '' })
       }, systemData[0].resultLatency)
       return res.ok({ races: output, system: systemData[0] })
     })
@@ -199,10 +176,7 @@ var RaceController = {
     })
     .then(function (raceData) {
       output = raceData
-      return Event.update({ id: output[0].event }, { ongoingRace: '' })
-    })
-    .then(function () {
-      return System.update({ key: 0 }, { ongoingEvent: '', ongoingRace: '', slaveEpcMap: {} })
+      return System.update({ key: 0 }, { ongoingRace: '' })
     })
     .then(function (systemData) {
       sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STOP' }) // stop impinj
@@ -210,13 +184,14 @@ var RaceController = {
       setTimeout(function () {
         sails.sockets.broadcast('rxdatapublic', 'raceend', { races: output }) // Broadcast read tag
         Race.update({ id: input.id }, { endTime: endTime, raceStatusWithLatency: 'ended' })
+        System.update({ key: 0 }, { ongoingRaceWithLatency: '' })
       }, systemData[0].resultLatency)
       return res.ok({ races: output, system: systemData[0] })
     })
     .catch(function (E) { return res.badRequest(E) })
   },
   // Console app 加入socket.io
-  // TO DO: 回傳eventId & isSingulating狀態
+  // TO DO: 回傳 isSingulating狀態
   socketManagement: function (req, res) {
     sails.sockets.join(req.query.sid, 'rxdata')
     sails.sockets.join(req.query.sid, 'readerCtrl')
@@ -245,17 +220,13 @@ var RaceController = {
     })
   },
   // 接收到測試讀取時，將資料塞入event, 並透過socket.io廣播
-  insertTestReadsToEvent: function (systemObj, payload) {
+  insertTestReads: function (systemData, payload) {
     var q = Q.defer()
-
-    Event.findOne({ id: systemObj.ongoingEvent })
-    .then(function (eventData) {
-      var result = dataService.updateRfidRecords(payload.records, eventData.recordsHashTable, eventData.slaveEpcStat, eventData.slaveEpcMap, systemObj.testIntervalMs)
-      return Event.update({ id: payload.eventId }, { recordsHashTable: result.recordsHashTable, slaveEpcStat: result.slaveEpcStat })
-    })
-    .then(function (eventData) {
-      sails.sockets.broadcast('rxdata', 'testrfid', { event: eventData[0] }) // Broadcast read tag
-      return q.resolve({ event: eventData[0] })
+    var result = dataService.updateRfidRecords(payload.records, systemData.recordsHashTable, systemData.slaveEpcStat, systemData.slaveEpcMap, systemData.testIntervalMs)
+    System.update({ key: 0 }, { recordsHashTable: result.recordsHashTable, slaveEpcStat: result.slaveEpcStat })
+    .then(function (systemData) {
+      sails.sockets.broadcast('rxdata', 'testrfid', { system: systemData[0] }) // Broadcast read tag
+      return q.resolve({ event: systemData[0] })
     })
     .catch(function (E) {
       return q.reject(E)
@@ -263,7 +234,7 @@ var RaceController = {
     return q.promise
   },
   // 接收到正式比賽資料時，將資料塞入race, 並透過socket.io廣播
-  insertOfficalReadsToRace: function (systemObj, payload) {
+  insertOfficalReads: function (systemObj, payload) {
     var q = Q.defer()
     var raceObj
     var resultObj
@@ -332,14 +303,14 @@ var RaceController = {
           return Race.update({ id: systemData.ongoingRace }, { logFile: payload.logFile })
         }
       } else if (type === 'txdata') {
-        // 判斷目前進行中的是測試或特定賽程
+        // 判斷目前進行中的是測試或特定賽程, 分別將比賽讀取資料存到system或race
         switch (systemData.ongoingRace) {
           case '':
             return console.log('No ongoing event or race')
           case 'testRfid':
-            return RaceController.insertTestReadsToEvent(systemData, payload)
+            return RaceController.insertTestReads(systemData, payload)
           default:
-            return RaceController.insertOfficalReadsToRace(systemData, payload)
+            return RaceController.insertOfficalReads(systemData, payload)
         }
       }
     })

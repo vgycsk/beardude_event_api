@@ -7,11 +7,11 @@ module.exports = {
       type: 'integer',
       defaultsTo: 0
     },
-    ongoingEvent: {
+    ongoingRace: {
       type: 'string',
       defaultsTo: ''
     },
-    ongoingRace: {
+    ongoingRaceWithLatency: {
       type: 'string',
       defaultsTo: ''
     },
@@ -23,13 +23,24 @@ module.exports = {
       type: 'integer',
       defaultsTo: 10000
     },
+    // {EPC_1_SLAVE: EPC_1, EPC_2_SLAVE: EPC_2 ...}
     slaveEpcMap: {
       type: 'json',
       defaultsTo: {}
     },
+    // 比賽發佈延遲. 預設30秒
     resultLatency: {
       type: 'integer',
-      defaultsTo: 0
+      defaultsTo: 30000
+    },
+    recordsHashTable: {
+      type: 'json',
+      defaultsTo: {}
+    },
+    // {EPC_1: [index1, index2]}
+    slaveEpcStat: {
+      type: 'json',
+      defaultsTo: {}
     }
   }
 }
