@@ -43,8 +43,13 @@ module.exports = {
       return Registration.find(query)
     })
     .then(function (V) {
-      if (!V) { return res.notFound() }
+      if (!V) { return false }
       result.registrations = V
+      return System.findOne({ key: 0 })
+    })
+    .then(function (V) {
+      if (!V) { return res.notFound() }
+      result.system = V
       return res.ok(result)
     })
     .catch(function (E) { return res.badRequest(E) })
@@ -65,18 +70,26 @@ module.exports = {
   },
   // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'raceOrder', 'ongoingRace', 'resultLatency', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo', 'registerDesc', 'announcement']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'raceOrder', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo', 'registerDesc', 'announcement']
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
     if (updateObj.streamingStart) { updateObj.streamingStart = moment(updateObj.streamingStart).valueOf() }
     if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
+    var eventObj
     Event.update({ id: req.body.id }, updateObj)
     .then(function (V) {
-      if (updateObj.resultLatency) {
-        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { event: {resultLatency: V[0].resultLatency} })
+      eventObj = V[0]
+      if (req.body.resultLatency) {
+        return System.update({ key: 0 }, { resultLatency: req.body.resultLatency })
       }
-      return res.ok({ event: V[0] })
+      return false
+    })
+    .then(function (systemData) {
+      if (systemData) {
+        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { system: {resultLatency: systemData[0].resultLatency} })
+      }
+      return res.ok({ event: eventObj })
     })
     .catch(function (E) { return res.badRequest(E) })
   },

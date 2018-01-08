@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, max-lines */
-/* global afterEach, beforeEach, describe, Event, it, Race */
+/* global afterEach, beforeEach, dataService, describe, Event, it, Race */
 
 var raceController = require('../../../api/controllers/RaceController.js')
 var sinon = require('sinon')
@@ -121,16 +121,19 @@ describe('/controllers/RaceController', function () {
       var req = { body: { id: 1, startTime: 1507651200000 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
+      var mockSystem = { id: 1, key: 0, ongoingRace: 3 }
       var mockEvent = { id: 1, ongoingRace: 3 }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
+      sailsMock.mockModel(System, 'findOne', mockSystem)
       this.timeout(150)
       raceController.startRace(req, res)
       setTimeout(function () {
         expect(actual.message).to.equal('Another race ongoing')
         Race.findOne.restore()
         Event.findOne.restore()
+        System.findOne.restore()
         done()
       }, 90)
     })
@@ -139,13 +142,19 @@ describe('/controllers/RaceController', function () {
       var req = { body: { id: 1, startTime: 1507651200000 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
-      var mockEvent = { id: 1, ongoingRace: '' }
+      var mockEvent = { id: 1, ongoingRace: '', slaveEpcMap: {} }
+      var mockSystem = { id: 1, ongoingRace: '' }
+      var mockSystemUpdate = [{ id: 1, ongoingRace: 1 }]
       var mockupdate = [ { id: 1, raceStatus: 'started' } ]
-      var expected = { races: [{ id: 1, raceStatus: 'started' }] }
+      var expected = { races: [{ id: 1, raceStatus: 'started' }], system: { id: 1, ongoingRace: 1 } }
 
+      sandbox.stub(dataService, 'returnSlaveEpcMap').callsFake(function () { return {} })
+      sandbox.stub(dataService, 'returnRaceResult').callsFake(function () { return [] })
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'update', mockupdate)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
+      sailsMock.mockModel(System, 'findOne', mockSystem)
+      sailsMock.mockModel(System, 'update', mockSystemUpdate)
       this.timeout(150)
       raceController.startRace(req, res)
       setTimeout(function () {
@@ -153,6 +162,8 @@ describe('/controllers/RaceController', function () {
         Race.findOne.restore()
         Race.update.restore()
         Event.findOne.restore()
+        System.findOne.restore()
+        System.update.restore()
         done()
       }, 90)
     })
@@ -164,12 +175,16 @@ describe('/controllers/RaceController', function () {
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
       var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
       var mockEvent = { id: 1, ongoingRace: '' }
+      var mockSystem = { id: 1, ongoingRace: 1 }
+      var mockSystemUpdate = [{ id: 1, ongoingRace: '' }]
       var mockupdate = [ { id: 1, raceStatus: 'init' } ]
-      var expected = { races: [{ id: 1, raceStatus: 'init' }] }
+      var expected = { races: [{ id: 1, raceStatus: 'init' }], system: { id: 1, ongoingRace: '' } }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'update', mockupdate)
       sailsMock.mockModel(Event, 'findOne', mockEvent)
+      sailsMock.mockModel(System, 'findOne', mockSystem)
+      sailsMock.mockModel(System, 'update', mockSystemUpdate)
       sailsMock.mockModel(Event, 'update', [mockEvent])
       this.timeout(150)
       raceController.resetRace(req, res)
@@ -179,6 +194,8 @@ describe('/controllers/RaceController', function () {
         Race.update.restore()
         Event.findOne.restore()
         Event.update.restore()
+        System.findOne.restore()
+        System.update.restore()
         done()
       }, 90)
     })
@@ -206,11 +223,13 @@ describe('/controllers/RaceController', function () {
       var mock = { id: 1, raceStatus: 'started', group: { event: 1 } }
       var mockEvent = { id: 1, ongoingRace: '' }
       var mockupdate = [ { id: 1, raceStatus: 'ended' } ]
-      var expected = { races: mockupdate }
+      var mockSystemUpdate = [{ id: 1, key: 0, ongoingEvent: '', ongoingRace: '', resultLatency: 0, slaveEpcMap: {}, testIntervalMs: 1000, validIntervalMs: 10000 }]
+      var expected = { races: mockupdate, system: mockSystemUpdate[0] }
 
       sailsMock.mockModel(Race, 'findOne', mock)
       sailsMock.mockModel(Race, 'update', mockupdate)
       sailsMock.mockModel(Event, 'update', [mockEvent])
+      sailsMock.mockModel(System, 'update', mockSystemUpdate)
       this.timeout(150)
       raceController.endRace(req, res)
       setTimeout(function () {
@@ -218,6 +237,7 @@ describe('/controllers/RaceController', function () {
         Race.findOne.restore()
         Race.update.restore()
         Event.update.restore()
+        System.update.restore()
         done()
       }, 90)
     })

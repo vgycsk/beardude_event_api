@@ -140,12 +140,14 @@ describe('/controllers/EventController', function () {
       var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
       var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
       var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]
-      var expected = { event: mockData, groups: mockGroups, races: mockRaces, registrations: mockRegs }
+      var mockSystem = { id: 1, key: 0, ongoingEvent: '', ongoingRace: '', resultLatency: 0, slaveEpcMap: {}, testIntervalMs: 1000, validIntervalMs: 10000 }
+      var expected = { event: mockData, groups: mockGroups, races: mockRaces, registrations: mockRegs, system: mockSystem }
       this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       sailsMock.mockModel(Group, 'find', mockGroups)
       sailsMock.mockModel(Race, 'find', mockRaces)
       sailsMock.mockModel(Registration, 'find', mockRegs)
+      sailsMock.mockModel(System, 'findOne', mockSystem)
       eventController.getInfo(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -153,6 +155,7 @@ describe('/controllers/EventController', function () {
         Group.find.restore()
         Race.find.restore()
         Registration.find.restore()
+        System.findOne.restore()
         done()
       }, 90)
     })
@@ -179,12 +182,14 @@ describe('/controllers/EventController', function () {
       var mockGroups = [ { id: 1, name: 'Group1', nameCht: '組別1' }, { id: 2, name: 'Group2', nameCht: '組別2' } ]
       var mockRaces = [ { id: 1, name: 'Race1', nameCht: 'Race1' }, { id: 2, name: 'Race2', nameCht: 'Race2' } ]
       var mockRegs = [ { id: 1, name: 'reg1' }, { id: 2, name: 'reg' } ]
-      var expected = { event: mockData, groups: mockGroups, races: mockRaces, registrations: mockRegs }
+      var mockSystem = { id: 1, key: 0, ongoingEvent: '', ongoingRace: '', resultLatency: 0, slaveEpcMap: {}, testIntervalMs: 1000, validIntervalMs: 10000 }
+      var expected = { event: mockData, groups: mockGroups, races: mockRaces, registrations: mockRegs, system: mockSystem }
       this.timeout(150)
       sailsMock.mockModel(Event, 'findOne', mockData)
       sailsMock.mockModel(Group, 'find', mockGroups)
       sailsMock.mockModel(Race, 'find', mockRaces)
       sailsMock.mockModel(Registration, 'find', mockRegs)
+      sailsMock.mockModel(System, 'findOne', mockSystem)
       eventController.getInfo(req, res)
       setTimeout(function () {
         expect(actual).to.deep.equal(expected)
@@ -192,6 +197,7 @@ describe('/controllers/EventController', function () {
         Group.find.restore()
         Race.find.restore()
         Registration.find.restore()
+        System.findOne.restore()
         done()
       }, 90)
     })

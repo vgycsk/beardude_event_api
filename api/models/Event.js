@@ -57,36 +57,6 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
-    recordsRaw: {
-      type: 'array',
-      defaultsTo: []
-    },
-    recordsHashTable: {
-      type: 'json',
-      defaultsTo: {}
-    },
-    // {EPC_1_SLAVE: EPC_1, EPC_2_SLAVE: EPC_2 ...}
-    slaveEpcMap: {
-      type: 'json',
-      defaultsTo: {}
-    },
-    // {EPC_1: [index1, index2]}
-    slaveEpcStat: {
-      type: 'json',
-      defaultsTo: {}
-    },
-    ongoingRace: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    resultLatency: {
-      type: 'integer',
-      defaultsTo: 0
-    },
-    validIntervalMs: {
-      type: 'integer',
-      defaultsTo: 10000
-    },
     streamingIframe: {
       type: 'string'
     },

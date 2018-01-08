@@ -48,9 +48,7 @@
       var controlReaderFromSocketIo = function (args) {
         println(args)
         var command = args.command;
-        var eventId = args.eventId;
-        var raceId = args.raceId;
-        var result = controlReader(command, eventId, raceId)
+        var result = controlReader(command)
         return result
       }
       var mReader = {
@@ -68,16 +66,13 @@
       var mApiHost = 'http://localhost:1337'
       var mSocketId
       var socketio = io(mApiHost);
-      var mEventId = ''
-      var mRaceId = ''
-      var controlReader = function (command, eventId, raceId) {
+      var controlReader = function (command) {
         var rs = {
           type: 'readerstatus',
           payload: {
             message: '',
             error: false,
             isSingulating: false,
-            raceId: undefined,
             debugMode: false,
             logFile: ''
           }
@@ -89,8 +84,6 @@
             rs.payload.error = true
           }
           mReader.stop()
-          mEventId = ''
-          mRaceId = ''
         } else if (command === 'DEBUG' || command === 'START') {
           if (isSingulating) {
             rs.payload.message = 'Already started. Ignoring start command'
@@ -99,13 +92,8 @@
           if (command === 'DEBUG') {
             rs.payload.debugMode = true
           }
-          rs.payload.raceId = raceId
           rs.payload.message = 'starting reader'
           mReader.start()
-          mEventId = eventId
-          if (raceId) {
-            mRaceId = raceId
-          }
         } else if (command === 'STATUS') {
           rs.payload.message = 'Reader status'
         } else {
@@ -131,19 +119,12 @@
       }
       var sendResult = function (record) {
         var txData = {
-          type: '',
+          type: 'txdata',
           payload: {
-            eventId: mEventId,
-            raceId: mRaceId,
             records: []
           }
         }
         var header = { method: 'post', credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }}
-        if (mRaceId === '') {
-          txData.type = 'txdata_test'
-        } else {
-          txData.type = 'txdata'
-        }
         txData.payload.records.push(record)
         header.body = JSON.stringify(txData)
         println(txData)
