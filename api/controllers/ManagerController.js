@@ -11,9 +11,6 @@ module.exports = {
     .then(function (result) { return res.ok({manager: result}) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  getAccountInfo: function (req, res) {
-    return res.ok({manager: req.session.managerInfo})
-  },
   getGeneralInfo: function (req, res) {
     Manager.findOne({id: req.params.id})
     .then(function (V) { return res.ok({ manager: V.toJSON() }) })
