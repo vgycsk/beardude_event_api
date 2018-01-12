@@ -42,7 +42,7 @@ var RaceController = {
     Q.all(funcs)
     .then(function (output) {
       var races = output.map(function (data) { return data[0] })
-      if (toBroadcast) { sails.sockets.broadcast('rxdata', 'raceend', { races: races }) }
+      if (toBroadcast) { sails.sockets.broadcast('rxdata', 'raceupdate', { races: races }) }
       return res.ok({ races: races })
     })
     .catch(function (E) { return res.badRequest(E) })
@@ -104,41 +104,43 @@ var RaceController = {
   // input: {id: ID, startTime: TIMESTAMP}, output: { races: [] }
   startRace: function (req, res) {
     var input = req.body
-    var eventId
-    var raceDataObj
     var startTime = (input.startTime) ? input.startTime : Date.now()
-    var systemDataObj
+    var output = {}
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
-      eventId = raceData.event
-      raceDataObj = raceData
+      output.races = [raceData]
       return System.findOne({ key: 0 })
     })
     .then(function (systemData) {
       if (systemData.ongoingRace !== '') { throw new Error('Another race ongoing') }
-      return dataService.returnSlaveEpcMap({ event: eventId })
+      return dataService.returnSlaveEpcMap({ event: output.races[0].event })
     })
     .then(function (slaveEpcMapData) {
       return System.update({ key: 0 }, { ongoingRace: input.id, slaveEpcMap: slaveEpcMapData })
     })
     .then(function (systemData) {
-      systemDataObj = systemData[0]
-      return Registration.find({ event: raceDataObj.event })
+      output.system = systemData[0]
+      return Registration.find({ event: output.races[0].event })
     })
     .then(function (regData) {
-      var raceResult = dataService.returnRaceResult(raceDataObj, regData)
+      var raceResult = dataService.returnRaceResult(output.races[0], regData)
       return Race.update({ id: input.id }, { startTime: startTime, raceStatus: 'started', result: raceResult })
     })
     .then(function (raceData) {
+      output.races = raceData
       sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'START' })
-      sails.sockets.broadcast('rxdata', 'raceupdate', { races: raceDataObj }) // send race data to clients
+      sails.sockets.broadcast('rxdata', 'raceupdate', output) // send race data to clients
       setTimeout(function () {
-        sails.sockets.broadcast('rxdatapublic', 'raceupdate', { races: raceDataObj }) // Broadcast read tag
-        Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', resultWithLatency: raceData[0].result })
+        output.races[0].startTimeWithLatency = startTime
+        output.races[0].raceStatusWithLatency = 'started'
+        output.races[0].resultWithLatency = output.races[0].result
+        output.system.ongoingRaceWithLatency = input.id
+        sails.sockets.broadcast('rxdatapublic', 'raceupdate', output) // Broadcast read tag
+        Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', resultWithLatency: output.race.result })
         System.update({ key: 0 }, { ongoingRaceWithLatency: input.id })
-      }, systemDataObj.resultLatency)
-      return res.ok({ races: raceData, system: systemDataObj })
+      }, output.system.resultLatency)
+      return res.ok(output)
     })
     .catch(function (E) { return res.badRequest(E) })
   },
@@ -146,47 +148,55 @@ var RaceController = {
   // DANGER: Hide this function on console app. requires additional step to reveal this
   resetRace: function (req, res) {
     var input = req.body
-    var output
+    var output = {}
     Race.update({ id: input.id }, { startTime: undefined, endTime: undefined, raceStatus: 'init', recordsHashTable: {}, result: [], slaveEpcStat: {} })
     .then(function (raceData) {
-      output = raceData
+      output.races = raceData
       return System.update({ key: 0 }, { ongoingRace: '' })
     })
     .then(function (systemData) {
+      output.system = systemData[0]
       sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STOP' }) // stop impinj
-      sails.sockets.broadcast('rxdata', 'raceend', { races: output })
+      sails.sockets.broadcast('rxdata', 'raceupdate', output)
       setTimeout(function () {
-        sails.sockets.broadcast('rxdatapublic', 'raceend', { races: output }) // Broadcast read tag
-        Race.update({ id: input.id }, { startTimeWithLatency: undefined, endTime: undefined, raceStatusWithLatency: 'init', resultWithLatency: [] })
+        output.races[0].startTimeWithLatency = null
+        output.races[0].endTime = null
+        output.races[0].raceStatusWithLatency = 'init'
+        output.races[0].resultWithLatency = []
+        output.system.ongoingRaceWithLatency = ''
+        sails.sockets.broadcast('rxdatapublic', 'raceupdate', output) // Broadcast read tag
+        Race.update({ id: input.id }, { startTimeWithLatency: null, endTime: null, raceStatusWithLatency: 'init', resultWithLatency: [] })
         System.update({ key: 0 }, { ongoingRaceWithLatency: '' })
       }, systemData[0].resultLatency)
-      return res.ok({ races: output, system: systemData[0] })
+      return res.ok(output)
     })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: {id: ID, endTime: TIMESTAMP}, output: { races: [] }
   endRace: function (req, res) {
     var input = req.body
-    var output
     var endTime = (input.endTime) ? input.endTime : Date.now()
+    var output = {}
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'started') { throw new Error('Can only stop a started race') }
       return Race.update({ id: input.id }, { endTime: endTime, raceStatus: 'ended' })
     })
     .then(function (raceData) {
-      output = raceData
+      output.races = raceData
       return System.update({ key: 0 }, { ongoingRace: '' })
     })
     .then(function (systemData) {
+      output.system = systemData[0]
       sails.sockets.broadcast('readerCtrl', 'readercommand', { command: 'STOP' }) // stop impinj
-      sails.sockets.broadcast('rxdata', 'raceend', { races: output })
+      sails.sockets.broadcast('rxdata', 'raceupdate', output)
       setTimeout(function () {
-        sails.sockets.broadcast('rxdatapublic', 'raceend', { races: output }) // Broadcast read tag
-        Race.update({ id: input.id }, { endTime: endTime, raceStatusWithLatency: 'ended' })
+        output.system.ongoingRaceWithLatency = ''
+        sails.sockets.broadcast('rxdatapublic', 'raceupdate', output) // Broadcast read tag
+        Race.update({ id: input.id }, { endTimeWithLatency: endTime, raceStatusWithLatency: 'ended' })
         System.update({ key: 0 }, { ongoingRaceWithLatency: '' })
       }, systemData[0].resultLatency)
-      return res.ok({ races: output, system: systemData[0] })
+      return res.ok(output)
     })
     .catch(function (E) { return res.badRequest(E) })
   },
