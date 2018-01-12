@@ -45,15 +45,8 @@ module.exports.routes = {
     'post /api/reg/create': 'RegistrationController.create',
     'post /api/reg/update': 'RegistrationController.update',
     'get  /api/reg/delete/:id': 'RegistrationController.delete',
-//    'post /api/reg/updateRaceNote': 'RegistrationController.updateRaceNote',
-//    'post  /api/regs': 'RegistrationController.getRegs',
-//    'post /api/reg/signupAndCreate': 'RegistrationController.signupAndCreate',
-//    'post /api/reg/signupAndCreateTeam': 'RegistrationController.signupAndCreateTeam',
+    'post /api/reg/signupAndCreateTeam': 'RegistrationController.signupAndCreateTeam',
     //'post /api/reg/updatePayment': 'RegistrationController.updatePayment',
-    //'post /api/reg/requestRefund': 'RegistrationController.requestRefund',
-    //'post /api/reg/refunded': 'RegistrationController.refunded',
-//    'post /api/reg/confirm': 'RegistrationController.confirmRegistration',
-//    'post /api/reg/admitRacer': 'RegistrationController.admitRacer',
 
     // Team
     'post /api/team/create': 'TeamController.create',
