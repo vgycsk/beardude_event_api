@@ -52,7 +52,13 @@ var TeamController = {
     // {id: ID}
   update: function (req, res) {
     var input = req.body
-    var fields = ['name', 'nameCht', 'description', 'url', 'leader']
+    var fields = [
+      'name',
+      'nameCht',
+      'description',
+      'url',
+      'leader'
+    ]
     var queryObj = { id: input.id }
 
     Team.findOne(queryObj)

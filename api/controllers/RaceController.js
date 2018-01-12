@@ -2,7 +2,21 @@
 
 'use strict'
 
-var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'pacerEpcSlave', 'advancingRules', 'registrationIds', 'raceStatus', 'result']
+var updateFields = [
+  'name',
+  'nameCht',
+  'laps',
+  'racerNumberAllowed',
+  'isEntryRace',
+  'isFinalRace',
+  'requirePacer',
+  'pacerEpc',
+  'pacerEpcSlave',
+  'advancingRules',
+  'registrationIds',
+  'raceStatus',
+  'result'
+]
 var Q = require('q')
 var RaceController = {
   // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: [] }

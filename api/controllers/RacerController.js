@@ -62,7 +62,23 @@ module.exports = {
   // Update fields speficied in returnUpdateFields function
   update: function (req, res, modelName) {
     var input = req.body
-    var fields = ['email', 'phone', 'firstName', 'lastName', 'nickName', 'birthday', 'idNumber', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive']
+    var fields = [
+      'email',
+      'phone',
+      'firstName',
+      'lastName',
+      'nickName',
+      'birthday',
+      'idNumber',
+      'password',
+      'street',
+      'district',
+      'city',
+      'county',
+      'country',
+      'zip',
+      'isActive'
+    ]
     var updateObj = dataService.returnUpdateObj(fields, input)
 
     if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
