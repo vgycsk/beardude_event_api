@@ -10,10 +10,11 @@ module.exports = {
   activate: function (req, res) {
     var input = req.body
     var token = req.params.token
+
     if (input.password !== input.confirmPassword) {
       return res.badRequest('Password and confirm-password mismatch')
     }
-    Racer.findOne({ input: input.id })
+    Racer.findOne({ id: input.id })
     .then(function (V) {
       if (V.autoToken !== token) { throw new Error('Token incorrect') }
       return Racer.update({ id: input.id }, { password: input.password, authToken: '' })
@@ -59,6 +60,9 @@ module.exports = {
 
     if (req.session.racerInfo) {
       return res.badRequest('Already logged in')
+    }
+    if (!input.password || input.password === '') {
+      return res.badRequest('Password required')
     }
     return Racer.findOne({ email: input.email })
     .then(function (V) {

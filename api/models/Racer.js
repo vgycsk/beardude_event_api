@@ -18,9 +18,7 @@ module.exports = {
       unique: true
     },
     phone: {
-      type: 'string',
-      required: true,
-      unique: true
+      type: 'string'
     },
     firstName: {
       type: 'string',
