@@ -1,10 +1,22 @@
-/* global accountService, dataService, Racer */
+/* global dataService, Racer */
 
 'use strict'
 
+var randomstring = require('randomstring')
+var codeLength = 36
+
 module.exports = {
+  // input: ?racer=ID&token=STRING
   activate: function (req, res) {
-    return accountService.activate(req, res, 'Racer')
+    var id = req.params.racer
+    var token = req.params.token
+    Racer.findOne({ id: id })
+    .then(function (V) {
+      if (V.autoToken !== token) { throw new Error('Token incorrect') }
+      req.session.racerInfo = V
+      return res.ok({ racer: V.toJSON() })
+    })
+    .catch(function (E) { return res.badRequest(E) })
   },
   getRacers: function (req, res) {
     Racer.find({})
@@ -13,21 +25,26 @@ module.exports = {
   },
   create: function (req, res) {
     var input = req.body
-    if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
-    return accountService.create(input, 'Racer')
+
+    if (input.password) {
+      if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
+    } else {
+      input.autoToken = randomstring.generate({ length: codeLength })
+    }
+    return Racer.create(input)
     .then(function (result) { return res.ok({ racer: result.toJSON() }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // Get insensitive account info
   getGeneralInfo: function (req, res) {
-    Racer.findOne({ id: req.params.id }).populate('team')
-    .then(function (V) { return res.ok({ racer: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive, team: V.team} }) })
+    Racer.findOne({ id: req.params.id })
+    .then(function (V) { return res.ok({ racer: V.toJSON() }) })
     .catch(function (E) { return res.badRequest(E) })
   },
     // Get complete account info
   getManagementInfo: function (req, res) {
-    Racer.findOne({id: req.params.id}).populate('registrations').populate('team')
-    .then(function (modelData) { return res.ok({ racer: modelData.toJSON() }) })
+    Racer.findOne({id: req.params.id})
+    .then(function (V) { return res.ok({ racer: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   login: function (req, res) {
@@ -37,7 +54,7 @@ module.exports = {
     if (req.session.racerInfo) {
       return res.badRequest('Already logged in')
     }
-    return Racer.findOne({ email: input.email }).populate('team')
+    return Racer.findOne({ email: input.email })
     .then(function (V) {
       result = V
       return dataService.authenticate(input.password, result.password)
@@ -56,11 +73,8 @@ module.exports = {
     delete req.session.racerInfo
     return res.ok({ message: 'Logged out' })
   },
-  reissuePassword: function (req, res) {
-    return accountService.reissuePassword(req, res, 'Racer')
-  },
   // Update fields speficied in returnUpdateFields function
-  update: function (req, res, modelName) {
+  update: function (req, res) {
     var input = req.body
     var fields = [
       'email',
@@ -69,27 +83,29 @@ module.exports = {
       'lastName',
       'nickName',
       'birthday',
-      'idNumber',
-      'password',
-      'street',
-      'district',
-      'city',
-      'county',
-      'country',
-      'zip',
-      'isActive'
+      'password'
     ]
     var updateObj = dataService.returnUpdateObj(fields, input)
 
-    if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
+    if (input.password && input.password !== input.confirmPassword) {
+      return res.badRequest('Password and confirm-password mismatch')
+    }
     Racer.update({id: input.id}, updateObj)
-    .then(function () {
-      return Racer.findOne({id: input.id}).populate('registrations').populate('team')
-    })
+    .then(function () { return Racer.findOne({id: input.id}) })
     .then(function (V) { return res.ok({racer: V.toJSON()}) })
     .catch(function (E) { return res.badRequest(E) })
   },
+  // input { id: ID, password: str, confirmPassword: str }
   updatePassword: function (req, res) {
-    return accountService.updatePassword(req, res, 'Racer')
+    var input = req.body
+    if (input.password !== input.confirmPassword) {
+      return res.badRequest('Password and confirm-password mismatch')
+    }
+    Racer.update({ id: input.id }, { password: input.password, authToken: '' })
+    .then(function (V) {
+      req.session.racerInfo = V[0]
+      return res.ok({ racer: V[0].toJSON() })
+    })
+    .catch(function (E) { return res.badRequest(E) })
   }
 }

@@ -18,6 +18,7 @@ module.exports = {
       type: 'string',
       required: true
     },
+    // indie race 專用
     name: {
       type: 'string'
     },

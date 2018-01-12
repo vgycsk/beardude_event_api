@@ -5,25 +5,22 @@ var bcrypt = require('bcrypt-nodejs')
 // 選手資料
 module.exports = {
   attributes: {
-    registrations: {
-      collection: 'Registration',
-      via: 'racer'
-    },
-    registrationIds: {
-      type: 'array',
-      defaultsTo: []
-    },
     team: {
       model: 'Team'
     },
-
+    authToken: {
+      type: 'string'
+      defaultsTo: ''
+    },
     email: {
       type: 'email',
       required: true,
       unique: true
     },
     phone: {
-      type: 'string'
+      type: 'string',
+      required: true,
+      unique: true
     },
     firstName: {
       type: 'string',
@@ -36,49 +33,19 @@ module.exports = {
     nickName: {
       type: 'string'
     },
-        // YYYY/MM/DD
-    birthday: {
-      type: 'string'
-    },
-    idNumber: {
-      type: 'string'
+    isTeamLeader: {
+      type: 'boolean',
+      defaultsTo: false
     },
     password: {
       type: 'string'
-    },
-    street: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    district: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    city: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    county: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    country: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    zip: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    isActive: {
-      type: 'boolean',
-      required: true,
-      defaultsTo: false
     },
     toJSON: function () {
       var obj = this.toObject()
 
       delete obj.password
+      delete obj.email
+      delete obj.phone
       delete obj.createdAt
       delete obj.updatedAt
       return obj
