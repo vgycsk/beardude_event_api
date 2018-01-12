@@ -52,15 +52,7 @@ module.exports = {
       required: true,
       defaultsTo: true
     },
-    requiresPaymentOnReg: {
-      type: 'boolean',
-      required: true,
-      defaultsTo: false
-    },
     streamingIframe: {
-      type: 'string'
-    },
-    promoVideo: {
       type: 'string'
     },
     streamingStart: {

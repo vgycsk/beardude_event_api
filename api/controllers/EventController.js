@@ -70,7 +70,7 @@ module.exports = {
   },
   // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
-    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'requiresPaymentOnReg', 'raceOrder', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'promoVideo', 'registerDesc', 'announcement']
+    var fields = ['name', 'nameCht', 'startTime', 'endTime', 'lapDistance', 'location', 'isRegistrationOpen', 'isPublic', 'isIndieEvent', 'raceOrder', 'validIntervalMs', 'streamingIframe', 'rules', 'streamingStart', 'registerDesc', 'announcement']
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
@@ -87,7 +87,7 @@ module.exports = {
     })
     .then(function (systemData) {
       if (systemData) {
-        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { system: {resultLatency: systemData[0].resultLatency} })
+        sails.sockets.broadcast('rxdata', 'eventlatencyupdate', { system: systemData[0] })
       }
       return res.ok({ event: eventObj })
     })
