@@ -14,28 +14,6 @@ var returnSessionObj = function (req, modelName) {
 }
 
 module.exports = {
-  // Activate account by setting user-input password, and set isActive=true
-  activate: function (req, res, modelName) {
-    var input = req.body
-    var ModelObj = returnModelObj(modelName)
-    var sessionObj = returnSessionObj(req, modelName)
-
-    if (input.password === '') { return res.badRequest('Please enter password') }
-    if (input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }
-    if (!sessionObj) { return res.badRequest('Please login') }
-    return ModelObj.update({ email: sessionObj.email }, { password: input.password, isActive: true })
-      .then(function (modelData) {
-        if (modelName === 'Manager') {
-          req.session.managerInfo = modelData[0]
-        } else {
-          req.session.racerInfo = modelData[0]
-        }
-        return res.ok({ message: 'Account activated', email: sessionObj.email })
-      })
-      .catch(function (E) {
-        return res.badRequest(E)
-      })
-  },
     // Create account. When omitting password, set account inactive and require user to activate
   create: function (inputRaw, modelName) {
     var modelDataObj

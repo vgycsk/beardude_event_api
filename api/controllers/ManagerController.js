@@ -16,7 +16,7 @@ module.exports = {
   },
   getGeneralInfo: function (req, res) {
     Manager.findOne({id: req.params.id})
-    .then(function (V) { return res.ok({manager: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive}}) })
+    .then(function (V) { return res.ok({ manager: V.toJSON() }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   getManagers: function (req, res) {
@@ -66,8 +66,7 @@ module.exports = {
       'city',
       'county',
       'country',
-      'zip',
-      'isActive'
+      'zip'
     ]
     var query = {id: input.id}
     var updateObj = dataService.returnUpdateObj(fields, input)
