@@ -1,4 +1,4 @@
-/* global dataService, Racer, Team */
+/* global dataService, Team */
 
 'use strict'
 
@@ -7,8 +7,37 @@ var TeamController = {
   // input: {name: STR, desc: STR}
   createTeam: function (input) {
     var q = Q.defer()
-
-    Team.create(input)
+    var isValid = function (name) {
+      var qq = Q.defer()
+      Team.count({ name: name })
+      .then(function (teamLen) {
+        if (teamLen === 0) { return q.resolve(true) }
+        return q.resolve(false)
+      })
+      return qq.promise
+    }
+    var returnName = function (name) {
+      var qq = Q.defer()
+      var result = name
+      var appendix = 0
+      isValid(result)
+      .then(function (res) {
+        if (!res) {
+          appendix += 1
+          result += ' - ' + appendix
+          return isValid(result)
+        }
+        return q.resolve(result)
+      })
+      return qq.promise
+    }
+    returnName(input.name)
+    .then(function (teamName) {
+      return Team.create({
+        name: teamName,
+        desc: input.desc
+      })
+    })
     .then(function (teamData) { return q.resolve(teamData) })
     .catch(function (E) { return q.reject(E) })
     return q.promise
@@ -17,16 +46,6 @@ var TeamController = {
   create: function (req, res) {
     TeamController.createTeam(req.body)
     .then(function (teamData) { return res.ok({ team: teamData }) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // /:ID
-  delete: function (req, res) {
-    Racer.count({ team: req.params.id })
-    .then(function (racerLen) {
-      if (racerLen > 0) { throw new Error('Cannot delete a team that contains racers') }
-      return Team.destroy({ id: req.params.id })
-    })
-    .then(function () { return res.ok({ team: req.params.id }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: /:name  output: { team: {} }

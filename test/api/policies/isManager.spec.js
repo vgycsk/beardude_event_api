@@ -17,12 +17,11 @@ describe('policies/isActiveManager', function () {
     sandbox.restore()
   })
 
-  it('should return true if the user is an active manager', function (done) {
+  it('should return true if the user is a manager', function (done) {
     var req = {
       session: {
         managerInfo: {
-          email: 'info@beardude.com',
-          isActive: true
+          email: 'info@beardude.com'
         }
       }
     }
@@ -33,8 +32,7 @@ describe('policies/isActiveManager', function () {
     }
     var mockData = {
       id: 1,
-      email: 'info@beardude.com',
-      isActive: true
+      email: 'info@beardude.com'
     }
     var callbackFunc = function () {
       return 'verified'
@@ -72,39 +70,5 @@ describe('policies/isActiveManager', function () {
     assert.equal(actual, expected)
     Manager.findOne.restore()
     done()
-  })
-
-  it('should return forbidden if manager is updated inActive', function (done) {
-    var req = {
-      session: {
-        managerInfo: {
-          email: 'info@beardude.com',
-          isActive: true
-        }
-      }
-    }
-    var actual
-    var res = {
-      forbidden: function (str) {
-        actual = str
-      }
-    }
-    var mockData = {
-      email: 'info@beardude.com',
-      isActive: false
-    }
-    var callbackFunc = function () {
-      return 'verified'
-    }
-    var expected = 'Unauthorized'
-
-    this.timeout(90)
-    sailsMock.mockModel(Manager, 'findOne', mockData)
-    isActiveManager(req, res, callbackFunc)
-    setTimeout(function () {
-      assert.equal(actual, expected)
-      Manager.findOne.restore()
-      done()
-    }, 50)
   })
 })

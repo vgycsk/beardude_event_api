@@ -41,17 +41,6 @@ module.exports.policies = {
 //      socket: '',
 //      socketImpinj: ''
     },
-    RacerController: {
-//        activate: '',
-//        create: '',
-//        getGeneralInfo: '',
-        getManagementInfo: ['isRacerSelf', 'isManager', 'isTeamLeader'],
-//        getRacers: '',
-        login: 'isNotLoggedIn',
-//        logout: '',
-//        reissuePassword: ''
-        update: ['isRacerSelf', 'isManager', 'isTeamLeader']
-    },
     RegistrationController: {
 //        createReg: 'isManager',
 //        signupAndCreate: '',

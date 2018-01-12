@@ -41,19 +41,6 @@ module.exports.routes = {
     'get  /api/socket/impinj': 'RaceController.socketImpinj',
     'post /api/socket/impinj': 'RaceController.socketImpinjReceiver',
 
-    // Racer
-    'post /api/racer/activate': 'RacerController.activate',
-    'post /api/racer/create': 'RacerController.create',
-    'get  /api/racer/info/:id': 'RacerController.getGeneralInfo',
-    'get  /api/racer/getRacers': 'RacerController.getRacers',
-    'get  /api/racer/mgmtInfo/:id': 'RacerController.getManagementInfo',
-    'post /api/racer/login': 'RacerController.login',
-    'post /api/racer/logout': 'RacerController.logout',
-    'get  /api/racer/reissuePassword/:id': 'RacerController.reissuePassword',
-    'post /api/racer/update': 'RacerController.update',
-    'post /api/racer/updatePassword': 'RacerController.updatePassword',
-    // Reset password
-
     // Registration
     'post /api/reg/create': 'RegistrationController.create',
     'post /api/reg/update': 'RegistrationController.update',
