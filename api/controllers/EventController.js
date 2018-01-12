@@ -77,14 +77,13 @@ module.exports = {
       'endTime',
       'lapDistance',
       'location',
-      'isRegistrationOpen',
-      'isPublic',
-      'isIndieEvent',
       'raceOrder',
-      'validIntervalMs',
+      'isPublic',
+      'isRegistrationOpen',
+      'isIndieEvent',
       'streamingIframe',
-      'rules',
       'streamingStart',
+      'rules',
       'registerDesc',
       'announcement'
     ]

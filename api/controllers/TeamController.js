@@ -21,9 +21,9 @@ var TeamController = {
   },
   // /:ID
   delete: function (req, res) {
-    Racer.find({ team: req.params.id })
-    .then(function (V) {
-      if (V.length > 0) { throw new Error('Cannot delete a team that contains racers') }
+    Racer.count({ team: req.params.id })
+    .then(function (racerLen) {
+      if (racerLen > 0) { throw new Error('Cannot delete a team that contains racers') }
       return Team.destroy({ id: req.params.id })
     })
     .then(function () { return res.ok({ team: req.params.id }) })
