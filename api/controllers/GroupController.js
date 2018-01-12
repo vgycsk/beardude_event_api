@@ -29,8 +29,7 @@ module.exports = {
     var fields = [
       'name',
       'nameCht',
-      'racerNumberAllowed',
-      'rules'
+      'racerNumberAllowed'
     ]
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     Group.update({id: req.body.id}, updateObj)
