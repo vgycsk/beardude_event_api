@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-/* global afterEach, beforeEach, describe, it, Manager, Racer */
+/* global afterEach, beforeEach, describe, it, Manager */
 
 var accountService = require('../../../api/services/accountService.js')
 var bcrypt = require('bcrypt-nodejs')

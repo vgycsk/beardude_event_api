@@ -19,7 +19,7 @@ var TeamController = {
           result += ' - ' + appendix
           return returnName(result)
         }
-        return r.resolve(result)
+        return qq.resolve(result)
       })
       return qq.promise
     }

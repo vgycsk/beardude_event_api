@@ -141,12 +141,12 @@ describe('/controllers/RaceController', function () {
       var actual
       var req = { body: { id: 1, startTime: 1507651200000 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 1, raceStatus: 'init', group: { event: 1 }}
+      var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
       var mockEvent = { id: 1, ongoingRace: '', slaveEpcMap: {} }
       var mockSystem = { id: 1, ongoingRace: '' }
       var mockSystemUpdate = [{ id: 1, ongoingRace: 1 }]
       var mockupdate = [ { id: 1, raceStatus: 'started' } ]
-      var expected = { races: [{ id: 1, raceStatus: 'started', raceStatusWithLatency: "started", startTimeWithLatency: 1507651200000 }], system: { id: 1, ongoingRace: 1, ongoingRaceWithLatency: 1 } }
+      var expected = { races: [{ id: 1, raceStatus: 'started', raceStatusWithLatency: 'started', startTimeWithLatency: 1507651200000 }], system: { id: 1, ongoingRace: 1, ongoingRaceWithLatency: 1 } }
 
       sandbox.stub(dataService, 'returnSlaveEpcMap').callsFake(function () { return {} })
       sandbox.stub(dataService, 'returnRaceResult').callsFake(function () { return [] })

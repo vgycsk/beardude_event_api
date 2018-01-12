@@ -5,7 +5,6 @@ var teamController = require('../../../api/controllers/TeamController.js')
 var sailsMock = require('sails-mock-models')
 var chai = require('chai')
 var expect = chai.expect
-var Q = require('q')
 var sinon = require('sinon')
 
 describe('/controllers/TeamController', function () {
