@@ -7,27 +7,19 @@ var TeamController = {
   // input: {name: STR, desc: STR}
   createTeam: function (input) {
     var q = Q.defer()
-    var isValid = function (name) {
-      var qq = Q.defer()
-      Team.count({ name: name })
-      .then(function (teamLen) {
-        if (teamLen === 0) { return q.resolve(true) }
-        return q.resolve(false)
-      })
-      return qq.promise
-    }
     var returnName = function (name) {
       var qq = Q.defer()
       var result = name
       var appendix = 0
-      isValid(result)
-      .then(function (res) {
-        if (!res) {
+
+      Team.count({ name: result })
+      .then(function (teamLen) {
+        if (teamLen !== 0) {
           appendix += 1
           result += ' - ' + appendix
-          return isValid(result)
+          return returnName(result)
         }
-        return q.resolve(result)
+        return r.resolve(result)
       })
       return qq.promise
     }

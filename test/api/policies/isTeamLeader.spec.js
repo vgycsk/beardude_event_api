@@ -5,7 +5,7 @@ var isTeamLeader = require('../../../api/policies/isTeamLeader.js')
 var sinon = require('sinon')
 var assert = require('assert')
 
-describe('policies/isTeamLeaderOrManager', function () {
+describe('policies/isTeamLeader', function () {
   var sandbox
 
   beforeEach(function () { sandbox = sinon.sandbox.create() })
@@ -17,7 +17,7 @@ describe('policies/isTeamLeaderOrManager', function () {
     var res = { forbidden: function (str) { actual = str } }
     var actual
     var callbackFunc = function () { actual = 'verified' }
-    var expected = 'Login required'
+    var expected = 'Unauthorized'
 
     isTeamLeader(req, res, callbackFunc)
     assert.equal(actual, expected)

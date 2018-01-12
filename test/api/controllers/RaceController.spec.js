@@ -141,12 +141,12 @@ describe('/controllers/RaceController', function () {
       var actual
       var req = { body: { id: 1, startTime: 1507651200000 } }
       var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
+      var mock = { id: 1, raceStatus: 'init', group: { event: 1 }}
       var mockEvent = { id: 1, ongoingRace: '', slaveEpcMap: {} }
       var mockSystem = { id: 1, ongoingRace: '' }
       var mockSystemUpdate = [{ id: 1, ongoingRace: 1 }]
       var mockupdate = [ { id: 1, raceStatus: 'started' } ]
-      var expected = { races: [{ id: 1, raceStatus: 'started' }], system: { id: 1, ongoingRace: 1 } }
+      var expected = { races: [{ id: 1, raceStatus: 'started', raceStatusWithLatency: "started", startTimeWithLatency: 1507651200000 }], system: { id: 1, ongoingRace: 1, ongoingRaceWithLatency: 1 } }
 
       sandbox.stub(dataService, 'returnSlaveEpcMap').callsFake(function () { return {} })
       sandbox.stub(dataService, 'returnRaceResult').callsFake(function () { return [] })
@@ -158,7 +158,7 @@ describe('/controllers/RaceController', function () {
       this.timeout(150)
       raceController.startRace(req, res)
       setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
+        expect(actual.races[0].raceStatusWithLatency).to.equal(expected.races[0].raceStatusWithLatency)
         Race.findOne.restore()
         Race.update.restore()
         Event.findOne.restore()
@@ -168,38 +168,7 @@ describe('/controllers/RaceController', function () {
       }, 90)
     })
   })
-  describe('.resetRace()', function () {
-    it('should reset a race', function (done) {
-      var actual
-      var req = { body: { id: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 1, raceStatus: 'init', group: { event: 1 } }
-      var mockEvent = { id: 1, ongoingRace: '' }
-      var mockSystem = { id: 1, ongoingRace: 1 }
-      var mockSystemUpdate = [{ id: 1, ongoingRace: '' }]
-      var mockupdate = [ { id: 1, raceStatus: 'init' } ]
-      var expected = { races: [{ id: 1, raceStatus: 'init' }], system: { id: 1, ongoingRace: '' } }
 
-      sailsMock.mockModel(Race, 'findOne', mock)
-      sailsMock.mockModel(Race, 'update', mockupdate)
-      sailsMock.mockModel(Event, 'findOne', mockEvent)
-      sailsMock.mockModel(System, 'findOne', mockSystem)
-      sailsMock.mockModel(System, 'update', mockSystemUpdate)
-      sailsMock.mockModel(Event, 'update', [mockEvent])
-      this.timeout(150)
-      raceController.resetRace(req, res)
-      setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
-        Race.findOne.restore()
-        Race.update.restore()
-        Event.findOne.restore()
-        Event.update.restore()
-        System.findOne.restore()
-        System.update.restore()
-        done()
-      }, 90)
-    })
-  })
   describe('.endRace()', function () {
     it('should return error if not started', function (done) {
       var actual
