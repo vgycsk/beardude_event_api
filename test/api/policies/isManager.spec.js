@@ -1,12 +1,12 @@
 /* eslint-disable no-magic-numbers */
 /* global afterEach, beforeEach, describe, it, Manager */
 
-var isActiveManager = require('../../../api/policies/isActiveManager.js')
+var isManager = require('../../../api/policies/isManager.js')
 var sinon = require('sinon')
 var assert = require('assert')
 var sailsMock = require('sails-mock-models')
 
-describe('policies/isActiveManager', function () {
+describe('policies/isManager', function () {
   var sandbox
 
   beforeEach(function () {
@@ -40,7 +40,7 @@ describe('policies/isActiveManager', function () {
     var expected
 
     sailsMock.mockModel(Manager, 'findOne', mockData)
-    isActiveManager(req, res, callbackFunc)
+    isManager(req, res, callbackFunc)
         .then(function (actual) {
           expected = 'verified'
           assert.equal(actual, expected)
@@ -66,7 +66,7 @@ describe('policies/isActiveManager', function () {
     var expected = 'Unauthorized'
 
     sailsMock.mockModel(Manager, 'findOne', mockData)
-    isActiveManager(req, res, callbackFunc)
+    isManager(req, res, callbackFunc)
     assert.equal(actual, expected)
     Manager.findOne.restore()
     done()
