@@ -26,7 +26,11 @@ module.exports = {
   },
   // input: { id: ID, name: STR, nameCht: STR, racerNumberAllowed: INT, rules: ARRAY }, output: { group: {} }
   update: function (req, res) {
-    var fields = ['name', 'nameCht', 'racerNumberAllowed', 'rules']
+    var fields = [
+      'name',
+      'nameCht',
+      'racerNumberAllowed'
+    ]
     var updateObj = dataService.returnUpdateObj(fields, req.body)
     Group.update({id: req.body.id}, updateObj)
     .then(function (modelData) { return res.ok({group: modelData[0]}) })

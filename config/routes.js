@@ -41,19 +41,6 @@ module.exports.routes = {
     'get  /api/socket/impinj': 'RaceController.socketImpinj',
     'post /api/socket/impinj': 'RaceController.socketImpinjReceiver',
 
-    // Racer 2.4
-    'post /api/racer/activate': 'RacerController.activate',
-    'post /api/racer/create': 'RacerController.create',
-    'get  /api/racer/info/:id': 'RacerController.getGeneralInfo',
-    'get  /api/racer/getRacers': 'RacerController.getRacers',
-    'get  /api/racer/mgmtInfo/:id': 'RacerController.getManagementInfo',
-    'post /api/racer/login': 'RacerController.login',
-    'post /api/racer/logout': 'RacerController.logout',
-    'get  /api/racer/reissuePassword/:id': 'RacerController.reissuePassword',
-    'post /api/racer/update': 'RacerController.update',
-    'post /api/racer/updatePassword': 'RacerController.updatePassword',
-    // Reset password
-
     // Registration
     'post /api/reg/create': 'RegistrationController.create',
     'post /api/reg/update': 'RegistrationController.update',
@@ -69,14 +56,10 @@ module.exports.routes = {
 //    'post /api/reg/admitRacer': 'RegistrationController.admitRacer',
 
     // Team
-    'post /api/team/nameAvailable': 'TeamController.nameAvailable',
     'post /api/team/create': 'TeamController.create',
-    'get  /api/team/getInfo/:id': 'TeamController.getInfo',
     'get  /api/team/getTeams': 'TeamController.getTeams',
     'post /api/team/update': 'TeamController.update',
-    //'post /api/team/delete': 'TeamController.delete',
-    //'post /api/team/invite': 'TeamController.invite',
-    //'post /api/team/acceptInvitation': 'TeamController.acceptInvitation',
+    //'post /api/team/delete': 'TeamController.delete'
 
     // Test page
     'get  /test/socket': { view: 'socket' }

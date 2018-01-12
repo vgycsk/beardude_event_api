@@ -9,16 +9,31 @@ module.exports = {
     group: {
       model: 'Group'
     },
-    racer: {
-      model: 'Racer'
+    team: {
+      model: 'Team'
     },
-
     // Event的accessCode為unique
     accessCode: {
       type: 'string',
       required: true
     },
+    // indie race 專用
     name: {
+      type: 'string',
+      required: true
+    },
+    email: {
+      type: 'email',
+      required: true,
+      unique: true
+    },
+    phone: {
+      type: 'string'
+    },
+    nickName: {
+      type: 'string'
+    },
+    isLeaderOf: {
       type: 'string'
     },
     raceNumber: {
@@ -32,31 +47,10 @@ module.exports = {
       type: 'string',
       defaultsTo: ''
     },
-    paid: {
-      type: 'boolean',
-      required: true,
-      defaultsTo: false
-    },
-    rfidRecycled: {
-      type: 'boolean',
-      required: true,
-      defaultsTo: false
-    },
-    refundRequested: {
-      type: 'boolean',
-      defaultsTo: false
-    },
-    refunded: {
-      type: 'boolean',
-      defaultsTo: false
-    },
-    isDisqualified: {
-      type: 'boolean',
-      defaultsTo: false
-    },
-    // [{race: ID, note: STR}]
-    raceNotes: {
-      type: 'json'
+    // unpaid, paid, requestRefund, refunded
+    paymentStatus: {
+      type: 'string',
+      defaultsTo: 'unpaid'
     },
     toJSON: function () {
       return this.toObject()

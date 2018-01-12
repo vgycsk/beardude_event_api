@@ -7,6 +7,10 @@ module.exports = {
       type: 'integer',
       defaultsTo: 0
     },
+    teamRacerCap: {
+      type: 'integer',
+      defaultsTo: 4
+    },
     ongoingRace: {
       type: 'string',
       defaultsTo: ''

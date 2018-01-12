@@ -28,38 +28,11 @@ module.exports = {
       type: 'string',
       required: true
     },
-    street: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    district: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    city: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    county: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    country: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    zip: {
-      type: 'string',
-      defaultsTo: ''
-    },
-    isActive: {
-      type: 'boolean',
-      required: true,
-      defaultsTo: false
-    },
     toJSON: function () {
       var obj = this.toObject()
 
+      delete obj.email
+      delete obj.phone
       delete obj.password
       delete obj.createdAt
       delete obj.updatedAt

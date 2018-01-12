@@ -2,7 +2,21 @@
 
 'use strict'
 
-var updateFields = ['name', 'nameCht', 'laps', 'racerNumberAllowed', 'isEntryRace', 'isFinalRace', 'requirePacer', 'pacerEpc', 'pacerEpcSlave', 'advancingRules', 'registrationIds', 'raceStatus', 'result']
+var updateFields = [
+  'name',
+  'nameCht',
+  'laps',
+  'racerNumberAllowed',
+  'isEntryRace',
+  'isFinalRace',
+  'requirePacer',
+  'pacerEpc',
+  'pacerEpcSlave',
+  'advancingRules',
+  'registrationIds',
+  'raceStatus',
+  'result'
+]
 var Q = require('q')
 var RaceController = {
   // input: {group: ID, event: ID, name: STR, nameCht: STR, laps: INT, racerNumberAllowed: INT, requirePacer: BOOL}, output: { races: [] }
@@ -106,6 +120,7 @@ var RaceController = {
     var input = req.body
     var startTime = (input.startTime) ? input.startTime : Date.now()
     var output = {}
+    var raceResult
     Race.findOne({ id: input.id })
     .then(function (raceData) {
       if (raceData.raceStatus !== 'init') { throw new Error('Can only start an init race') }
@@ -124,7 +139,7 @@ var RaceController = {
       return Registration.find({ event: output.races[0].event })
     })
     .then(function (regData) {
-      var raceResult = dataService.returnRaceResult(output.races[0], regData)
+      raceResult = dataService.returnRaceResult(output.races[0], regData)
       return Race.update({ id: input.id }, { startTime: startTime, raceStatus: 'started', result: raceResult })
     })
     .then(function (raceData) {
@@ -137,7 +152,7 @@ var RaceController = {
         output.races[0].resultWithLatency = output.races[0].result
         output.system.ongoingRaceWithLatency = input.id
         sails.sockets.broadcast('rxdatapublic', 'raceupdate', output) // Broadcast read tag
-        Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', resultWithLatency: output.race.result })
+        Race.update({ id: input.id }, { startTimeWithLatency: startTime, raceStatusWithLatency: 'started', resultWithLatency: raceResult })
         System.update({ key: 0 }, { ongoingRaceWithLatency: input.id })
       }, output.system.resultLatency)
       return res.ok(output)

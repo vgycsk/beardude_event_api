@@ -16,7 +16,7 @@ module.exports = {
   },
   getGeneralInfo: function (req, res) {
     Manager.findOne({id: req.params.id})
-    .then(function (V) { return res.ok({manager: {firstName: V.firstName, lastName: V.lastName, isActive: V.isActive}}) })
+    .then(function (V) { return res.ok({ manager: V.toJSON() }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   getManagers: function (req, res) {
@@ -55,7 +55,19 @@ module.exports = {
   },
   update: function (req, res) {
     var input = req.body
-    var fields = ['email', 'phone', 'firstName', 'lastName', 'password', 'street', 'district', 'city', 'county', 'country', 'zip', 'isActive']
+    var fields = [
+      'email',
+      'phone',
+      'firstName',
+      'lastName',
+      'password',
+      'street',
+      'district',
+      'city',
+      'county',
+      'country',
+      'zip'
+    ]
     var query = {id: input.id}
     var updateObj = dataService.returnUpdateObj(fields, input)
     if (input.password && input.password !== input.confirmPassword) { return res.badRequest('Password and confirm-password mismatch') }

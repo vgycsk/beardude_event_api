@@ -2,73 +2,60 @@
 
 module.exports.policies = {
     EventController: {
-      create: 'isActiveManager',
+      create: 'isManager',
 //    getEvents: '',
 //    getInfo: '',
-      update: 'isActiveManager',
-      delete: 'isActiveManager'
+      update: 'isManager',
+      delete: 'isManager'
     },
     GroupController: {
-        create: 'isActiveManager',
-//        getInfo: 'isActiveManager',
-        update: 'isActiveManager',
-        delete: 'isActiveManager'
+        create: 'isManager',
+//        getInfo: 'isManager',
+        update: 'isManager',
+        delete: 'isManager'
     },
     ManagerController: {
 //        activate: 'isInactive',
-        create: 'isActiveManager',
+        create: 'isManager',
 //        getGeneralInfo: '',
-        getManagers: 'isActiveManager',
-        getManagementInfo: 'isActiveManager',
+        getManagers: 'isManager',
+        getManagementInfo: 'isManager',
         login: 'isNotLoggedIn',
 //        logout: '',
 //        reissuePassword: ''
-        update: 'isActiveManager',
-        updatePassword: 'isActiveManager'
+        update: 'isManager',
+        updatePassword: 'isManager'
     },
     RaceController: {
-        create: 'isActiveManager',
+        create: 'isManager',
 //        getGeneralInfo: '',
-        getManagementInfo: 'isActiveManager',
-        update: 'isActiveManager',
-        delete: 'isActiveManager',
-        assignRegsToRaces: 'isActiveManager',
-        startRace: 'isActiveManager',
-        resetRace: 'isActiveManager',
-        endRace: 'isActiveManager',
-        submitResult: 'isActiveManager',
-        socketManagement: 'isActiveManager'
+        getManagementInfo: 'isManager',
+        update: 'isManager',
+        delete: 'isManager',
+        assignRegsToRaces: 'isManager',
+        startRace: 'isManager',
+        resetRace: 'isManager',
+        endRace: 'isManager',
+        submitResult: 'isManager',
+        socketManagement: 'isManager'
 //      socket: '',
 //      socketImpinj: ''
     },
-    RacerController: {
-//        activate: 'isInactive',
-//        create: '',
-//        getGeneralInfo: '',
-        getRacers: 'isActiveManager',
-        getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
-        login: 'isNotLoggedIn',
-//        logout: '',
-//        reissuePassword: ''
-        update: 'isRacerSelfOrTeamLeaderOrManager',
-        updatePassword: 'isRacerSelfOrTeamLeaderOrManager'
-    },
     RegistrationController: {
-//        createReg: 'isActiveManager',
+//        createReg: 'isManager',
 //        signupAndCreate: '',
 //        signupAndCreateMultiple: '',
 //        create: '',
-        getInfo: 'isRacerSelfOrTeamLeaderOrManager',
-        confirmRegistration: 'isActiveManager',
-        update: 'isActiveManager',
-//        updateDisqualification: 'isActiveManager',
-        updateRaceNote: 'isActiveManager',
-        delete: 'isActiveManager'
+//        getInfo: '',
+        confirmRegistration: 'isManager',
+        update: 'isManager',
+        updateRaceNote: 'isManager',
+        delete: 'isManager'
     },
     TeamController: {
 //        teamExist: '',
 //        create: '',
 //        getInfo: '',
-        update: 'isTeamLeaderOrManager'
+        update: ['isManager', 'isTeamLeader']
     }
 };

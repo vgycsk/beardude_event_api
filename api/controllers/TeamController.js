@@ -4,82 +4,64 @@
 
 var Q = require('q')
 var TeamController = {
-  // {name: STR}
-  nameAvailable: function (req, res) {
-    Team.findOne(req.body)
-    .then(function (V) { return res.ok({ team: V }) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // {name: STR, desc: STR, url: STR, leader: ID}
+  // input: {name: STR, desc: STR}
   createTeam: function (input) {
     var q = Q.defer()
+    var returnName = function (name) {
+      var qq = Q.defer()
+      var result = name
+      var appendix = 0
 
-    Team.create(input)
+      Team.count({ name: result })
+      .then(function (teamLen) {
+        if (teamLen !== 0) {
+          appendix += 1
+          result += ' - ' + appendix
+          return returnName(result)
+        }
+        return qq.resolve(result)
+      })
+      return qq.promise
+    }
+    returnName(input.name)
+    .then(function (teamName) {
+      return Team.create({
+        name: teamName,
+        desc: input.desc
+      })
+    })
     .then(function (teamData) { return q.resolve(teamData) })
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
-  // {name: STR, nameCht: STR, desc: STR, url: STR, leader: ID}
+  // input: {name: STR, desc: STR} output: { team: {}}
   create: function (req, res) {
-    var input = req.body
-
-    TeamController.createTeam(input)
+    TeamController.createTeam(req.body)
     .then(function (teamData) { return res.ok({ team: teamData }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-  // /:ID
-  delete: function (req, res) {
-    var query = {id: req.params.id}
-
-    Team.findOne(query).populate('racers')
-    .then(function (V) {
-      if (V.racers.length > 0) { throw new Error('Cannot delete a team that contains racers') }
-      return Team.destroy(query)
-    })
-    .then(function () { return res.ok({ team: query.id }) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
+  // input: /:name  output: { team: {} }
   getInfo: function (req, res) {
-    Team.findOne({ id: req.params.id }).populate('racers')
-    .then(function (teamData) { return res.ok({ team: teamData }) })
+    Team.findOne({ id: (req.params.name).toLowerCase().trim() })
+    .then(function (V) { return res.ok({ team: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   getTeams: function (req, res) {
     Team.find({})
-    .then(function (teamData) { return res.ok({ teams: teamData }) })
+    .then(function (V) { return res.ok({ teams: V }) })
     .catch(function (E) { return res.badRequest(E) })
   },
-    // {id: ID}
+    // {id: ID, objs: {}}
   update: function (req, res) {
     var input = req.body
-    var fields = ['name', 'nameCht', 'description', 'url', 'leader']
-    var queryObj = { id: input.id }
-
-    Team.findOne(queryObj)
-    .then(function (modelData) {
-      return Team.update(queryObj, dataService.returnUpdateObj(fields, input))
-    })
-    .then(function () {
-      return Team.findOne(queryObj).populate('racers')
-    })
-    .then(function (modelData) {
-      if (input.racers) {
-        input.racers.forEach(function (racer) {
-          if (racer.toAdd) { modelData.racers.add(racer.id) }
-          if (racer.toRemove) { modelData.racers.remove(racer.id) }
-        })
-        return modelData.save()
-      }
-      return false
-    })
-    .then(function () { return Team.findOne(queryObj).populate('racers') })
-    .then(function (modeldata) { return res.ok({ team: modeldata }) })
+    var fields = [
+      'name',
+      'description'
+    ]
+    Team.update({ id: input.id }, dataService.returnUpdateObj(fields, input))
+    .then(function (V) { return res.ok({ team: V[0] }) })
     .catch(function (E) { return res.badRequest(E) })
   }
-  // {id: ID, racer: ID}
-  // invite: function (req, res) {},
-  // {id: ID, racer: ID}
-  // acceptInvitation: function (req, res) {}
 }
 
 module.exports = TeamController

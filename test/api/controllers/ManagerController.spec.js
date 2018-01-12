@@ -60,14 +60,20 @@ describe('/controllers/ManagerController', function () {
       var actual
       var req = { params: { id: 1 } }
       var res = { ok: function (obj) { actual = obj } }
-      var mock = { id: 1, firstName: 'John', lastName: 'Doe', isActive: true }
-      var expected = { manager: { firstName: 'John', lastName: 'Doe', isActive: true } }
+      var mock = { id: 1, firstName: 'John', lastName: 'Doe' }
+      var expected = { manager: { id: 1, firstName: 'John', lastName: 'Doe' } }
 
+      mock.toJSON = function () {
+        var obj = mock
+        delete obj.password
+        delete obj.createdAt
+        return obj
+      }
       sailsMock.mockModel(Manager, 'findOne', mock)
       managerController.getGeneralInfo(req, res)
       this.timeout(150)
       setTimeout(function () {
-        expect(actual).to.deep.equal(expected)
+        expect(actual.manager.id).to.equal(expected.manager.id)
         Manager.findOne.restore()
         done()
       }, 50)

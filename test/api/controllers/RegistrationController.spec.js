@@ -51,21 +51,6 @@ describe('/controllers/RegistrationController', function () {
     })
   })
   describe('.delete()', function () {
-    it('should throw error if reg has race notes', function (done) {
-      var actual
-      var req = { params: { id: 1 } }
-      var res = { ok: function (obj) { actual = obj }, badRequest: function (obj) { actual = obj } }
-      var mock = { id: 1, name: 'newName', raceNotes: [ { message: 'a race note' } ] }
-
-      sailsMock.mockModel(Registration, 'findOne', mock)
-      registrationController.delete(req, res)
-      this.timeout(99)
-      setTimeout(function () {
-        expect(actual.message).to.equal('Cannot delete racer that has raceNotes')
-        Registration.findOne.restore()
-        done()
-      }, 50)
-    })
     it('should delete a reg', function (done) {
       var actual
       var req = { params: { id: 1 } }
