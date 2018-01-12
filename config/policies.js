@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports.policies = {
-    EventController: {isManager
+    EventController: {
       create: 'isManager',
 //    getEvents: '',
 //    getInfo: '',
