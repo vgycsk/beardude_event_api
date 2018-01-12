@@ -1,4 +1,4 @@
-/* global dataService, Team */
+/* global dataService, Racer, Team */
 
 'use strict'
 

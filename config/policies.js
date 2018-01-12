@@ -42,23 +42,22 @@ module.exports.policies = {
 //      socketImpinj: ''
     },
     RacerController: {
-//        activate: 'isInactive',
+//        activate: '',
 //        create: '',
 //        getGeneralInfo: '',
-        getRacers: 'isActiveManager',
         getManagementInfo: 'isRacerSelfOrTeamLeaderOrManager',
+//        getRacers: '',
         login: 'isNotLoggedIn',
 //        logout: '',
 //        reissuePassword: ''
-        update: 'isRacerSelfOrTeamLeaderOrManager',
-        updatePassword: 'isRacerSelfOrTeamLeaderOrManager'
+        update: 'isRacerSelfOrTeamLeaderOrManager'
     },
     RegistrationController: {
 //        createReg: 'isActiveManager',
 //        signupAndCreate: '',
 //        signupAndCreateMultiple: '',
 //        create: '',
-        getInfo: 'isRacerSelfOrTeamLeaderOrManager',
+//        getInfo: '',
         confirmRegistration: 'isActiveManager',
         update: 'isActiveManager',
 //        updateDisqualification: 'isActiveManager',

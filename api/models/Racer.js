@@ -9,7 +9,7 @@ module.exports = {
       model: 'Team'
     },
     authToken: {
-      type: 'string'
+      type: 'string',
       defaultsTo: ''
     },
     email: {
@@ -33,9 +33,8 @@ module.exports = {
     nickName: {
       type: 'string'
     },
-    isTeamLeader: {
-      type: 'boolean',
-      defaultsTo: false
+    isLeaderOf: {
+      type: 'string'
     },
     password: {
       type: 'string'

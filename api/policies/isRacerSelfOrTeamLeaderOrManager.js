@@ -1,15 +1,21 @@
-/* global Manager */
+/* global Manager, Racer */
 
 'use strict'
 
 module.exports = function (req, res, callback) {
-  if (req.session.racerInfo) {
-    if (req.session.racerInfo.id === req.params.id) {
-      return callback()
-    } else if (req.session.racerInfo.team && (req.session.racerInfo.id === req.session.racerInfo.team.leader)) {
-      return callback()
-    }
-  } else if (req.session.managerInfo && req.session.managerInfo.email) {
+  if (req.session.racerInfo && req.session.racerInfo.id === req.body.id) {
+    return callback()
+  }
+  if (req.session.racerInfo && req.session.racerInfo.isLeaderOf && req.body.id) {
+    return Racer.findOne({ id: req.body.id })
+    .then(function (V) {
+      if (V.team === req.session.racerInfo.isLeaderOf) {
+        return callback()
+      }
+      return res.forbidden('Unauthorized')
+    })
+  }
+  if (req.session.managerInfo && req.session.managerInfo.email) {
     return Manager.findOne({ email: req.session.managerInfo.email })
       .then(function (managerData) {
         if (typeof managerData !== 'undefined' && managerData.isActive) {
@@ -18,5 +24,5 @@ module.exports = function (req, res, callback) {
         return res.forbidden('Unauthorized')
       })
   }
-  return res.forbidden('Login required')
+  return res.forbidden('Unauthorized')
 }

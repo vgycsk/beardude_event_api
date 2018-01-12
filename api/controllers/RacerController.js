@@ -6,21 +6,22 @@ var randomstring = require('randomstring')
 var codeLength = 36
 
 module.exports = {
-  // input: ?racer=ID&token=STRING
+  // input ?token=STRING, { id: ID, password: str, confirmPassword: str }
   activate: function (req, res) {
-    var id = req.params.racer
+    var input = req.body
     var token = req.params.token
-    Racer.findOne({ id: id })
+    if (input.password !== input.confirmPassword) {
+      return res.badRequest('Password and confirm-password mismatch')
+    }
+    Racer.findOne({ input: input.id })
     .then(function (V) {
       if (V.autoToken !== token) { throw new Error('Token incorrect') }
-      req.session.racerInfo = V
-      return res.ok({ racer: V.toJSON() })
+      return Racer.update({ id: input.id }, { password: input.password, authToken: '' })
     })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  getRacers: function (req, res) {
-    Racer.find({})
-    .then(function (V) { return res.ok({ racers: V.map(function (racer) { return racer.toJSON() }) }) })
+    .then(function (V) {
+      req.session.racerInfo = V[0]
+      return res.ok({ racer: V[0] })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   create: function (req, res) {
@@ -45,6 +46,11 @@ module.exports = {
   getManagementInfo: function (req, res) {
     Racer.findOne({id: req.params.id})
     .then(function (V) { return res.ok({ racer: V }) })
+    .catch(function (E) { return res.badRequest(E) })
+  },
+  getRacers: function (req, res) {
+    Racer.find({})
+    .then(function (V) { return res.ok({ racers: V.map(function (racer) { return racer.toJSON() }) }) })
     .catch(function (E) { return res.badRequest(E) })
   },
   login: function (req, res) {
@@ -82,7 +88,7 @@ module.exports = {
       'firstName',
       'lastName',
       'nickName',
-      'birthday',
+      'isLeaderOf',
       'password'
     ]
     var updateObj = dataService.returnUpdateObj(fields, input)
@@ -90,22 +96,10 @@ module.exports = {
     if (input.password && input.password !== input.confirmPassword) {
       return res.badRequest('Password and confirm-password mismatch')
     }
-    Racer.update({id: input.id}, updateObj)
+    Racer.findOne({ id: input.id })
+    .then(function (V) { return Racer.update({id: input.id}, updateObj) })
     .then(function () { return Racer.findOne({id: input.id}) })
     .then(function (V) { return res.ok({racer: V.toJSON()}) })
-    .catch(function (E) { return res.badRequest(E) })
-  },
-  // input { id: ID, password: str, confirmPassword: str }
-  updatePassword: function (req, res) {
-    var input = req.body
-    if (input.password !== input.confirmPassword) {
-      return res.badRequest('Password and confirm-password mismatch')
-    }
-    Racer.update({ id: input.id }, { password: input.password, authToken: '' })
-    .then(function (V) {
-      req.session.racerInfo = V[0]
-      return res.ok({ racer: V[0].toJSON() })
-    })
     .catch(function (E) { return res.badRequest(E) })
   }
 }
