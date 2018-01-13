@@ -45,6 +45,7 @@ var RegistrationController = {
       'epc',
       'epcSlave',
       'email',
+      'accessCode',
       'phone',
       'nickName',
       'raceNumber'

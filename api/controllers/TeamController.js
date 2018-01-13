@@ -4,7 +4,7 @@
 
 var Q = require('q')
 var TeamController = {
-  // input: {name: STR, desc: STR}
+  // input: {name: STR, desc: STR, event: ID}
   createTeam: function (input) {
     var q = Q.defer()
     var returnName = function (name) {
@@ -26,6 +26,7 @@ var TeamController = {
     returnName(input.name)
     .then(function (teamName) {
       return Team.create({
+        event: input.event,
         name: teamName,
         desc: input.desc
       })
@@ -34,7 +35,7 @@ var TeamController = {
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
-  // input: {name: STR, desc: STR} output: { team: {}}
+  // input: {name: STR, desc: STR, event: STR} output: { team: {}}
   create: function (req, res) {
     TeamController.createTeam(req.body)
     .then(function (teamData) { return res.ok({ team: teamData }) })
@@ -55,6 +56,7 @@ var TeamController = {
   update: function (req, res) {
     var input = req.body
     var fields = [
+      'event',
       'name',
       'description'
     ]
