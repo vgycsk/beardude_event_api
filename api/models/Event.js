@@ -46,7 +46,6 @@ module.exports = {
       required: true,
       defaultsTo: false
     },
-    // Doesnt require racer info
     isIndieEvent: {
       type: 'boolean',
       required: true,
