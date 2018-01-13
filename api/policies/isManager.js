@@ -1,4 +1,3 @@
-/* global Manager */
 
 'use strict'
 
