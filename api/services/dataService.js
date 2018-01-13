@@ -85,7 +85,7 @@ var dataService = {
     return q.promise
   },
   // 把timestamp parse成日期時間
-  returnFormattedTime: (milS) => {
+  returnFormattedTime: function (milS) {
     const sec = ((milS % 60000) / 1000).toFixed(2)
     const min = Math.floor(milS / 60000)
     return min + ':' + (sec < 10 ? '0' : '') + sec
@@ -100,7 +100,7 @@ var dataService = {
     return string.toLowerCase().replace(/[^\w\s]/gi, '').replace(/ +/g, '')
   },
   // 回傳可晉級的比賽ID
-  returnAdvanceToId: (rank, advancingRules) => {
+  returnAdvanceToId: function (rank, advancingRules) {
     for (var i = 0; i < advancingRules.length; i += 1) {
       if (rank >= advancingRules[i].rankFrom && rank <= advancingRules[i].rankTo) { return advancingRules[i].toRace }
     }
@@ -108,7 +108,7 @@ var dataService = {
   },
   // 讀取並回傳所有單圈成績
   // 完成圈數顯示單圈成績, 進行中顯示時鐘emoji, 沒成績顯示-
-  returnLapRecord: (result, laps, startTime, raceStatus) => {
+  returnLapRecord: function (result, laps, startTime, raceStatus) {
     let output = []
     let lastRecord = startTime
     let lapsLeft = laps
@@ -129,7 +129,7 @@ var dataService = {
     for (i = 0; i < lapsLeft; i += 1) { output.push('-') }
     return output
   },
-  returnSortedResult: (race, regs) => {
+  returnSortedResult: function (race, regs) {
     let sortTable = []
     let incomplete = []
     let notStarted = []
@@ -164,7 +164,7 @@ var dataService = {
     return sortTable
   },
   // 將 race.recordsHashTable parse成race.result. 並依成績做排序
-  returnRaceResult: (race, regs) => {
+  returnRaceResult: function (race, regs) {
     const sortTable = dataService.returnSortedResult(race, regs)
     return sortTable.map((item, index) => ({
       epc: item.epc,
