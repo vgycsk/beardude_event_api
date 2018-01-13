@@ -3,59 +3,51 @@
 module.exports.policies = {
     EventController: {
       create: 'isManager',
-//    getEvents: '',
 //    getInfo: '',
+//    getEvents: '',
       update: 'isManager',
       delete: 'isManager'
     },
     GroupController: {
-        create: 'isManager',
-//        getInfo: 'isManager',
-        update: 'isManager',
-        delete: 'isManager'
+      create: 'isManager',
+      delete: 'isManager',
+      update: 'isManager'
     },
     ManagerController: {
-//        activate: 'isInactive',
-        create: 'isManager',
-//        getGeneralInfo: '',
-        getManagers: 'isManager',
-        getManagementInfo: 'isManager',
-        login: 'isNotLoggedIn',
-//        logout: '',
-//        reissuePassword: ''
-        update: 'isManager',
-        updatePassword: 'isManager'
+      create: 'isManager',
+//      getGeneralInfo: '',
+      getManagers: 'isManager',
+      getManagementInfo: 'isManager',
+      login: 'isNotLoggedIn',
+//      logout: '',
+      update: 'isManager',
+      updatePassword: 'isManager',
+//      resetPassword: ''
     },
     RaceController: {
-        create: 'isManager',
-//        getGeneralInfo: '',
-        getManagementInfo: 'isManager',
-        update: 'isManager',
-        delete: 'isManager',
-        assignRegsToRaces: 'isManager',
-        startRace: 'isManager',
-        resetRace: 'isManager',
-        endRace: 'isManager',
-        submitResult: 'isManager',
-        socketManagement: 'isManager'
-//      socket: '',
+      create: 'isManager',
+      update: 'isManager',
+      updateMulti: 'isManager',
+      delete: 'isManager',
+      testRfid: 'isManager',
+      startRace: 'isManager',
+      resetRace: 'isManager',
+      endRace: 'isManager',
+      socketManagement: 'isManager'
+//      socketPublic: '',
 //      socketImpinj: ''
+//      socketImpinjReceiver
     },
     RegistrationController: {
-//        createReg: 'isManager',
-//        signupAndCreate: '',
-//        signupAndCreateMultiple: '',
-//        create: '',
-//        getInfo: '',
-        confirmRegistration: 'isManager',
-        update: 'isManager',
-        updateRaceNote: 'isManager',
-        delete: 'isManager'
+//      create: '',
+      update: 'isManager',
+      delete: 'isManager',
+//      signupAndCreateTeam: ''
     },
     TeamController: {
-//        teamExist: '',
-//        create: '',
-//        getInfo: '',
-        update: ['isManager', 'isTeamLeader']
+//    create: '',
+//    getInfo: '',
+//    getTeams: '',
+      update: ['isManager', 'isTeamLeader']
     }
 };
