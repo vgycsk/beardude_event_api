@@ -40,6 +40,7 @@ var RegistrationController = {
   },
   // input: { id: ID, name: STR }, output: { registration: {} }
   update: function (req, res) {
+    var input = req.body
     var fields = [
       'name',
       'epc',
@@ -47,12 +48,33 @@ var RegistrationController = {
       'email',
       'accessCode',
       'phone',
-      'nickName',
-      'raceNumber'
+      'nickName'
+//      'raceNumber'
     ]
-    var updateObj = dataService.returnUpdateObj(fields, req.body)
-    Registration.update({ id: req.body.id }, updateObj)
-    .then(function (V) { return res.ok({ registration: V[0] }) })
+    var toUpdateRaceNumber
+    var updateObj = dataService.returnUpdateObj(fields, input)
+    var output
+    if (input.raceNumber && input.raceNumber !== '') {
+      toUpdateRaceNumber = true
+    }
+    Registration.update({ id: input.id }, updateObj)
+    .then(function (V) {
+      output = V[0]
+      if (toUpdateRaceNumber) {
+        return Registration.count({ event: V.event, raceNumber: input.raceNumber})
+      }
+      return false
+    })
+    .then(function (V) {
+      if (V && V === 0) {
+        return Registration.update({ id: input.id }, { raceNumber: input.raceNumber })
+      }
+      return false
+    })
+    .then(function (V) {
+      if (V) { output = V[0] }
+      return res.ok({ registration: output })
+    })
     .catch(function (E) { return res.badRequest(E) })
   },
   // input: /:id  output: { registration: { id: ID }, races: [] } 1. Find and remove registrationIds from races, 2. remove reg
