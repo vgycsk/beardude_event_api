@@ -15,7 +15,9 @@ module.exports = {
     mongoDev: {
       adapter: 'sails-mongo',
       host: '192.168.0.196',
-      port: 27017,
+      port: 39999,
+      user: 'beardude_event_dev',
+      password: 'zhuandao',
       database: 'beardude_event_dev'
     }
   },
