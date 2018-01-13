@@ -1,5 +1,5 @@
 {
-  "name": "beardude_event",
+  "name": "beardude_event_api",
   "private": false,
   "version": "0.1.0",
   "description": "A bicycle race event manager",
@@ -33,7 +33,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:azaitw/beardude_event.git"
+    "url": "git@github.com:azaitw/beardude_event_api.git"
   },
   "author": "azai",
   "license": "",
