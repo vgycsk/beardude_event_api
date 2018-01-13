@@ -49,7 +49,7 @@ module.exports = {
     isIndieEvent: {
       type: 'boolean',
       required: true,
-      defaultsTo: true
+      defaultsTo: false
     },
     streamingIframe: {
       type: 'string'
