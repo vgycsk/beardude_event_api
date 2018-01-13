@@ -23,6 +23,7 @@ module.exports = {
     var query
     Event.findOne({ uniqueName: req.params.uniqueName })
     .then(function (V) {
+      if (!V) { throw new Error('Not found') }
       // Hide event if event is not public and request is not from manager
       if (!V.isPublic) {
         if (!req.session.managerInfo) { return false }
@@ -69,6 +70,7 @@ module.exports = {
   },
   // input: {id: ID}, output: { event: {} }
   update: function (req, res) {
+    var input = req.body
     var fields = [
       'name',
       'nameCht',
@@ -86,15 +88,28 @@ module.exports = {
       'registerDesc',
       'announcement'
     ]
-    var updateObj = dataService.returnUpdateObj(fields, req.body)
+    var updateObj = dataService.returnUpdateObj(fields, input)
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
     if (updateObj.streamingStart) { updateObj.streamingStart = moment(updateObj.streamingStart).valueOf() }
     if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
     var eventObj
-    Event.update({ id: req.body.id }, updateObj)
+    Event.update({ id: input.id }, updateObj)
     .then(function (V) {
       eventObj = V[0]
+      if (input.uniqueName) {
+        return Event.count({ uniqueName: input.uniqueName })
+      }
+      return false
+    })
+    .then(function (eventLen) {
+      if (eventLen && eventLen === 0) {
+        return Event.update({ id: input.id }, { uniqueName: input.uniqueName })
+      }
+      return false
+    })
+    .then(function (V) {
+      if (V) { eventObj = V[0] }
       if (req.body.resultLatency) {
         return System.update({ key: 0 }, { resultLatency: req.body.resultLatency })
       }
