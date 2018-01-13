@@ -16,7 +16,6 @@ module.exports.routes = {
     // Manager 1.5
     'post /api/manager/login': 'ManagerController.login',
     'get  /api/manager/logout': 'ManagerController.logout',
-    'get  /api/manager/account': 'ManagerController.getAccountInfo',
     'post /api/manager/create': 'ManagerController.create',
     'get  /api/manager/info/:id': 'ManagerController.getGeneralInfo',
     'get  /api/manager/getManagers': 'ManagerController.getManagers',

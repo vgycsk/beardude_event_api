@@ -22,7 +22,8 @@ module.exports = {
     .catch(function (E) { return res.badRequest(E) })
   },
   getManagementInfo: function (req, res) {
-    Manager.findOne({id: req.params.id})
+    var id = (req.params.id) ? req.params.id : req.session.managerInfo.id
+    Manager.findOne({id: id})
     .then(function (V) { return res.ok({manager: V.toJSON()}) })
     .catch(function (E) { return res.badRequest(E) })
   },
