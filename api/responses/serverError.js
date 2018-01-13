@@ -24,6 +24,7 @@ module.exports = function (data) {
   var sails = req._sails
   var viewData = data
 
+  console.log('Server error: ', data)
   res.status(statusCode)
   sails.log.verbose(response, logContent)
 

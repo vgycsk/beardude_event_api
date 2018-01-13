@@ -13,7 +13,7 @@ module.exports.routes = {
     'post /api/group/update': 'GroupController.update',
     'get  /api/group/delete/:id': 'GroupController.delete',
 
-    // Manager 1.5
+    // Manager
     'post /api/manager/login': 'ManagerController.login',
     'get  /api/manager/logout': 'ManagerController.logout',
     'post /api/manager/create': 'ManagerController.create',

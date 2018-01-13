@@ -48,7 +48,6 @@ module.exports = {
       return System.findOne({ key: 0 })
     })
     .then(function (V) {
-      if (!V) { return res.notFound() }
       result.system = V
       return res.ok(result)
     })
