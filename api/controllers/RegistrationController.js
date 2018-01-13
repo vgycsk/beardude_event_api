@@ -48,7 +48,9 @@ var RegistrationController = {
       'email',
       'accessCode',
       'phone',
-      'nickName'
+      'nickName',
+      'regNotes',
+      'raceNotes'
 //      'raceNumber'
     ]
     var toUpdateRaceNumber
@@ -61,7 +63,7 @@ var RegistrationController = {
     .then(function (V) {
       output = V[0]
       if (toUpdateRaceNumber) {
-        return Registration.count({ event: V.event, raceNumber: input.raceNumber})
+        return Registration.count({ event: V.event, raceNumber: input.raceNumber })
       }
       return false
     })

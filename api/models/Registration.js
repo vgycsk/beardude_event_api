@@ -52,6 +52,14 @@ module.exports = {
       type: 'string',
       defaultsTo: 'unpaid'
     },
+    regNotes: {
+      type: 'string',
+      defaultsTo: ''
+    },
+    raceNotes: {
+      type: 'string',
+      defaultsTo: ''
+    },
     toJSON: function () {
       return this.toObject()
     }
