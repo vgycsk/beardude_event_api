@@ -28,6 +28,7 @@
     "lint": "./node_modules/standard/bin/cmd.js api/**/*.js config/**/*.js test/**/*.js test/**/*.spec.js",
     "start": "NODE_ENV=production node app.js",
     "dev": "mkdir -p .tmp/public/js; cp -r assets/js .tmp/public; ./node_modules/sails/bin/sails.js lift",
+    "stage": "mkdir -p .tmp/public/js; cp -r assets/js .tmp/public; ./node_modules/sails/bin/sails.js lift",
     "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha --reporter spec test/bootstrap.test.js test/**/*.spec.js"
   },
   "main": "app.js",
