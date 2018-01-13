@@ -16,6 +16,9 @@ module.exports = {
     },
     racerNumberAllowed: {
       type: 'integer'
+    },
+    toJSON: function () {
+      return this.toObject()
     }
   }
 }

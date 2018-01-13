@@ -30,12 +30,7 @@ module.exports = {
     },
     toJSON: function () {
       var obj = this.toObject()
-
-      delete obj.email
-      delete obj.phone
       delete obj.password
-      delete obj.createdAt
-      delete obj.updatedAt
       return obj
     }
   },

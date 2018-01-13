@@ -3,6 +3,9 @@
 // 比賽隊伍
 module.exports = {
   attributes: {
+    event: {
+      model: 'Event'
+    },
     name: {
       type: 'string',
       required: true,
@@ -10,6 +13,9 @@ module.exports = {
     },
     description: {
       type: 'string'
+    },
+    toJSON: function () {
+      return this.toObject()
     }
   }
 }

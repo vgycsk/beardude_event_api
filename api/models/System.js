@@ -45,6 +45,9 @@ module.exports = {
     slaveEpcStat: {
       type: 'json',
       defaultsTo: {}
+    },
+    toJSON: function () {
+      return this.toObject()
     }
   }
 }
