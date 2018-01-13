@@ -7,18 +7,18 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "connect-redis": "3.3.0",
+    "ejs": "2.5.7",
     "moment": "2.18.1",
     "q": "*",
     "randomstring": "1.1.5",
-    "sails": "0.12.13",
+    "sails": "0.12.14",
     "sails-mongo": "*"
   },
   "devDependencies": {
     "chai": "*",
-    "ejs": "2.5.7",
     "istanbul": "0.4.5",
     "mocha": "3.4.2",
-		"sails-disk": "*",
+    "sails-disk": "*",
     "sails-mock-models": "*",
     "sinon": "*",
     "standard": "^10.0.2"
