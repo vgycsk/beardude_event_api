@@ -15,7 +15,7 @@ var RegistrationController = {
       return false
     })
     .then(function (V) {
-      obj.raceNumber = (V) ? V + 1 : 1
+      obj.raceNumber = V + 1
       return Registration.create(obj)
     })
     .then(function (V) {
