@@ -44,10 +44,14 @@ module.exports = {
       type: 'string',
       defaultsTo: ''
     },
-    // unpaid, paid, requestRefund, refunded
+    // unpaid: 0
+    // paid: 1
+    // requestRefund: 2
+    // refunded: 3
+    // paidManual: 4
     paymentStatus: {
-      type: 'string',
-      defaultsTo: 'unpaid'
+      type: 'integer',
+      defaultsTo: 0
     },
     regNotes: {
       type: 'string',
