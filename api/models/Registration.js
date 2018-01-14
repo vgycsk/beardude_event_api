@@ -33,9 +33,6 @@ module.exports = {
     nickName: {
       type: 'string'
     },
-    isLeaderOf: {
-      type: 'string'
-    },
     raceNumber: {
       type: 'integer'
     },

@@ -23,9 +23,10 @@ module.exports = {
       type: 'integer',
       defaultsTo: 1000
     },
+    // (場地(km) / 時速 100) x 3600 (秒)
     validIntervalMs: {
       type: 'integer',
-      defaultsTo: 10000
+      defaultsTo: 20000
     },
     // {EPC_1_SLAVE: EPC_1, EPC_2_SLAVE: EPC_2 ...}
     slaveEpcMap: {

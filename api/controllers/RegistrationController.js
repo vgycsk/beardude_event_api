@@ -4,18 +4,22 @@
 
 var Q = require('q')
 var RegistrationController = {
-  // input: { event: ID, group: ID, name: STR }, output: { group: {} }
+  // input: { event: ID, group: ID, name: STR, nickName: STR, phone: STR, email: STR, raceNumber: STR }
+  // output: { registration: {} }
   createReg: function (input) {
     var q = Q.defer()
     var obj = input
+
     dataService.returnAccessCode(obj.event)
     .then(function (accessCode) {
       obj.accessCode = accessCode
-      if (!input.raceNumber) { return Registration.count({ group: input.group }) }
-      return false
+      if (input.raceNumber) {
+        return dataService.requestRaceNumber(input.event, input.raceNumber)
+      }
+      return dataService.assignRaceNumber(input.event)
     })
-    .then(function (V) {
-      obj.raceNumber = (V) ? V + 1 : 1
+    .then(function (raceNumber) {
+      obj.raceNumber = raceNumber
       return Registration.create(obj)
     })
     .then(function (V) {
@@ -26,10 +30,10 @@ var RegistrationController = {
     .catch(function (E) { return q.reject(E) })
     return q.promise
   },
-  // input: { event: ID, group: ID, name: STR }, output: { registration: {} }
+  // input: { event: ID, group: ID, name: STR, email: STR }, output: { registration: {} }
   create: function (req, res) {
     var input = req.body
-    var query = {event: input.event, group: input.group, name: input.name}
+    var query = {event: input.event, group: input.group, email: input.email}
     Registration.findOne(query)
     .then(function (modelData) {
       if (modelData) { throw new Error('Already registered') }
@@ -46,30 +50,26 @@ var RegistrationController = {
       'epc',
       'epcSlave',
       'email',
-      'accessCode',
       'phone',
       'nickName',
       'regNotes',
       'raceNotes'
 //      'raceNumber'
     ]
-    var toUpdateRaceNumber
     var updateObj = dataService.returnUpdateObj(fields, input)
     var output
-    if (input.raceNumber && input.raceNumber !== '') {
-      toUpdateRaceNumber = true
-    }
+
     Registration.update({ id: input.id }, updateObj)
     .then(function (V) {
       output = V[0]
-      if (toUpdateRaceNumber) {
-        return Registration.count({ event: V.event, raceNumber: input.raceNumber })
+      if (input.raceNumber && input.raceNumber !== '') {
+        return dataService.requestRaceNumber(output.event, input.raceNumber, output.raceNumber)
       }
       return false
     })
     .then(function (V) {
-      if (V && V === 0) {
-        return Registration.update({ id: input.id }, { raceNumber: input.raceNumber })
+      if (V) {
+        return Registration.update({ id: input.id }, { raceNumber: V })
       }
       return false
     })
@@ -122,19 +122,34 @@ var RegistrationController = {
     .then(function (teamData) {
       output.team = teamData
       input.registrations.map(function (reg) {
-        // input: { event: ID, group: ID, name: STR }, output: { group: {} }
         funcs.push(RegistrationController.createReg({
           event: input.event,
           group: reg.group,
           name: reg.name,
+          email: reg.email,
+          phone: reg.phone,
           nickName: reg.nickName,
-          isLeaderOf: (reg.isLeader) ? teamData.id : undefined
+          raceNumber: reg.raceNumber,
+          regNotes: reg.regNotes
         }))
       })
       return Q.all(funcs)
     })
     .then(function (regs) {
+      var leaderId
+      regs.map(function (reg) {
+        if (reg.name === input.registrations[0].name) {
+          leaderId = reg.id
+        }
+      })
       output.registrations = regs
+      if (leaderId) {
+        return sails.controllers.team.assignLeader(output.team.id, leaderId)
+      }
+      return false
+    })
+    .then(function (teamData) {
+      if (teamData) { output.team = teamData }
       return res.ok(output)
     })
     .catch(function (E) { return res.badRequest(E) })

@@ -71,9 +71,9 @@ var dataService = {
     var codeLength = 4
     var code = randomstring.generate({ length: codeLength })
     var getCode = function (code) {
-      Registration.findOne({ event: eventId, accessCode: code })
-      .then(function (modelData) {
-        if (modelData) {
+      Registration.count({ event: eventId, accessCode: code })
+      .then(function (regLen) {
+        if (regLen > 0) {
           code = randomstring.generate({ length: codeLength })
           return getCode(code)
         }
@@ -128,6 +128,47 @@ var dataService = {
     }
     for (i = 0; i < lapsLeft; i += 1) { output.push('-') }
     return output
+  },
+  assignRaceNumber: function (eventId) {
+    var q = Q.defer()
+    var raceNumber
+    var getDefaultNumber = function (raceNumber) {
+      var qq = Q.defer()
+      Registration.count({ event: eventId, raceNumber: raceNumber })
+      .then(function (regLen) {
+        if (regLen > 0) {
+          return getDefaultNumber(raceNumber += 1)
+        }
+        return qq.resolve(raceNumber)
+      })
+      return qq.promise
+    }
+    Registration.count({ event: eventId })
+    .then(function (regLen) {
+      raceNumber = regLen + 1
+      return getDefaultNumber(raceNumber)
+    })
+    .then(function (raceNumber) {
+      return q.resolve(raceNumber)
+    })
+    return q.promise
+  },
+  requestRaceNumber: function (eventId, desiredNumber, originalNumber) {
+    var q = Q.defer()
+
+    Registration.count({ event: eventId, raceNumber: desiredNumber })
+    .then(function (regLen) {
+      if (regLen === 0) {
+        return desiredNumber
+      } else if (originalNumber) {
+        return originalNumber
+      }
+      return dataService.assignRaceNumber(eventId)
+    })
+    .then(function (raceNumber) {
+      return q.resolve(raceNumber)
+    })
+    return q.promise
   },
   returnSortedResult: function (race, regs) {
     let sortTable = []

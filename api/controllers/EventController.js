@@ -89,11 +89,13 @@ module.exports = {
       'announcement'
     ]
     var updateObj = dataService.returnUpdateObj(fields, input)
+    var eventObj
+
     if (updateObj.startTime) { updateObj.startTime = moment(updateObj.startTime).valueOf() }
     if (updateObj.endTime) { updateObj.endTime = moment(updateObj.endTime).valueOf() }
     if (updateObj.streamingStart) { updateObj.streamingStart = moment(updateObj.streamingStart).valueOf() }
     if (updateObj.name) { updateObj.uniqueName = dataService.sluggify(updateObj.name) }
-    var eventObj
+
     Event.update({ id: input.id }, updateObj)
     .then(function (V) {
       eventObj = V[0]
@@ -103,7 +105,7 @@ module.exports = {
       return false
     })
     .then(function (eventLen) {
-      if (eventLen && eventLen === 0) {
+      if (eventLen === 0) {
         return Event.update({ id: input.id }, { uniqueName: input.uniqueName })
       }
       return false
