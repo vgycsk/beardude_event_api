@@ -1,10 +1,28 @@
-/* global dataService, Team */
+/* global dataService, Registration, Team */
 
 'use strict'
 
 var Q = require('q')
 var TeamController = {
-  // input: {name: STR, desc: STR, event: ID}
+  // output: teamData
+  assignLeader: function (teamId, regId) {
+    var eventId
+    var q = Q.defer()
+    Team.findOne({ id: teamId })
+    .then(function (V) {
+      eventId = V.event
+      return Registration.findOne({ id: regId })
+    })
+    .then(function (V) {
+      if (V.event !== eventId) { return false }
+      return Team.update({ id: teamId }, { leader: regId })
+    })
+    .then(function (V) {
+      return q.resolve(V[0])
+    })
+    return q.promise
+  },
+  // input: {name: STR, desc: STR, event: ID, leader:ID}
   createTeam: function (input) {
     var q = Q.defer()
     var returnName = function (name) {

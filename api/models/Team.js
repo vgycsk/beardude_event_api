@@ -6,6 +6,9 @@ module.exports = {
     event: {
       model: 'Event'
     },
+    leader: {
+      model: 'Registration'
+    },
     name: {
       type: 'string',
       required: true,
