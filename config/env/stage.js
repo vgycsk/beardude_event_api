@@ -14,9 +14,9 @@ module.exports = {
   connections: {
     mongoDb: {
       adapter: 'sails-mongo',
-      host: 'localhost',
+      host: '192.168.0.196',
       port: 27017,
-      database: 'beardude_event_dev'
+      database: 'beardude_event_stage'
     }
   },
   cors: {
